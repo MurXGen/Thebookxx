@@ -4311,22 +4311,33 @@ export default function ManageOrdersPage() {
         }).catch(() => {});
       }
 
-      // Push each row's barcode (tracking ID) to its order's Shipping ID so the
-      // customer + admin see the tracking number without a separate step.
+      // On download, every order in this file is being shipped: move it to
+      // "In Transit" and (when a barcode was filled) save the tracking ID to
+      // its Shipping ID so the customer + admin see it without a separate step.
       let pushed = 0;
+      let moved = 0;
       ipBulk.rows.forEach((r) => {
         const tid = String(r.barcode || "").trim();
         const oid = String(r.orderId || "").trim();
-        if (tid && oid) {
+        if (!oid) return;
+        const fields = { "Order Status": "In Transit" };
+        if (tid) {
+          fields["Shipping ID"] = tid;
           pushed += 1;
-          patchLocalOrder(oid, { "Shipping ID": tid, shippingId: tid });
-          updateOrderRow(oid, { "Shipping ID": tid }).catch(() => {});
         }
+        moved += 1;
+        patchLocalOrder(
+          oid,
+          tid
+            ? { ...fields, shippingId: tid, status: "In Transit" }
+            : { ...fields, status: "In Transit" },
+        );
+        updateOrderRow(oid, fields).catch(() => {});
       });
-      if (pushed) setTimeout(fetchOrders, 1600);
+      if (moved) setTimeout(fetchOrders, 1600);
 
       showToast(
-        `${ipBulk.rows.length}-parcel ${ipBulk.product} file downloaded ✓${pushed ? ` · ${pushed} tracking ID(s) saved to orders` : ""}`,
+        `${ipBulk.rows.length}-parcel ${ipBulk.product} file downloaded ✓${moved ? ` · ${moved} order(s) → In Transit` : ""}${pushed ? ` · ${pushed} tracking ID(s) saved` : ""}`,
         "success",
       );
       setIpFilledIds([]);
@@ -5515,10 +5526,24 @@ export default function ManageOrdersPage() {
       let already = 0;
       const seen = new Set();
       const matches = [];
+      // Match a file row to an order: prefer the booking-report Order ID
+      // (customer-bulk-reference), then fall back to the India Post article
+      // number vs the order's saved Shipping ID.
+      const findOrderForRow = (r) => {
+        if (r.orderId) {
+          const byId = orders.find(
+            (ord) => String(ord["Order ID"] || "").trim() === r.orderId,
+          );
+          if (byId) return byId;
+        }
+        if (r.article)
+          return orders.find(
+            (ord) => sidUp(ord["Shipping ID"]) === sidUp(r.article),
+          );
+        return null;
+      };
       delivered.forEach((r) => {
-        const o = orders.find(
-          (ord) => sidUp(ord["Shipping ID"]) === sidUp(r.article),
-        );
+        const o = findOrderForRow(r);
         if (!o) {
           unmatched += 1;
           return;
@@ -5527,10 +5552,10 @@ export default function ManageOrdersPage() {
         if (!oid || seen.has(oid)) return;
         const newStatus = targetDeliveredStatus(o);
         const cur = String(o["Order Status"] || "").trim();
-        if (cur.toLowerCase() === newStatus.toLowerCase()) {
-          already += 1;
-          return;
-        }
+        // Always override from the file — include the order even when it is
+        // already at the target status, so the file's value wins. (We still
+        // count how many were already correct, just for the summary.)
+        if (cur.toLowerCase() === newStatus.toLowerCase()) already += 1;
         seen.add(oid);
         matches.push({
           order: o,
@@ -5539,6 +5564,7 @@ export default function ManageOrdersPage() {
           newStatus,
           currentStatus: cur || "—",
           lastEvent: r.lastEvent,
+          alreadySet: cur.toLowerCase() === newStatus.toLowerCase(),
         });
       });
       // Reverse case: file NOT delivered, but order marked Delivered / Money
@@ -5548,9 +5574,7 @@ export default function ManageOrdersPage() {
       rows
         .filter((r) => !isDelivered(r.status))
         .forEach((r) => {
-          const o = orders.find(
-            (ord) => sidUp(ord["Shipping ID"]) === sidUp(r.article),
-          );
+          const o = findOrderForRow(r);
           if (!o) return;
           const oid = o["Order ID"];
           if (!oid || revSeen.has(oid)) return;
@@ -5571,9 +5595,7 @@ export default function ManageOrdersPage() {
       rows
         .filter((r) => isReturned(r))
         .forEach((r) => {
-          const o = orders.find(
-            (ord) => sidUp(ord["Shipping ID"]) === sidUp(r.article),
-          );
+          const o = findOrderForRow(r);
           if (!o) return;
           const oid = o["Order ID"];
           if (!oid || cancSeen.has(oid)) return;
@@ -9008,6 +9030,1254 @@ export default function ManageOrdersPage() {
     return <OrdersLoader />;
   }
 
+  // Shared order-card renderer — used by BOTH the Orders grid and the
+  // Dispatch queue so the dispatch list shows the exact same cards.
+  const renderOrderCard = (order, idx) => {
+                        const orderId = order["Order ID"];
+                        const books = order.parsedBooks || [];
+                        const pnl = order.pnl;
+                        const hasTracking =
+                          order.shippingId &&
+                          String(order.shippingId).trim() !== "";
+                        const fullyPicked = isOrderFullyPicked(order);
+                        const tinyUrl = order["TinyURL"];
+                        const hasTinyUrl =
+                          tinyUrl && String(tinyUrl).trim() !== "";
+                        const fullAddress = [
+                          order["Address"],
+                          order["City"],
+                          order["State"],
+                        ]
+                          .filter(Boolean)
+                          .join(", ");
+                        const addressLine = order["Pincode"]
+                          ? `${fullAddress} - ${order["Pincode"]}`
+                          : fullAddress;
+
+                        const isExpanded = !!expandedCards[orderId];
+                        const isPacked = !!packedOrders[orderId];
+                        const pickedCount = books.reduce(
+                          (n, _b, i) =>
+                            n + (pickChecked[bookKey(orderId, i)] ? 1 : 0),
+                          0,
+                        );
+                        const allPicked =
+                          books.length > 0 && pickedCount === books.length;
+                        // Value (₹) of the books picked so far vs the full order.
+                        const pickedValue = books.reduce(
+                          (s, b, i) =>
+                            s +
+                            (pickChecked[bookKey(orderId, i)]
+                              ? b.total || 0
+                              : 0),
+                          0,
+                        );
+                        const totalBooksValue = books.reduce(
+                          (s, b) => s + (b.total || 0),
+                          0,
+                        );
+                        // Relative age of the order for the card badge.
+                        // Counted in CALENDAR days (not rolling 24h): an order
+                        // placed at 1:21 PM is "Today" until midnight, then
+                        // becomes 1 day old at 12:00 AM the next calendar day.
+                        const orderDate = getOrderDate(order);
+                        const startOfDay = (dt) => {
+                          const x = new Date(dt);
+                          x.setHours(0, 0, 0, 0);
+                          return x.getTime();
+                        };
+                        const calDaysAgo = orderDate
+                          ? Math.round(
+                              (startOfDay(new Date()) - startOfDay(orderDate)) /
+                                86400000,
+                            )
+                          : 0;
+                        let agoLabel = "";
+                        if (orderDate) {
+                          agoLabel =
+                            calDaysAgo <= 0
+                              ? "Today"
+                              : calDaysAgo === 1
+                                ? "1 day"
+                                : `${calDaysAgo} days`;
+                        }
+                        const isCOD = /cash|cod/i.test(
+                          order["Payment Type"] || "",
+                        );
+                        // "Prepaid" = a COD order whose ₹99 advance is already
+                        // paid online (partial prepaid) — coloured distinctly
+                        // from plain COD and full-online (UPI) orders.
+                        const advancePaid = /^\s*yes/i.test(
+                          String(order["Advance Paid"] || ""),
+                        );
+                        const isPrepaid = isCOD && advancePaid;
+                        // Terminal orders (Delivered / Cancelled) collapse to a
+                        // 2-line summary — no covers, tracking or actions needed.
+                        const isTerminal = /delivered|cancel/i.test(
+                          String(order.status || order["Order Status"] || ""),
+                        );
+                        // Urgency — an order must not sit "In Transit" WITHOUT a
+                        // tracking ID for more than a calendar day. Once it does,
+                        // it turns into a red high-priority card so the operator
+                        // adds the tracking ID immediately.
+                        const inTransit = /in\s*transit/i.test(
+                          String(order.status || order["Order Status"] || ""),
+                        );
+                        const isUrgentNoTrack =
+                          !isTerminal &&
+                          inTransit &&
+                          !hasTracking &&
+                          calDaysAgo >= 1;
+                        // Exception flags — a card that needs the operator gets
+                        // an amber left border + one reason chip. Order matters:
+                        // the first true reason wins. Urgency outranks the rest.
+                        const exReason = isTerminal
+                          ? null
+                          : isUrgentNoTrack
+                            ? `In transit · no tracking · ${calDaysAgo}d`
+                            : isUnconfirmedOrder(order)
+                              ? "Unconfirmed"
+                              : isCOD && Number(order.revenue) > 2000
+                                ? "COD over ₹2000"
+                                : null;
+                        const isException = !!exReason;
+                        const oidStr = String(orderId || "");
+                        const formData = {
+                          orderId,
+                          customerName: order["Customer Name"],
+                          customerAddress: order["Address"],
+                          customerCity: order["City"],
+                          customerState: order["State"],
+                          customerPincode: order["Pincode"],
+                          customerPhone: order["Phone Number"],
+                          totalValueRs: order.revenue,
+                          isCOD,
+                          codAmount: order.revenue,
+                        };
+
+                        const isSelected =
+                          cardSelectMode && selectedIds.includes(orderId);
+                        const toggleCardSelect = () =>
+                          setSelectedIds((prev) =>
+                            prev.includes(orderId)
+                              ? prev.filter((x) => x !== orderId)
+                              : [...prev, orderId],
+                          );
+
+                        return (
+                          <motion.div
+                            key={orderId || idx}
+                            initial={{ opacity: 0, y: 18, scale: 0.985 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{
+                              duration: 0.36,
+                              ease: EASE_OUT,
+                              delay: Math.min((idx % ORDERS_BATCH) * 0.035, 0.32),
+                            }}
+                            className={`admin-order-card mo-card ${
+                              isPrepaid
+                                ? "mo-card-prepaid"
+                                : isCOD
+                                  ? "mo-card-cod"
+                                  : "mo-card-online"
+                            }${isPacked ? " packed" : ""}${
+                              isExpanded ? " expanded" : ""
+                            }${cardSelectMode ? " selectable" : ""}${
+                              isSelected ? " selected" : ""
+                            }${
+                              pendingTracking[orderId]
+                                ? " mo-card-pending-push"
+                                : ""
+                            }${isGiftOrder(order) ? " mo-card-gift" : ""}`}
+                            style={{
+                              "--card-accent": isUrgentNoTrack
+                                ? "#dc2626"
+                                : isException
+                                  ? "#f59e0b"
+                                  : moStatusColor(order.status),
+                            }}
+                            onPointerDown={() => {
+                              if (cardSelectMode) return;
+                              longPressRef.current = false;
+                              clearTimeout(lpTimer.current);
+                              lpTimer.current = setTimeout(() => {
+                                longPressRef.current = true;
+                                setCardSelectMode(true);
+                                setSelectedIds((p) =>
+                                  p.includes(orderId)
+                                    ? p
+                                    : [...p, orderId],
+                                );
+                                if (navigator.vibrate) navigator.vibrate(15);
+                              }, 480);
+                            }}
+                            onPointerUp={() =>
+                              clearTimeout(lpTimer.current)
+                            }
+                            onPointerMove={() =>
+                              clearTimeout(lpTimer.current)
+                            }
+                            onPointerLeave={() =>
+                              clearTimeout(lpTimer.current)
+                            }
+                          >
+                            {/* Gift order — flowing confetti decoration across
+                                the whole card (no banner, no QR here). */}
+                            {isGiftOrder(order) && (
+                              <span
+                                className="mo-card-gift-confetti"
+                                aria-hidden="true"
+                              >
+                                {Array.from({ length: 10 }).map((_, i) => (
+                                  <span key={i} className={`mcg mcg-${i}`} />
+                                ))}
+                              </span>
+                            )}
+                            {/* Faster / Express delivery — speed-streak graphic +
+                                a small animated "Express" badge. */}
+                            {(() => {
+                              const deliv = String(order["Delivery Type"] || "");
+                              const fasterD =
+                                /faster|express/i.test(deliv) ||
+                                /^e/i.test(String(order.shippingId || "").trim());
+                              if (!fasterD) return null;
+                              return (
+                                <span
+                                  className="mo-card-faster"
+                                  aria-hidden="true"
+                                >
+                                  <span className="mcf-streak mcf-s0" />
+                                  <span className="mcf-streak mcf-s1" />
+                                  <span className="mcf-streak mcf-s2" />
+                                  <span className="mcf-streak mcf-s3" />
+                                  <span className="mcf-streak mcf-s4" />
+                                </span>
+                              );
+                            })()}
+                            {/* Header — name + phone (left); status + date (right) */}
+                            <div
+                              className="mo2-head"
+                              onClick={(e) => {
+                                if (cardSelectMode) {
+                                  e.stopPropagation();
+                                  toggleCardSelect();
+                                } else {
+                                  e.stopPropagation();
+                                }
+                              }}
+                              style={
+                                cardSelectMode ? { cursor: "pointer" } : undefined
+                              }
+                            >
+                              {cardSelectMode && (
+                                <button
+                                  type="button"
+                                  className={`mo2-select-box${isSelected ? " on" : ""}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCardSelect();
+                                  }}
+                                  aria-pressed={isSelected}
+                                  aria-label={isSelected ? "Deselect" : "Select"}
+                                >
+                                  {isSelected && <Check size={14} strokeWidth={3} />}
+                                </button>
+                              )}
+                              <div className="mo2-head-l">
+                                <span className="mo2-name">{order["Customer Name"] || "—"}</span>
+                                <button
+                                  type="button"
+                                  className="mo2-phone"
+                                  title="Tap to copy number"
+                                  onClick={() =>
+                                    copyToClipboard(String(order["Phone Number"] || ""), `phone-${idx}`)
+                                  }
+                                >
+                                  {order["Phone Number"] || "—"}
+                                  {copiedId === `phone-${idx}` && (
+                                    <span className="mo-phone-copied">
+                                      <Check size={11} /> Copied
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
+                              <div className="mo2-head-r">
+                                <div
+                                  className="mo2-status-wrap"
+                                  style={{ "--st-color": moStatusColor(order.status) }}
+                                >
+                                  <select
+                                    className={`mo2-status${pendingStatus[orderId] ? " dirty" : ""}`}
+                                    value={order.status || "Processing"}
+                                    title="Change status (queued — push to save)"
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      patchLocalOrder(orderId, { "Order Status": val, status: val });
+                                      setPendingStatus((prev) => ({ ...prev, [orderId]: val }));
+                                    }}
+                                  >
+                                    {TRACK_STATUS_OPTIONS.map((s) => (
+                                      <option key={s} value={s}>
+                                        {s}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <ChevronDown size={14} className="mo2-status-chev" />
+                                </div>
+                                <span className="mo2-date">
+                                  {orderDate
+                                    ? `${orderDate.toLocaleDateString("en-IN", {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                      })} | ${orderDate.toLocaleTimeString("en-IN", {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      })}`
+                                    : "—"}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="mo2-div" />
+
+                            {/* Covers — horizontal row with title + price */}
+                            {books.length > 0 && (
+                              <div className="mo2-covers" onClick={(e) => e.stopPropagation()}>
+                                {books.map((b, ci) => {
+                                  const img = getBookImage(b.name);
+                                  const price =
+                                    b.total > 0 ? b.total : b.price > 0 ? b.price : 0;
+                                  return (
+                                    <div className="mo2-cover-item" key={ci}>
+                                      <div className="mo2-cover">
+                                        <BookCoverImg
+                                          src={img}
+                                          name={b.name}
+                                          author={b.author}
+                                          loading="lazy"
+                                        />
+                                        {b.quantity > 1 && (
+                                          <span className="mo-cover-qty">×{b.quantity}</span>
+                                        )}
+                                      </div>
+                                      <span className="mo2-cover-name" title={b.name}>
+                                        {b.name}
+                                      </span>
+                                      <span className="mo2-cover-price">
+                                        {price > 0 ? `₹${price}` : "—"}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+
+                            {/* Badges — horizontally scrollable. Book count (always,
+                                with a download) + delivery type + gift wrap +
+                                bookmark; each shown only when it has a value. */}
+                            {(() => {
+                              const deliv = String(order["Delivery Type"] || "");
+                              const fasterD =
+                                /faster|express/i.test(deliv) ||
+                                /^e/i.test(String(order.shippingId || "").trim());
+                              const addonsB = parseAddonsField(
+                                String(order["Gift Wrap"] || ""),
+                              );
+                              const giftOn = addonsB.giftOn;
+                              const bmQty = addonsB.bookmarkQty;
+                              const bookCount = books.reduce(
+                                (s, b) => s + (Number(b.quantity) || 1),
+                                0,
+                              );
+                              return (
+                                <div
+                                  className="mo2-badges"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <span className="mo2-badge mo2-badge-count">
+                                    📚 {bookCount} book{bookCount === 1 ? "" : "s"}
+                                  </span>
+                                  {String(order["Tracking detail"] || "")
+                                    .split("||")[0]
+                                    .trim() && (
+                                    <span
+                                      className="mo2-badge mo2-badge-track"
+                                      title="Live India Post status"
+                                    >
+                                      📍{" "}
+                                      {
+                                        String(order["Tracking detail"]).split(
+                                          "||",
+                                        )[0]
+                                      }
+                                    </span>
+                                  )}
+                                  {fasterD && (
+                                    <span className="mo2-badge mo2-badge-deliv">
+                                      ⚡ Express delivery
+                                    </span>
+                                  )}
+                                  {giftOn && (
+                                    <span className="mo2-badge mo2-badge-gift">
+                                      🎁 Gift wrap
+                                    </span>
+                                  )}
+                                  {bmQty > 0 && (
+                                    <span className="mo2-badge mo2-badge-bm">
+                                      🔖 Bookmark {bmQty}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })()}
+
+                            <div className="mo2-div" />
+
+                            {/* Info grid — order/payment type + weight & tracking (edit via sheet) */}
+                            {(() => {
+                              const advancePaid = /^\s*yes/i.test(
+                                String(order["Advance Paid"] || ""),
+                              );
+                              const orderType = isCOD
+                                ? "Cash on delivery"
+                                : isPrepaid
+                                  ? "Prepaid"
+                                  : "Online (UPI)";
+                              const payType = advancePaid
+                                ? "₹99-Advance paid"
+                                : isCOD
+                                  ? "Cash on delivery"
+                                  : "Paid online";
+                              const w = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");
+                              const sz = String(order["Sizes(Lxbxh)"] || "")
+                                .trim()
+                                .replace(/[xX×*]/g, "x");
+                              const wsText =
+                                w || sz
+                                  ? `${w ? w + "gm" : ""}${w && sz ? " | " : ""}${sz}`
+                                  : "Add weight & size";
+                              const trk = String(
+                                order.shippingId || order["Shipping ID"] || "",
+                              ).trim();
+                              return (
+                                <div className="mo2-grid" onClick={(e) => e.stopPropagation()}>
+                                  <div className="mo2-cell">
+                                    <span className="mo2-cell-k">Order type</span>
+                                    <span className="mo2-badge-pill mo2-badge-blue">
+                                      {orderType}
+                                    </span>
+                                  </div>
+                                  <div className="mo2-cell mo2-cell-r">
+                                    <span className="mo2-cell-k">Payment type</span>
+                                    <span
+                                      className={`mo2-badge-pill ${advancePaid ? "mo2-badge-green" : /online|upi|paid/i.test(payType) && !/cod|cash/i.test(payType) ? "mo2-badge-green" : "mo2-badge-grey"}`}
+                                    >
+                                      {payType}
+                                    </span>
+                                  </div>
+                                  <div className="mo2-cell">
+                                    <span className="mo2-cell-k">Weight &amp; Size</span>
+                                    <button
+                                      type="button"
+                                      className="mo2-cell-v mo2-cell-edit mo2-v-ul"
+                                      onClick={() => openShipEdit(order)}
+                                    >
+                                      {wsText} <Pencil size={12} />
+                                    </button>
+                                  </div>
+                                  <div className="mo2-cell mo2-cell-r">
+                                    <span className="mo2-cell-k">Tracking id</span>
+                                    <button
+                                      type="button"
+                                      className={`mo2-cell-v mo2-cell-edit${trk ? " mo2-v-green" : ""}`}
+                                      onClick={() => openShipEdit(order)}
+                                    >
+                                      {trk || "Add"} <Pencil size={12} />
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })()}
+
+                            {/* Note — shown on EVERY card for a consistent
+                                layout. Only the customer's own note is shown
+                                here; a dash when they didn't add one. (The
+                                strict delivery instruction lives on the printed
+                                address label, not on the card.) */}
+                            {(() => {
+                              const custNote = isGiftOrder(order)
+                                ? ""
+                                : cleanNote(
+                                    orderNotes[orderId] ||
+                                      order["Order Comment"],
+                                  );
+                              return (
+                                <div className="mo2-note">
+                                  <span className="mo2-note-k">Note :</span>
+                                  <span className="mo2-note-v">
+                                    {custNote || "—"}
+                                  </span>
+                                </div>
+                              );
+                            })()}
+
+                            <div className="mo2-div" />
+
+                            {/* Total order value */}
+                            <div className="mo2-total" onClick={(e) => e.stopPropagation()}>
+                              <span className="mo2-total-k">Total order value</span>
+                              <button
+                                type="button"
+                                className="mo2-total-v"
+                                onClick={() => setBillOrderId(orderId)}
+                                title="Tap for bill"
+                              >
+                                ₹{Number(order.revenue || 0).toLocaleString("en-IN")}
+                              </button>
+                            </div>
+
+                            <div className="mo2-div" />
+
+                            {/* Bottom bar — contact icons (left) + 3-dot options (right) */}
+                            <div className="mo2-actions" onClick={(e) => e.stopPropagation()}>
+                              <div className="mo2-actions-l">
+                                <button
+                                  type="button"
+                                  className="mo-frame-ic mo-frame-wa"
+                                  onClick={() => {
+                                    pendingPickerChannel.current = "wa";
+                                    setWaCustomText("");
+                                    setWaPickerOrder(order);
+                                  }}
+                                  title="WhatsApp the customer"
+                                  aria-label="WhatsApp the customer"
+                                >
+                                  <FaWhatsapp size={17} />
+                                </button>
+                                {String(order["Email"] || "").trim() && (
+                                  <button
+                                    type="button"
+                                    className="mo-frame-ic mo-frame-email"
+                                    onClick={() => {
+                                      pendingPickerChannel.current = "email";
+                                      setWaCustomText("");
+                                      setWaPickerOrder(order);
+                                    }}
+                                    title="Email the customer"
+                                    aria-label="Email the customer"
+                                  >
+                                    <Mail size={15} />
+                                  </button>
+                                )}
+                                {orderId && (
+                                  <a
+                                    className="mo-frame-ic"
+                                    href={`/profile/${String(order["Phone Number"] || "")
+                                      .replace(/\D/g, "")
+                                      .slice(-10)}/orders/${encodeURIComponent(orderId)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Open customer order page"
+                                    aria-label="Open customer order page"
+                                  >
+                                    <ExternalLink size={15} />
+                                  </a>
+                                )}
+                                <button
+                                  type="button"
+                                  className={`mo-frame-ic mo-frame-book${bookedOrders[orderId] ? " done" : ""}`}
+                                  onClick={() => setBookOrder(order)}
+                                  title={
+                                    bookedOrders[orderId]
+                                      ? "Booked with India Post"
+                                      : "Book online with India Post"
+                                  }
+                                  aria-label="Book online with India Post"
+                                >
+                                  {bookedOrders[orderId] ? (
+                                    <CheckCircle size={15} />
+                                  ) : (
+                                    <Truck size={15} />
+                                  )}
+                                </button>
+                                <button
+                                  type="button"
+                                  className={`mo-frame-ic mo-frame-dispatch${dispatchIds.includes(orderId) ? " on" : ""}`}
+                                  onClick={() => toggleDispatch(orderId)}
+                                  title={
+                                    dispatchIds.includes(orderId)
+                                      ? "In dispatch queue — tap to remove"
+                                      : "Move to Dispatch for label printing"
+                                  }
+                                  aria-label="Move to Dispatch"
+                                >
+                                  {dispatchIds.includes(orderId) ? (
+                                    <CheckCircle size={15} />
+                                  ) : (
+                                    <Send size={15} />
+                                  )}
+                                </button>
+                              </div>
+                              <div className="mo-kebab-wrap">
+                                <button
+                                  type="button"
+                                  className="mo-kebab-btn"
+                                  title="More actions"
+                                  aria-label="More actions"
+                                  aria-haspopup="menu"
+                                  aria-expanded={cardMenuId === orderId}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCardMenuId((p) => (p === orderId ? null : orderId));
+                                  }}
+                                >
+                                  <MoreVertical size={16} />
+                                </button>
+                                {cardMenuId === orderId && (
+                                  <>
+                                    <div
+                                      className="mo-kebab-backdrop"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCardMenuId(null);
+                                      }}
+                                    />
+                                    <div
+                                      className="mo-kebab-menu mo-kebab-menu-up"
+                                      role="menu"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item"
+                                        onClick={() => {
+                                          setCancelChoiceOrder(order);
+                                          setCardMenuId(null);
+                                        }}
+                                      >
+                                        <X size={14} /> Cancel order
+                                      </button>
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item"
+                                        onClick={() => {
+                                          openReplaceBook(order);
+                                          setCardMenuId(null);
+                                        }}
+                                      >
+                                        <RefreshCw size={14} /> Replace a book
+                                      </button>
+                                      <div className="mo-kebab-group">Advanced</div>
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item"
+                                        onClick={() => {
+                                          copyToClipboard(
+                                            buildIpAutofillJson(order, books, isCOD),
+                                            `cardjson-${orderId}`,
+                                          );
+                                          setCardMenuId(null);
+                                        }}
+                                      >
+                                        <Copy size={14} /> Copy JSON
+                                      </button>
+                                      <div className="mo-kebab-sep" />
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item danger"
+                                        onClick={() => confirmDeleteOrder(order)}
+                                      >
+                                        <Trash2 size={14} /> Delete permanently
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Cancel / Delete / Copy JSON demoted into the
+                                header kebab (⋯) — see .mo-card-menu. */}
+
+                            {/* Comment + Book online moved into the bill modal. */}
+
+                            {billOrderId === orderId &&
+                              typeof document !== "undefined" &&
+                              createPortal(
+                                <div
+                                  className="bill-modal-overlay"
+                                  onClick={() => setBillOrderId(null)}
+                                >
+                                  <motion.div
+                                    className="bill-modal mo-bill"
+                                    initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    transition={{ duration: 0.24, ease: EASE_OUT }}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <div className="bill-header">
+                                      <div className="mo-bill-head-l">
+                                        <span className="mo-bill-title">
+                                          Order bill
+                                        </span>
+                                        <span className="mo-bill-sub">
+                                          {order["Customer Name"] || "Customer"}{" "}
+                                          · #{oidStr.slice(-6)}
+                                        </span>
+                                      </div>
+                                      <span
+                                        className="mo-bill-x"
+                                        onClick={() => setBillOrderId(null)}
+                                      >
+                                        <X size={18} />
+                                      </span>
+                                    </div>
+                                    <div className="mo-bill-body">
+                                      {books.length > 0 && (
+                                        <div className="mo-bill-sec">
+                                          <div className="mo-bill-sec-t">
+                                            Items · {books.length}
+                                          </div>
+                                          <div className="mo-bill-items">
+                                            {books.map((b, bi) => {
+                                              const price =
+                                                b.total > 0
+                                                  ? b.total
+                                                  : b.price > 0
+                                                    ? b.price
+                                                    : 0;
+                                              const bimg = getBookImage(
+                                                b.name,
+                                              );
+                                              return (
+                                                <div
+                                                  className="mo-bill-item"
+                                                  key={bi}
+                                                >
+                                                  <span className="mo-bill-item-thumb">
+                                                    {bimg ? (
+                                                      <img
+                                                        src={bimg}
+                                                        alt={b.name}
+                                                        loading="lazy"
+                                                      />
+                                                    ) : (
+                                                      <Package size={16} />
+                                                    )}
+                                                  </span>
+                                                  <span className="mo-bill-item-nm">
+                                                    {b.name}
+                                                    {b.quantity > 1
+                                                      ? ` ×${b.quantity}`
+                                                      : ""}
+                                                  </span>
+                                                  <span className="mo-bill-item-pr">
+                                                    {price > 0
+                                                      ? `₹${price.toLocaleString()}`
+                                                      : "—"}
+                                                  </span>
+                                                </div>
+                                              );
+                                            })}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {(() => {
+                                        const rev = Number(order.revenue) || 0;
+                                        const fee = isCOD
+                                          ? Math.round(rev * 0.015)
+                                          : 0;
+                                        const net = Math.round(rev - fee);
+                                        const ad = parseAddonsField(
+                                          order["Gift Wrap"],
+                                        );
+                                        const giftChg = ad.giftOn
+                                          ? parseFloat(
+                                              order["Gift Wrap Charge"],
+                                            ) || 0
+                                          : 0;
+                                        return (
+                                          <div className="mo-bill-sec">
+                                            <div className="mo-bill-sec-t">
+                                              Payment
+                                            </div>
+                                            <div className="mo-bill-rows">
+                                              <div className="mo-bill-row">
+                                                <span>Order value</span>
+                                                <b>₹{rev.toLocaleString()}</b>
+                                              </div>
+                                              {ad.bookmarkQty > 0 && (
+                                                <div className="mo-bill-row muted">
+                                                  <span>
+                                                    Bookmarks · {ad.bookmarkQty}{" "}
+                                                    ({ad.bookmarkCharged}×₹9
+                                                    {ad.bookmarkFree > 0
+                                                      ? `, ${ad.bookmarkFree} free`
+                                                      : ""}
+                                                    )
+                                                  </span>
+                                                  <b>
+                                                    {ad.bookmarkCharge > 0
+                                                      ? `+₹${ad.bookmarkCharge}`
+                                                      : "FREE"}
+                                                  </b>
+                                                </div>
+                                              )}
+                                              {giftChg > 0 && (
+                                                <div className="mo-bill-row muted">
+                                                  <span>Gift wrap</span>
+                                                  <b>+₹{giftChg}</b>
+                                                </div>
+                                              )}
+                                              {isCOD && (
+                                                <>
+                                                  <div className="mo-bill-row muted">
+                                                    <span>COD commission · 1.5%</span>
+                                                    <b>−₹{fee.toLocaleString()}</b>
+                                                  </div>
+                                                  <div className="mo-bill-row">
+                                                    <span>Net receivable</span>
+                                                    <b>₹{net.toLocaleString()}</b>
+                                                  </div>
+                                                </>
+                                              )}
+                                              <div className="mo-bill-row muted">
+                                                <span>Cost</span>
+                                                <b>
+                                                  ₹
+                                                  {order.totalCost.toLocaleString()}
+                                                </b>
+                                              </div>
+                                              <div
+                                                className={`mo-bill-row total ${pnl >= 0 ? "pos" : "neg"}`}
+                                              >
+                                                <span>Profit</span>
+                                                <b>
+                                                  {pnl >= 0 ? "+" : "−"}₹
+                                                  {Math.abs(
+                                                    pnl,
+                                                  ).toLocaleString()}
+                                                </b>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })()}
+                                    {(() => {
+                                      // India Post autofill payload — identical
+                                      // shape to the "Book online" modal copy.
+                                      const jsonPayload = buildIpAutofillJson(
+                                        order,
+                                        books,
+                                        isCOD,
+                                      );
+                                      const editing = !!addrEdit[orderId];
+                                      const draft = addrEdit[orderId] || {
+                                        address: order["Address"] || "",
+                                        city: order["City"] || "",
+                                        state: order["State"] || "",
+                                        pincode: order["Pincode"] || "",
+                                      };
+                                      const setDraft = (patch) =>
+                                        setAddrEdit((p) => ({
+                                          ...p,
+                                          [orderId]: { ...draft, ...patch },
+                                        }));
+                                      const savingRow = rowSaving[orderId];
+                                      return (
+                                        <div className="aoc-section">
+                                          <div className="aoc-section-title">
+                                            <MapPin size={13} /> Shipping address
+                                            <button
+                                              type="button"
+                                              className="aoc-json-btn"
+                                              title="Copy India Post autofill JSON"
+                                              onClick={() =>
+                                                copyToClipboard(
+                                                  jsonPayload,
+                                                  `json-${idx}`,
+                                                )
+                                              }
+                                            >
+                                              {copiedId === `json-${idx}` ? (
+                                                <>
+                                                  <Check size={12} /> Copied
+                                                </>
+                                              ) : (
+                                                <>
+                                                  <Copy size={12} /> Copy JSON
+                                                </>
+                                              )}
+                                            </button>
+                                          </div>
+
+                                          {!editing ? (
+                                            <div className="aoc-addr">
+                                              <div className="aoc-addr-line">
+                                                {order["Address"] || "—"}
+                                              </div>
+                                              <div className="aoc-addr-grid">
+                                                <span>
+                                                  <b>City</b>{" "}
+                                                  {order["City"] || "—"}
+                                                </span>
+                                                <span>
+                                                  <b>State</b>{" "}
+                                                  {order["State"] || "—"}
+                                                </span>
+                                                <span>
+                                                  <b>Pincode</b>{" "}
+                                                  {order["Pincode"] || "—"}
+                                                </span>
+                                              </div>
+                                              <div className="aoc-addr-actions">
+                                                <button
+                                                  type="button"
+                                                  className="aoc-mini-btn"
+                                                  onClick={() =>
+                                                    copyToClipboard(
+                                                      addressLine,
+                                                      `address-${idx}`,
+                                                    )
+                                                  }
+                                                >
+                                                  {copiedId ===
+                                                  `address-${idx}` ? (
+                                                    <>
+                                                      <Check size={12} /> Copied
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <Copy size={12} /> Copy
+                                                    </>
+                                                  )}
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  className="aoc-mini-btn"
+                                                  onClick={() =>
+                                                    setAddrEdit((p) => ({
+                                                      ...p,
+                                                      [orderId]: {
+                                                        address:
+                                                          order["Address"] || "",
+                                                        city:
+                                                          order["City"] || "",
+                                                        state:
+                                                          order["State"] || "",
+                                                        pincode:
+                                                          order["Pincode"] || "",
+                                                      },
+                                                    }))
+                                                  }
+                                                >
+                                                  <Edit size={12} /> Edit
+                                                </button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="aoc-addr-edit">
+                                              <textarea
+                                                className="admin-input aoc-addr-input"
+                                                rows={2}
+                                                value={draft.address}
+                                                placeholder="Address"
+                                                onChange={(e) =>
+                                                  setDraft({
+                                                    address: e.target.value,
+                                                  })
+                                                }
+                                              />
+                                              <div className="aoc-addr-edit-row">
+                                                <input
+                                                  className="admin-input"
+                                                  value={draft.city}
+                                                  placeholder="City"
+                                                  onChange={(e) =>
+                                                    setDraft({
+                                                      city: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                                <input
+                                                  className="admin-input"
+                                                  value={draft.state}
+                                                  placeholder="State"
+                                                  onChange={(e) =>
+                                                    setDraft({
+                                                      state: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                                <input
+                                                  className="admin-input"
+                                                  value={draft.pincode}
+                                                  placeholder="Pincode"
+                                                  onChange={(e) =>
+                                                    setDraft({
+                                                      pincode: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                              </div>
+                                              <div className="aoc-addr-actions">
+                                                <button
+                                                  type="button"
+                                                  className="aoc-mini-btn primary"
+                                                  disabled={
+                                                    savingRow === "address"
+                                                  }
+                                                  onClick={() =>
+                                                    saveAddress(order)
+                                                  }
+                                                >
+                                                  {savingRow === "address" ? (
+                                                    "Saving…"
+                                                  ) : (
+                                                    <>
+                                                      <Check size={12} /> Save to
+                                                      sheet
+                                                    </>
+                                                  )}
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  className="aoc-mini-btn"
+                                                  onClick={() =>
+                                                    setAddrEdit((p) => {
+                                                      const n = { ...p };
+                                                      delete n[orderId];
+                                                      return n;
+                                                    })
+                                                  }
+                                                >
+                                                  Cancel
+                                                </button>
+                                              </div>
+                                            </div>
+                                          )}
+
+                                          {/* Tracking ID — show if set, always
+                                          allow add/replace pushed to the sheet. */}
+                                          <div className="aoc-track-edit">
+                                            {hasTracking && (
+                                              <div className="aoc-track-cur">
+                                                <span className="aoc-track-id">
+                                                  Tracking:{" "}
+                                                  <strong>
+                                                    {order.shippingId}
+                                                  </strong>
+                                                </span>
+                                                <button
+                                                  type="button"
+                                                  className="track-btn-small flex flex-row items-center gap-4"
+                                                  onClick={() =>
+                                                    handleTrackPackage(
+                                                      order.shippingId,
+                                                    )
+                                                  }
+                                                >
+                                                  <Truck size={12} /> Track
+                                                </button>
+                                              </div>
+                                            )}
+                                            <div className="aoc-track-add">
+                                              <input
+                                                className="admin-input"
+                                                placeholder={
+                                                  hasTracking
+                                                    ? "Replace tracking ID…"
+                                                    : "Add tracking ID (e.g. CX…IN)"
+                                                }
+                                                value={
+                                                  trackDrafts[orderId] ?? ""
+                                                }
+                                                onChange={(e) =>
+                                                  setTrackDrafts((p) => ({
+                                                    ...p,
+                                                    [orderId]: e.target.value,
+                                                  }))
+                                                }
+                                                onKeyDown={(e) => {
+                                                  if (e.key === "Enter")
+                                                    saveTrackingId(
+                                                      order,
+                                                      trackDrafts[orderId],
+                                                    );
+                                                }}
+                                              />
+                                              <button
+                                                type="button"
+                                                className="aoc-mini-btn primary"
+                                                disabled={
+                                                  !String(
+                                                    trackDrafts[orderId] || "",
+                                                  ).trim() ||
+                                                  savingRow === "tracking"
+                                                }
+                                                onClick={() =>
+                                                  saveTrackingId(
+                                                    order,
+                                                    trackDrafts[orderId],
+                                                  )
+                                                }
+                                              >
+                                                {savingRow === "tracking" ? (
+                                                  "Saving…"
+                                                ) : (
+                                                  <>
+                                                    <Check size={12} /> Save
+                                                  </>
+                                                )}
+                                              </button>
+                                            </div>
+                                            {hasTinyUrl && (
+                                              <button
+                                                type="button"
+                                                className="aoc-orderlink"
+                                                title="Open the customer's order link"
+                                                onClick={() =>
+                                                  window.open(
+                                                    tinyUrl,
+                                                    "_blank",
+                                                    "noopener,noreferrer",
+                                                  )
+                                                }
+                                              >
+                                                <ExternalLink size={12} /> Order{" "}
+                                                {oidStr} link
+                                              </button>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
+
+                                    <div className="mo-bill-sec">
+                                      <div className="mo-bill-sec-t">Status</div>
+                                    <div className="aoc-status-row">
+                                      <select
+                                        className="bulk-wa-select aoc-status-select"
+                                        value={order.status || "Processing"}
+                                        title="Change & save order status"
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          patchLocalOrder(orderId, {
+                                            "Order Status": val,
+                                            status: val,
+                                          });
+                                          updateOrderRow(orderId, {
+                                            "Order Status": val,
+                                          }).then(() =>
+                                            setTimeout(fetchOrders, 1300),
+                                          );
+                                        }}
+                                      >
+                                        {TRACK_STATUS_OPTIONS.map((s) => (
+                                          <option key={s} value={s}>
+                                            {s}
+                                          </option>
+                                        ))}
+                                      </select>
+                                      <button
+                                        type="button"
+                                        className={`aoc-pack-btn${isPacked ? " done" : ""}`}
+                                        onClick={() => togglePacked(orderId)}
+                                      >
+                                        {isPacked ? (
+                                          <>
+                                            <CheckCircle size={14} /> Packed
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Package size={14} /> Mark as packed
+                                          </>
+                                        )}
+                                      </button>
+                                    </div>
+                                    </div>
+
+                                    <div className="mo-bill-sec">
+                                      <div className="mo-bill-sec-t">
+                                        Actions
+                                      </div>
+                                      <div className="mo-bill-actions">
+                                        {(() => {
+                                          const cmt =
+                                            orderNotes[orderId] ??
+                                            (order["Comment"] || "");
+                                          return (
+                                            <button
+                                              type="button"
+                                              className="sec-big-btn mo-note-add"
+                                              onClick={() =>
+                                                setNoteEditor({
+                                                  orderId,
+                                                  draft: cmt,
+                                                })
+                                              }
+                                            >
+                                              <MessageCircle size={14} />{" "}
+                                              {cmt ? "Edit comment" : "Comment"}
+                                            </button>
+                                          );
+                                        })()}
+                                        <button
+                                          type="button"
+                                          className={`sec-big-btn mo-book-btn${bookedOrders[orderId] ? " done" : ""}`}
+                                          onClick={() => setBookOrder(order)}
+                                          title={
+                                            bookedOrders[orderId]
+                                              ? "Booked with India Post"
+                                              : "Book online with India Post"
+                                          }
+                                        >
+                                          {bookedOrders[orderId] ? (
+                                            <>
+                                              <CheckCircle size={14} /> Booked
+                                            </>
+                                          ) : (
+                                            <>
+                                              <Truck size={14} /> Book online
+                                            </>
+                                          )}
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    <div className="aoc-foot">
+                                      <div className="aoc-meta">
+                                        <span>
+                                          {order["Payment Type"] || "—"}
+                                        </span>
+                                        <span className="aoc-dot">·</span>
+                                        <span>
+                                          {cleanDeliveryType(order["Delivery Type"])}
+                                        </span>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        className="aoc-edit"
+                                        onClick={() => openEditModal(order)}
+                                      >
+                                        <Edit size={14} /> Edit
+                                      </button>
+                                    </div>
+                                    </div>
+                                  </motion.div>
+                                </div>,
+                                document.body,
+                              )}
+                          </motion.div>
+                        );
+  };
+
   return (
     <div className={`my-orders-page mo-glass${darkMode ? " mo-dark" : ""}`}>
       {/* New-order chime (drop the audio file at /public/sounds/new-order.mp3) */}
@@ -10945,74 +12215,29 @@ export default function ManageOrdersPage() {
                     </p>
                   ) : (
                     <>
-                      <div className="mo-dispatch-list">
-                        {dOrders.map((o) => {
-                          const oid = o["Order ID"];
-                          const on = dispatchSel.includes(oid);
-                          const bc = (o.parsedBooks || []).reduce(
-                            (s, b) => s + (Number(b.quantity) || 1),
-                            0,
-                          );
-                          const amt = Number(o.revenue || 0);
-                          const advPaid = /^\s*yes/i.test(
-                            String(o["Advance Paid"] || ""),
-                          );
-                          const ptRaw = String(o["Payment Type"] || "");
-                          const payLabel = advPaid
-                            ? "₹99 Advance"
-                            : /online|upi|prepaid|paid/i.test(ptRaw) &&
-                                !/cod|cash/i.test(ptRaw)
-                              ? "Online"
-                              : "COD";
-                          const fasterD =
-                            /faster|express/i.test(
-                              String(o["Delivery Type"] || ""),
-                            ) ||
-                            /^e/i.test(String(o.shippingId || "").trim());
+                      {/* Full order cards — identical to the Orders tab — so the
+                          dispatch queue is fully manageable here. Each card has a
+                          small "remove from queue" control in its top-right. */}
+                      <div className="admin-orders-grid mo-dispatch-grid">
+                        {dOrders.map((order, idx) => {
+                          const oid = order["Order ID"];
                           return (
-                            <label className="mo-dispatch-row" key={oid}>
-                              <input
-                                type="checkbox"
-                                checked={on}
-                                onChange={() =>
-                                  setDispatchSel((p) =>
-                                    p.includes(oid)
-                                      ? p.filter((x) => x !== oid)
-                                      : [...p, oid],
-                                  )
-                                }
-                              />
-                              <span className="mo-dispatch-main">
-                                <span className="mo-dispatch-name">
-                                  {o["Customer Name"] || "—"}
-                                  {fasterD && (
-                                    <span className="mo-dispatch-faster">
-                                      ⚡ Express
-                                    </span>
-                                  )}
-                                </span>
-                                <span className="mo-dispatch-meta">
-                                  {bc} book{bc === 1 ? "" : "s"} · ₹
-                                  {amt.toLocaleString("en-IN")} · {payLabel} ·{" "}
-                                  {o.status || "Processing"}
-                                  {o["Pincode"] ? ` · ${o["Pincode"]}` : ""}
-                                </span>
-                              </span>
+                            <div className="mo-dispatch-card-wrap" key={oid}>
                               <button
                                 type="button"
-                                className="mo-dispatch-x"
-                                title="Remove from queue"
-                                onClick={(e) => {
-                                  e.preventDefault();
+                                className="mo-dispatch-card-x"
+                                title="Remove from dispatch queue"
+                                onClick={() => {
                                   toggleDispatch(oid);
                                   setDispatchSel((p) =>
                                     p.filter((x) => x !== oid),
                                   );
                                 }}
                               >
-                                <X size={14} />
+                                <X size={15} />
                               </button>
-                            </label>
+                              {renderOrderCard(order, idx)}
+                            </div>
                           );
                         })}
                       </div>
@@ -12451,7 +13676,7 @@ export default function ManageOrdersPage() {
                   )}
                   {delivSkipped.already > 0 && (
                     <span className="mo-deliv-chip">
-                      {delivSkipped.already} already updated
+                      {delivSkipped.already} already set (will re-apply)
                     </span>
                   )}
                   {delivSkipped.unmatched > 0 && (
@@ -13664,1240 +14889,7 @@ export default function ManageOrdersPage() {
 
                   {orderView === "cards" ? (
                     <div className="admin-orders-grid">
-                      {visibleOrders.map((order, idx) => {
-                        const orderId = order["Order ID"];
-                        const books = order.parsedBooks || [];
-                        const pnl = order.pnl;
-                        const hasTracking =
-                          order.shippingId &&
-                          String(order.shippingId).trim() !== "";
-                        const fullyPicked = isOrderFullyPicked(order);
-                        const tinyUrl = order["TinyURL"];
-                        const hasTinyUrl =
-                          tinyUrl && String(tinyUrl).trim() !== "";
-                        const fullAddress = [
-                          order["Address"],
-                          order["City"],
-                          order["State"],
-                        ]
-                          .filter(Boolean)
-                          .join(", ");
-                        const addressLine = order["Pincode"]
-                          ? `${fullAddress} - ${order["Pincode"]}`
-                          : fullAddress;
-
-                        const isExpanded = !!expandedCards[orderId];
-                        const isPacked = !!packedOrders[orderId];
-                        const pickedCount = books.reduce(
-                          (n, _b, i) =>
-                            n + (pickChecked[bookKey(orderId, i)] ? 1 : 0),
-                          0,
-                        );
-                        const allPicked =
-                          books.length > 0 && pickedCount === books.length;
-                        // Value (₹) of the books picked so far vs the full order.
-                        const pickedValue = books.reduce(
-                          (s, b, i) =>
-                            s +
-                            (pickChecked[bookKey(orderId, i)]
-                              ? b.total || 0
-                              : 0),
-                          0,
-                        );
-                        const totalBooksValue = books.reduce(
-                          (s, b) => s + (b.total || 0),
-                          0,
-                        );
-                        // Relative age of the order for the card badge.
-                        // Counted in CALENDAR days (not rolling 24h): an order
-                        // placed at 1:21 PM is "Today" until midnight, then
-                        // becomes 1 day old at 12:00 AM the next calendar day.
-                        const orderDate = getOrderDate(order);
-                        const startOfDay = (dt) => {
-                          const x = new Date(dt);
-                          x.setHours(0, 0, 0, 0);
-                          return x.getTime();
-                        };
-                        const calDaysAgo = orderDate
-                          ? Math.round(
-                              (startOfDay(new Date()) - startOfDay(orderDate)) /
-                                86400000,
-                            )
-                          : 0;
-                        let agoLabel = "";
-                        if (orderDate) {
-                          agoLabel =
-                            calDaysAgo <= 0
-                              ? "Today"
-                              : calDaysAgo === 1
-                                ? "1 day"
-                                : `${calDaysAgo} days`;
-                        }
-                        const isCOD = /cash|cod/i.test(
-                          order["Payment Type"] || "",
-                        );
-                        // "Prepaid" = a COD order whose ₹99 advance is already
-                        // paid online (partial prepaid) — coloured distinctly
-                        // from plain COD and full-online (UPI) orders.
-                        const advancePaid = /^\s*yes/i.test(
-                          String(order["Advance Paid"] || ""),
-                        );
-                        const isPrepaid = isCOD && advancePaid;
-                        // Terminal orders (Delivered / Cancelled) collapse to a
-                        // 2-line summary — no covers, tracking or actions needed.
-                        const isTerminal = /delivered|cancel/i.test(
-                          String(order.status || order["Order Status"] || ""),
-                        );
-                        // Urgency — an order must not sit "In Transit" WITHOUT a
-                        // tracking ID for more than a calendar day. Once it does,
-                        // it turns into a red high-priority card so the operator
-                        // adds the tracking ID immediately.
-                        const inTransit = /in\s*transit/i.test(
-                          String(order.status || order["Order Status"] || ""),
-                        );
-                        const isUrgentNoTrack =
-                          !isTerminal &&
-                          inTransit &&
-                          !hasTracking &&
-                          calDaysAgo >= 1;
-                        // Exception flags — a card that needs the operator gets
-                        // an amber left border + one reason chip. Order matters:
-                        // the first true reason wins. Urgency outranks the rest.
-                        const exReason = isTerminal
-                          ? null
-                          : isUrgentNoTrack
-                            ? `In transit · no tracking · ${calDaysAgo}d`
-                            : isUnconfirmedOrder(order)
-                              ? "Unconfirmed"
-                              : isCOD && Number(order.revenue) > 2000
-                                ? "COD over ₹2000"
-                                : null;
-                        const isException = !!exReason;
-                        const oidStr = String(orderId || "");
-                        const formData = {
-                          orderId,
-                          customerName: order["Customer Name"],
-                          customerAddress: order["Address"],
-                          customerCity: order["City"],
-                          customerState: order["State"],
-                          customerPincode: order["Pincode"],
-                          customerPhone: order["Phone Number"],
-                          totalValueRs: order.revenue,
-                          isCOD,
-                          codAmount: order.revenue,
-                        };
-
-                        const isSelected =
-                          cardSelectMode && selectedIds.includes(orderId);
-                        const toggleCardSelect = () =>
-                          setSelectedIds((prev) =>
-                            prev.includes(orderId)
-                              ? prev.filter((x) => x !== orderId)
-                              : [...prev, orderId],
-                          );
-
-                        return (
-                          <motion.div
-                            key={orderId || idx}
-                            initial={{ opacity: 0, y: 18, scale: 0.985 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            transition={{
-                              duration: 0.36,
-                              ease: EASE_OUT,
-                              delay: Math.min((idx % ORDERS_BATCH) * 0.035, 0.32),
-                            }}
-                            className={`admin-order-card mo-card ${
-                              isPrepaid
-                                ? "mo-card-prepaid"
-                                : isCOD
-                                  ? "mo-card-cod"
-                                  : "mo-card-online"
-                            }${isPacked ? " packed" : ""}${
-                              isExpanded ? " expanded" : ""
-                            }${cardSelectMode ? " selectable" : ""}${
-                              isSelected ? " selected" : ""
-                            }${
-                              pendingTracking[orderId]
-                                ? " mo-card-pending-push"
-                                : ""
-                            }${isGiftOrder(order) ? " mo-card-gift" : ""}`}
-                            style={{
-                              "--card-accent": isUrgentNoTrack
-                                ? "#dc2626"
-                                : isException
-                                  ? "#f59e0b"
-                                  : moStatusColor(order.status),
-                            }}
-                            onPointerDown={() => {
-                              if (cardSelectMode) return;
-                              longPressRef.current = false;
-                              clearTimeout(lpTimer.current);
-                              lpTimer.current = setTimeout(() => {
-                                longPressRef.current = true;
-                                setCardSelectMode(true);
-                                setSelectedIds((p) =>
-                                  p.includes(orderId)
-                                    ? p
-                                    : [...p, orderId],
-                                );
-                                if (navigator.vibrate) navigator.vibrate(15);
-                              }, 480);
-                            }}
-                            onPointerUp={() =>
-                              clearTimeout(lpTimer.current)
-                            }
-                            onPointerMove={() =>
-                              clearTimeout(lpTimer.current)
-                            }
-                            onPointerLeave={() =>
-                              clearTimeout(lpTimer.current)
-                            }
-                          >
-                            {/* Gift order — flowing confetti decoration across
-                                the whole card (no banner, no QR here). */}
-                            {isGiftOrder(order) && (
-                              <span
-                                className="mo-card-gift-confetti"
-                                aria-hidden="true"
-                              >
-                                {Array.from({ length: 10 }).map((_, i) => (
-                                  <span key={i} className={`mcg mcg-${i}`} />
-                                ))}
-                              </span>
-                            )}
-                            {/* Faster / Express delivery — speed-streak graphic +
-                                a small animated "Express" badge. */}
-                            {(() => {
-                              const deliv = String(order["Delivery Type"] || "");
-                              const fasterD =
-                                /faster|express/i.test(deliv) ||
-                                /^e/i.test(String(order.shippingId || "").trim());
-                              if (!fasterD) return null;
-                              return (
-                                <span
-                                  className="mo-card-faster"
-                                  aria-hidden="true"
-                                >
-                                  <span className="mcf-streak mcf-s0" />
-                                  <span className="mcf-streak mcf-s1" />
-                                  <span className="mcf-streak mcf-s2" />
-                                  <span className="mcf-streak mcf-s3" />
-                                  <span className="mcf-streak mcf-s4" />
-                                </span>
-                              );
-                            })()}
-                            {/* Header — name + phone (left); status + date (right) */}
-                            <div
-                              className="mo2-head"
-                              onClick={(e) => {
-                                if (cardSelectMode) {
-                                  e.stopPropagation();
-                                  toggleCardSelect();
-                                } else {
-                                  e.stopPropagation();
-                                }
-                              }}
-                              style={
-                                cardSelectMode ? { cursor: "pointer" } : undefined
-                              }
-                            >
-                              {cardSelectMode && (
-                                <button
-                                  type="button"
-                                  className={`mo2-select-box${isSelected ? " on" : ""}`}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleCardSelect();
-                                  }}
-                                  aria-pressed={isSelected}
-                                  aria-label={isSelected ? "Deselect" : "Select"}
-                                >
-                                  {isSelected && <Check size={14} strokeWidth={3} />}
-                                </button>
-                              )}
-                              <div className="mo2-head-l">
-                                <span className="mo2-name">{order["Customer Name"] || "—"}</span>
-                                <button
-                                  type="button"
-                                  className="mo2-phone"
-                                  title="Tap to copy number"
-                                  onClick={() =>
-                                    copyToClipboard(String(order["Phone Number"] || ""), `phone-${idx}`)
-                                  }
-                                >
-                                  {order["Phone Number"] || "—"}
-                                  {copiedId === `phone-${idx}` && (
-                                    <span className="mo-phone-copied">
-                                      <Check size={11} /> Copied
-                                    </span>
-                                  )}
-                                </button>
-                              </div>
-                              <div className="mo2-head-r">
-                                <div
-                                  className="mo2-status-wrap"
-                                  style={{ "--st-color": moStatusColor(order.status) }}
-                                >
-                                  <select
-                                    className={`mo2-status${pendingStatus[orderId] ? " dirty" : ""}`}
-                                    value={order.status || "Processing"}
-                                    title="Change status (queued — push to save)"
-                                    onChange={(e) => {
-                                      const val = e.target.value;
-                                      patchLocalOrder(orderId, { "Order Status": val, status: val });
-                                      setPendingStatus((prev) => ({ ...prev, [orderId]: val }));
-                                    }}
-                                  >
-                                    {TRACK_STATUS_OPTIONS.map((s) => (
-                                      <option key={s} value={s}>
-                                        {s}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  <ChevronDown size={14} className="mo2-status-chev" />
-                                </div>
-                                <span className="mo2-date">
-                                  {orderDate
-                                    ? `${orderDate.toLocaleDateString("en-IN", {
-                                        day: "numeric",
-                                        month: "short",
-                                        year: "numeric",
-                                      })} | ${orderDate.toLocaleTimeString("en-IN", {
-                                        hour: "numeric",
-                                        minute: "2-digit",
-                                        hour12: true,
-                                      })}`
-                                    : "—"}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="mo2-div" />
-
-                            {/* Covers — horizontal row with title + price */}
-                            {books.length > 0 && (
-                              <div className="mo2-covers" onClick={(e) => e.stopPropagation()}>
-                                {books.map((b, ci) => {
-                                  const img = getBookImage(b.name);
-                                  const price =
-                                    b.total > 0 ? b.total : b.price > 0 ? b.price : 0;
-                                  return (
-                                    <div className="mo2-cover-item" key={ci}>
-                                      <div className="mo2-cover">
-                                        <BookCoverImg
-                                          src={img}
-                                          name={b.name}
-                                          author={b.author}
-                                          loading="lazy"
-                                        />
-                                        {b.quantity > 1 && (
-                                          <span className="mo-cover-qty">×{b.quantity}</span>
-                                        )}
-                                      </div>
-                                      <span className="mo2-cover-name" title={b.name}>
-                                        {b.name}
-                                      </span>
-                                      <span className="mo2-cover-price">
-                                        {price > 0 ? `₹${price}` : "—"}
-                                      </span>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-
-                            {/* Badges — horizontally scrollable. Book count (always,
-                                with a download) + delivery type + gift wrap +
-                                bookmark; each shown only when it has a value. */}
-                            {(() => {
-                              const deliv = String(order["Delivery Type"] || "");
-                              const fasterD =
-                                /faster|express/i.test(deliv) ||
-                                /^e/i.test(String(order.shippingId || "").trim());
-                              const addonsB = parseAddonsField(
-                                String(order["Gift Wrap"] || ""),
-                              );
-                              const giftOn = addonsB.giftOn;
-                              const bmQty = addonsB.bookmarkQty;
-                              const bookCount = books.reduce(
-                                (s, b) => s + (Number(b.quantity) || 1),
-                                0,
-                              );
-                              return (
-                                <div
-                                  className="mo2-badges"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <span className="mo2-badge mo2-badge-count">
-                                    📚 {bookCount} book{bookCount === 1 ? "" : "s"}
-                                  </span>
-                                  {String(order["Tracking detail"] || "")
-                                    .split("||")[0]
-                                    .trim() && (
-                                    <span
-                                      className="mo2-badge mo2-badge-track"
-                                      title="Live India Post status"
-                                    >
-                                      📍{" "}
-                                      {
-                                        String(order["Tracking detail"]).split(
-                                          "||",
-                                        )[0]
-                                      }
-                                    </span>
-                                  )}
-                                  {fasterD && (
-                                    <span className="mo2-badge mo2-badge-deliv">
-                                      ⚡ Express delivery
-                                    </span>
-                                  )}
-                                  {giftOn && (
-                                    <span className="mo2-badge mo2-badge-gift">
-                                      🎁 Gift wrap
-                                    </span>
-                                  )}
-                                  {bmQty > 0 && (
-                                    <span className="mo2-badge mo2-badge-bm">
-                                      🔖 Bookmark {bmQty}
-                                    </span>
-                                  )}
-                                </div>
-                              );
-                            })()}
-
-                            <div className="mo2-div" />
-
-                            {/* Info grid — order/payment type + weight & tracking (edit via sheet) */}
-                            {(() => {
-                              const advancePaid = /^\s*yes/i.test(
-                                String(order["Advance Paid"] || ""),
-                              );
-                              const orderType = isCOD
-                                ? "Cash on delivery"
-                                : isPrepaid
-                                  ? "Prepaid"
-                                  : "Online (UPI)";
-                              const payType = advancePaid
-                                ? "₹99-Advance paid"
-                                : isCOD
-                                  ? "Cash on delivery"
-                                  : "Paid online";
-                              const w = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");
-                              const sz = String(order["Sizes(Lxbxh)"] || "")
-                                .trim()
-                                .replace(/[xX×*]/g, "x");
-                              const wsText =
-                                w || sz
-                                  ? `${w ? w + "gm" : ""}${w && sz ? " | " : ""}${sz}`
-                                  : "Add weight & size";
-                              const trk = String(
-                                order.shippingId || order["Shipping ID"] || "",
-                              ).trim();
-                              return (
-                                <div className="mo2-grid" onClick={(e) => e.stopPropagation()}>
-                                  <div className="mo2-cell">
-                                    <span className="mo2-cell-k">Order type</span>
-                                    <span className="mo2-badge-pill mo2-badge-blue">
-                                      {orderType}
-                                    </span>
-                                  </div>
-                                  <div className="mo2-cell mo2-cell-r">
-                                    <span className="mo2-cell-k">Payment type</span>
-                                    <span
-                                      className={`mo2-badge-pill ${advancePaid ? "mo2-badge-green" : /online|upi|paid/i.test(payType) && !/cod|cash/i.test(payType) ? "mo2-badge-green" : "mo2-badge-grey"}`}
-                                    >
-                                      {payType}
-                                    </span>
-                                  </div>
-                                  <div className="mo2-cell">
-                                    <span className="mo2-cell-k">Weight &amp; Size</span>
-                                    <button
-                                      type="button"
-                                      className="mo2-cell-v mo2-cell-edit mo2-v-ul"
-                                      onClick={() => openShipEdit(order)}
-                                    >
-                                      {wsText} <Pencil size={12} />
-                                    </button>
-                                  </div>
-                                  <div className="mo2-cell mo2-cell-r">
-                                    <span className="mo2-cell-k">Tracking id</span>
-                                    <button
-                                      type="button"
-                                      className={`mo2-cell-v mo2-cell-edit${trk ? " mo2-v-green" : ""}`}
-                                      onClick={() => openShipEdit(order)}
-                                    >
-                                      {trk || "Add"} <Pencil size={12} />
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-
-                            {/* Note (non-gift) */}
-                            {!isGiftOrder(order) &&
-                              cleanNote(orderNotes[orderId] || order["Order Comment"]) && (
-                                <div className="mo2-note">
-                                  <span className="mo2-note-k">Note :</span>
-                                  <span className="mo2-note-v">
-                                    {cleanNote(orderNotes[orderId] || order["Order Comment"])}
-                                  </span>
-                                </div>
-                              )}
-
-                            <div className="mo2-div" />
-
-                            {/* Total order value */}
-                            <div className="mo2-total" onClick={(e) => e.stopPropagation()}>
-                              <span className="mo2-total-k">Total order value</span>
-                              <button
-                                type="button"
-                                className="mo2-total-v"
-                                onClick={() => setBillOrderId(orderId)}
-                                title="Tap for bill"
-                              >
-                                ₹{Number(order.revenue || 0).toLocaleString("en-IN")}
-                              </button>
-                            </div>
-
-                            <div className="mo2-div" />
-
-                            {/* Bottom bar — contact icons (left) + 3-dot options (right) */}
-                            <div className="mo2-actions" onClick={(e) => e.stopPropagation()}>
-                              <div className="mo2-actions-l">
-                                <button
-                                  type="button"
-                                  className="mo-frame-ic mo-frame-wa"
-                                  onClick={() => {
-                                    pendingPickerChannel.current = "wa";
-                                    setWaCustomText("");
-                                    setWaPickerOrder(order);
-                                  }}
-                                  title="WhatsApp the customer"
-                                  aria-label="WhatsApp the customer"
-                                >
-                                  <FaWhatsapp size={17} />
-                                </button>
-                                {String(order["Email"] || "").trim() && (
-                                  <button
-                                    type="button"
-                                    className="mo-frame-ic mo-frame-email"
-                                    onClick={() => {
-                                      pendingPickerChannel.current = "email";
-                                      setWaCustomText("");
-                                      setWaPickerOrder(order);
-                                    }}
-                                    title="Email the customer"
-                                    aria-label="Email the customer"
-                                  >
-                                    <Mail size={15} />
-                                  </button>
-                                )}
-                                {orderId && (
-                                  <a
-                                    className="mo-frame-ic"
-                                    href={`/profile/${String(order["Phone Number"] || "")
-                                      .replace(/\D/g, "")
-                                      .slice(-10)}/orders/${encodeURIComponent(orderId)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    title="Open customer order page"
-                                    aria-label="Open customer order page"
-                                  >
-                                    <ExternalLink size={15} />
-                                  </a>
-                                )}
-                                <button
-                                  type="button"
-                                  className={`mo-frame-ic mo-frame-book${bookedOrders[orderId] ? " done" : ""}`}
-                                  onClick={() => setBookOrder(order)}
-                                  title={
-                                    bookedOrders[orderId]
-                                      ? "Booked with India Post"
-                                      : "Book online with India Post"
-                                  }
-                                  aria-label="Book online with India Post"
-                                >
-                                  {bookedOrders[orderId] ? (
-                                    <CheckCircle size={15} />
-                                  ) : (
-                                    <Truck size={15} />
-                                  )}
-                                </button>
-                                <button
-                                  type="button"
-                                  className={`mo-frame-ic mo-frame-dispatch${dispatchIds.includes(orderId) ? " on" : ""}`}
-                                  onClick={() => toggleDispatch(orderId)}
-                                  title={
-                                    dispatchIds.includes(orderId)
-                                      ? "In dispatch queue — tap to remove"
-                                      : "Move to Dispatch for label printing"
-                                  }
-                                  aria-label="Move to Dispatch"
-                                >
-                                  {dispatchIds.includes(orderId) ? (
-                                    <CheckCircle size={15} />
-                                  ) : (
-                                    <Send size={15} />
-                                  )}
-                                </button>
-                              </div>
-                              <div className="mo-kebab-wrap">
-                                <button
-                                  type="button"
-                                  className="mo-kebab-btn"
-                                  title="More actions"
-                                  aria-label="More actions"
-                                  aria-haspopup="menu"
-                                  aria-expanded={cardMenuId === orderId}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setCardMenuId((p) => (p === orderId ? null : orderId));
-                                  }}
-                                >
-                                  <MoreVertical size={16} />
-                                </button>
-                                {cardMenuId === orderId && (
-                                  <>
-                                    <div
-                                      className="mo-kebab-backdrop"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setCardMenuId(null);
-                                      }}
-                                    />
-                                    <div
-                                      className="mo-kebab-menu mo-kebab-menu-up"
-                                      role="menu"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      <button
-                                        type="button"
-                                        role="menuitem"
-                                        className="mo-kebab-item"
-                                        onClick={() => {
-                                          setCancelChoiceOrder(order);
-                                          setCardMenuId(null);
-                                        }}
-                                      >
-                                        <X size={14} /> Cancel order
-                                      </button>
-                                      <button
-                                        type="button"
-                                        role="menuitem"
-                                        className="mo-kebab-item"
-                                        onClick={() => {
-                                          openReplaceBook(order);
-                                          setCardMenuId(null);
-                                        }}
-                                      >
-                                        <RefreshCw size={14} /> Replace a book
-                                      </button>
-                                      <div className="mo-kebab-group">Advanced</div>
-                                      <button
-                                        type="button"
-                                        role="menuitem"
-                                        className="mo-kebab-item"
-                                        onClick={() => {
-                                          copyToClipboard(
-                                            buildIpAutofillJson(order, books, isCOD),
-                                            `cardjson-${orderId}`,
-                                          );
-                                          setCardMenuId(null);
-                                        }}
-                                      >
-                                        <Copy size={14} /> Copy JSON
-                                      </button>
-                                      <div className="mo-kebab-sep" />
-                                      <button
-                                        type="button"
-                                        role="menuitem"
-                                        className="mo-kebab-item danger"
-                                        onClick={() => confirmDeleteOrder(order)}
-                                      >
-                                        <Trash2 size={14} /> Delete permanently
-                                      </button>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Cancel / Delete / Copy JSON demoted into the
-                                header kebab (⋯) — see .mo-card-menu. */}
-
-                            {/* Comment + Book online moved into the bill modal. */}
-
-                            {billOrderId === orderId &&
-                              typeof document !== "undefined" &&
-                              createPortal(
-                                <div
-                                  className="bill-modal-overlay"
-                                  onClick={() => setBillOrderId(null)}
-                                >
-                                  <motion.div
-                                    className="bill-modal mo-bill"
-                                    initial={{ opacity: 0, y: 24, scale: 0.98 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    transition={{ duration: 0.24, ease: EASE_OUT }}
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <div className="bill-header">
-                                      <div className="mo-bill-head-l">
-                                        <span className="mo-bill-title">
-                                          Order bill
-                                        </span>
-                                        <span className="mo-bill-sub">
-                                          {order["Customer Name"] || "Customer"}{" "}
-                                          · #{oidStr.slice(-6)}
-                                        </span>
-                                      </div>
-                                      <span
-                                        className="mo-bill-x"
-                                        onClick={() => setBillOrderId(null)}
-                                      >
-                                        <X size={18} />
-                                      </span>
-                                    </div>
-                                    <div className="mo-bill-body">
-                                      {books.length > 0 && (
-                                        <div className="mo-bill-sec">
-                                          <div className="mo-bill-sec-t">
-                                            Items · {books.length}
-                                          </div>
-                                          <div className="mo-bill-items">
-                                            {books.map((b, bi) => {
-                                              const price =
-                                                b.total > 0
-                                                  ? b.total
-                                                  : b.price > 0
-                                                    ? b.price
-                                                    : 0;
-                                              const bimg = getBookImage(
-                                                b.name,
-                                              );
-                                              return (
-                                                <div
-                                                  className="mo-bill-item"
-                                                  key={bi}
-                                                >
-                                                  <span className="mo-bill-item-thumb">
-                                                    {bimg ? (
-                                                      <img
-                                                        src={bimg}
-                                                        alt={b.name}
-                                                        loading="lazy"
-                                                      />
-                                                    ) : (
-                                                      <Package size={16} />
-                                                    )}
-                                                  </span>
-                                                  <span className="mo-bill-item-nm">
-                                                    {b.name}
-                                                    {b.quantity > 1
-                                                      ? ` ×${b.quantity}`
-                                                      : ""}
-                                                  </span>
-                                                  <span className="mo-bill-item-pr">
-                                                    {price > 0
-                                                      ? `₹${price.toLocaleString()}`
-                                                      : "—"}
-                                                  </span>
-                                                </div>
-                                              );
-                                            })}
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      {(() => {
-                                        const rev = Number(order.revenue) || 0;
-                                        const fee = isCOD
-                                          ? Math.round(rev * 0.015)
-                                          : 0;
-                                        const net = Math.round(rev - fee);
-                                        const ad = parseAddonsField(
-                                          order["Gift Wrap"],
-                                        );
-                                        const giftChg = ad.giftOn
-                                          ? parseFloat(
-                                              order["Gift Wrap Charge"],
-                                            ) || 0
-                                          : 0;
-                                        return (
-                                          <div className="mo-bill-sec">
-                                            <div className="mo-bill-sec-t">
-                                              Payment
-                                            </div>
-                                            <div className="mo-bill-rows">
-                                              <div className="mo-bill-row">
-                                                <span>Order value</span>
-                                                <b>₹{rev.toLocaleString()}</b>
-                                              </div>
-                                              {ad.bookmarkQty > 0 && (
-                                                <div className="mo-bill-row muted">
-                                                  <span>
-                                                    Bookmarks · {ad.bookmarkQty}{" "}
-                                                    ({ad.bookmarkCharged}×₹9
-                                                    {ad.bookmarkFree > 0
-                                                      ? `, ${ad.bookmarkFree} free`
-                                                      : ""}
-                                                    )
-                                                  </span>
-                                                  <b>
-                                                    {ad.bookmarkCharge > 0
-                                                      ? `+₹${ad.bookmarkCharge}`
-                                                      : "FREE"}
-                                                  </b>
-                                                </div>
-                                              )}
-                                              {giftChg > 0 && (
-                                                <div className="mo-bill-row muted">
-                                                  <span>Gift wrap</span>
-                                                  <b>+₹{giftChg}</b>
-                                                </div>
-                                              )}
-                                              {isCOD && (
-                                                <>
-                                                  <div className="mo-bill-row muted">
-                                                    <span>COD commission · 1.5%</span>
-                                                    <b>−₹{fee.toLocaleString()}</b>
-                                                  </div>
-                                                  <div className="mo-bill-row">
-                                                    <span>Net receivable</span>
-                                                    <b>₹{net.toLocaleString()}</b>
-                                                  </div>
-                                                </>
-                                              )}
-                                              <div className="mo-bill-row muted">
-                                                <span>Cost</span>
-                                                <b>
-                                                  ₹
-                                                  {order.totalCost.toLocaleString()}
-                                                </b>
-                                              </div>
-                                              <div
-                                                className={`mo-bill-row total ${pnl >= 0 ? "pos" : "neg"}`}
-                                              >
-                                                <span>Profit</span>
-                                                <b>
-                                                  {pnl >= 0 ? "+" : "−"}₹
-                                                  {Math.abs(
-                                                    pnl,
-                                                  ).toLocaleString()}
-                                                </b>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        );
-                                      })()}
-                                    {(() => {
-                                      // India Post autofill payload — identical
-                                      // shape to the "Book online" modal copy.
-                                      const jsonPayload = buildIpAutofillJson(
-                                        order,
-                                        books,
-                                        isCOD,
-                                      );
-                                      const editing = !!addrEdit[orderId];
-                                      const draft = addrEdit[orderId] || {
-                                        address: order["Address"] || "",
-                                        city: order["City"] || "",
-                                        state: order["State"] || "",
-                                        pincode: order["Pincode"] || "",
-                                      };
-                                      const setDraft = (patch) =>
-                                        setAddrEdit((p) => ({
-                                          ...p,
-                                          [orderId]: { ...draft, ...patch },
-                                        }));
-                                      const savingRow = rowSaving[orderId];
-                                      return (
-                                        <div className="aoc-section">
-                                          <div className="aoc-section-title">
-                                            <MapPin size={13} /> Shipping address
-                                            <button
-                                              type="button"
-                                              className="aoc-json-btn"
-                                              title="Copy India Post autofill JSON"
-                                              onClick={() =>
-                                                copyToClipboard(
-                                                  jsonPayload,
-                                                  `json-${idx}`,
-                                                )
-                                              }
-                                            >
-                                              {copiedId === `json-${idx}` ? (
-                                                <>
-                                                  <Check size={12} /> Copied
-                                                </>
-                                              ) : (
-                                                <>
-                                                  <Copy size={12} /> Copy JSON
-                                                </>
-                                              )}
-                                            </button>
-                                          </div>
-
-                                          {!editing ? (
-                                            <div className="aoc-addr">
-                                              <div className="aoc-addr-line">
-                                                {order["Address"] || "—"}
-                                              </div>
-                                              <div className="aoc-addr-grid">
-                                                <span>
-                                                  <b>City</b>{" "}
-                                                  {order["City"] || "—"}
-                                                </span>
-                                                <span>
-                                                  <b>State</b>{" "}
-                                                  {order["State"] || "—"}
-                                                </span>
-                                                <span>
-                                                  <b>Pincode</b>{" "}
-                                                  {order["Pincode"] || "—"}
-                                                </span>
-                                              </div>
-                                              <div className="aoc-addr-actions">
-                                                <button
-                                                  type="button"
-                                                  className="aoc-mini-btn"
-                                                  onClick={() =>
-                                                    copyToClipboard(
-                                                      addressLine,
-                                                      `address-${idx}`,
-                                                    )
-                                                  }
-                                                >
-                                                  {copiedId ===
-                                                  `address-${idx}` ? (
-                                                    <>
-                                                      <Check size={12} /> Copied
-                                                    </>
-                                                  ) : (
-                                                    <>
-                                                      <Copy size={12} /> Copy
-                                                    </>
-                                                  )}
-                                                </button>
-                                                <button
-                                                  type="button"
-                                                  className="aoc-mini-btn"
-                                                  onClick={() =>
-                                                    setAddrEdit((p) => ({
-                                                      ...p,
-                                                      [orderId]: {
-                                                        address:
-                                                          order["Address"] || "",
-                                                        city:
-                                                          order["City"] || "",
-                                                        state:
-                                                          order["State"] || "",
-                                                        pincode:
-                                                          order["Pincode"] || "",
-                                                      },
-                                                    }))
-                                                  }
-                                                >
-                                                  <Edit size={12} /> Edit
-                                                </button>
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <div className="aoc-addr-edit">
-                                              <textarea
-                                                className="admin-input aoc-addr-input"
-                                                rows={2}
-                                                value={draft.address}
-                                                placeholder="Address"
-                                                onChange={(e) =>
-                                                  setDraft({
-                                                    address: e.target.value,
-                                                  })
-                                                }
-                                              />
-                                              <div className="aoc-addr-edit-row">
-                                                <input
-                                                  className="admin-input"
-                                                  value={draft.city}
-                                                  placeholder="City"
-                                                  onChange={(e) =>
-                                                    setDraft({
-                                                      city: e.target.value,
-                                                    })
-                                                  }
-                                                />
-                                                <input
-                                                  className="admin-input"
-                                                  value={draft.state}
-                                                  placeholder="State"
-                                                  onChange={(e) =>
-                                                    setDraft({
-                                                      state: e.target.value,
-                                                    })
-                                                  }
-                                                />
-                                                <input
-                                                  className="admin-input"
-                                                  value={draft.pincode}
-                                                  placeholder="Pincode"
-                                                  onChange={(e) =>
-                                                    setDraft({
-                                                      pincode: e.target.value,
-                                                    })
-                                                  }
-                                                />
-                                              </div>
-                                              <div className="aoc-addr-actions">
-                                                <button
-                                                  type="button"
-                                                  className="aoc-mini-btn primary"
-                                                  disabled={
-                                                    savingRow === "address"
-                                                  }
-                                                  onClick={() =>
-                                                    saveAddress(order)
-                                                  }
-                                                >
-                                                  {savingRow === "address" ? (
-                                                    "Saving…"
-                                                  ) : (
-                                                    <>
-                                                      <Check size={12} /> Save to
-                                                      sheet
-                                                    </>
-                                                  )}
-                                                </button>
-                                                <button
-                                                  type="button"
-                                                  className="aoc-mini-btn"
-                                                  onClick={() =>
-                                                    setAddrEdit((p) => {
-                                                      const n = { ...p };
-                                                      delete n[orderId];
-                                                      return n;
-                                                    })
-                                                  }
-                                                >
-                                                  Cancel
-                                                </button>
-                                              </div>
-                                            </div>
-                                          )}
-
-                                          {/* Tracking ID — show if set, always
-                                          allow add/replace pushed to the sheet. */}
-                                          <div className="aoc-track-edit">
-                                            {hasTracking && (
-                                              <div className="aoc-track-cur">
-                                                <span className="aoc-track-id">
-                                                  Tracking:{" "}
-                                                  <strong>
-                                                    {order.shippingId}
-                                                  </strong>
-                                                </span>
-                                                <button
-                                                  type="button"
-                                                  className="track-btn-small flex flex-row items-center gap-4"
-                                                  onClick={() =>
-                                                    handleTrackPackage(
-                                                      order.shippingId,
-                                                    )
-                                                  }
-                                                >
-                                                  <Truck size={12} /> Track
-                                                </button>
-                                              </div>
-                                            )}
-                                            <div className="aoc-track-add">
-                                              <input
-                                                className="admin-input"
-                                                placeholder={
-                                                  hasTracking
-                                                    ? "Replace tracking ID…"
-                                                    : "Add tracking ID (e.g. CX…IN)"
-                                                }
-                                                value={
-                                                  trackDrafts[orderId] ?? ""
-                                                }
-                                                onChange={(e) =>
-                                                  setTrackDrafts((p) => ({
-                                                    ...p,
-                                                    [orderId]: e.target.value,
-                                                  }))
-                                                }
-                                                onKeyDown={(e) => {
-                                                  if (e.key === "Enter")
-                                                    saveTrackingId(
-                                                      order,
-                                                      trackDrafts[orderId],
-                                                    );
-                                                }}
-                                              />
-                                              <button
-                                                type="button"
-                                                className="aoc-mini-btn primary"
-                                                disabled={
-                                                  !String(
-                                                    trackDrafts[orderId] || "",
-                                                  ).trim() ||
-                                                  savingRow === "tracking"
-                                                }
-                                                onClick={() =>
-                                                  saveTrackingId(
-                                                    order,
-                                                    trackDrafts[orderId],
-                                                  )
-                                                }
-                                              >
-                                                {savingRow === "tracking" ? (
-                                                  "Saving…"
-                                                ) : (
-                                                  <>
-                                                    <Check size={12} /> Save
-                                                  </>
-                                                )}
-                                              </button>
-                                            </div>
-                                            {hasTinyUrl && (
-                                              <button
-                                                type="button"
-                                                className="aoc-orderlink"
-                                                title="Open the customer's order link"
-                                                onClick={() =>
-                                                  window.open(
-                                                    tinyUrl,
-                                                    "_blank",
-                                                    "noopener,noreferrer",
-                                                  )
-                                                }
-                                              >
-                                                <ExternalLink size={12} /> Order{" "}
-                                                {oidStr} link
-                                              </button>
-                                            )}
-                                          </div>
-                                        </div>
-                                      );
-                                    })()}
-
-                                    <div className="mo-bill-sec">
-                                      <div className="mo-bill-sec-t">Status</div>
-                                    <div className="aoc-status-row">
-                                      <select
-                                        className="bulk-wa-select aoc-status-select"
-                                        value={order.status || "Processing"}
-                                        title="Change & save order status"
-                                        onChange={(e) => {
-                                          const val = e.target.value;
-                                          patchLocalOrder(orderId, {
-                                            "Order Status": val,
-                                            status: val,
-                                          });
-                                          updateOrderRow(orderId, {
-                                            "Order Status": val,
-                                          }).then(() =>
-                                            setTimeout(fetchOrders, 1300),
-                                          );
-                                        }}
-                                      >
-                                        {TRACK_STATUS_OPTIONS.map((s) => (
-                                          <option key={s} value={s}>
-                                            {s}
-                                          </option>
-                                        ))}
-                                      </select>
-                                      <button
-                                        type="button"
-                                        className={`aoc-pack-btn${isPacked ? " done" : ""}`}
-                                        onClick={() => togglePacked(orderId)}
-                                      >
-                                        {isPacked ? (
-                                          <>
-                                            <CheckCircle size={14} /> Packed
-                                          </>
-                                        ) : (
-                                          <>
-                                            <Package size={14} /> Mark as packed
-                                          </>
-                                        )}
-                                      </button>
-                                    </div>
-                                    </div>
-
-                                    <div className="mo-bill-sec">
-                                      <div className="mo-bill-sec-t">
-                                        Actions
-                                      </div>
-                                      <div className="mo-bill-actions">
-                                        {(() => {
-                                          const cmt =
-                                            orderNotes[orderId] ??
-                                            (order["Comment"] || "");
-                                          return (
-                                            <button
-                                              type="button"
-                                              className="sec-big-btn mo-note-add"
-                                              onClick={() =>
-                                                setNoteEditor({
-                                                  orderId,
-                                                  draft: cmt,
-                                                })
-                                              }
-                                            >
-                                              <MessageCircle size={14} />{" "}
-                                              {cmt ? "Edit comment" : "Comment"}
-                                            </button>
-                                          );
-                                        })()}
-                                        <button
-                                          type="button"
-                                          className={`sec-big-btn mo-book-btn${bookedOrders[orderId] ? " done" : ""}`}
-                                          onClick={() => setBookOrder(order)}
-                                          title={
-                                            bookedOrders[orderId]
-                                              ? "Booked with India Post"
-                                              : "Book online with India Post"
-                                          }
-                                        >
-                                          {bookedOrders[orderId] ? (
-                                            <>
-                                              <CheckCircle size={14} /> Booked
-                                            </>
-                                          ) : (
-                                            <>
-                                              <Truck size={14} /> Book online
-                                            </>
-                                          )}
-                                        </button>
-                                      </div>
-                                    </div>
-
-                                    <div className="aoc-foot">
-                                      <div className="aoc-meta">
-                                        <span>
-                                          {order["Payment Type"] || "—"}
-                                        </span>
-                                        <span className="aoc-dot">·</span>
-                                        <span>
-                                          {cleanDeliveryType(order["Delivery Type"])}
-                                        </span>
-                                      </div>
-                                      <button
-                                        type="button"
-                                        className="aoc-edit"
-                                        onClick={() => openEditModal(order)}
-                                      >
-                                        <Edit size={14} /> Edit
-                                      </button>
-                                    </div>
-                                    </div>
-                                  </motion.div>
-                                </div>,
-                                document.body,
-                              )}
-                          </motion.div>
-                        );
-                      })}
+                      {visibleOrders.map((order, idx) => renderOrderCard(order, idx))}
                     </div>
                   ) : (
                     <div className="mo-table-wrap">
@@ -15508,6 +15500,55 @@ export default function ManageOrdersPage() {
                           autoFocus
                         />
                       </label>
+
+                      {/* Live India Post bucket — Express-opted orders are
+                          always Speed; otherwise < 500 g = Speed, ≥ 500 g =
+                          Standard (Contractual). */}
+                      {(() => {
+                        const faster =
+                          /faster|express/i.test(
+                            String(wsOrder["Delivery Type"] || ""),
+                          ) ||
+                          /^e/i.test(
+                            String(wsOrder.shippingId || "").trim(),
+                          );
+                        const w = parseInt(
+                          String(wsWeight).replace(/[^\d]/g, ""),
+                          10,
+                        );
+                        const hasW = Number.isFinite(w) && w > 0;
+                        let kind = null;
+                        let reason = "";
+                        if (faster) {
+                          kind = "speed";
+                          reason = "Express delivery opted";
+                        } else if (hasW) {
+                          kind = w < 500 ? "speed" : "standard";
+                          reason = `${w} g · ${w < 500 ? "under" : "over"} 500 g`;
+                        }
+                        return (
+                          <div
+                            className={`mo-ws-kind${kind ? ` ${kind}` : " none"}`}
+                          >
+                            {kind === "speed" ? (
+                              <span className="mo-ws-kind-l">
+                                🚚 <b>Speed Post</b>
+                              </span>
+                            ) : kind === "standard" ? (
+                              <span className="mo-ws-kind-l">
+                                📦 <b>Standard (Contractual)</b>
+                              </span>
+                            ) : (
+                              <span className="mo-ws-kind-l muted">
+                                Enter weight to classify
+                              </span>
+                            )}
+                            {reason && (
+                              <span className="mo-ws-kind-r">{reason}</span>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       <div className="mo-ws-field">
                         <span className="mo-ws-label">Sizes (L × B × H, cm)</span>
@@ -16870,6 +16911,7 @@ export default function ManageOrdersPage() {
       <BarcodeScanner
         open={!!trackScanFor}
         single
+        autoTorch
         title="Scan tracking ID"
         onClose={() => setTrackScanFor(null)}
         onDetect={(code) => {

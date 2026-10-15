@@ -51,6 +51,23 @@ export const SENDER = {
   mobile: "7977960242 / 9702551037",
 };
 
+// Strict delivery instruction shown WHEN THE CUSTOMER DID NOT add a note.
+// Orders are being returned/cancelled due to delivery negligence, so this is a
+// firm (but polite) message to the delivery person — printed on the card and on
+// the address label, in English + Hindi, with warning emoji.
+export const POSTMAN_NOTE_EN =
+  "⚠️ Please deliver this parcel to the customer even during heavy workload. If returned undelivered due to negligence, a formal complaint will be lodged. 🙏";
+export const POSTMAN_NOTE_HI =
+  "⚠️ कृपया यह पार्सल ग्राहक तक अवश्य पहुँचाएँ, चाहे काम का बोझ कितना भी हो। लापरवाही के कारण वापस लौटाने पर औपचारिक शिकायत दर्ज की जाएगी। 🙏";
+
+// Which note to show: the customer's own note wins (and then the postman
+// message is NOT shown); otherwise the strict bilingual delivery instruction.
+export const deliveryNoteFor = (customerNote) => {
+  const c = String(customerNote || "").trim();
+  if (c) return { text: c, textHi: "", isCustomer: true };
+  return { text: POSTMAN_NOTE_EN, textHi: POSTMAN_NOTE_HI, isCustomer: false };
+};
+
 // Build a 2× scaled canvas with consistent drawing helpers. Returns the
 // canvas, ctx, and a small toolkit (text, rect, wrap, download).
 // Lives at module level, pure, no component state.
@@ -1335,21 +1352,93 @@ function drawBigAddressLabel(c, startY, data) {
       { font: "bold 14px Poppins, sans-serif", color: "#7a1020" },
     );
     y += qs + 14;
-  } else if (data.note && String(data.note).trim()) {
-    y += 14;
-    c.text("NOTE:", innerX, y + 14, {
-      font: "bold 13px Poppins, sans-serif",
-      color: "#c25e00",
+  } else {
+    // ===== Prominent delivery-note box =====
+    // Customer's own note wins (big, auto-fitting one-liner that shrinks and
+    // wraps smaller if long). If they left no note, show the strict bilingual
+    // instruction for the delivery person (English + Hindi, with emoji).
+    const dn = deliveryNoteFor(data.note);
+    const strict = !dn.isCustomer;
+    const padB = 20;
+    const availW = innerW - padB * 2;
+    const bg = strict ? "#fff3f1" : "#eef4ff";
+    const border = strict ? "#e03a2f" : "#1f66d0";
+    const titleColor = strict ? "#b00020" : "#1452b0";
+    const textColor = strict ? "#5a0f08" : "#10213a";
+    const title = strict ? "DELIVERY INSTRUCTION" : "NOTE FROM CUSTOMER";
+
+    // How many wrapped lines a string needs at a given font/width.
+    const wrapLineCount = (str, font, maxW) => {
+      ctx.font = `bold ${font}px Poppins, sans-serif`;
+      const words = String(str || "").split(" ");
+      let line = "";
+      let n = 1;
+      for (const w of words) {
+        const test = line + w + " ";
+        if (ctx.measureText(test).width > maxW && line) {
+          n += 1;
+          line = w + " ";
+        } else line = test;
+      }
+      return n;
+    };
+
+    // Build the content line(s) + their font sizes.
+    const lines = [];
+    if (strict) {
+      lines.push({ str: dn.text, font: 21 });
+      lines.push({ str: dn.textHi, font: 20 });
+    } else {
+      // Auto-fit: start big (34px) and shrink until it fits one line; if it
+      // still won't fit at 20px, it wraps at 20px (smaller, 2+ lines).
+      let f = 34;
+      ctx.font = `bold ${f}px Poppins, sans-serif`;
+      while (f > 20 && ctx.measureText(dn.text).width > availW) {
+        f -= 1;
+        ctx.font = `bold ${f}px Poppins, sans-serif`;
+      }
+      lines.push({ str: dn.text, font: f });
+    }
+    const lineMeta = lines.map((ln) => ({
+      ...ln,
+      lh: Math.round(ln.font * 1.3),
+      n: wrapLineCount(ln.str, ln.font, availW),
+    }));
+
+    // Box height from measured content.
+    const titleBlock = 30; // top pad + title + gap
+    let contentH = 0;
+    lineMeta.forEach((ln) => {
+      contentH += ln.font + (ln.n - 1) * ln.lh + 8;
     });
-    const nEnd = c.wrap(
-      String(data.note).trim(),
-      innerX + 56,
-      y + 14,
-      innerW - 56,
-      22,
-      { font: "bold 14px Poppins, sans-serif", color: "#7c5a12" },
-    );
-    y = nEnd + 14;
+    const boxH = titleBlock + contentH + 8;
+
+    y += 18;
+    ctx.save();
+    ctx.fillStyle = bg;
+    rr(innerX, y, innerW, boxH, 12);
+    ctx.fill();
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 2.6;
+    rr(innerX, y, innerW, boxH, 12);
+    ctx.stroke();
+    ctx.restore();
+
+    let ty = y + 24;
+    c.text(title, innerX + padB, ty, {
+      font: "bold 14px Poppins, sans-serif",
+      color: titleColor,
+    });
+    ty += 8;
+    lineMeta.forEach((ln) => {
+      ty += ln.font;
+      const end = c.wrap(ln.str, innerX + padB, ty, availW, ln.lh, {
+        font: `bold ${ln.font}px Poppins, sans-serif`,
+        color: textColor,
+      });
+      ty = end + 8;
+    });
+    y += boxH + 14;
   }
 
   // ===== Footer =====

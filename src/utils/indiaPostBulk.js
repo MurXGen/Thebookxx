@@ -704,23 +704,47 @@ export async function parseWeightsFile(file) {
 export async function parseTrackingStatusFile(file) {
   const XLSX = await import("xlsx");
   const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
-  // Prefer an "Articles" sheet, else the first sheet.
+  // Prefer an "Articles" / "Data" sheet, else the first sheet.
   const sheetName =
-    wb.SheetNames.find((n) => /article/i.test(n)) || wb.SheetNames[0];
+    wb.SheetNames.find((n) => /article|data/i.test(n)) || wb.SheetNames[0];
   const ws = wb.Sheets[sheetName];
   if (!ws) throw new Error("No sheet found in the file.");
   const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-  const header = (aoa[0] || []).map((h) => String(h).trim());
+  // Normalise headers (spaces / underscores → hyphen) so the same lookup works
+  // for BOTH the "Bulk Articles Tracking" export ("Article Number" / "Status")
+  // AND the "Customer Self-service → Booking report" export ("article-number" /
+  // "event-description" / "customer-bulk-reference").
+  const header = (aoa[0] || []).map((h) =>
+    String(h).trim().toLowerCase().replace(/[\s_]+/g, "-"),
+  );
   const idx = (...names) =>
-    header.findIndex((h) =>
-      names.some((n) => h.toLowerCase() === String(n).toLowerCase()),
-    );
-  const iArt = idx("Article Number", "Article No", "Tracking ID", "Article");
-  const iStat = idx("Status", "Current Status");
-  const iEvent = idx("Last Event", "Event", "Remarks");
+    header.findIndex((h) => names.some((n) => h === n));
+  const iArt = idx(
+    "article-number",
+    "article-no",
+    "tracking-id",
+    "article",
+  );
+  const iStat = idx(
+    "status",
+    "current-status",
+    "event-description",
+  );
+  const iEvent = idx(
+    "last-event",
+    "event",
+    "remarks",
+    "event-description",
+  );
+  const iOrder = idx(
+    "customer-bulk-reference",
+    "bulk-reference",
+    "reference",
+    "order-id",
+  );
   if (iArt < 0 || iStat < 0)
     throw new Error(
-      "File needs 'Article Number' and 'Status' columns (India Post bulk tracking export).",
+      "File needs an article number + status column — either the India Post bulk tracking export ('Article Number' / 'Status') or the booking report export ('article-number' / 'event-description').",
     );
   const out = [];
   for (let r = 1; r < aoa.length; r++) {
@@ -729,10 +753,12 @@ export async function parseTrackingStatusFile(file) {
       .trim()
       .toUpperCase();
     const status = String(row[iStat] ?? "").trim();
-    if (!article) continue;
+    const orderId = iOrder >= 0 ? String(row[iOrder] ?? "").trim() : "";
+    if (!article && !orderId) continue;
     out.push({
       article,
       status,
+      orderId,
       lastEvent: iEvent >= 0 ? String(row[iEvent] ?? "").trim() : "",
     });
   }

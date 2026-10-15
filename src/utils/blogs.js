@@ -4,6 +4,172 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "poverty-eradication-day-2026-books-on-poverty-inequality-and-hope-india": {
+    "id": "blog-079",
+    "title": "Poverty Eradication Day 2026 (17 October): 15 Books on Poverty, Inequality and Hope to Read in India",
+    "slug": "poverty-eradication-day-2026-books-on-poverty-inequality-and-hope-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-15",
+    "lastModified": "2026-10-15",
+    "excerpt": "17 October is the International Day for the Eradication of Poverty. Read 15 books on poverty, inequality and hope, from ₹1 with free delivery and COD across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The International Day for the Eradication of Poverty is observed every year on 17 October, which is this Saturday. The United Nations traces the day to 17 October 1987, when more than 100,000 people gathered at the Trocadéro in Paris, the same place where the Universal Declaration of Human Rights was signed in 1948, to honour the victims of extreme poverty, violence and hunger. The UN's 2026 to 2028 theme is \"United for Peace and Human Rights\", and the focus for 2026 is \"Safe Homes for All\"."
+      },
+      {
+        "type": "paragraph",
+        "content": "For most of us, poverty is an abstract number in a report. Books are one of the few tools that turn that number back into a person, a street, a home. This reading list brings together economics, memoir, fiction and personal-finance titles that help you understand how poverty works, why some nations stay poor, and what dignity, work and hope look like in practice. Every title is available at TheBookX, with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts for 17 October 2026",
+        "content": "Date: Saturday, 17 October 2026. Origin: the 1987 gathering at the Trocadéro, Paris. UN theme 2026 to 2028: United for Peace and Human Rights. 2026 focus: Safe Homes for All. A simple way to mark the day: read one book on the subject and talk about it with someone at home."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Start with the big picture: why some nations stay poor"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/why-nations-fail\" style=\"color:#fb8500;font-weight:600\">Why Nations Fail</a> by Daron Acemoglu and James A. Robinson argues that the gap between rich and poor countries comes down to institutions: whether they let ordinary people invest, innovate and keep what they earn, or let a small elite extract it. It is a long read, but it changes how you read the news. Pair it with <a href=\"/books/factfulness\" style=\"color:#fb8500;font-weight:600\">Factfulness</a> by Hans Rosling, which uses data to show how much the world has improved and why our instincts about poverty are often outdated. Together they give you both the structural argument and the reality check."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories that put a human face on hardship"
+      },
+      {
+        "type": "paragraph",
+        "content": "Fiction often explains deprivation better than statistics. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy, set in Kerala, shows how caste and class decide who is allowed to love, to belong and to be safe. <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini follows two boys from different social worlds in Kabul and what displacement does to a family. For gentler, deeply Indian everyday life, R.K. Narayan's <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is full of small-town characters who are often one bad season away from trouble, written with warmth rather than pity."
+      },
+      {
+        "type": "paragraph",
+        "content": "Viktor Frankl's <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> is not about poverty as such, but about what remains when nearly everything is taken away. Many readers find it the most useful book to read alongside any conversation about hardship and dignity."
+      },
+      {
+        "type": "blockquote",
+        "content": "Poverty is not only about money. It is also about voice, safety, a roof overhead and the chance to make a plan for next year."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "This year's focus: why a safe home matters"
+      },
+      {
+        "type": "paragraph",
+        "content": "The 2026 focus, Safe Homes for All, is a reminder that housing is the base on which health, schooling and work are built. A stable home means a child can study in the evening, a parent can hold a steady job and a family can save even a little. If you want to act on the theme, look for local organisations that build or repair homes for low-income families, and consider donating books to a nearby community library or school, where they can be shared by many readers."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Money habits: how ordinary people build security"
+      },
+      {
+        "type": "paragraph",
+        "content": "Personal finance will not solve structural poverty, but it helps individuals and families protect themselves. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel explains that behaviour matters more than intelligence when it comes to money. <a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> by Robert Kiyosaki is a popular introduction to assets, liabilities and financial education, and <a href=\"/books/the-richest-man-in-babylon\" style=\"color:#fb8500;font-weight:600\">The Richest Man in Babylon</a> packs saving and investing principles into short parables. <a href=\"/books/think-and-grow-rich\" style=\"color:#fb8500;font-weight:600\">Think and Grow Rich</a> by Napoleon Hill is a classic on mindset and persistence."
+      },
+      {
+        "type": "paragraph",
+        "content": "Behind every financial plan is a decision that has to be made calmly and repeated daily. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear shows how small habits, such as saving a fixed amount each month, compound over years. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar helps you cut through noise and see the real decision in front of you, which is often the first step before spending, saving or starting something of your own."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Work, ambition and getting out"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a>, the autobiography of A.P.J. Abdul Kalam, is the story of a boy from Rameswaram who rose through education and hard work to lead India's space and missile programmes. It remains one of the most inspiring books for students from modest backgrounds. <a href=\"/books/shoe-dog\" style=\"color:#fb8500;font-weight:600\">Shoe Dog</a> by Phil Knight, the founder of Nike, is a candid account of building a business from almost nothing, with all its debts, doubts and near failures. For a wider view of human history and how societies organise wealth, try <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Quick reading list by mood"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "To understand the economics: Why Nations Fail and Factfulness.",
+          "To feel the human story: The God of Small Things, The Kite Runner and Malgudi Days.",
+          "To find meaning in hardship: Man's Search for Meaning and Wings of Fire.",
+          "To build financial security: The Psychology of Money, The Richest Man in Babylon and Atomic Habits.",
+          "To start something yourself: Shoe Dog and The Art of Clarity."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to turn reading into action"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one book from the list and finish it before the end of the month.",
+          "Pass your copy on to a friend, a younger cousin or a school library once you are done.",
+          "Support a local organisation working on housing, food or education.",
+          "Start a small monthly saving habit, even ₹100, and track it."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Books from ₹1, delivered free",
+        "content": "TheBookX has books from ₹1, free delivery and Cash on Delivery across India, so a good read is never out of reach. Buying a second copy to donate to a community library is one small way to mark the day."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/poverty-eradication-day-2026-books-on-poverty-inequality-and-hope-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/poverty-eradication-day-2026-books-on-poverty-inequality-and-hope-india.jpeg",
+        "alt": "A young woman reading a book by a sunlit window at home",
+        "caption": "Reading is one of the simplest ways to understand poverty and inequality.",
+        "category": "Reading List"
+      }
+    ],
+    "keywords": [
+      "poverty eradication day 2026",
+      "books on poverty",
+      "books on inequality",
+      "International Day for the Eradication of Poverty",
+      "17 October",
+      "why nations fail",
+      "best economics books India",
+      "books to read online India"
+    ],
+    "categories": [
+      "Awareness Days",
+      "Non-Fiction",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "When is the International Day for the Eradication of Poverty?",
+        "answer": "It is observed every year on 17 October. In 2026 it falls on a Saturday."
+      },
+      {
+        "question": "What is the theme for 2026?",
+        "answer": "According to the United Nations, the 2026 to 2028 theme is \"United for Peace and Human Rights\", with the 2026 focus on \"Safe Homes for All\"."
+      },
+      {
+        "question": "Which book is best to understand why countries stay poor?",
+        "answer": "Why Nations Fail by Daron Acemoglu and James A. Robinson is a widely read starting point, and Factfulness by Hans Rosling gives a data-driven view of how living conditions have changed."
+      },
+      {
+        "question": "Are these books available with free delivery in India?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "world-food-day-2026-books-about-food-hunger-and-mindful-eating-india": {
     "id": "blog-078",
     "title": "World Food Day 2026 (16 October): 15 Books About Food, Hunger and Mindful Eating to Read in India",

@@ -28869,6 +28869,46 @@ img[data-loaded="true"] {
   color: var(--muted, #9ca3af);
   margin: 0;
 }
+/* Live Speed / Standard classification chip in the shipment-details sheet. */
+.mo-ws-kind {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: -2px 0 2px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  border: 1px solid transparent;
+}
+.mo-ws-kind-l {
+  font-weight: 600;
+}
+.mo-ws-kind-l b {
+  font-weight: 800;
+}
+.mo-ws-kind-r {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.mo-ws-kind.speed {
+  background: #fff4e9;
+  border-color: #ffd9ad;
+  color: #b4560a;
+}
+.mo-ws-kind.standard {
+  background: #eef3ff;
+  border-color: #cfe0ff;
+  color: #1452b0;
+}
+.mo-ws-kind.none {
+  background: #f6f7f9;
+  border-color: #e6e8ec;
+  color: #9ca3af;
+}
+.mo-ws-kind .muted {
+  font-weight: 500;
+}
 .mo-ws-foot {
   display: flex;
   gap: 10px;
@@ -29734,6 +29774,42 @@ img[data-loaded="true"] {
   max-height: 46vh;
   overflow-y: auto;
 }
+/* Dispatch queue rendered as the full Orders-tab cards. */
+.mo-dispatch-grid {
+  margin-top: 4px;
+}
+.mo-dispatch-card-wrap {
+  position: relative;
+  overflow: visible;
+}
+/* Floating removal button pinned to the top-right CORNER of the card so it
+   never overlaps the customer name (left) or status pill (top edge). */
+.mo-dispatch-card-x {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 6;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: #e03a2f;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(192, 57, 43, 0.35);
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+.mo-dispatch-card-x:hover {
+  background: #c0392b;
+}
+.mo-dispatch-card-x:active {
+  transform: scale(0.9);
+}
 .mo-dispatch-row {
   display: flex;
   align-items: center;
@@ -29986,6 +30062,10 @@ img[data-loaded="true"] {
   border: 1px solid transparent;
   word-break: break-word;
 }
+/* Right-hand cell (Payment type) → badge hugs the right edge. */
+.mo2-cell-r .mo2-badge-pill {
+  align-self: flex-end;
+}
 .mo2-badge-blue {
   color: #0d6bf5;
   background: #eaf2ff;
@@ -30035,6 +30115,33 @@ img[data-loaded="true"] {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* Strict postman instruction (shown when the customer left no note) — full
+   width, wraps, with the Hindi line below. */
+.mo2-note-postman {
+  flex-direction: column;
+  gap: 2px;
+  background: #fff4f1;
+  border: 1px solid #f3c9c4;
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: #8a2a1e;
+}
+.mo2-note-postman .mo2-note-k {
+  color: #c0392b;
+}
+.mo2-note-postman .mo2-note-v {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.mo2-note-hi {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: #9a4b3e;
 }
 /* Total */
 .mo2-total {

@@ -4174,7 +4174,11 @@ export default function ManageOrdersPage() {
   // queue). Only orders with weight & sizes entered qualify — same rule as
   // the Orders page; opens the same preview/edit modal before download.
   const openIpBulkForOrders = (product, pool0) => {
-    const pool = (pool0 || []).filter(ipHasWeightSizes);
+    // Only the orders that classify into THIS product (Speed vs Contractual)
+    // and have weight & sizes — matches the counts shown on each button.
+    const pool = (pool0 || []).filter(
+      (o) => ipHasWeightSizes(o) && classifyOrderProduct(o) === product,
+    );
     if (pool.length === 0) {
       showToast(
         `No ${product} orders with weight & sizes to export.`,
@@ -11013,7 +11017,12 @@ export default function ManageOrdersPage() {
                         })}
                       </div>
                       {(() => {
-                        const ipReady = scope.filter(ipHasWeightSizes).length;
+                        const ipPool = scope.filter(ipHasWeightSizes);
+                        const ipReady = ipPool.length;
+                        const speedN = ipPool.filter(
+                          (o) => classifyOrderProduct(o) === "speed",
+                        ).length;
+                        const contractN = ipReady - speedN;
                         return (
                           <div className="mo-dispatch-ip">
                             <span className="mo-dispatch-ip-lbl">
@@ -11024,22 +11033,22 @@ export default function ManageOrdersPage() {
                               <button
                                 type="button"
                                 className="mo-dispatch-ip-btn speed"
-                                disabled={!ipReady}
+                                disabled={!speedN}
                                 onClick={() =>
                                   openIpBulkForOrders("speed", scope)
                                 }
                               >
-                                🚚 Speed (.xlsx)
+                                🚚 Speed ({speedN})
                               </button>
                               <button
                                 type="button"
                                 className="mo-dispatch-ip-btn contract"
-                                disabled={!ipReady}
+                                disabled={!contractN}
                                 onClick={() =>
                                   openIpBulkForOrders("contractual", scope)
                                 }
                               >
-                                📦 Contractual (.xlsx)
+                                📦 Contractual ({contractN})
                               </button>
                             </div>
                           </div>
@@ -13420,12 +13429,40 @@ export default function ManageOrdersPage() {
                         // ticked, else all available (non-dismissed).
                         const { speed: speedN, contract: contractN, scoped } =
                           ipCounts();
+                        const labelScope = selectedIds.length
+                          ? filteredOrders.filter((o) =>
+                              selectedIds.includes(o["Order ID"]),
+                            )
+                          : filteredOrders;
                         return (
                           <div className="mo-cardbulk-export">
                             <span className="mo-cardbulk-lbl">
                               India Post bulk (.xlsx) ·{" "}
                               {scoped ? "selected" : "all available"}
                             </span>
+                            <button
+                              type="button"
+                              className="mo-ipx-btn label"
+                              disabled={!labelScope.length}
+                              onClick={() =>
+                                downloadFormsFor(
+                                  labelScope,
+                                  "pdf",
+                                  `address_labels_${selectedIds.length ? "selected_" : ""}${new Date().toISOString().slice(0, 10)}`,
+                                  true,
+                                )
+                              }
+                              title={
+                                selectedIds.length
+                                  ? `Download a merged address-label PDF for the ${labelScope.length} selected order(s)`
+                                  : `Download a merged address-label PDF for all ${labelScope.length} orders in view`
+                              }
+                            >
+                              📄 Address labels{" "}
+                              {selectedIds.length
+                                ? `(${labelScope.length} selected)`
+                                : `(all ${labelScope.length})`}
+                            </button>
                             <button
                               type="button"
                               className="mo-ipx-btn speed"
@@ -13850,7 +13887,34 @@ export default function ManageOrdersPage() {
                               );
                             })()}
                             {/* Header — name + phone (left); status + date (right) */}
-                            <div className="mo2-head" onClick={(e) => e.stopPropagation()}>
+                            <div
+                              className="mo2-head"
+                              onClick={(e) => {
+                                if (cardSelectMode) {
+                                  e.stopPropagation();
+                                  toggleCardSelect();
+                                } else {
+                                  e.stopPropagation();
+                                }
+                              }}
+                              style={
+                                cardSelectMode ? { cursor: "pointer" } : undefined
+                              }
+                            >
+                              {cardSelectMode && (
+                                <button
+                                  type="button"
+                                  className={`mo2-select-box${isSelected ? " on" : ""}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCardSelect();
+                                  }}
+                                  aria-pressed={isSelected}
+                                  aria-label={isSelected ? "Deselect" : "Select"}
+                                >
+                                  {isSelected && <Check size={14} strokeWidth={3} />}
+                                </button>
+                              )}
                               <div className="mo2-head-l">
                                 <span className="mo2-name">{order["Customer Name"] || "—"}</span>
                                 <button
@@ -14033,11 +14097,15 @@ export default function ManageOrdersPage() {
                                 <div className="mo2-grid" onClick={(e) => e.stopPropagation()}>
                                   <div className="mo2-cell">
                                     <span className="mo2-cell-k">Order type</span>
-                                    <span className="mo2-cell-v mo2-v-blue">{orderType}</span>
+                                    <span className="mo2-badge-pill mo2-badge-blue">
+                                      {orderType}
+                                    </span>
                                   </div>
                                   <div className="mo2-cell mo2-cell-r">
                                     <span className="mo2-cell-k">Payment type</span>
-                                    <span className={`mo2-cell-v${advancePaid ? " mo2-v-green" : ""}`}>
+                                    <span
+                                      className={`mo2-badge-pill ${advancePaid ? "mo2-badge-green" : /online|upi|paid/i.test(payType) && !/cod|cash/i.test(payType) ? "mo2-badge-green" : "mo2-badge-grey"}`}
+                                    >
                                       {payType}
                                     </span>
                                   </div>
@@ -17281,8 +17349,8 @@ export default function ManageOrdersPage() {
 
               <div className="ip-bulk-foot">
                 <span className="ip-bulk-foot-note">
-                  Weight & COD are absolute (no decimals). Prepaid rows won't
-                  collect anything unless you set a COD type.
+                  Weight &amp; COD are absolute (no decimals). Prepaid rows
+                  won&apos;t collect anything unless you set a COD type.
                 </span>
                 <div className="ip-bulk-foot-btns">
                   <button

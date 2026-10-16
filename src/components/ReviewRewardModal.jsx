@@ -1,58 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Gift,
-  Upload,
-  Check,
-  Clock,
-  XCircle,
-  Camera,
-  X,
-} from "lucide-react";
+import { Gift, Upload, Check, Clock, XCircle, X, Mail } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { getSavedPhone } from "@/utils/userPhone";
 import { showToast } from "@/context/ToastContext";
 
 const MAX_REWARD = 200;
-const PLATFORMS = ["Instagram", "YouTube", "Facebook", "Other"];
+const SUPPORT_WA = "917710892108";
+const SUPPORT_EMAIL = "uskillbook@gmail.com";
 const norm = (p) => String(p || "").replace(/\D/g, "").slice(-10);
 
-// Downscale an uploaded screenshot to a compact JPEG data URL.
-function fileToDataUrl(file, maxDim = 1080, quality = 0.8) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        let { width, height } = img;
-        if (width > maxDim || height > maxDim) {
-          const r = Math.min(maxDim / width, maxDim / height);
-          width = Math.round(width * r);
-          height = Math.round(height * r);
-        }
-        const c = document.createElement("canvas");
-        c.width = width;
-        c.height = height;
-        c.getContext("2d").drawImage(img, 0, 0, width, height);
-        try {
-          resolve(c.toDataURL("image/jpeg", quality));
-        } catch {
-          resolve(reader.result);
-        }
-      };
-      img.onerror = reject;
-      img.src = reader.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
 /**
- * ReviewRewardModal — a compact "Get up to ₹200" CTA that opens the full
- * share-&-earn review flow in a pincode-style slide-up modal.
+ * ReviewRewardModal — a compact "Get up to ₹200" CTA that opens the
+ * share-&-earn flow. The shopper just pastes their post link; after submitting
+ * they're asked to send the screenshot over WhatsApp or Email (so the proof +
+ * image reaches us directly), and we release the reward within 24h.
  */
 export default function ReviewRewardModal({
   variant = "chip",
@@ -62,12 +27,11 @@ export default function ReviewRewardModal({
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [phone, setPhone] = useState("");
-  const [platform, setPlatform] = useState("Instagram");
   const [link, setLink] = useState("");
-  const [shot, setShot] = useState(""); // dataURL preview
   const [busy, setBusy] = useState(false);
   const [subs, setSubs] = useState([]);
-  const fileRef = useRef(null);
+  // After a successful submit → ask them to send the screenshot to us.
+  const [shotPrompt, setShotPrompt] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -84,13 +48,11 @@ export default function ReviewRewardModal({
     } catch {}
   };
 
-  // Load status when the modal opens with a known number.
   useEffect(() => {
     if (open && norm(phone).length === 10) loadSubs(phone);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Lock body scroll while open.
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -100,29 +62,10 @@ export default function ReviewRewardModal({
     };
   }, [open]);
 
-  const pickFile = () => fileRef.current?.click();
-  const onFile = async (e) => {
-    const file = e?.target?.files?.[0];
-    if (!file) return;
-    if (!/^image\//.test(file.type)) {
-      showToast("Please upload an image screenshot", "error");
-      return;
-    }
-    try {
-      setShot(await fileToDataUrl(file));
-    } catch {
-      showToast("Couldn't read that image — try another", "error");
-    }
-  };
-
   const submit = async () => {
     const p = norm(phone);
     if (p.length !== 10) {
       showToast("Enter your 10-digit mobile number", "error");
-      return;
-    }
-    if (!shot) {
-      showToast("Upload a screenshot of your post", "error");
       return;
     }
     if (!/^https?:\/\//i.test(link.trim())) {
@@ -140,17 +83,14 @@ export default function ReviewRewardModal({
         body: JSON.stringify({
           phone: p,
           orderId,
-          platform,
+          platform: "social",
           link: link.trim(),
-          image: shot,
         }),
       });
       const json = await res.json().catch(() => ({}));
       if (json.ok) {
-        showToast("Submitted! We'll review it shortly 🎉", "success");
-        setShot("");
-        setLink("");
         loadSubs(p);
+        setShotPrompt(true); // ask for the screenshot next
       } else {
         showToast(json.error || "Couldn't submit — try again", "error");
       }
@@ -159,6 +99,36 @@ export default function ReviewRewardModal({
     } finally {
       setBusy(false);
     }
+  };
+
+  // Message the shopper sends us along with their screenshot.
+  const proofText = () =>
+    `Hi TheBookX! 🎉 I've posted my review.\n\n` +
+    `🔗 Post link: ${link.trim()}\n` +
+    `📱 Mobile: ${norm(phone)}\n\n` +
+    `I'm attaching the screenshot of my story/post here. Please release my reward 🙏`;
+
+  const sendWhatsApp = () => {
+    window.open(
+      `https://wa.me/${SUPPORT_WA}?text=${encodeURIComponent(proofText())}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+  const sendEmail = () => {
+    const subject = `TheBookX review reward — screenshot (${norm(phone)})`;
+    window.location.href =
+      `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}` +
+      `&body=${encodeURIComponent(proofText())}`;
+  };
+  const finishPrompt = () => {
+    setShotPrompt(false);
+    setLink("");
+    setOpen(false);
+    showToast(
+      "Thanks! Once we see your screenshot, your reward lands within 24h 🎉",
+      "success",
+    );
   };
 
   const StatusRow = ({ s }) => {
@@ -194,7 +164,21 @@ export default function ReviewRewardModal({
   };
 
   const trigger =
-    variant === "pill" ? (
+    variant === "fab" ? (
+      <button
+        type="button"
+        className={`cos-fab cos-fab-reward ${className}`}
+        onClick={() => setOpen(true)}
+        aria-label="Post a reel and earn up to ₹200"
+        title="Post & earn up to ₹200"
+      >
+        <span className="cos-fab-ic">
+          <Gift size={21} />
+        </span>
+        <span className="cos-fab-badge">₹{MAX_REWARD}</span>
+        <span className="cos-fab-label">Earn</span>
+      </button>
+    ) : variant === "pill" ? (
       <button
         type="button"
         className={`rr-cos-pill ${className}`}
@@ -270,8 +254,8 @@ export default function ReviewRewardModal({
                   <div className="rr-modal-body">
                     <p className="rr-sub-txt">
                       Post a reel or story with your books &amp; an honest review
-                      on Instagram/YouTube, send us the link + screenshot, and
-                      we&apos;ll credit your wallet. 📚✨
+                      on Instagram or YouTube, paste the link below, and we&apos;ll
+                      credit your wallet. 📚✨
                     </p>
 
                     <div className="rr-steps">
@@ -279,10 +263,10 @@ export default function ReviewRewardModal({
                         <b>1</b> Post with your books
                       </span>
                       <span>
-                        <b>2</b> Upload screenshot + link
+                        <b>2</b> Paste the link
                       </span>
                       <span>
-                        <b>3</b> Get up to ₹{MAX_REWARD}
+                        <b>3</b> Send us the screenshot
                       </span>
                     </div>
 
@@ -295,46 +279,6 @@ export default function ReviewRewardModal({
                     )}
 
                     <div className="rr-form">
-                      <button
-                        type="button"
-                        className="rr-upload"
-                        onClick={pickFile}
-                      >
-                        {shot ? (
-                          /* eslint-disable-next-line @next/next/no-img-element */
-                          <img
-                            src={shot}
-                            alt="screenshot"
-                            className="rr-upload-img"
-                          />
-                        ) : (
-                          <span className="rr-upload-ph">
-                            <Camera size={20} />
-                            <span>Upload screenshot of your post</span>
-                          </span>
-                        )}
-                      </button>
-                      <input
-                        ref={fileRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={onFile}
-                        style={{ display: "none" }}
-                      />
-
-                      <div className="rr-plats">
-                        {PLATFORMS.map((p) => (
-                          <button
-                            key={p}
-                            type="button"
-                            className={`rr-plat${platform === p ? " on" : ""}`}
-                            onClick={() => setPlatform(p)}
-                          >
-                            {p}
-                          </button>
-                        ))}
-                      </div>
-
                       <input
                         className="rr-input"
                         placeholder="Paste the post/reel/story link"
@@ -363,16 +307,74 @@ export default function ReviewRewardModal({
                           "Submitting…"
                         ) : (
                           <>
-                            <Upload size={16} /> Submit for review
+                            <Upload size={16} /> Submit &amp; send screenshot
                           </>
                         )}
                       </button>
                       <p className="rr-fine">
-                        Reward amount is confirmed after we verify your post.
-                        Paid to your TheBookX wallet.
+                        After submitting, send us the screenshot on WhatsApp or
+                        Email. Reward is paid to your TheBookX wallet once
+                        verified.
                       </p>
                     </div>
                   </div>
+
+                  {/* Screenshot prompt — slide-up on top after submit. */}
+                  <AnimatePresence>
+                    {shotPrompt && (
+                      <motion.div
+                        className="rr-shot-overlay"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={finishPrompt}
+                      >
+                        <motion.div
+                          className="rr-shot-sheet"
+                          onClick={(e) => e.stopPropagation()}
+                          initial={{ y: "100%" }}
+                          animate={{ y: 0 }}
+                          exit={{ y: "100%" }}
+                          transition={{ duration: 0.32, ease: "easeOut" }}
+                        >
+                          <div className="rr-shot-grab" />
+                          <div className="rr-shot-emoji">📸</div>
+                          <h3 className="rr-shot-title">
+                            One last step — send your screenshot
+                          </h3>
+                          <p className="rr-shot-sub">
+                            Your link is in! Now send us a screenshot of your
+                            story/post so we can verify it. Attach the image and
+                            send it on WhatsApp or Email — we&apos;ll release
+                            your reward within 24 hours. 🎉
+                          </p>
+                          <div className="rr-shot-btns">
+                            <button
+                              type="button"
+                              className="rr-shot-wa"
+                              onClick={sendWhatsApp}
+                            >
+                              <FaWhatsapp size={18} /> Send on WhatsApp
+                            </button>
+                            <button
+                              type="button"
+                              className="rr-shot-email"
+                              onClick={sendEmail}
+                            >
+                              <Mail size={17} /> Send via Email
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            className="rr-shot-done"
+                            onClick={finishPrompt}
+                          >
+                            I&apos;ve sent it
+                          </button>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               </motion.div>
             )}

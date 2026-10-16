@@ -28,7 +28,20 @@ export default function CommunityJoin({ className = "", variant = "icon" }) {
   const avatars = COMMUNITY_AVATARS.filter((s) => !broken[s]);
 
   const trigger =
-    variant === "card" ? (
+    variant === "fab" ? (
+      <button
+        type="button"
+        className={`cos-fab cos-fab-community ${className}`}
+        onClick={() => setOpen(true)}
+        aria-label="Join our reader community"
+        title="Our reader community"
+      >
+        <span className="cos-fab-ic">
+          <Users size={21} />
+        </span>
+        <span className="cos-fab-label">Community</span>
+      </button>
+    ) : variant === "card" ? (
       <button
         type="button"
         className={`community-card-trigger ${className}`}

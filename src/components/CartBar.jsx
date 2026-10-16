@@ -316,16 +316,26 @@ export default function CartBar({ tab = "books" }) {
 
   const shouldShowUnlockMessage = !hasNeverUnlocked;
 
-  /* Copy the site link so shoppers can share it on any social platform. */
+  /* Open the device's native share sheet (any app). Falls back to copying the
+     link on desktop browsers that don't support the Web Share API. */
   const shareSite = async () => {
+    const data = {
+      title: "TheBookX",
+      text: "Buy books online in India, starting at ₹1 — free shipping & Cash on Delivery. 📚",
+      url: SITE_URL,
+    };
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share(data);
+      } catch (_) {
+        /* user dismissed the share sheet — nothing to do */
+      }
+      return;
+    }
     try {
       await navigator.clipboard.writeText(SITE_URL);
       showToast("Link copied — share it on your socials 🎉", "success");
-    } catch (_) {
-      try {
-        if (navigator.share) await navigator.share({ url: SITE_URL });
-      } catch {}
-    }
+    } catch {}
   };
 
   return (
@@ -333,18 +343,21 @@ export default function CartBar({ tab = "books" }) {
       className={`cart-bar${barHidden ? " cart-bar-hidden" : ""}`}
       style={{ maxWidth: "680px", margin: "0 auto" }}
     >
-      {/* Share-&-earn pill + community + share — always visible above the bar. */}
-      <div className="cos-social-row">
-        <ReviewRewardModal variant="pill" />
-        <CommunityJoin variant="icon" />
+      {/* Three glassmorphic action buttons — Earn · Community · Share. */}
+      <div className="cos-fab-row">
+        <ReviewRewardModal variant="fab" />
+        <CommunityJoin variant="fab" />
         <button
           type="button"
-          className="community-icon-btn cos-share"
+          className="cos-fab cos-fab-share"
           onClick={shareSite}
           aria-label="Share TheBookX"
           title="Share TheBookX"
         >
-          <Share2 size={18} />
+          <span className="cos-fab-ic">
+            <Share2 size={21} />
+          </span>
+          <span className="cos-fab-label">Share</span>
         </button>
       </div>
       {/* Suggest strip ("Not sure what to read next?") — hidden for now.

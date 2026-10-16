@@ -339,10 +339,7 @@ export default function CartBar({ tab = "books" }) {
   };
 
   return (
-    <div
-      className={`cart-bar${barHidden ? " cart-bar-hidden" : ""}`}
-      style={{ maxWidth: "680px", margin: "0 auto" }}
-    >
+    <div className={`cart-bar cart-bar-full${barHidden ? " cart-bar-hidden" : ""}`}>
       {/* Three glassmorphic action buttons — Earn · Community · Share. */}
       <div className="cos-fab-row">
         <ReviewRewardModal variant="fab" />

@@ -14,6 +14,7 @@ import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import FreeShippingNudgeModal from "@/components/UI/FreeShippingNudgeModal";
 import HorizontalScroll from "@/components/UI/HorizontalScroll";
+import BookRails from "@/components/BookRails";
 import WishlistStrip from "@/components/WishlistStrip";
 import QuickReadsCheckout from "@/components/quickreads/QuickReadsCheckout";
 import QuickReadsReader from "@/components/quickreads/QuickReadsReader";
@@ -432,23 +433,6 @@ function BagContent() {
     </AnimatePresence>,
     document.body,
   );
-
-  // Recommendations for the empty-bag state (exclude ₹1 books).
-  const recTrending = books
-    .filter(
-      (b) =>
-        (b.catalogue || []).includes("trending") && b.discountedPrice !== 1,
-    )
-    .slice(0, 10);
-  const recBest = books
-    .filter(
-      (b) =>
-        (b.catalogue || []).includes("bestseller") && b.discountedPrice !== 1,
-    )
-    .slice(0, 10);
-  const recQuick = books
-    .filter((b) => quickReadFrameCount(b.id) > 0 && b.discountedPrice !== 1)
-    .slice(0, 10);
 
   // QuickReads rail (2-row scrollable, homepage style) shown above the
   // recommendations in the bag.
@@ -1195,43 +1179,25 @@ ${itemsBlock}${qrLines}
             </Link>
           </div>
 
-          {recTrending.length > 0 && (
-            <section
-              className="catalogue-section-2 trending-section"
-              style={{ marginTop: "24px" }}
-            >
-              <HorizontalScroll title="Trending now">
-                {recTrending.map((b) => (
-                  <BookCard key={b.id} book={b} />
-                ))}
-              </HorizontalScroll>
-            </section>
-          )}
-
-          {recBest.length > 0 && (
-            <section
-              className="catalogue-section-2"
-              style={{ marginTop: "24px" }}
-            >
-              <HorizontalScroll title="Bestsellers">
-                {recBest.map((b) => (
-                  <BookCard key={b.id} book={b} />
-                ))}
-              </HorizontalScroll>
-            </section>
-          )}
-
-          {recQuick.length > 0 && (
-            <section
-              className="catalogue-section-2"
-              style={{ marginTop: "24px" }}
-            >
-              <HorizontalScroll title="QuickReads">
-                {recQuick.map((b) => (
-                  <BookCard key={b.id} book={b} />
-                ))}
-              </HorizontalScroll>
-            </section>
+          {/* Below the empty state: on the QuickReads tab show ONLY QuickReads;
+              otherwise show the full set of homepage book rails. */}
+          {activeBagTab === "quickreads" ? (
+            qrRailBooks.length > 0 && (
+              <section
+                className="catalogue-section-2"
+                style={{ marginTop: "24px" }}
+              >
+                <HorizontalScroll title="QuickReads">
+                  {qrRailBooks.slice(0, 24).map((b) => (
+                    <BookCard key={b.id} book={b} />
+                  ))}
+                </HorizontalScroll>
+              </section>
+            )
+          ) : (
+            <div style={{ marginTop: "20px" }}>
+              <BookRails idPrefix="bag" />
+            </div>
           )}
         </>
       )}
@@ -1370,8 +1336,8 @@ ${itemsBlock}${qrLines}
                   Readers who picked these also loved…
                 </span>
                 <span className="cart-rec-sub">
-                  Hand-picked for you, add one more and make it a reading you'll
-                  remember
+                  Hand-picked for you, add one more and make it a reading
+                  you&apos;ll remember
                 </span>
               </div>
               <LazyBookGrid items={recommendedBooks} batch={20} />

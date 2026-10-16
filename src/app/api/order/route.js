@@ -21,7 +21,7 @@ export async function GET(request) {
   const phone = String(searchParams.get("phone") || "").replace(/\D/g, "").slice(-10);
   if (!id) {
     return Response.json(
-      { order: null, found: false, confirmed: false },
+      { order: null, found: false, confirmed: false, failed: false },
       { status: 400 },
     );
   }
@@ -40,11 +40,15 @@ export async function GET(request) {
     const order = rows.length ? rows[rows.length - 1] : null; // keep last
 
     let confirmed = false;
+    let failed = false;
     if (order) {
       // Confirmed = the order's status is anything other than "Unconfirmed"
       // (the admin moved it to Processing etc. after verifying it).
       const st = String(order["Order Status"] ?? "");
       confirmed = st.trim() !== "" && !/unconfirmed/i.test(st);
+      // Failed = the admin explicitly marked the payment failed (status is
+      // "Unconfirmed (Payment Failed)"), as opposed to just still-pending.
+      failed = /fail/i.test(st);
     }
 
     // Enforce ownership when a phone number was supplied: never return another
@@ -58,15 +62,16 @@ export async function GET(request) {
           order: null,
           found: false,
           confirmed: false,
+          failed: false,
           denied: true,
         });
       }
     }
 
-    return Response.json({ order, found: !!order, confirmed });
+    return Response.json({ order, found: !!order, confirmed, failed });
   } catch (e) {
     return Response.json(
-      { order: null, found: false, confirmed: false },
+      { order: null, found: false, confirmed: false, failed: false },
       { status: 502 },
     );
   }

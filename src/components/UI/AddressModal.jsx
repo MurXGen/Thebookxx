@@ -355,8 +355,14 @@ export default function AddressModal({
       try {
         if (upiOrderRef) {
           const r = await fetchOrderStatusById(upiOrderRef);
+          // Admin tapped Passed → success. Admin tapped Failed → show the
+          // failed screen (don't keep polling). Otherwise stay pending.
           if (r?.confirmed) {
             finalizeUPISuccess();
+            return true;
+          }
+          if (r?.failed) {
+            triggerUpiFailed();
             return true;
           }
         }
@@ -1708,14 +1714,49 @@ export default function AddressModal({
     upiPollRef.current = { poll: null, tick: null, to: null };
   };
 
-  // Payment confirmed (admin removed the "(unconfirmed)" tag) success screen.
+  // Payment confirmed (admin tapped Passed) → show a success tick INSIDE the
+  // UPI modal for ~1.9s, THEN hand off to the order details / success page.
   const finalizeUPISuccess = () => {
+    if (successHandedRef.current) return;
     clearUpiTimers();
-    setUpiPhase("confirmed");
-    setShowUPIPayment(false);
     persistLogin();
     setSuccessPayment("UPI");
-    finishToSuccess(upiOrderRef, advanceMode ? "ADV" : "UPI");
+    setUpiPhase("success"); // tick screen renders in the modal
+    setTimeout(() => {
+      setShowUPIPayment(false);
+      finishToSuccess(upiOrderRef, advanceMode ? "ADV" : "UPI");
+    }, 1900);
+  };
+
+  // Admin tapped Failed → the payment didn't go through. Show a "transaction
+  // failed" screen (order summary + Try again) instead of the success page.
+  const triggerUpiFailed = () => {
+    clearUpiTimers();
+    setUpiPhase("failed");
+  };
+
+  // From the failed screen: clear the failed tag back to plain "Unconfirmed"
+  // (so the fresh poll doesn't immediately re-fail), then restart the QR /
+  // payment step — a new QR + a new Passed/Failed message to the team.
+  const handleTryAgainUpi = () => {
+    const oid = String(upiOrderRef || "").trim();
+    if (oid) {
+      // Reset the sheet status so the retry starts from a clean pending state.
+      fetch("/api/order-write", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update",
+          orderId: oid,
+          data: { "Order Status": "Unconfirmed" },
+        }),
+      }).catch(() => {});
+    }
+    clearUpiTimers();
+    upiQrNotifiedRef.current = ""; // allow a fresh buttoned Telegram message
+    // Re-trigger the QR open effect (resets to await → 2s → counting).
+    setShowUPIPayment(false);
+    setTimeout(() => setShowUPIPayment(true), 60);
   };
 
   // Shopper taps "I've paid" — instead of bouncing them to WhatsApp (which left
@@ -3928,6 +3969,14 @@ export default function AddressModal({
             onWhatsAppFallback={handleUPIWhatsAppVerify}
             onSwitchToCOD={switchToCODFromUPI}
             onCheckStatus={handleCheckUPIStatus}
+            onTryAgain={handleTryAgainUpi}
+            summaryName={name}
+            summaryItems={(cartBooks || []).map((b) => ({
+              name: b.name,
+              qty: b.qty || b.quantity || 1,
+              price: (b.discountedPrice || b.price || 0) * (b.qty || b.quantity || 1),
+              image: b.image,
+            }))}
           />
         )}
       </AnimatePresence>
@@ -5140,7 +5189,90 @@ function UPIPaymentModal({
   onWhatsAppFallback,
   onSwitchToCOD,
   onCheckStatus,
+  onTryAgain,
+  summaryName = "",
+  summaryItems = [],
 }) {
+  // Success tick + failed screens replace the QR body for those two phases.
+  if (upiPhase === "success" || upiPhase === "failed") {
+    const failed = upiPhase === "failed";
+    return (
+      <motion.div
+        className="bill-modal-overlay upiv3-overlay"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={failed ? onClose : undefined}
+        style={{ maxWidth: "980px", margin: "0 auto" }}
+      >
+        <motion.div
+          className="bill-modal upiv3-modal"
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "100%" }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={`upiv3-result ${failed ? "is-failed" : "is-success"}`}>
+            <div className="upiv3-result-icon">
+              {failed ? <X size={44} strokeWidth={3} /> : <Check size={44} strokeWidth={3} />}
+            </div>
+            <h3 className="upiv3-result-title">
+              {failed ? "Payment failed" : "Payment confirmed"}
+            </h3>
+            <p className="upiv3-result-sub">
+              {failed
+                ? "We couldn't confirm this payment. No worries — you can try again."
+                : "Thank you! Taking you to your order…"}
+            </p>
+
+            {failed && (
+              <>
+                <div className="upiv3-result-summary">
+                  <div className="upiv3-result-sum-head">
+                    <span>{summaryName || "Your order"}</span>
+                    <b>₹{totalToPay}</b>
+                  </div>
+                  <div className="upiv3-result-items">
+                    {summaryItems.slice(0, 6).map((it, i) => (
+                      <div className="upiv3-result-item" key={i}>
+                        <span className="upiv3-result-item-nm">
+                          {it.name}
+                          {it.qty > 1 ? ` ×${it.qty}` : ""}
+                        </span>
+                        <span className="upiv3-result-item-pr">
+                          ₹{it.price}
+                        </span>
+                      </div>
+                    ))}
+                    {summaryItems.length > 6 && (
+                      <div className="upiv3-result-item muted">
+                        +{summaryItems.length - 6} more
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="pri-big-btn width100 flex flex-row items-center justify-center gap-6"
+                  onClick={onTryAgain}
+                >
+                  <RefreshCw size={16} /> Try again
+                </button>
+                <button
+                  type="button"
+                  className="upiv3-cod-link"
+                  onClick={onClose}
+                >
+                  Close
+                </button>
+              </>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  }
   return (
     <motion.div
       className="bill-modal-overlay upiv3-overlay"

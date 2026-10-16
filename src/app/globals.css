@@ -45964,6 +45964,103 @@ img[data-loaded="true"] {
   margin-top: 10px;
 }
 
+/* ===== UPI result screens (success tick / payment failed) ===== */
+.upiv3-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 34px 22px 26px;
+  gap: 10px;
+}
+.upiv3-result-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  margin-bottom: 4px;
+  animation: upiv3PopIn 0.4s cubic-bezier(0.17, 0.67, 0.3, 1.33);
+}
+.upiv3-result.is-success .upiv3-result-icon {
+  background: #16a34a;
+  box-shadow: 0 10px 26px rgba(22, 163, 74, 0.33);
+}
+.upiv3-result.is-failed .upiv3-result-icon {
+  background: #e03a2f;
+  box-shadow: 0 10px 26px rgba(224, 58, 47, 0.3);
+}
+@keyframes upiv3PopIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.upiv3-result-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 2px 0 0;
+  color: var(--foreground, #0a0a0a);
+}
+.upiv3-result-sub {
+  font-size: 13.5px;
+  color: var(--dark-50, #6b7280);
+  margin: 0 0 6px;
+  max-width: 340px;
+  line-height: 1.5;
+}
+.upiv3-result-summary {
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid var(--hairline, #eee);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 4px 0 8px;
+  text-align: left;
+  background: #fafafa;
+}
+.upiv3-result-sum-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 700;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #e3e3e3;
+}
+.upiv3-result-items {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.upiv3-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--dark-60, #4b5563);
+}
+.upiv3-result-item-nm {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.upiv3-result-item.muted {
+  color: var(--dark-40, #9ca3af);
+  font-size: 12px;
+}
+.upiv3-result .pri-big-btn {
+  max-width: 420px;
+}
+
 /* ===== Choose payment method — selectable cards + comparison ===== */
 .pay-pick {
   display: flex;

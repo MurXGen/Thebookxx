@@ -523,10 +523,14 @@ export const fetchOrderStatusById = async (orderId) => {
       cache: "no-store",
     });
     const json = await res.json();
-    return { found: !!json.found, confirmed: !!json.confirmed };
+    return {
+      found: !!json.found,
+      confirmed: !!json.confirmed,
+      failed: !!json.failed,
+    };
   } catch (e) {
     console.error("Order status read failed:", e);
-    return { found: false, confirmed: false };
+    return { found: false, confirmed: false, failed: false };
   }
 };
 

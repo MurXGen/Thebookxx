@@ -69,6 +69,7 @@ import {
   Pin,
   Pencil,
   Mail,
+  MailCheck,
   MoreVertical,
   Calculator,
   Delete,
@@ -104,6 +105,10 @@ import {
 import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
+import {
+  orderEmailFromRow,
+  sendOrderStatusEmail,
+} from "@/utils/orderEmail";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import {
   classifyOrderProduct,
@@ -7978,6 +7983,51 @@ export default function ManageOrdersPage() {
       [oid]: String(order.shippingId || order["Shipping ID"] || "").trim(),
     }));
   };
+
+  // One-click: email the customer their CURRENT order status + tracking + the
+  // full bill breakdown (via Resend, from orders@mail.thebookx.in). The live
+  // India Post status (Tracking detail) is preferred over the manual status.
+  const [emailingOrder, setEmailingOrder] = useState("");
+  const sendStatusEmailForOrder = async (order) => {
+    const to = String(order["Email"] || "").trim();
+    const oid = String(order["Order ID"] || "");
+    if (!to) {
+      showToast("No email on this order.", "error");
+      return;
+    }
+    const items = (order.parsedBooks || []).map((b) => ({
+      name: b.name,
+      qty: Number(b.quantity) || 1,
+      price:
+        Number(b.total) ||
+        (Number(b.price) || 0) * (Number(b.quantity) || 1),
+    }));
+    const liveStatus = String(order["Tracking detail"] || "")
+      .split("||")[0]
+      .trim();
+    const status =
+      liveStatus || order.status || order["Order Status"] || "Processing";
+    const tracking = String(
+      order.shippingId || order["Shipping ID"] || "",
+    ).trim();
+    setEmailingOrder(oid);
+    try {
+      const ok = await sendOrderStatusEmail({
+        to,
+        order: orderEmailFromRow(order, items),
+        status,
+        tracking,
+      });
+      showToast(
+        ok
+          ? `Status email sent to ${to} ✓`
+          : "Couldn't send the email — try again.",
+        ok ? "success" : "error",
+      );
+    } finally {
+      setEmailingOrder("");
+    }
+  };
   const saveWeightSize = async () => {
     if (!wsOrder) return;
     const oid = wsOrder["Order ID"];
@@ -9585,6 +9635,22 @@ export default function ManageOrdersPage() {
                                     aria-label="Email the customer"
                                   >
                                     <Mail size={15} />
+                                  </button>
+                                )}
+                                {String(order["Email"] || "").trim() && (
+                                  <button
+                                    type="button"
+                                    className="mo-frame-ic mo-frame-emailsend"
+                                    disabled={emailingOrder === orderId}
+                                    onClick={() => sendStatusEmailForOrder(order)}
+                                    title="Send status + tracking email (one click)"
+                                    aria-label="Send status email"
+                                  >
+                                    {emailingOrder === orderId ? (
+                                      <Loader2 size={15} className="mo-spin" />
+                                    ) : (
+                                      <MailCheck size={15} />
+                                    )}
                                   </button>
                                 )}
                                 {orderId && (

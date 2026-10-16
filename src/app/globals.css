@@ -29778,6 +29778,13 @@ img[data-loaded="true"] {
 .mo-dispatch-grid {
   margin-top: 4px;
 }
+.mo-frame-emailsend.mo-frame-ic {
+  color: #0a8f0c;
+}
+.mo-frame-emailsend.mo-frame-ic:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
 .mo-dispatch-card-wrap {
   position: relative;
   overflow: visible;

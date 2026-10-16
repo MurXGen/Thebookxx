@@ -61,6 +61,7 @@ import {
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
+import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 
 const PINCODE_DATA_KEY = "user_pincode";
 
@@ -553,6 +554,64 @@ export default function AddressModal({
       if (digits.length === 10)
         localStorage.setItem("track_orders_phone", digits);
     } catch {}
+    // Order-confirmation email (with the full bill breakdown) — only when the
+    // shopper entered a valid email. Fire-and-forget so it never blocks success.
+    try {
+      const em = String(email || "").trim();
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+        const isCODish = pay === "COD" || pay === "ADV";
+        const advAmt = pay === "ADV" ? codAdvanceAmount : 0;
+        const grand = ctx.baseTotal;
+        const deliv = getDeliveryCharge(fasterDelivery);
+        const gw = giftWrap || giftWrapSelected ? giftWrapCharge : 0;
+        const mrp = (cartBooks || []).reduce(
+          (s, b) =>
+            s +
+            Number(b.originalPrice || b.price || b.discountedPrice || 0) *
+              (b.qty || 1),
+          0,
+        );
+        sendOrderConfirmationEmail({
+          to: em,
+          order: {
+            orderId: oid,
+            name,
+            items: (cartBooks || []).map((b) => ({
+              name: b.name,
+              qty: b.qty || 1,
+              price: (b.discountedPrice || b.price || 0) * (b.qty || 1),
+            })),
+            isCOD: isCODish,
+            paymentType:
+              pay === "COD"
+                ? "Cash on Delivery"
+                : pay === "ADV"
+                  ? "COD · ₹99 advance"
+                  : "UPI",
+            orderUrl:
+              digits.length === 10
+                ? `https://www.thebookx.in/profile/${digits}/orders/${encodeURIComponent(oid)}`
+                : "",
+            bill: {
+              mrp,
+              itemDiscount: Math.max(0, mrp - totalDiscounted),
+              subtotal: totalDiscounted,
+              delivery: deliv,
+              giftWrap: gw,
+              bookmarks: bookmarkCharge,
+              quickReads: qrAddOn,
+              offerDiscount,
+              couponDiscount: appliedCoupon ? couponDiscount : 0,
+              wallet: walletApplied,
+              codFee: pay === "COD" ? codFeeAmount : 0,
+              grand,
+              advanceAmount: advAmt,
+              payOnDelivery: isCODish ? Math.max(0, grand - advAmt) : 0,
+            },
+          },
+        });
+      }
+    } catch (_) {}
     setShowCODSuccess(false);
     if (onOrderPlaced) onOrderPlaced(ctx);
     if (onClose) onClose();

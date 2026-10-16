@@ -108,6 +108,7 @@ import { showToast } from "@/context/ToastContext";
 import {
   orderEmailFromRow,
   sendOrderStatusEmail,
+  reviewBooksFor,
 } from "@/utils/orderEmail";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import {
@@ -7984,13 +7985,127 @@ export default function ManageOrdersPage() {
     }));
   };
 
-  // One-click: email the customer their CURRENT order status + tracking + the
-  // full bill breakdown (via Resend, from orders@mail.thebookx.in). The live
-  // India Post status (Tracking detail) is preferred over the manual status.
-  const [emailingOrder, setEmailingOrder] = useState("");
-  const sendStatusEmailForOrder = async (order) => {
+  // Status-update email templates — shown in a picker (like the WhatsApp one).
+  // Picking one sends a branded email (with tracking + bill) via Resend.
+  const [emailTplOrder, setEmailTplOrder] = useState(null); // order for the picker
+  const [emailingOrder, setEmailingOrder] = useState(""); // template key being sent
+  const emailStatusTemplates = (order) => {
+    const faster =
+      /faster|express/i.test(String(order?.["Delivery Type"] || "")) ||
+      /^e/i.test(String(order?.shippingId || order?.["Shipping ID"] || "").trim());
+    const eta = faster ? "1–5 days" : "4–9 days";
+    // Dates from the order's own timestamp.
+    const od = (() => {
+      try {
+        return typeof getOrderDate === "function" ? getOrderDate(order) : null;
+      } catch {
+        return null;
+      }
+    })();
+    const addDays = (d, n) =>
+      d ? new Date(d.getTime() + n * 86400000) : null;
+    const fmt = (d) =>
+      d
+        ? d.toLocaleDateString("en-IN", {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+          })
+        : "";
+    const expectedBy = fmt(addDays(od, faster ? 5 : 9));
+    const soon = fmt(addDays(new Date(), 1));
+    const byLine = expectedBy ? ` — by around ${expectedBy}` : "";
+    // COD line (keep the amount ready).
+    const isCOD =
+      /cash|cod|advance/i.test(String(order?.["Payment Type"] || "")) ||
+      /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
+    const collect =
+      parseFloat(
+        String(
+          order?.["COD Collectible"] || order?.["Total Amount"] || "",
+        ).replace(/[^\d.]/g, ""),
+      ) || 0;
+    const codNote =
+      isCOD && collect > 0
+        ? ` Please keep ₹${collect.toLocaleString("en-IN")} ready for the delivery agent (cash or UPI).`
+        : "";
+
+    return [
+      {
+        key: "packed",
+        label: "📦 Packed",
+        status: "Processing",
+        heading: "Your order is packed 📦",
+        subheading:
+          "Your books are carefully packed, wrapped and ready to leave our shelf. They'll be handed to the courier shortly — we'll email your tracking number the moment they're on the move.",
+      },
+      {
+        key: "about",
+        label: "🚀 About to ship",
+        status: "Processing",
+        heading: "Shipping very soon 🚀",
+        subheading:
+          "Your order is at our dispatch desk and about to leave with our shipping partner. You'll get the tracking details here within a few hours so you can follow it every step of the way.",
+      },
+      {
+        key: "shipped",
+        label: "🚚 Shipped",
+        status: "In Transit",
+        heading: "Your order has shipped 🚚",
+        subheading:
+          "Your parcel has been handed to our shipping partner and is officially on its way. Track it with the ID below. If you won't be home when it arrives, please let a neighbour or family member know so it isn't missed.",
+      },
+      {
+        key: "transit",
+        label: "📍 In transit",
+        status: "In Transit",
+        heading: "On the way 📍",
+        subheading:
+          "Your parcel is moving through our shipping partner's network toward your city. Please keep your phone reachable — the delivery agent may call before arriving. Stepping out? Ask someone at home to receive it for you.",
+      },
+      {
+        key: "transit_eta",
+        label: `⏳ In transit · ~${eta}`,
+        status: "In Transit",
+        heading: "Almost there 📍",
+        subheading: `Your parcel is in your region and should reach you in about ${eta}${byLine}. Deliveries happen anytime between 8 AM and 9 PM, so please keep someone available to collect it, or let a neighbour accept it so it isn't returned.${codNote}`,
+      },
+      {
+        key: "early",
+        label: "⚡ Arriving early",
+        status: "In Transit",
+        heading: "Good news — arriving early! ⚡",
+        subheading: `Your order is running ahead of schedule! It was expected${expectedBy ? ` by ${expectedBy}` : ""}, but it's now set to reach you${soon ? ` around ${soon}` : " soon"}. Deliveries happen anytime between 8 AM and 9 PM — please keep someone available to receive it, or let a neighbour accept it on your behalf.${codNote}`,
+      },
+      {
+        key: "ofd",
+        label: "🛵 Out for delivery",
+        status: "Out for Delivery",
+        heading: "Out for delivery today 🛵",
+        subheading: `Your parcel is out for delivery and should arrive within a few hours. Deliveries usually happen anytime between 8 AM and 9 PM, so please keep your phone handy for the agent's call. Can't be there? Kindly ask a family member or neighbour to collect it for you.${codNote}`,
+      },
+      {
+        key: "delivered",
+        label: "✅ Delivered + review us",
+        status: "Delivered",
+        heading: "Delivered ✅ — how did we do?",
+        subheading:
+          "Your order has been delivered — we hope the books are everything you hoped for! If you have a moment, a quick review (tap a book below) means the world to a small bookstore like ours and helps other readers discover these titles.",
+        review: true,
+      },
+      {
+        key: "review",
+        label: "⭐ Review each book",
+        status: "Delivered",
+        heading: "Loved your books? Leave a review ⭐",
+        subheading:
+          "We'd love to hear what you thought! Tap any book below to share a quick review — even a line or two genuinely helps other readers find them and supports us as an independent bookstore.",
+        review: true,
+      },
+    ];
+  };
+  const sendStatusEmailTemplate = async (order, tpl) => {
     const to = String(order["Email"] || "").trim();
-    const oid = String(order["Order ID"] || "");
     if (!to) {
       showToast("No email on this order.", "error");
       return;
@@ -7999,34 +8114,86 @@ export default function ManageOrdersPage() {
       name: b.name,
       qty: Number(b.quantity) || 1,
       price:
-        Number(b.total) ||
-        (Number(b.price) || 0) * (Number(b.quantity) || 1),
+        Number(b.total) || (Number(b.price) || 0) * (Number(b.quantity) || 1),
     }));
-    const liveStatus = String(order["Tracking detail"] || "")
-      .split("||")[0]
-      .trim();
-    const status =
-      liveStatus || order.status || order["Order Status"] || "Processing";
     const tracking = String(
       order.shippingId || order["Shipping ID"] || "",
     ).trim();
-    setEmailingOrder(oid);
+    setEmailingOrder(tpl.key);
     try {
       const ok = await sendOrderStatusEmail({
         to,
         order: orderEmailFromRow(order, items),
-        status,
+        status: tpl.status,
         tracking,
+        heading: tpl.heading,
+        subheading: tpl.subheading,
+        reviewBooks: tpl.review ? reviewBooksFor(items) : undefined,
       });
       showToast(
-        ok
-          ? `Status email sent to ${to} ✓`
-          : "Couldn't send the email — try again.",
+        ok ? `“${tpl.label}” email sent to ${to} ✓` : "Couldn't send — try again.",
         ok ? "success" : "error",
       );
+      if (ok) setEmailTplOrder(null);
     } finally {
       setEmailingOrder("");
     }
+  };
+
+  // Bulk: send one template to every selected order (or all) that has an email.
+  const [emailBulkOpen, setEmailBulkOpen] = useState(false);
+  const [bulkEmailProgress, setBulkEmailProgress] = useState(null); // {done,total}
+  const sendBulkStatusEmail = async (tpl) => {
+    const scope = (
+      selectedIds.length
+        ? filteredOrders.filter((o) => selectedIds.includes(o["Order ID"]))
+        : filteredOrders
+    ).filter((o) => String(o["Email"] || "").trim());
+    if (!scope.length) {
+      showToast("No selected orders have an email.", "error");
+      return;
+    }
+    setBulkEmailProgress({ done: 0, total: scope.length });
+    let ok = 0;
+    const CH = 5;
+    for (let i = 0; i < scope.length; i += CH) {
+      const batch = scope.slice(i, i + CH);
+      // eslint-disable-next-line no-await-in-loop
+      const res = await Promise.all(
+        batch.map((order) => {
+          const items = (order.parsedBooks || []).map((b) => ({
+            name: b.name,
+            qty: Number(b.quantity) || 1,
+            price:
+              Number(b.total) ||
+              (Number(b.price) || 0) * (Number(b.quantity) || 1),
+          }));
+          const tracking = String(
+            order.shippingId || order["Shipping ID"] || "",
+          ).trim();
+          return sendOrderStatusEmail({
+            to: String(order["Email"]).trim(),
+            order: orderEmailFromRow(order, items),
+            status: tpl.status,
+            tracking,
+            heading: tpl.heading,
+            subheading: tpl.subheading,
+            reviewBooks: tpl.review ? reviewBooksFor(items) : undefined,
+          }).catch(() => false);
+        }),
+      );
+      ok += res.filter(Boolean).length;
+      setBulkEmailProgress({
+        done: Math.min(scope.length, i + CH),
+        total: scope.length,
+      });
+    }
+    setBulkEmailProgress(null);
+    setEmailBulkOpen(false);
+    showToast(
+      `Sent “${tpl.label}” to ${ok}/${scope.length} customer(s) ✓`,
+      ok ? "success" : "error",
+    );
   };
   const saveWeightSize = async () => {
     if (!wsOrder) return;
@@ -9641,16 +9808,11 @@ export default function ManageOrdersPage() {
                                   <button
                                     type="button"
                                     className="mo-frame-ic mo-frame-emailsend"
-                                    disabled={emailingOrder === orderId}
-                                    onClick={() => sendStatusEmailForOrder(order)}
-                                    title="Send status + tracking email (one click)"
+                                    onClick={() => setEmailTplOrder(order)}
+                                    title="Send a status email (pick a template)"
                                     aria-label="Send status email"
                                   >
-                                    {emailingOrder === orderId ? (
-                                      <Loader2 size={15} className="mo-spin" />
-                                    ) : (
-                                      <MailCheck size={15} />
-                                    )}
+                                    <MailCheck size={15} />
                                   </button>
                                 )}
                                 {orderId && (
@@ -9869,6 +10031,102 @@ export default function ManageOrdersPage() {
                                           </div>
                                         </div>
                                       )}
+
+                                      {(() => {
+                                        // Customer bill breakdown from the
+                                        // itemised columns (clear, Flipkart-
+                                        // style). Hidden for old orders lacking
+                                        // the columns.
+                                        const bn = (k) => {
+                                          const v = parseFloat(
+                                            String(order[k] ?? "").replace(
+                                              /[^\d.-]/g,
+                                              "",
+                                            ),
+                                          );
+                                          return Number.isFinite(v) ? v : 0;
+                                        };
+                                        const mrp = bn("Total MRP");
+                                        const sub = bn("Subtotal");
+                                        const itemDisc = bn("Item Discount");
+                                        const deliv = bn("Delivery Charge");
+                                        const gift = bn("Gift Wrap Charge");
+                                        const bm = bn("Bookmark Charge");
+                                        const qr = bn("QuickReads Total");
+                                        const offer = bn("Offer Discount");
+                                        const coup = bn("Coupon Discount");
+                                        const wal = bn("Wallet Applied");
+                                        const cFee = bn("COD Fee");
+                                        const grand = bn("Total Amount");
+                                        const adv = bn("Advance Amount");
+                                        const collect =
+                                          bn("COD Collectible") ||
+                                          Math.max(0, grand - adv);
+                                        if (!(mrp || sub || offer || coup || wal))
+                                          return null;
+                                        const R = (label, val, cls) => (
+                                          <div
+                                            className={`mo-bill-row ${cls || ""}`}
+                                            key={label}
+                                          >
+                                            <span>{label}</span>
+                                            <b>{val}</b>
+                                          </div>
+                                        );
+                                        return (
+                                          <div className="mo-bill-sec">
+                                            <div className="mo-bill-sec-t">
+                                              Bill breakdown
+                                            </div>
+                                            <div className="mo-bill-rows">
+                                              {mrp > 0 && R("Total MRP", `₹${mrp}`)}
+                                              {itemDisc > 0 &&
+                                                R(
+                                                  "Item discount",
+                                                  `−₹${itemDisc}`,
+                                                  "muted",
+                                                )}
+                                              {sub > 0 && R("Subtotal", `₹${sub}`)}
+                                              {R(
+                                                "Delivery",
+                                                deliv > 0 ? `+₹${deliv}` : "FREE",
+                                                "muted",
+                                              )}
+                                              {gift > 0 &&
+                                                R("Gift wrap", `+₹${gift}`, "muted")}
+                                              {bm > 0 &&
+                                                R("Bookmarks", `+₹${bm}`, "muted")}
+                                              {qr > 0 &&
+                                                R("QuickReads", `+₹${qr}`, "muted")}
+                                              {offer > 0 &&
+                                                R(
+                                                  "Offer discount",
+                                                  `−₹${offer}`,
+                                                  "muted",
+                                                )}
+                                              {coup > 0 &&
+                                                R("Coupon", `−₹${coup}`, "muted")}
+                                              {wal > 0 &&
+                                                R("Wallet", `−₹${wal}`, "muted")}
+                                              {cFee > 0 &&
+                                                R("COD fee", `+₹${cFee}`, "muted")}
+                                              {R("Total", `₹${grand}`, "total")}
+                                              {adv > 0 &&
+                                                R(
+                                                  "Paid online (advance)",
+                                                  `−₹${adv}`,
+                                                  "muted",
+                                                )}
+                                              {adv > 0 &&
+                                                R(
+                                                  "Collect at door",
+                                                  `₹${collect}`,
+                                                  "total",
+                                                )}
+                                            </div>
+                                          </div>
+                                        );
+                                      })()}
 
                                       {(() => {
                                         const rev = Number(order.revenue) || 0;
@@ -14636,35 +14894,8 @@ export default function ManageOrdersPage() {
                   {/* Always-visible colorful gift-cards download — exports only
                       gift-wrap orders (selected ones if any, else all in view).
                       Prices show only for COD gift orders. */}
-                  {(() => {
-                    const scope = selectedIds.length
-                      ? filteredOrders.filter((o) =>
-                          selectedIds.includes(o["Order ID"]),
-                        )
-                      : filteredOrders;
-                    const giftN = scope.filter(isGiftOrder).length;
-                    if (!giftN) return null;
-                    return (
-                      <button
-                        type="button"
-                        className="mo-gift-dl"
-                        onClick={downloadGiftCards}
-                        title="Download / print a colorful gift-card PDF for gift-wrap orders"
-                      >
-                        <span className="mo-gift-dl-ic" aria-hidden="true">
-                          🎁
-                        </span>
-                        <span className="mo-gift-dl-txt">
-                          <b>Gift cards PDF</b>
-                          <small>
-                            {giftN} gift order{giftN > 1 ? "s" : ""} ·
-                            colorful · COD shows price
-                          </small>
-                        </span>
-                        <Download size={16} className="mo-gift-dl-arrow" />
-                      </button>
-                    );
-                  })()}
+                  {/* (Removed the top "Gift cards PDF" stripe — the same
+                      download lives in the select bulk bar below.) */}
 
                   {orderView === "cards" && cardSelectMode && (
                     <div className="mo-cardbulk-bar">
@@ -14744,8 +14975,7 @@ export default function ManageOrdersPage() {
                         return (
                           <div className="mo-cardbulk-export">
                             <span className="mo-cardbulk-lbl">
-                              India Post bulk (.xlsx) ·{" "}
-                              {scoped ? "selected" : "all available"}
+                              Bulk actions · {scoped ? "selected" : "all"}
                             </span>
                             <button
                               type="button"
@@ -14798,6 +15028,25 @@ export default function ManageOrdersPage() {
                               />{" "}
                               Import .xlsx
                             </button>
+                            {(() => {
+                              const emailScope = (
+                                selectedIds.length ? labelScope : filteredOrders
+                              ).filter((o) =>
+                                String(o["Email"] || "").trim(),
+                              );
+                              return (
+                                <button
+                                  type="button"
+                                  className="mo-ipx-btn emailbulk"
+                                  disabled={!emailScope.length}
+                                  onClick={() => setEmailBulkOpen(true)}
+                                  title="Send a status email to every selected order that has an email"
+                                >
+                                  <MailCheck size={14} /> Email (
+                                  {emailScope.length})
+                                </button>
+                              );
+                            })()}
                           </div>
                         );
                       })()}
@@ -16383,6 +16632,154 @@ export default function ManageOrdersPage() {
           </>,
           document.body,
         )}
+
+      {/* ===== Email status-template picker (Resend, per order) ===== */}
+      <AnimatePresence>
+        {emailTplOrder && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => emailingOrder === "" && setEmailTplOrder(null)}
+            style={{ zIndex: 2147483000 }}
+          >
+            <motion.div
+              className="bill-modal support-sheet mo-emailtpl-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="support-sheet-head">
+                <div>
+                  <div className="support-sheet-title">
+                    <MailCheck size={16} /> Email the customer
+                  </div>
+                  <div className="support-sheet-sub">
+                    {String(emailTplOrder["Email"] || "").trim() ||
+                      "No email on file"}{" "}
+                    · pick a template — sent instantly with tracking &amp; bill.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="support-sheet-x"
+                  onClick={() => setEmailTplOrder(null)}
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="mo-emailtpl-list">
+                {emailStatusTemplates(emailTplOrder).map((tpl) => (
+                  <button
+                    key={tpl.key}
+                    type="button"
+                    className="mo-emailtpl-row"
+                    disabled={emailingOrder !== ""}
+                    onClick={() => sendStatusEmailTemplate(emailTplOrder, tpl)}
+                  >
+                    <span className="mo-emailtpl-l">
+                      <span className="mo-emailtpl-label">{tpl.label}</span>
+                      <span className="mo-emailtpl-sub">{tpl.subheading}</span>
+                    </span>
+                    {emailingOrder === tpl.key ? (
+                      <Loader2 size={16} className="mo-spin" />
+                    ) : (
+                      <Send size={15} />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Bulk email status-template picker ===== */}
+      <AnimatePresence>
+        {emailBulkOpen && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !bulkEmailProgress && setEmailBulkOpen(false)}
+            style={{ zIndex: 2147483000 }}
+          >
+            <motion.div
+              className="bill-modal support-sheet mo-emailtpl-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {(() => {
+                const n = (
+                  selectedIds.length
+                    ? filteredOrders.filter((o) =>
+                        selectedIds.includes(o["Order ID"]),
+                      )
+                    : filteredOrders
+                ).filter((o) => String(o["Email"] || "").trim()).length;
+                return (
+                  <div className="support-sheet-head">
+                    <div>
+                      <div className="support-sheet-title">
+                        <MailCheck size={16} /> Email {n} customer
+                        {n === 1 ? "" : "s"}
+                      </div>
+                      <div className="support-sheet-sub">
+                        Pick a template — sent to every{" "}
+                        {selectedIds.length ? "selected" : "visible"} order with
+                        an email (with tracking &amp; bill).
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="support-sheet-x"
+                      onClick={() =>
+                        !bulkEmailProgress && setEmailBulkOpen(false)
+                      }
+                      aria-label="Close"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                );
+              })()}
+              {bulkEmailProgress ? (
+                <div className="mo-emailtpl-progress">
+                  <Loader2 size={22} className="mo-spin" />
+                  <span>
+                    Sending… {bulkEmailProgress.done}/{bulkEmailProgress.total}
+                  </span>
+                </div>
+              ) : (
+                <div className="mo-emailtpl-list">
+                  {emailStatusTemplates(null).map((tpl) => (
+                    <button
+                      key={tpl.key}
+                      type="button"
+                      className="mo-emailtpl-row"
+                      onClick={() => sendBulkStatusEmail(tpl)}
+                    >
+                      <span className="mo-emailtpl-l">
+                        <span className="mo-emailtpl-label">{tpl.label}</span>
+                        <span className="mo-emailtpl-sub">{tpl.subheading}</span>
+                      </span>
+                      <Send size={15} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ===== WhatsApp message picker (per order) ===== */}
       <AnimatePresence>

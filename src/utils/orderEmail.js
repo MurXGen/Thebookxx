@@ -70,7 +70,43 @@ export function sendOrderConfirmationEmail({ to, order, invoiceBase64 }) {
   return post({ type: "confirmation", to, order, invoiceBase64 });
 }
 
-export function sendOrderStatusEmail({ to, order, status, tracking, invoiceBase64 }) {
+export function sendOrderStatusEmail({
+  to,
+  order,
+  status,
+  tracking,
+  invoiceBase64,
+  heading,
+  subheading,
+  reviewBooks,
+}) {
   if (!to || !order) return Promise.resolve(false);
-  return post({ type: "status", to, order, status, tracking, invoiceBase64 });
+  return post({
+    type: "status",
+    to,
+    order,
+    status,
+    tracking,
+    invoiceBase64,
+    heading,
+    subheading,
+    reviewBooks,
+  });
+}
+
+// Book-specific review links for the "review" templates.
+export function slugify(text) {
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+export function reviewBooksFor(items) {
+  return (items || [])
+    .filter((b) => b && b.name)
+    .map((b) => ({
+      name: b.name,
+      url: `https://www.thebookx.in/books/${slugify(b.name)}`,
+    }));
 }

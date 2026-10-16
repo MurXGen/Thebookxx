@@ -490,13 +490,23 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     address: addressData.address || "",
     booksList: formattedBooksList,
     totalAmount: totalWithDelivery || finalPayable,
-    paymentType:
-      paymentLabel ||
-      (paymentType === "COD"
-        ? "Cash on Delivery"
-        : paymentType === "WhatsApp"
-          ? "WhatsApp"
-          : "UPI Payment"),
+    paymentType: (() => {
+      let pt =
+        paymentLabel ||
+        (paymentType === "COD"
+          ? "Cash on Delivery"
+          : paymentType === "WhatsApp"
+            ? "WhatsApp"
+            : "UPI Payment");
+      // Advance ("pay in two parts") orders always carry a ₹99-advance label so
+      // they never look like a plain full-COD order in the sheet / on cards.
+      if (advancePaid && !/advance/i.test(pt)) {
+        pt = /cash on delivery/i.test(pt)
+          ? "COD · ₹99 advance"
+          : `${pt} · ₹99 advance`;
+      }
+      return pt;
+    })(),
     deliveryType: fasterDeliveryChoice
       ? `Faster Delivery (${deliveryLabel})`
       : `Standard Delivery (${deliveryLabel})`,

@@ -1063,19 +1063,59 @@ export default function AddressModal({
         giftWrapAmt +
         bookmarkCharge +
         feeForThisOrder;
-      const resolvedPay =
+      let resolvedPay =
         paymentLabel ||
         (paymentType === "COD"
           ? "Cash on Delivery"
           : paymentType === "WhatsApp"
             ? "WhatsApp"
             : "UPI Payment");
+      // An advance ("pay in two parts") order must always read as a ₹99-advance
+      // in the Payment Type — never bare "Cash on Delivery" — so it's instantly
+      // distinguishable from a full-COD order.
+      if (advance && !/advance/i.test(resolvedPay)) {
+        resolvedPay = /cash on delivery/i.test(resolvedPay)
+          ? "COD · ₹99 advance"
+          : `${resolvedPay} · ₹99 advance`;
+      }
+      // Keep the itemised billing columns in sync on the confirmed/updated row
+      // too — otherwise wallet (only known on confirm) and the final amounts
+      // would be lost, since the first (draft) write recorded wallet as 0.
+      const n0 = (v) => Math.max(0, Math.round(Number(v) || 0));
+      const mrpTotal = (cartBooks || []).reduce((s, b) => {
+        const q = Number(b?.qty ?? b?.quantity ?? 1) || 1;
+        const unit = Number(
+          b?.originalPrice ?? b?.mrp ?? b?.price ?? b?.discountedPrice ?? 0,
+        );
+        return s + unit * q;
+      }, 0);
+      const walletForOrder = confirmed ? walletApplied || 0 : 0;
+      const advanceAmt = advance ? 99 : 0;
+      const codCollectForOrder =
+        paymentType === "COD" || advance
+          ? Math.max(0, totalForOrder - advanceAmt)
+          : 0;
       const updates = {
         "Order Status": confirmed ? "Processing" : "Unconfirmed",
         "Payment Type": resolvedPay,
         "Total Amount": String(totalForOrder),
         ...(advance ? { "Advance Paid": "Yes" } : {}),
         ...(appliedCoupon?.code ? { Coupon: appliedCoupon.code } : {}),
+        // Itemised billing
+        "Total MRP": String(n0(mrpTotal)),
+        "Item Discount": String(n0(mrpTotal - totalDiscounted)),
+        Subtotal: String(n0(totalDiscounted)),
+        "Offer Discount": String(n0(offerDiscount)),
+        "Coupon Discount": String(
+          n0(appliedCoupon ? couponDiscount : 0),
+        ),
+        "Wallet Applied": String(n0(walletForOrder)),
+        "Bookmark Qty": String(n0(bookmarkQty)),
+        "Bookmark Charge": String(n0(bookmarkCharge)),
+        "QuickReads Total": String(n0((quickReadItems || []).length * 19)),
+        "COD Fee": String(n0(feeForThisOrder)),
+        "Advance Amount": String(n0(advanceAmt)),
+        "COD Collectible": String(n0(codCollectForOrder)),
       };
       updateOrderRow(orderId, updates).catch((e) =>
         console.error("Order upsert update failed:", e),

@@ -4,6 +4,152 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "national-dictionary-day-2026-vocabulary-and-language-books-india": {
+    "id": "blog-080",
+    "title": "National Dictionary Day 2026 (16 October): 15 Books to Build Your Vocabulary and Write Better in India",
+    "slug": "national-dictionary-day-2026-vocabulary-and-language-books-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-16",
+    "lastModified": "2026-10-16",
+    "excerpt": "National Dictionary Day is 16 October. Build vocabulary and clearer writing with 15 books, from ₹1 with free delivery and Cash on Delivery across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "National Dictionary Day is observed in the United States on 16 October, the birthday of Noah Webster, often called the father of the American dictionary. Webster published A Compendious Dictionary of the English Language in 1806 and then An American Dictionary of the English Language in 1828, which carried about 70,000 entries. Long before that, Robert Cawdrey's A Table Alphabeticall (1604) is described as the first single-language English dictionary, with roughly 3,000 words."
+      },
+      {
+        "type": "paragraph",
+        "content": "The day is American in origin, but the habit it celebrates travels well. Indian readers move between English, Hindi and regional languages every day, and a stronger vocabulary helps with exams, interviews, emails and plain, confident conversation. This list pairs vocabulary builders with books on clear thinking and great prose, so you grow your word bank and learn when not to use it. Every title is at TheBookX, with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts",
+        "content": "Date: Friday, 16 October 2026. Observed in the US in honour of Noah Webster's birthday. Webster's 1828 dictionary had about 70,000 entries. Merriam-Webster notes that no dictionary has ever included every English word; words are generally added once enough people use them in a sustained way."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Start with a dedicated vocabulary builder"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/word-power-made-easy\" style=\"color:#fb8500;font-weight:600\">Word Power Made Easy</a> by Norman Lewis is a long-time favourite with competitive-exam and MBA aspirants. It teaches words in related clusters, through roots and short exercises, rather than as a dry list to memorise. Fifteen minutes a day is enough to see progress within a few weeks."
+      },
+      {
+        "type": "paragraph",
+        "content": "A dictionary only helps if you meet words in context, which is why reading widely matters. <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> by Mortimer Adler and Charles Van Doren shows how to read actively, mark what you do not understand and look it up. Keep a notebook beside you and write down each new word with the sentence where you found it."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Learn from writers who respect the reader"
+      },
+      {
+        "type": "paragraph",
+        "content": "George Orwell argued that political language is often designed to hide meaning, and his fiction shows it in action. <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> gave us Newspeak, a language shrunk on purpose to limit thought, and <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> shows how slogans can bend the truth. Both are short, sharp reads that make you notice the words around you."
+      },
+      {
+        "type": "paragraph",
+        "content": "For lightness and craft, <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho uses plain, simple sentences to carry a big idea, proof that a small vocabulary used well can move millions. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan does the same in an Indian setting, with gentle, precise English that never shows off."
+      },
+      {
+        "type": "blockquote",
+        "content": "A large vocabulary is a tool, not a trophy. The goal is the right word for the moment, not the longest one."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Words are also about clear thinking"
+      },
+      {
+        "type": "paragraph",
+        "content": "Clear writing starts with clear thinking. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is about cutting through mental clutter to decide, speak and write with purpose. It pairs naturally with <a href=\"/books/think-straight\" style=\"color:#fb8500;font-weight:600\">Think Straight</a>, which looks at how to change your thinking habits, and <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl, a book where every sentence earns its place."
+      },
+      {
+        "type": "paragraph",
+        "content": "If speaking is your weak spot, <a href=\"/books/think-faster-talk-smarter\" style=\"color:#fb8500;font-weight:600\">Think Faster, Talk Smarter</a> offers practical ways to organise your thoughts under pressure, and <a href=\"/books/how-to-win-friends-and-influence-people\" style=\"color:#fb8500;font-weight:600\">How to Win Friends and Influence People</a> by Dale Carnegie remains a classic on how the words you choose shape relationships."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple 30-day word habit"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one book from this list and read 15 to 20 pages every day.",
+          "Note down three unfamiliar words a day with the sentence they appeared in.",
+          "Look up each word, then write one sentence of your own using it.",
+          "Use one new word in a message or conversation each day, and review the list every Sunday.",
+          "Pair the routine with a habit tracker approach from <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear so it sticks."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories that celebrate words and reading"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> by Sudha Murty is a warm collection that reminds us how powerful it is to learn to read at any age. <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> by Satoshi Yagisawa is a cosy novel about a young woman who finds comfort among old books, ideal for a quiet weekend. And for a thoughtful look at what words can do to the mind, <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini shows how a single sentence, spoken or left unsaid, can shape a whole life."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Books from ₹1, delivered free",
+        "content": "TheBookX has books from ₹1, free delivery and Cash on Delivery across India. Add a dictionary-day read to your cart today and start your 30-day word habit this weekend."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/national-dictionary-day-2026-vocabulary-and-language-books-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/national-dictionary-day-2026-vocabulary-and-language-books-india.jpeg",
+        "alt": "A cheerful young woman reading a book with a notebook and cup of tea beside her",
+        "caption": "A few pages and a few new words a day is all it takes to build vocabulary.",
+        "category": "Reading List"
+      }
+    ],
+    "keywords": [
+      "national dictionary day 2026",
+      "books to improve vocabulary",
+      "word power made easy",
+      "how to build vocabulary India",
+      "best books to improve English",
+      "Noah Webster",
+      "16 October",
+      "books to read online India"
+    ],
+    "categories": [
+      "Awareness Days",
+      "Learning",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "When is National Dictionary Day?",
+        "answer": "It is observed every year on 16 October, the birthday of Noah Webster. In 2026 it falls on a Friday."
+      },
+      {
+        "question": "Which book is best to improve English vocabulary?",
+        "answer": "Word Power Made Easy by Norman Lewis is a popular choice because it teaches words through roots and related groups, with short daily exercises."
+      },
+      {
+        "question": "How can I learn new words without memorising lists?",
+        "answer": "Read widely, note each unfamiliar word with its sentence, look it up, and use it in your own sentence the same day. Revisit the list weekly."
+      },
+      {
+        "question": "Are these books available with free delivery in India?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "poverty-eradication-day-2026-books-on-poverty-inequality-and-hope-india": {
     "id": "blog-079",
     "title": "Poverty Eradication Day 2026 (17 October): 15 Books on Poverty, Inequality and Hope to Read in India",

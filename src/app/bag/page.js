@@ -754,6 +754,7 @@ Thank you!
     fasterDeliveryChoice,
     giftWrapSelected,
     shortLink,
+    opts = {},
   ) => {
     const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
     const deliveryLabel = getDeliveryLabel(
@@ -819,6 +820,14 @@ ${itemsBlock}${qrLines}
       totalAmount: totalWithDelivery,
       paymentMethod: paymentType,
       codHandlingFee: codFee,
+      // When the shopper reaches the UPI QR screen we ask the journalx bot to
+      // attach "✅ Passed / ❌ Failed" inline buttons for this order. journalx
+      // (which owns the bot + webhook) reads `actionButtons` + `orderId` and
+      // sends the message with the inline keyboard; a tap then sets the sheet
+      // status to Processing (pass) or Unconfirmed (fail). See the client note.
+      ...(opts.verifyButtons
+        ? { actionButtons: "verify", orderId: addressData.orderId || "" }
+        : {}),
     });
 
     // 1) Try sendBeacon first — it is designed to reliably deliver data even

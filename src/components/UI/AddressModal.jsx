@@ -889,7 +889,10 @@ export default function AddressModal({
   // Only AFTER the counter do we show the "Verify status" + WhatsApp buttons.
   // No status is ever auto-changed — confirmation comes from our team.
   useEffect(() => {
-    if (!showUPIPayment) return;
+    if (!showUPIPayment) {
+      upiQrNotifiedRef.current = ""; // allow a fresh buttoned message next open
+      return;
+    }
     setQrUnlocked(false);
     setUpiPhase("await");
     setUpiReassured(false);
@@ -903,6 +906,9 @@ export default function AddressModal({
         totalAmount: netPayable,
         paymentId: `UPI-${upiOrderRef || Date.now()}`,
       });
+      // QR is live and the 30s counter has started → post the order to Telegram
+      // with the Passed/Failed buttons so the team can mark it from the chat.
+      notifyUpiQrToTelegram();
     }, 2000);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1334,6 +1340,43 @@ export default function AddressModal({
       await notifyTelegram(addressData, "COD", isFaster, giftWrap, shortLink);
     } catch (e) {
       console.error("COD Telegram notification failed:", e);
+    }
+  };
+
+  // When the UPI QR screen opens (and its 30s counter starts), ask the journalx
+  // Telegram bot to post this order WITH "✅ Passed / ❌ Failed" inline buttons.
+  // Tapping Passed sets the sheet status to Processing (which the shopper's
+  // verify-poll then detects → success); Failed sets it back to Unconfirmed.
+  // We only fire once per QR open.
+  const upiQrNotifiedRef = useRef("");
+  const notifyUpiQrToTelegram = async () => {
+    if (!notifyTelegram) return;
+    const oid = String(upiOrderRef || "").trim();
+    if (!oid || upiQrNotifiedRef.current === oid) return; // once per order
+    upiQrNotifiedRef.current = oid;
+    try {
+      const addressData = {
+        name,
+        phone,
+        city,
+        pincode,
+        address: fullAddress,
+        district,
+        area,
+        fasterDelivery,
+        giftWrap,
+        orderId: oid,
+      };
+      await notifyTelegram(
+        addressData,
+        advanceMode ? "ADV" : "UPI",
+        fasterDelivery,
+        giftWrap,
+        "",
+        { verifyButtons: true },
+      );
+    } catch (e) {
+      console.error("UPI QR Telegram (buttons) notification failed:", e);
     }
   };
 

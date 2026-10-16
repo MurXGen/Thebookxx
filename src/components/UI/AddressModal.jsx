@@ -345,26 +345,38 @@ export default function AddressModal({
   // confirmed on the sheet. If still pending, we just tell the shopper.
   const handleVerifyStatus = async () => {
     if (upiPhase === "rechecking") return;
+    // Poll the sheet for ~30s with a live countdown shown INSIDE the button.
+    // The WhatsApp verify button stays visible & clickable the whole time. The
+    // moment our team confirms (removes the "(unconfirmed)" tag) → success.
+    clearUpiTimers();
+    setVerifyCountdown(30);
     setUpiPhase("rechecking");
-    try {
-      let confirmed = false;
-      if (upiOrderRef) {
-        const r = await fetchOrderStatusById(upiOrderRef);
-        confirmed = !!r?.confirmed;
-      }
-      if (confirmed) {
-        finalizeUPISuccess();
-      } else {
-        showToast(
-          "Not confirmed yet — our team will verify your payment shortly.",
-          "info",
-        );
-        setUpiPhase("ready");
-      }
-    } catch {
-      showToast("Couldn't check right now — please try again.", "error");
-      setUpiPhase("ready");
-    }
+    const check = async () => {
+      try {
+        if (upiOrderRef) {
+          const r = await fetchOrderStatusById(upiOrderRef);
+          if (r?.confirmed) {
+            finalizeUPISuccess();
+            return true;
+          }
+        }
+      } catch {}
+      return false;
+    };
+    const tick = setInterval(() => {
+      setVerifyCountdown((p) => (p <= 1 ? 0 : p - 1));
+    }, 1000);
+    const poll = setInterval(check, 5000);
+    const to = setTimeout(() => {
+      clearUpiTimers();
+      setUpiPhase((ph) => (ph === "rechecking" ? "ready" : ph));
+      showToast(
+        "Still not confirmed — our team will verify your payment shortly.",
+        "info",
+      );
+    }, 30500);
+    upiPollRef.current = { poll, tick, to };
+    check(); // immediate first check
   };
 
   const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
@@ -1383,13 +1395,17 @@ export default function AddressModal({
       setGiftCode("");
       setShowPayMethod(true);
     } else if (method === "COD") {
-      // Write the order as "(unconfirmed)" now so we always have a record of
-      // the intent, then show the COD review + instructions sheet. The order
-      // is only flipped to Processing (confirmed) when the shopper confirms.
       const oid = ensureCheckoutOid();
-      submitToGoogleForm("COD", isFaster, false, oid);
       codConfirmRef.current = { oid, isFaster };
-      setShowCodConfirm(true);
+      // --- COD confirmation / review sheet DISABLED for a smoother,
+      //     block-free checkout. Previously we wrote the order as
+      //     "(unconfirmed)" and showed the COD review sheet, flipping it to
+      //     Processing only on confirm. Now we place the order straight away.
+      //     Re-enable later by restoring the two commented lines below and
+      //     removing the direct handleConfirmCodOrder() call. ---
+      // submitToGoogleForm("COD", isFaster, false, oid);
+      // setShowCodConfirm(true);
+      handleConfirmCodOrder();
     }
   };
 
@@ -1645,7 +1661,8 @@ export default function AddressModal({
   const clearUpiTimers = () => {
     if (upiPollRef.current.poll) clearInterval(upiPollRef.current.poll);
     if (upiPollRef.current.tick) clearInterval(upiPollRef.current.tick);
-    upiPollRef.current = { poll: null, tick: null };
+    if (upiPollRef.current.to) clearTimeout(upiPollRef.current.to);
+    upiPollRef.current = { poll: null, tick: null, to: null };
   };
 
   // Payment confirmed (admin removed the "(unconfirmed)" tag) success screen.
@@ -1693,12 +1710,15 @@ export default function AddressModal({
       "_blank",
       "noopener,noreferrer",
     );
-    // ONLY send the message. Do NOT place / finalize the order or change its
-    // status — it stays "(unconfirmed)" until our team verifies it manually.
+    // Send the message AND kick off the same auto-verify poll as the Verify
+    // button (a 30s status check). The order itself is not finalized here — it
+    // flips to confirmed only when our team removes the "(unconfirmed)" tag,
+    // which the poll then picks up.
     showToast(
-      "Payment details sent on WhatsApp — our team will verify your payment shortly.",
+      "Payment details sent on WhatsApp — verifying your payment…",
       "success",
     );
+    handleVerifyStatus();
   };
 
   // Shopper taps the Verify button on the QR screen.
@@ -2364,7 +2384,12 @@ export default function AddressModal({
                       return;
                     }
                     setPaySel("UPI"); // online payment selected by default
-                    openAddrConfirm();
+                    // --- "Review your details" sheet DISABLED for a smoother,
+                    //     block-free checkout. Re-enable later by restoring
+                    //     openAddrConfirm() and removing the direct
+                    //     setShowPaySelect(true) call below. ---
+                    // openAddrConfirm();
+                    setShowPaySelect(true);
                   }}
                 >
                   <span className="flex flex-row items-center justify-center gap-6">
@@ -5219,15 +5244,22 @@ function UPIPaymentModal({
           </div>
 
           <div className="upiv3-actions-row">
-            {upiPhase === "counting" ? (
-              // Initial 30s counter — no buttons yet.
+            {upiPhase === "await" || upiPhase === "counting" ? (
+              // QR generating ("await") + the initial 30s counter ("counting")
+              // BOTH show the loader — no buttons yet. This stops the buttons
+              // from flashing for the first ~2s before the counter starts.
               <span className="sec-big-btn width100 is-loading flex flex-row items-center justify-center gap-6">
-                <span className="upiv3-spin dark" /> Verifying payment…{" "}
-                {verifyCountdown}s
+                <span className="upiv3-spin dark" />{" "}
+                {upiPhase === "await" ? (
+                  <>Preparing secure QR…</>
+                ) : (
+                  <>Verifying payment… {verifyCountdown}s</>
+                )}
               </span>
             ) : (
-              // After the counter: "Verify status" + WhatsApp, always both shown.
-              // While re-checking, the loader sits inside the Verify button.
+              // After the counter: "Verify status" + WhatsApp, always both shown
+              // on the same row. While re-checking, a 30s countdown sits inside
+              // the Verify button; the WhatsApp button stays active throughout.
               <div className="upiv3-verify-btns">
                 <button
                   type="button"
@@ -5237,7 +5269,8 @@ function UPIPaymentModal({
                 >
                   {upiPhase === "rechecking" ? (
                     <>
-                      <span className="upiv3-spin dark" /> Checking…
+                      <span className="upiv3-spin dark" /> Checking…{" "}
+                      {verifyCountdown}s
                     </>
                   ) : (
                     <>

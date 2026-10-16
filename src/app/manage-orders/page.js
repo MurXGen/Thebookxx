@@ -7152,12 +7152,17 @@ export default function ManageOrdersPage() {
           label: WEEKDAY_LABELS[i],
           sub: String(d.getDate()),
           count: 0,
+          revenue: 0,
           isToday: k === tKey,
         });
       }
       anOrders.forEach((o) => {
         const d = getOrderDate(o);
-        if (d && idx[dayKey(d)] != null) days[idx[dayKey(d)]].count++;
+        const i = d ? idx[dayKey(d)] : null;
+        if (i != null) {
+          days[i].count++;
+          days[i].revenue += Number(o.revenue) || 0;
+        }
       });
       return days;
     }
@@ -7175,13 +7180,18 @@ export default function ManageOrdersPage() {
           label: String(cur.getDate()),
           sub: WEEKDAY_LABELS[(cur.getDay() + 6) % 7],
           count: 0,
+          revenue: 0,
           isToday: k === tKey,
         });
         cur.setDate(cur.getDate() + 1);
       }
       anOrders.forEach((o) => {
         const d = getOrderDate(o);
-        if (d && idx[dayKey(d)] != null) days[idx[dayKey(d)]].count++;
+        const i = d ? idx[dayKey(d)] : null;
+        if (i != null) {
+          days[i].count++;
+          days[i].revenue += Number(o.revenue) || 0;
+        }
       });
       return days;
     }
@@ -7191,11 +7201,15 @@ export default function ManageOrdersPage() {
       label: m,
       sub: "",
       count: 0,
+      revenue: 0,
       isToday: i === nowM && yr === nowY,
     }));
     anOrders.forEach((o) => {
       const d = getOrderDate(o);
-      if (d) months[d.getMonth()].count++;
+      if (d) {
+        months[d.getMonth()].count++;
+        months[d.getMonth()].revenue += Number(o.revenue) || 0;
+      }
     });
     return months;
   }, [anOrders, analyticsPeriod, periodWindow]);
@@ -11137,12 +11151,22 @@ export default function ManageOrdersPage() {
                         key={i}
                         ref={b.isToday ? centerTodayRef : undefined}
                       >
-                        <span className="an2-bar-cap">{b.count || ""}</span>
+                        <span className="an2-bar-cap">
+                          {b.count || ""}
+                          {b.revenue > 0 && (
+                            <span className="an2-bar-rev">
+                              ₹
+                              {b.revenue >= 1000
+                                ? `${(b.revenue / 1000).toFixed(1)}k`
+                                : Math.round(b.revenue)}
+                            </span>
+                          )}
+                        </span>
                         <div className="an2-bar-track">
                           <div
                             className="an2-bar an2-bar-grad"
                             style={{ height: `${(b.count / max) * 100}%` }}
-                            data-tip={`${b.label}${b.sub ? " " + b.sub : ""}: ${b.count} order${b.count === 1 ? "" : "s"}`}
+                            data-tip={`${b.label}${b.sub ? " " + b.sub : ""}: ${b.count} order${b.count === 1 ? "" : "s"} · ₹${Math.round(b.revenue).toLocaleString("en-IN")}`}
                           />
                         </div>
                         <span className="an2-bar-x">{b.label}</span>

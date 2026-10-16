@@ -37,6 +37,19 @@ const SHEET_HEADERS = {
   userAgent: "User Agent",
   shippingId: "Shipping ID",
   coupon: "Coupon",
+  // ── Itemised billing breakdown (one ₹ value per column) ──
+  totalMrp: "Total MRP",
+  itemDiscount: "Item Discount",
+  subtotal: "Subtotal",
+  offerDiscountAmt: "Offer Discount",
+  couponDiscountAmt: "Coupon Discount",
+  walletApplied: "Wallet Applied",
+  bookmarkQtyCol: "Bookmark Qty",
+  bookmarkChargeCol: "Bookmark Charge",
+  quickReadsTotalCol: "QuickReads Total",
+  codFeeCol: "COD Fee",
+  advanceAmountCol: "Advance Amount",
+  codCollectibleCol: "COD Collectible",
 };
 
 // Field IDs from your Google Form URL
@@ -379,6 +392,17 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     // Applied coupon code + its discount (stacked on the cart offer).
     coupon = "",
     couponDiscount = 0,
+    // ── Itemised billing inputs (from the checkout bill) ──
+    // Discounted item total (before add-ons/delivery). Falls back to
+    // totalDiscounted when not supplied explicitly.
+    subtotal: subtotalIn,
+    // Pre-discount MRP total. When absent we derive it from the cart lines.
+    totalOriginal: totalOriginalIn,
+    codHandlingFee = 0,
+    // ₹ amounts for the ₹99-advance split (paid online now / collect at door).
+    advanceAmount: advanceAmountIn = 0,
+    codCollectible: codCollectibleIn,
+    quickReadUnitPrice = 19,
     // When true the order is a completed checkout (→ "Processing"); when false
     // it is a draft / payment-pending write (→ "Unconfirmed", admin verifies).
     confirmed = false,
@@ -404,6 +428,41 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     minute: "2-digit",
     second: "2-digit",
   });
+
+  // ── Itemised billing breakdown ──────────────────────────────────────────
+  const n0 = (v) => {
+    const x = Math.round(Number(v) || 0);
+    return Number.isFinite(x) ? x : 0;
+  };
+  const subtotalVal = n0(
+    subtotalIn != null ? subtotalIn : totalDiscounted,
+  );
+  // Total MRP: use the supplied value, else sum the cart lines' original price
+  // (falling back to the discounted price when no MRP is known → 0 discount).
+  const mrpFromCart = (cartBooks || []).reduce((s, b) => {
+    const qty = Number(b?.qty ?? b?.quantity ?? 1) || 1;
+    const unit = Number(
+      b?.originalPrice ?? b?.mrp ?? b?.price ?? b?.discountedPrice ?? 0,
+    );
+    return s + unit * qty;
+  }, 0);
+  const totalMrpVal = n0(totalOriginalIn != null ? totalOriginalIn : mrpFromCart);
+  const itemDiscountVal = Math.max(0, totalMrpVal - subtotalVal);
+  const quickReadsTotalVal = n0(
+    (quickReadItems || []).length * (Number(quickReadUnitPrice) || 19),
+  );
+  const codFeeVal = n0(codHandlingFee);
+  const advanceAmountVal = advancePaid ? n0(advanceAmountIn || 99) : 0;
+  const grandTotalVal = n0(totalWithDelivery || finalPayable);
+  // Amount collected at the door: supplied value, else for a COD/advance order
+  // it's the grand total minus whatever was prepaid online (the ₹99 advance).
+  const isCod = paymentType === "COD" || advancePaid;
+  const codCollectibleVal =
+    codCollectibleIn != null
+      ? n0(codCollectibleIn)
+      : isCod
+        ? Math.max(0, grandTotalVal - advanceAmountVal)
+        : 0;
 
   const orderId = orderIdIn || `ORD${Date.now()}`;
   // Store the customer's own order-detail link (their profile order page) rather
@@ -476,6 +535,19 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     // Wallet spent is now recorded in the dedicated Wallet tab (see the debit
     // write below), not on the order row.
     wallet: "",
+    // ── Itemised billing columns (₹) — power the order-page bill breakdown ──
+    totalMrp: totalMrpVal,
+    itemDiscount: itemDiscountVal,
+    subtotal: subtotalVal,
+    offerDiscountAmt: n0(offerDiscount),
+    couponDiscountAmt: n0(coupon ? couponDiscount : 0),
+    walletApplied: n0(walletUsed),
+    bookmarkQtyCol: n0(bookmarkQty),
+    bookmarkChargeCol: n0(bookmarkChargeIn),
+    quickReadsTotalCol: quickReadsTotalVal,
+    codFeeCol: codFeeVal,
+    advanceAmountCol: advanceAmountVal,
+    codCollectibleCol: codCollectibleVal,
     timestamp: formattedTimestamp,
     userAgent:
       typeof navigator !== "undefined"

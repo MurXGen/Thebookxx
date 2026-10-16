@@ -47321,17 +47321,28 @@ img[data-loaded="true"] {
   padding: 10px 14px 28px;
   background: #fff;
 }
-/* White section cards for Step 1. */
+/* Step 1: the name/address + contact fields now sit flat on the canvas (no
+   boxed container) — the inputs keep their own borders, so the form reads
+   cleaner and less nested. The delivery-speed choice keeps its own container
+   below so it stands out. */
 .addr-modal .af-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin-top: 18px;
+  box-shadow: none;
+}
+.addr-modal .af-card:first-of-type {
+  margin-top: 8px;
+}
+/* Delivery-speed stays a distinct bordered container. */
+.addr-modal .af-deliv-card {
   background: #fff;
   border: 1px solid var(--hairline, #ececec);
   border-radius: 16px;
   padding: 14px;
-  margin-top: 16px;
   box-shadow: var(--shadow-xs, 0 1px 2px rgba(10, 10, 10, 0.05));
-}
-.addr-modal .af-card:first-of-type {
-  margin-top: 6px;
 }
 /* Delivery-speed card header spacing inside its white card. */
 .addr-modal .af-deliv-card .deliv-addon-head {

@@ -771,26 +771,72 @@ export default function OrderDetailPage() {
     const cMatch = String(order?.["Offer Applied"] || "").match(
       /Coupon\s+\S+\s*\(₹(\d+)\s*OFF\)/i,
     );
-    const couponDiscount = cMatch ? parseInt(cMatch[1], 10) : 0;
+    let couponDiscount = cMatch ? parseInt(cMatch[1], 10) : 0;
+
+    // Prefer the dedicated itemised billing columns when they're present (new
+    // orders). Old orders (no columns) keep the parsed/derived values above.
+    const col = (name) => {
+      const v = order?.[name];
+      if (v === undefined || v === null || String(v).trim() === "") return null;
+      const num = parseFloat(String(v).replace(/[^\d.-]/g, ""));
+      return Number.isFinite(num) ? num : null;
+    };
+    const cSub = col("Subtotal");
+    const cMrp = col("Total MRP");
+    const cItemDisc = col("Item Discount");
+    const cOffer = col("Offer Discount");
+    const cCoupon = col("Coupon Discount");
+    const cWallet = col("Wallet Applied");
+    const cBookmark = col("Bookmark Charge");
+    const cQr = col("QuickReads Total");
+    const cCodFee = col("COD Fee");
+    const cAdvance = col("Advance Amount");
+    const cCollect = col("COD Collectible");
+
+    const subF = cSub != null ? cSub : sub;
+    const listingF = cMrp != null ? cMrp : listing;
+    const giftF = giftFee;
+    const bookmarkF = cBookmark != null ? cBookmark : bookmarkFee;
+    const codFeeF = cCodFee != null ? cCodFee : codFee;
+    const offerF = cOffer != null ? cOffer : 0;
+    if (cCoupon != null) couponDiscount = cCoupon;
+    const walletF = cWallet != null ? cWallet : 0;
+    const qrF = cQr != null ? cQr : 0;
+    // For new orders (dedicated columns) the offer, coupon and wallet each get
+    // their OWN line, so the "Discount" line is just the auto offer. Old orders
+    // keep the single derived "discount" (which rolls everything together).
+    const hasBillCols =
+      cSub != null || cOffer != null || cItemDisc != null || cMrp != null;
+    const discountF = hasBillCols ? offerF : discount;
+    const advanceAmountF = cAdvance != null ? cAdvance : advanceAmount;
+    const payOnDeliveryF =
+      cCollect != null ? cCollect : Math.max(0, grand - advanceAmountF);
+    const itemDiscountF =
+      cItemDisc != null ? cItemDisc : Math.max(0, listingF - subF);
+
     return {
-      sub,
+      sub: subF,
       grand,
       deliveryFee,
-      giftFee,
-      bookmarkFee,
+      giftFee: giftF,
+      bookmarkFee: bookmarkF,
       bookmarkCharged: addons.bookmarkCharged,
       bookmarkFree: addons.bookmarkFree,
       bookmarkQty: addons.bookmarkQty,
-      codFee,
-      discount,
+      quickReadsTotal: qrF,
+      codFee: codFeeF,
+      discount: discountF,
+      offerDiscount: offerF,
+      walletApplied: walletF,
+      itemDiscount: itemDiscountF,
       freeDelivery,
       deliveryLabel: !freeDelivery && isHandling ? "Handling & Care" : "Delivery",
-      listing,
-      savings: Math.max(0, listing - sub),
+      listing: listingF,
+      savings: Math.max(0, listingF - subF),
       isCOD,
       advancePaid,
-      advanceAmount,
-      payOnDelivery,
+      advanceAmount: advanceAmountF,
+      payOnDelivery: payOnDeliveryF,
       couponCode,
       couponDiscount,
     };
@@ -811,6 +857,13 @@ export default function OrderDetailPage() {
       discount,
       freeDelivery,
       deliveryLabel,
+      quickReadsTotal,
+      couponCode,
+      couponDiscount,
+      walletApplied,
+      advancePaid,
+      advanceAmount,
+      payOnDelivery,
     } = bd;
     const W = 700;
     const P = 44;
@@ -821,8 +874,12 @@ export default function OrderDetailPage() {
       1 +
       (giftFee > 0 ? 1 : 0) +
       (bookmarkFee > 0 ? 1 : 0) +
+      (quickReadsTotal > 0 ? 1 : 0) +
       (codFee > 0 ? 1 : 0) +
-      (discount > 0 ? 1 : 0);
+      (discount > 0 ? 1 : 0) +
+      (couponDiscount > 0 ? 1 : 0) +
+      (walletApplied > 0 ? 1 : 0) +
+      (advancePaid ? 2 : 0);
     const H = 300 + items.length * rowH + summaryCount * 26 + 70 + 70;
     const canvas = document.createElement("canvas");
     canvas.width = W * scale;
@@ -908,8 +965,17 @@ export default function OrderDetailPage() {
         `Bookmarks (${bookmarkCharged} × ₹9${bookmarkFree > 0 ? `, ${bookmarkFree} free` : ""})`,
         `+₹${bookmarkFee}`,
       );
+    if (quickReadsTotal > 0) sumLine("QuickReads", `+₹${quickReadsTotal}`);
     if (codFee > 0) sumLine("COD handling fee", `+₹${codFee}`);
-    if (discount > 0) sumLine("Discount", `−₹${discount}`, "#008f0c");
+    if (discount > 0) sumLine("Offer discount", `−₹${discount}`, "#008f0c");
+    if (couponDiscount > 0)
+      sumLine(
+        `Coupon${couponCode ? ` (${couponCode})` : ""}`,
+        `−₹${couponDiscount}`,
+        "#008f0c",
+      );
+    if (walletApplied > 0)
+      sumLine("Wallet balance", `−₹${walletApplied}`, "#008f0c");
     y += 18;
     ctx.strokeStyle = "#cccccc";
     ctx.setLineDash([4, 4]);
@@ -921,11 +987,27 @@ export default function OrderDetailPage() {
     y += 28;
     ctx.fillStyle = "#0a0a0a";
     ctx.font = "700 17px Arial";
-    ctx.fillText("Total paid", P, y);
+    ctx.fillText(advancePaid ? "Order total" : "Total paid", P, y);
     ctx.textAlign = "right";
     ctx.fillText(`₹${grand}`, W - P, y);
     ctx.textAlign = "left";
     y += 36;
+    if (advancePaid) {
+      ctx.font = "600 13px Arial";
+      ctx.fillStyle = "#008f0c";
+      ctx.fillText("Paid online (advance)", P, y);
+      ctx.textAlign = "right";
+      ctx.fillText(`−₹${advanceAmount}`, W - P, y);
+      ctx.textAlign = "left";
+      y += 24;
+      ctx.fillStyle = "#0a0a0a";
+      ctx.font = "700 14px Arial";
+      ctx.fillText("Collect at door", P, y);
+      ctx.textAlign = "right";
+      ctx.fillText(`₹${payOnDelivery}`, W - P, y);
+      ctx.textAlign = "left";
+      y += 30;
+    }
     ctx.fillStyle = "#888888";
     ctx.font = "12px Arial";
     ctx.fillText(
@@ -1616,7 +1698,7 @@ export default function OrderDetailPage() {
             <MapPin size={26} />
             <strong>Map unavailable</strong>
             <span>
-              We couldn't locate the delivery area for this order right now.
+              We couldn&apos;t locate the delivery area for this order right now.
             </span>
           </div>
         )}
@@ -2031,9 +2113,15 @@ export default function OrderDetailPage() {
             <span>+₹{bd.codFee}</span>
           </div>
         )}
+        {bd.quickReadsTotal > 0 && (
+          <div className="od-price-row">
+            <span>QuickReads</span>
+            <span>+₹{bd.quickReadsTotal}</span>
+          </div>
+        )}
         {bd.discount > 0 && (
           <div className="od-price-row od-price-save">
-            <span>Discount</span>
+            <span>Offer discount</span>
             <span>−₹{bd.discount}</span>
           </div>
         )}
@@ -2043,6 +2131,12 @@ export default function OrderDetailPage() {
             <span>
               {bd.couponDiscount > 0 ? `−₹${bd.couponDiscount}` : "Applied"}
             </span>
+          </div>
+        )}
+        {bd.walletApplied > 0 && (
+          <div className="od-price-row od-price-save">
+            <span>Wallet balance</span>
+            <span>−₹{bd.walletApplied}</span>
           </div>
         )}
         <div className="od-price-row od-price-total">

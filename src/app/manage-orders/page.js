@@ -9440,16 +9440,24 @@ export default function ManageOrdersPage() {
                               const advancePaid = /^\s*yes/i.test(
                                 String(order["Advance Paid"] || ""),
                               );
-                              const orderType = isCOD
-                                ? "Cash on delivery"
-                                : isPrepaid
-                                  ? "Prepaid"
-                                  : "Online (UPI)";
-                              const payType = advancePaid
-                                ? "₹99-Advance paid"
+                              // Payment type is now MERGED into one "Order"
+                              // field — type + payment state in a single badge.
+                              const orderLabel = advancePaid
+                                ? "COD · ₹99 advance paid"
                                 : isCOD
                                   ? "Cash on delivery"
-                                  : "Paid online";
+                                  : "Online (UPI) · Paid";
+                              const num = (v) =>
+                                parseFloat(
+                                  String(v ?? "").replace(/[^\d.]/g, ""),
+                                ) || 0;
+                              const grandAmt = num(order["Total Amount"]);
+                              const advAmt = advancePaid
+                                ? num(order["Advance Amount"]) || 99
+                                : 0;
+                              const codCollect =
+                                num(order["COD Collectible"]) ||
+                                Math.max(0, grandAmt - advAmt);
                               const w = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");
                               const sz = String(order["Sizes(Lxbxh)"] || "")
                                 .trim()
@@ -9464,17 +9472,25 @@ export default function ManageOrdersPage() {
                               return (
                                 <div className="mo2-grid" onClick={(e) => e.stopPropagation()}>
                                   <div className="mo2-cell">
-                                    <span className="mo2-cell-k">Order type</span>
-                                    <span className="mo2-badge-pill mo2-badge-blue">
-                                      {orderType}
+                                    <span className="mo2-cell-k">Order</span>
+                                    <span
+                                      className={`mo2-badge-pill ${isCOD && !advancePaid ? "mo2-badge-blue" : "mo2-badge-green"}`}
+                                    >
+                                      {orderLabel}
                                     </span>
                                   </div>
                                   <div className="mo2-cell mo2-cell-r">
-                                    <span className="mo2-cell-k">Payment type</span>
+                                    <span className="mo2-cell-k">
+                                      {isCOD ? "Collect at door" : "Payment"}
+                                    </span>
                                     <span
-                                      className={`mo2-badge-pill ${advancePaid ? "mo2-badge-green" : /online|upi|paid/i.test(payType) && !/cod|cash/i.test(payType) ? "mo2-badge-green" : "mo2-badge-grey"}`}
+                                      className={`mo2-cell-v${isCOD ? "" : " mo2-v-green"}`}
                                     >
-                                      {payType}
+                                      {isCOD
+                                        ? `₹${codCollect.toLocaleString("en-IN")}`
+                                        : grandAmt
+                                          ? `Paid ₹${grandAmt.toLocaleString("en-IN")}`
+                                          : "Paid"}
                                     </span>
                                   </div>
                                   <div className="mo2-cell">

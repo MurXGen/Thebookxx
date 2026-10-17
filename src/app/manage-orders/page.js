@@ -5110,6 +5110,12 @@ export default function ManageOrdersPage() {
   const [rbPick, setRbPick] = useState(null); // chosen replacement book
   const [rbRecompute, setRbRecompute] = useState(false); // re-tier delivery/offers?
   const [rbBusy, setRbBusy] = useState(false);
+  // "Add a book" to an existing order — picker + checkout-style bill recompute.
+  const [abOrder, setAbOrder] = useState(null); // order being added to
+  const [abQuery, setAbQuery] = useState(""); // catalogue search text
+  const [abPick, setAbPick] = useState(null); // chosen book to add
+  const [abQty, setAbQty] = useState(1); // how many copies
+  const [abBusy, setAbBusy] = useState(false);
   // ── Delivered reconcile (India Post bulk-articles-tracking upload) ──
   // Upload the India Post bulk-tracking .xlsx; every article the file marks
   // "Delivered" is matched to an order by Shipping ID. COD orders are proposed
@@ -8402,6 +8408,205 @@ export default function ManageOrdersPage() {
     }
   };
 
+  // ── Add a book to an existing order ──────────────────────────────────────
+  const openAddBook = (order) => {
+    setAbOrder(order);
+    setAbQuery("");
+    setAbPick(null);
+    setAbQty(1);
+  };
+  const closeAddBook = () => {
+    setAbOrder(null);
+    setAbPick(null);
+    setAbQuery("");
+    setAbQty(1);
+  };
+  // Recompute the whole bill the way checkout does once the new book is added:
+  // subtotal from the full cart, delivery re-tiered on the new subtotal, and the
+  // already-recorded gift / bookmark / COD fees + offer / coupon / wallet kept.
+  const abCompute = () => {
+    if (!abOrder) return null;
+    const lines =
+      abOrder.parsedBooks || parseBooksList(abOrder["Books List"]) || [];
+    const oldTotalPaid =
+      Number(abOrder["Total Amount"]) || Number(abOrder.revenue) || 0;
+    const qty = Math.max(1, Number(abQty) || 1);
+    const unit = abPick
+      ? Math.round(Number(abPick.discountedPrice ?? abPick.price ?? 0))
+      : 0;
+    const addLineTotal = unit * qty;
+    // Merge into an existing identical line, else append a new one.
+    let newLines = lines;
+    if (abPick) {
+      const idx = lines.findIndex(
+        (b) =>
+          String(b.name || "").toLowerCase() ===
+          String(abPick.name || "").toLowerCase(),
+      );
+      if (idx >= 0) {
+        newLines = lines.map((b, i) => {
+          if (i !== idx) return b;
+          const nq = (Number(b.quantity) || 1) + qty;
+          const u = Number(b.price) || unit;
+          return { ...b, quantity: nq, price: u, total: u * nq };
+        });
+      } else {
+        newLines = [
+          ...lines,
+          { name: abPick.name, quantity: qty, price: unit, total: addLineTotal },
+        ];
+      }
+    }
+    const newSubtotal = newLines.reduce((s, b) => s + (b.total || 0), 0);
+    const num = (k) => {
+      const v = parseFloat(String(abOrder[k] ?? "").replace(/[^\d.-]/g, ""));
+      return Number.isFinite(v) ? v : 0;
+    };
+    const giftFee = num("Gift Wrap Charge");
+    const bookmarkFee = num("Bookmark Charge");
+    const codFee = num("COD Fee");
+    const quickReadsTotal = num("QuickReads Total");
+    const offerDiscount = num("Offer Discount");
+    const couponDiscount = num("Coupon Discount");
+    const walletApplied = num("Wallet Applied");
+    const isFaster = /faster|express/i.test(abOrder["Delivery Type"] || "");
+    const delivery = getDeliveryCharge(newSubtotal, isFaster, false);
+    const freeDelivery = delivery === 0;
+    const isCOD = /cash|cod/i.test(abOrder["Payment Type"] || "");
+    const advancePaid = /^\s*yes/i.test(String(abOrder["Advance Paid"] || ""));
+    // MRP + item discount for the bill breakdown (only when the order already
+    // carries a Total MRP so we can extend it meaningfully).
+    const oldMrp = num("Total MRP");
+    const addMrpUnit = Math.round(
+      Number(abPick?.originalPrice ?? abPick?.price ?? unit) || 0,
+    );
+    const newMrp = oldMrp > 0 && abPick ? oldMrp + addMrpUnit * qty : oldMrp;
+    const itemDiscount = newMrp > 0 ? Math.max(0, newMrp - newSubtotal) : 0;
+
+    let newTotal =
+      newSubtotal +
+      delivery +
+      giftFee +
+      bookmarkFee +
+      codFee +
+      quickReadsTotal -
+      offerDiscount -
+      couponDiscount -
+      walletApplied;
+    newTotal = Math.max(0, Math.round(newTotal));
+    const delta = newTotal - oldTotalPaid;
+    const advanceAmount = advancePaid ? 99 : 0;
+    const codCollectible = Math.max(0, newTotal - advanceAmount);
+    return {
+      lines,
+      newLines,
+      oldTotalPaid,
+      newSubtotal,
+      newMrp,
+      itemDiscount,
+      delivery,
+      freeDelivery,
+      giftFee,
+      bookmarkFee,
+      codFee,
+      quickReadsTotal,
+      offerDiscount,
+      couponDiscount,
+      walletApplied,
+      newTotal,
+      delta,
+      isCOD,
+      advancePaid,
+      advanceAmount,
+      codCollectible,
+      qty,
+      addName: abPick?.name || "",
+      addUnit: unit,
+      addLineTotal,
+    };
+  };
+  const abFirstName = () =>
+    String(abOrder?.["Customer Name"] || "")
+      .replace(/\(unconfirmed\)/i, "")
+      .trim()
+      .split(/\s+/)[0] || "there";
+  const abOrderLink = () => {
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://thebookx.in";
+    const p10 = String(abOrder?.["Phone Number"] || "")
+      .replace(/\D/g, "")
+      .slice(-10);
+    const oid = abOrder?.["Order ID"] || "";
+    return `${origin}/profile/${p10}/orders/${encodeURIComponent(oid)}?pay=online`;
+  };
+  // Write the added book + the full recomputed billing columns to the sheet.
+  const abSaveOrder = async (c, extraFields = {}) => {
+    const oid = abOrder["Order ID"];
+    const fields = {
+      "Books List": serializeBooksList(c.newLines),
+      "Total Amount": String(extraFields["Total Amount"] ?? c.newTotal),
+      Subtotal: String(c.newSubtotal),
+      "Delivery Charge": String(c.delivery),
+      ...(c.newMrp > 0 ? { "Total MRP": String(c.newMrp) } : {}),
+      ...(c.newMrp > 0 ? { "Item Discount": String(c.itemDiscount) } : {}),
+      "COD Collectible": String(
+        extraFields["Total Amount"] != null
+          ? extraFields["Total Amount"]
+          : c.codCollectible,
+      ),
+      ...extraFields,
+    };
+    patchLocalOrder(oid, {
+      ...fields,
+      revenue: Number(fields["Total Amount"]) || c.newTotal,
+      parsedBooks: c.newLines,
+    });
+    await updateOrderRow(oid, fields);
+  };
+  // COD order (or no extra due): just update the books + new collectible total.
+  const applyAddBookUpdate = async () => {
+    const c = abCompute();
+    if (!c || !abPick) return;
+    setAbBusy(true);
+    try {
+      await abSaveOrder(c);
+      showToast(`Added "${c.addName}" · new total ₹${c.newTotal}`, "success");
+      setTimeout(fetchOrders, 1300);
+      closeAddBook();
+    } finally {
+      setAbBusy(false);
+    }
+  };
+  // Prepaid order: the added book increases the bill. The already-paid amount
+  // stays paid; the difference is collected (online link or COD).
+  const applyAddBookBalance = async (mode) => {
+    const c = abCompute();
+    if (!c || !abPick) return;
+    const due = Math.max(0, c.delta);
+    setAbBusy(true);
+    try {
+      // Keep the full recomputed bill on the row, but flip collection of the
+      // difference: set it COD for the balance so it shows as "to collect".
+      await abSaveOrder(c, {
+        "Payment Type": "Cash on Delivery",
+        "Advance Paid": "No",
+      });
+      const link = abOrderLink();
+      const msg =
+        mode === "cod"
+          ? `Hi ${abFirstName()}, we added "${c.addName}" to your order ${abOrder["Order ID"]}. The extra ₹${due} will be collected as cash on delivery. Prefer to pay online instead? Tap here: ${link} 🙏`
+          : `Hi ${abFirstName()}, we added "${c.addName}" to your order ${abOrder["Order ID"]}. That's ₹${due} more — please pay the difference online here: ${link} 🙏 (or it'll be collected as cash on delivery.)`;
+      openWhatsApp(abOrder["Phone Number"], msg);
+      showToast(`Balance ₹${due} set to collect ✓`, "success");
+      setTimeout(fetchOrders, 1300);
+      closeAddBook();
+    } finally {
+      setAbBusy(false);
+    }
+  };
+
   // Append a NEW order row via the Apps Script (action=append). `fields` is
   // keyed by sheet-column header (e.g. { "Order ID": "...", ... }). Used instead
   // of the Google Form, which rejects submissions when a question is Required.
@@ -9928,6 +10133,17 @@ export default function ManageOrdersPage() {
                                         }}
                                       >
                                         <RefreshCw size={14} /> Replace a book
+                                      </button>
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item"
+                                        onClick={() => {
+                                          openAddBook(order);
+                                          setCardMenuId(null);
+                                        }}
+                                      >
+                                        <Plus size={14} /> Add a book
                                       </button>
                                       <div className="mo-kebab-group">Advanced</div>
                                       <button
@@ -16249,6 +16465,294 @@ export default function ManageOrdersPage() {
                                 disabled={rbBusy}
                               >
                                 {rbBusy ? (
+                                  <Loader2 size={15} className="mo-spin" />
+                                ) : (
+                                  <Truck size={15} />
+                                )}
+                                Collect COD
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  );
+                })()}
+            </AnimatePresence>,
+            document.body,
+          )}
+
+        {/* Add-a-book — slide-up sheet (portaled, no blur). */}
+        {typeof document !== "undefined" &&
+          createPortal(
+            <AnimatePresence>
+              {abOrder &&
+                (() => {
+                  const c = abCompute();
+                  const results = abQuery.trim()
+                    ? ALL_BOOKS.filter((b) =>
+                        String(b.name || "")
+                          .toLowerCase()
+                          .includes(abQuery.trim().toLowerCase()),
+                      ).slice(0, 20)
+                    : [];
+                  return (
+                    <motion.div
+                      className="mo-bd-overlay"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      onClick={closeAddBook}
+                    >
+                      <motion.div
+                        className="mo-bd-sheet mo-rb-sheet"
+                        initial={{ y: "100%" }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.32, ease: "easeOut" }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="mo-ws-head">
+                          <div className="mo-ws-head-txt">
+                            <span className="mo-ws-title">
+                              <Plus size={16} /> Add a book
+                            </span>
+                            <span className="mo-ws-sub">
+                              {abOrder["Customer Name"]} ·{" "}
+                              {c?.isCOD ? "COD" : "Prepaid"}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            className="mo-ws-close"
+                            onClick={closeAddBook}
+                            aria-label="Close"
+                          >
+                            <X size={18} />
+                          </button>
+                        </div>
+
+                        <div className="mo-rb-body">
+                          {/* current cart */}
+                          <div className="mo-rb-section-label">
+                            Currently in this order
+                          </div>
+                          <div className="mo-rb-lines">
+                            {(c?.lines || []).map((b, i) => (
+                              <div key={i} className="mo-rb-line" aria-disabled>
+                                <span className="mo-rb-line-name">{b.name}</span>
+                                <span className="mo-rb-line-meta">
+                                  ×{b.quantity} · ₹{b.total}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* search catalogue */}
+                          <div className="mo-rb-section-label">Add a book</div>
+                          <div className="mo-rb-search">
+                            <Search size={15} />
+                            <input
+                              className="mo-rb-search-input"
+                              placeholder="Search a book by title…"
+                              value={abQuery}
+                              onChange={(e) => {
+                                setAbQuery(e.target.value);
+                                setAbPick(null);
+                              }}
+                              autoFocus
+                            />
+                          </div>
+                          {abPick ? (
+                            <div className="mo-rb-picked">
+                              <Check size={14} /> {abPick.name} · ₹
+                              {Math.round(
+                                abPick.discountedPrice ?? abPick.price ?? 0,
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setAbPick(null);
+                                  setAbQuery("");
+                                }}
+                              >
+                                Change
+                              </button>
+                            </div>
+                          ) : (
+                            results.length > 0 && (
+                              <div className="mo-rb-results">
+                                {results.map((b) => (
+                                  <button
+                                    key={b.id}
+                                    type="button"
+                                    className="mo-rb-result"
+                                    onClick={() => setAbPick(b)}
+                                  >
+                                    <span className="mo-rb-result-name">
+                                      {b.name}
+                                    </span>
+                                    <span className="mo-rb-result-price">
+                                      ₹
+                                      {Math.round(
+                                        b.discountedPrice ?? b.price ?? 0,
+                                      )}
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+                            )
+                          )}
+
+                          {/* quantity */}
+                          {abPick && (
+                            <div className="mo-rb-qtyrow">
+                              <span>Quantity</span>
+                              <div className="mo-rb-qtyctrl">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setAbQty((q) => Math.max(1, (q || 1) - 1))
+                                  }
+                                  aria-label="Decrease"
+                                >
+                                  −
+                                </button>
+                                <span>{abQty}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => setAbQty((q) => (q || 1) + 1)}
+                                  aria-label="Increase"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* checkout-style bill preview */}
+                          {abPick && c && (
+                            <div className="mo-rb-preview">
+                              {c.newMrp > 0 && (
+                                <div className="mo-rb-prow">
+                                  <span>Total MRP</span>
+                                  <span>₹{c.newMrp}</span>
+                                </div>
+                              )}
+                              {c.itemDiscount > 0 && (
+                                <div className="mo-rb-prow mo-rb-save">
+                                  <span>Discount on MRP</span>
+                                  <span>−₹{c.itemDiscount}</span>
+                                </div>
+                              )}
+                              <div className="mo-rb-prow">
+                                <span>Total after discount</span>
+                                <span>₹{c.newSubtotal}</span>
+                              </div>
+                              {c.offerDiscount > 0 && (
+                                <div className="mo-rb-prow mo-rb-save">
+                                  <span>Offer discount</span>
+                                  <span>−₹{c.offerDiscount}</span>
+                                </div>
+                              )}
+                              {c.couponDiscount > 0 && (
+                                <div className="mo-rb-prow mo-rb-save">
+                                  <span>Coupon</span>
+                                  <span>−₹{c.couponDiscount}</span>
+                                </div>
+                              )}
+                              <div className="mo-rb-prow">
+                                <span>Delivery</span>
+                                <span>
+                                  {c.freeDelivery ? "FREE" : `+₹${c.delivery}`}
+                                </span>
+                              </div>
+                              {c.giftFee > 0 && (
+                                <div className="mo-rb-prow">
+                                  <span>Gift wrap</span>
+                                  <span>+₹{c.giftFee}</span>
+                                </div>
+                              )}
+                              {c.bookmarkFee > 0 && (
+                                <div className="mo-rb-prow">
+                                  <span>Bookmarks</span>
+                                  <span>+₹{c.bookmarkFee}</span>
+                                </div>
+                              )}
+                              {c.codFee > 0 && (
+                                <div className="mo-rb-prow">
+                                  <span>COD handling fee</span>
+                                  <span>+₹{c.codFee}</span>
+                                </div>
+                              )}
+                              {c.walletApplied > 0 && (
+                                <div className="mo-rb-prow mo-rb-save">
+                                  <span>Wallet applied</span>
+                                  <span>−₹{c.walletApplied}</span>
+                                </div>
+                              )}
+                              <div className="mo-rb-prow mo-rb-ptotal">
+                                <span>New total</span>
+                                <span>₹{c.newTotal}</span>
+                              </div>
+                              <div className="mo-rb-prow mo-rb-delta up">
+                                <span>
+                                  {c.isCOD ? "Collect at door" : "Extra to collect"}
+                                </span>
+                                <span>
+                                  {c.delta === 0
+                                    ? "₹0"
+                                    : `+₹${Math.abs(c.delta)}`}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mo-ws-foot mo-rb-foot">
+                          <button
+                            type="button"
+                            className="mo-ws-cancel"
+                            onClick={closeAddBook}
+                            disabled={abBusy}
+                          >
+                            Cancel
+                          </button>
+                          {!abPick ? (
+                            <button type="button" className="mo-ws-save" disabled>
+                              Pick a book
+                            </button>
+                          ) : c.isCOD || c.delta <= 0 ? (
+                            <button
+                              type="button"
+                              className="mo-ws-save"
+                              onClick={applyAddBookUpdate}
+                              disabled={abBusy}
+                            >
+                              {abBusy ? (
+                                <Loader2 size={15} className="mo-spin" />
+                              ) : (
+                                <Check size={15} />
+                              )}
+                              Add &amp; update
+                            </button>
+                          ) : (
+                            <div className="mo-rb-costlier-btns">
+                              <button
+                                type="button"
+                                className="mo-rb-online-btn"
+                                onClick={() => applyAddBookBalance("online")}
+                                disabled={abBusy}
+                              >
+                                <ExternalLink size={14} /> Pay online
+                              </button>
+                              <button
+                                type="button"
+                                className="mo-ws-save"
+                                onClick={() => applyAddBookBalance("cod")}
+                                disabled={abBusy}
+                              >
+                                {abBusy ? (
                                   <Loader2 size={15} className="mo-spin" />
                                 ) : (
                                   <Truck size={15} />

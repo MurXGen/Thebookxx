@@ -29346,6 +29346,59 @@ img[data-loaded="true"] {
   border-top-color: rgba(255, 255, 255, 0.12);
   color: #f3f4f6;
 }
+.mo-rb-save span:last-child {
+  color: #16a34a;
+}
+.mo-rb-ptotal {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--hairline, #d1d5db);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text, #1c1814);
+}
+.mo-dark .mo-rb-ptotal {
+  border-top-color: rgba(255, 255, 255, 0.16);
+  color: #f3f4f6;
+}
+/* Quantity stepper inside the add-a-book sheet */
+.mo-rb-qtyrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text, #1c1814);
+  margin: 2px 0 4px;
+}
+.mo-dark .mo-rb-qtyrow {
+  color: #f3f4f6;
+}
+.mo-rb-qtyctrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+.mo-dark .mo-rb-qtyctrl {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.mo-rb-qtyctrl button {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--brand, #fb8500);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.mo-rb-qtyctrl span {
+  min-width: 16px;
+  text-align: center;
+  font-weight: 800;
+}
 .mo-rb-foot {
   gap: 10px;
 }

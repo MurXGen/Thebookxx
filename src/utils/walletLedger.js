@@ -72,6 +72,20 @@ export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_
         expires,
       });
     } else {
+      // A PENDING debit is spend on an order that isn't confirmed yet (e.g. an
+      // unpaid UPI draft). It's shown in history as "pending" but does NOT
+      // consume credits / reduce the balance until that order is confirmed.
+      if (e.pending) {
+        history.push({
+          date: e.date,
+          amount: e.amount,
+          type: "debit",
+          reason: e.reason || "",
+          orderId: e.orderId || "",
+          pending: true,
+        });
+        continue;
+      }
       let need = -e.amount;
       history.push({
         date: e.date,
@@ -135,6 +149,7 @@ export async function fetchWalletEntries(phone) {
       type: e.type || "",
       orderId: e.orderId || "",
       locked: !!e.locked,
+      pending: !!e.pending,
     }));
   } catch (e) {
     console.error("Wallet ledger fetch failed:", e);

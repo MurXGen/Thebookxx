@@ -113,6 +113,7 @@ export async function GET(request) {
     const anyOrderLinked = entries.some((e) => e.orderId);
     let presentIds = new Set();
     let cancelledIds = new Set();
+    let confirmedIds = new Set(); // orders whose spend is allowed to count
     let ordersReadOk = false;
     if (anyOrderLinked) {
       try {
@@ -137,40 +138,53 @@ export async function GET(request) {
           if (!oid) return;
           presentIds.add(oid);
           const status = String(row["Order Status"] ?? "");
+          const s = status.toLowerCase();
           if (/cancel/i.test(status)) cancelledIds.add(oid);
+          // "Confirmed" = a real, paid/placed order: status is set and is not a
+          // pending (unconfirmed), failed, or cancelled one. Only then does its
+          // wallet spend reduce the balance.
+          if (
+            s &&
+            !/unconfirmed/.test(s) &&
+            !/fail/.test(s) &&
+            !/cancel/.test(s)
+          )
+            confirmedIds.add(oid);
         });
         ordersReadOk = true;
       } catch {
         presentIds = new Set(); // read failed → hide nothing (safe)
         cancelledIds = new Set(); // read failed → refund nothing (safe)
+        confirmedIds = new Set();
         ordersReadOk = false;
       }
     }
 
-    const withLock = entries.map((e) => ({
-      ...e,
-      // A reward credit whose linked order is NOT found for this phone is an
-      // orphan → locked (hidden + unspendable). Only applied on a good read.
-      locked:
-        ordersReadOk &&
-        e.amount > 0 &&
-        !!e.orderId &&
-        !presentIds.has(String(e.orderId).trim()),
-    }));
+    const withLock = entries.map((e) => {
+      const oid = e.orderId ? String(e.orderId).trim() : "";
+      // A DEBIT tied to an order counts (reduces the balance) ONLY once that
+      // order is confirmed. While the order is still unconfirmed/failed/cancelled
+      // — or not yet found on a good read — the spend is "pending": the row is
+      // kept in history (so the sheet has it) but excluded from the balance, so
+      // the customer still sees/keeps that amount until the order goes through.
+      // Safety: if the orders read FAILED, we fall back to counting the debit
+      // (never inflate a spendable balance on a failed read).
+      const pending =
+        e.amount < 0 && !!oid && ordersReadOk && !confirmedIds.has(oid);
+      return {
+        ...e,
+        // A reward credit whose linked order is NOT found for this phone is an
+        // orphan → locked (hidden + unspendable). Only applied on a good read.
+        locked:
+          ordersReadOk &&
+          e.amount > 0 &&
+          !!oid &&
+          !presentIds.has(oid),
+        pending,
+      };
+    });
 
-    const finalEntries =
-      cancelledIds.size > 0
-        ? withLock.filter(
-            (e) =>
-              !(
-                e.amount < 0 &&
-                e.orderId &&
-                cancelledIds.has(String(e.orderId).trim())
-              ),
-          )
-        : withLock;
-
-    return Response.json({ entries: finalEntries });
+    return Response.json({ entries: withLock });
   } catch (e) {
     return Response.json({ entries: [] }, { status: 200 });
   }

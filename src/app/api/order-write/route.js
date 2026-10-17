@@ -18,17 +18,18 @@ import {
 } from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
-// After an order is written/confirmed, record its wallet spend as a debit —
-// server-side and idempotent (keyed by Order ID). This replaces the fragile
-// client-side fire-and-forget debit that was dropped on navigation, and it also
-// catches UPI orders confirmed LATER by an admin (no client present). An order
-// counts as "confirmed" once its status is set and is not unconfirmed / failed /
-// cancelled; only then is the spend deducted.
+// When an order is written, record its wallet spend as a debit — server-side
+// and idempotent (keyed by Order ID). This replaces the fragile client-side
+// fire-and-forget debit that was dropped on navigation / absent for admin-
+// confirmed UPI orders. The debit row is written REGARDLESS of whether the order
+// is confirmed yet; whether it actually reduces the shown/spendable balance is
+// decided at read time by /api/wallet, based on the linked order's status. So an
+// unpaid UPI draft stores the debit but doesn't reduce the balance until it's
+// confirmed — no dropped deductions, no double-counting.
 async function reconcileOrderWallet({ action, orderId, data }) {
   try {
     let phone;
     let walletApplied;
-    let status;
     let oid;
 
     if (action === "append") {
@@ -37,37 +38,21 @@ async function reconcileOrderWallet({ action, orderId, data }) {
       oid = String(data?.["Order ID"] ?? data?.["Order Id"] ?? "").trim();
       phone = data?.["Phone Number"];
       walletApplied = data?.["Wallet Applied"];
-      status = data?.["Order Status"];
     } else {
       // update: the row already exists — read it for the authoritative phone +
-      // Wallet Applied, and prefer any status carried in this update's data.
+      // Wallet Applied, preferring any amount carried in this update's payload.
       oid = String(orderId ?? "").trim();
       if (!oid) return;
       const row = await readOrderRowById(oid);
-      // Phone always comes from the stored row; amount/status prefer this
-      // update's payload (fresher — e.g. the client confirm carries them), then
-      // fall back to the row (e.g. a status-only Telegram/admin confirm).
       phone = row?.["Phone Number"];
       walletApplied =
         data && data["Wallet Applied"] != null
           ? data["Wallet Applied"]
           : row?.["Wallet Applied"];
-      status =
-        data && data["Order Status"] != null
-          ? data["Order Status"]
-          : row?.["Order Status"];
     }
 
     const applied = Math.round(Number(walletApplied) || 0);
     if (!oid || applied <= 0) return;
-
-    const s = String(status || "").toLowerCase();
-    const confirmed =
-      !!s &&
-      !/unconfirmed/.test(s) &&
-      !/fail/.test(s) &&
-      !/cancel/.test(s);
-    if (!confirmed) return; // UPI stays undebited until an admin confirms it
 
     await reconcileOrderWalletDebit({
       phone,

@@ -182,7 +182,10 @@ export default function WalletPage() {
                 .filter((h) => !h.locked)
                 .filter((h) => filter === "all" || h.type === filter)
                 .map((h, i) => (
-                  <div key={i} className="wallet-txn">
+                  <div
+                    key={i}
+                    className={`wallet-txn${h.pending ? " pending" : ""}`}
+                  >
                     <span
                       className={`wallet-txn-ic ${h.type === "credit" ? "cr" : "db"}`}
                     >
@@ -198,9 +201,14 @@ export default function WalletPage() {
                           (h.type === "credit"
                             ? "Reward credited"
                             : "Used on order")}
+                        {h.pending && (
+                          <span className="wallet-txn-pending">Pending</span>
+                        )}
                       </span>
                       <span className="wallet-txn-date">
-                        {fmtDateTime(h.date)}
+                        {h.pending
+                          ? "Applied — deducts once the order is confirmed"
+                          : fmtDateTime(h.date)}
                       </span>
                       {h.type === "credit" && h.expires && (
                         <span className="wallet-txn-exp">
@@ -209,7 +217,7 @@ export default function WalletPage() {
                       )}
                     </div>
                     <span
-                      className={`wallet-txn-amt ${h.type === "credit" ? "cr" : "db"}`}
+                      className={`wallet-txn-amt ${h.type === "credit" ? "cr" : "db"}${h.pending ? " pending" : ""}`}
                     >
                       {h.type === "credit" ? "+" : "−"}₹{Math.abs(h.amount)}
                     </span>

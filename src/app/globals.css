@@ -52018,6 +52018,15 @@ img[data-loaded="true"] {
   color: #059669;
   font-weight: 700;
 }
+/* Subtotal row — the "Total after discount" step; a quiet divider + medium
+   weight so it reads as a running subtotal, not a final total. */
+.od-price-sub {
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--hairline, #eef0f2);
+  font-weight: 700;
+  color: #111827;
+}
 .od-price-total {
   margin-top: 6px;
   padding-top: 10px;

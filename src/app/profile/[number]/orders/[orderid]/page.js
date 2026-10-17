@@ -864,14 +864,18 @@ export default function OrderDetailPage() {
       advancePaid,
       advanceAmount,
       payOnDelivery,
+      listing,
+      itemDiscount,
     } = bd;
     const W = 700;
     const P = 44;
     const rowH = 32;
     const scale = 2;
     const summaryCount =
-      (sub > 0 ? 1 : 0) +
-      1 +
+      1 + // Total MRP
+      (itemDiscount > 0 ? 1 : 0) +
+      (sub > 0 ? 1 : 0) + // Total after discount
+      1 + // delivery
       (giftFee > 0 ? 1 : 0) +
       (bookmarkFee > 0 ? 1 : 0) +
       (quickReadsTotal > 0 ? 1 : 0) +
@@ -953,7 +957,18 @@ export default function OrderDetailPage() {
       ctx.textAlign = "left";
     };
     y += 8;
-    if (sub > 0) sumLine(`Subtotal (${items.length} items)`, `₹${sub}`);
+    sumLine(`Total MRP (${items.length} items)`, `₹${listing}`);
+    if (itemDiscount > 0)
+      sumLine("Discount on MRP", `−₹${itemDiscount}`, "#008f0c");
+    if (sub > 0) sumLine("Total after discount", `₹${sub}`);
+    if (quickReadsTotal > 0) sumLine("QuickReads", `+₹${quickReadsTotal}`);
+    if (discount > 0) sumLine("Offer discount", `−₹${discount}`, "#008f0c");
+    if (couponDiscount > 0)
+      sumLine(
+        `Coupon${couponCode ? ` (${couponCode})` : ""}`,
+        `−₹${couponDiscount}`,
+        "#008f0c",
+      );
     sumLine(
       deliveryLabel,
       freeDelivery ? "FREE" : `+₹${deliveryFee}`,
@@ -965,17 +980,9 @@ export default function OrderDetailPage() {
         `Bookmarks (${bookmarkCharged} × ₹9${bookmarkFree > 0 ? `, ${bookmarkFree} free` : ""})`,
         `+₹${bookmarkFee}`,
       );
-    if (quickReadsTotal > 0) sumLine("QuickReads", `+₹${quickReadsTotal}`);
     if (codFee > 0) sumLine("COD handling fee", `+₹${codFee}`);
-    if (discount > 0) sumLine("Offer discount", `−₹${discount}`, "#008f0c");
-    if (couponDiscount > 0)
-      sumLine(
-        `Coupon${couponCode ? ` (${couponCode})` : ""}`,
-        `−₹${couponDiscount}`,
-        "#008f0c",
-      );
     if (walletApplied > 0)
-      sumLine("Wallet balance", `−₹${walletApplied}`, "#008f0c");
+      sumLine("Wallet applied", `−₹${walletApplied}`, "#008f0c");
     y += 18;
     ctx.strokeStyle = "#cccccc";
     ctx.setLineDash([4, 4]);
@@ -2070,18 +2077,42 @@ export default function OrderDetailPage() {
       {/* Price details (Flipkart-style breakdown) */}
       <section className="od-block od-price-block">
         <div className="od-block-title">Price details</div>
+        {/* Clear, meaningful flow: Total MRP → after discount → offer/coupon →
+            add-ons → wallet → net bill (each step adds up to the next). */}
         <div className="od-price-row">
-          <span>Listing price</span>
+          <span>
+            Total MRP ({books.length} {books.length === 1 ? "item" : "items"})
+          </span>
           <span className="od-strike">₹{bd.listing}</span>
         </div>
-        <div className="od-price-row">
-          <span>Selling price ({books.length} items)</span>
-          <span>₹{bd.sub}</span>
-        </div>
-        {bd.savings > 0 && (
+        {bd.itemDiscount > 0 && (
           <div className="od-price-row od-price-save">
             <span>Discount on MRP</span>
-            <span>−₹{bd.savings}</span>
+            <span>−₹{bd.itemDiscount}</span>
+          </div>
+        )}
+        <div className="od-price-row od-price-sub">
+          <span>Total after discount</span>
+          <span>₹{bd.sub}</span>
+        </div>
+        {bd.quickReadsTotal > 0 && (
+          <div className="od-price-row">
+            <span>QuickReads</span>
+            <span>+₹{bd.quickReadsTotal}</span>
+          </div>
+        )}
+        {bd.discount > 0 && (
+          <div className="od-price-row od-price-save">
+            <span>Offer discount</span>
+            <span>−₹{bd.discount}</span>
+          </div>
+        )}
+        {(bd.couponDiscount > 0 || bd.couponCode) && (
+          <div className="od-price-row od-price-save">
+            <span>Coupon{bd.couponCode ? ` (${bd.couponCode})` : ""}</span>
+            <span>
+              {bd.couponDiscount > 0 ? `−₹${bd.couponDiscount}` : "Applied"}
+            </span>
           </div>
         )}
         <div className="od-price-row">
@@ -2113,34 +2144,14 @@ export default function OrderDetailPage() {
             <span>+₹{bd.codFee}</span>
           </div>
         )}
-        {bd.quickReadsTotal > 0 && (
-          <div className="od-price-row">
-            <span>QuickReads</span>
-            <span>+₹{bd.quickReadsTotal}</span>
-          </div>
-        )}
-        {bd.discount > 0 && (
-          <div className="od-price-row od-price-save">
-            <span>Offer discount</span>
-            <span>−₹{bd.discount}</span>
-          </div>
-        )}
-        {bd.couponCode && (
-          <div className="od-price-row od-price-save">
-            <span>Coupon ({bd.couponCode})</span>
-            <span>
-              {bd.couponDiscount > 0 ? `−₹${bd.couponDiscount}` : "Applied"}
-            </span>
-          </div>
-        )}
         {bd.walletApplied > 0 && (
           <div className="od-price-row od-price-save">
-            <span>Wallet balance</span>
+            <span>Wallet applied</span>
             <span>−₹{bd.walletApplied}</span>
           </div>
         )}
         <div className="od-price-row od-price-total">
-          <span>Total amount</span>
+          <span>Net bill amount</span>
           <span>₹{bd.grand}</span>
         </div>
         {bd.advancePaid && (

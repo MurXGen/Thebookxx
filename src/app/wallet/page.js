@@ -7,6 +7,7 @@ import { Wallet, ArrowLeft, Clock, Gift, AlertTriangle, ArrowDownCircle, ArrowUp
 import Navbar from "@/components/Navbar";
 import { getSavedPhone } from "@/utils/userPhone";
 import { fetchWalletLedger, WALLET_TTL_DAYS } from "@/utils/walletLedger";
+import { fetchWalletBalance } from "@/utils/googleFormOrder";
 import RechargeModal from "@/components/UI/RechargeModal";
 
 const fmtDate = (d) =>
@@ -34,6 +35,10 @@ export default function WalletPage() {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(true);
   const [ledger, setLedger] = useState(null);
+  // Spendable balance from the SAME helper checkout + profile use, so all three
+  // always show one identical number. The ledger is still used for the history
+  // list and the "expiring soon" note.
+  const [spendable, setSpendable] = useState(0);
   const [filter, setFilter] = useState("all"); // all | credit | debit
   const [name, setName] = useState("");
   const [benefitsOpen, setBenefitsOpen] = useState(false);
@@ -54,8 +59,12 @@ export default function WalletPage() {
       return;
     }
     (async () => {
-      const led = await fetchWalletLedger(p);
+      const [led, bal] = await Promise.all([
+        fetchWalletLedger(p),
+        fetchWalletBalance(p).catch(() => 0),
+      ]);
       setLedger(led);
+      setSpendable(bal || 0);
       setLoading(false);
     })();
   }, []);
@@ -84,9 +93,7 @@ export default function WalletPage() {
             </div>
           </div>
           <div className="wallet-hero-balrow">
-            <span className="wallet-hero-balance">
-              ₹{ledger ? ledger.balance : 0}
-            </span>
+            <span className="wallet-hero-balance">₹{spendable}</span>
             <span className="wallet-hero-baltag">Available balance</span>
           </div>
           {phone && (

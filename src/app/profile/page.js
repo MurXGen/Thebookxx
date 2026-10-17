@@ -66,7 +66,7 @@ import ReferralCodeField from "@/components/profile/ReferralCodeField";
 import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import ReviewRewardCard from "@/components/ReviewRewardCard";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
-import { fetchWalletLedger } from "@/utils/walletLedger";
+import { fetchWalletBalance } from "@/utils/googleFormOrder";
 import {
   readProfileCache,
   saveProfileCache,
@@ -951,12 +951,13 @@ export default function MyOrdersPage() {
           comment: order["Comment for this order"] || order["Comment"] || "",
         };
       });
-      // Wallet balance now comes from the dedicated Wallet sheet (read via the
-      // ledger, which applies 60-day expiry). Never below 0.
+      // Wallet balance uses the SAME helper as checkout (fetchWalletBalance) so
+      // the profile, the wallet page and checkout always show one identical,
+      // spendable number — skips locked/orphan reward coins and pending (not-yet-
+      // confirmed) spends. Never below 0.
       let walletValue = 0;
       try {
-        const led = await fetchWalletLedger(phone);
-        walletValue = led.balance || 0;
+        walletValue = await fetchWalletBalance(phone);
       } catch (_) {}
       setWalletBalance(walletValue);
 

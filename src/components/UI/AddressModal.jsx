@@ -925,24 +925,36 @@ export default function AddressModal({
     else setShowContactFields(false);
   }, [address, city]);
 
-  // UPI verification: ONLY when the shopper taps "Verify again" do we poll the
-  // sheet every 5s (for 30s) to see if the admin removed the "(unconfirmed)"
-  // tag. Confirmed → success screen; otherwise we quietly return to idle so the
-  // shopper can tap "Verify again" or "Verify via WhatsApp". No auto-verify.
-  // Initial 30s counter — purely a countdown, NO automatic status verification.
-  // When it reaches 0 we simply reveal the "Verify status" + WhatsApp buttons.
+  // Initial 30s counter after the QR appears. It now ALSO polls the sheet every
+  // 5s: the moment our team / the Telegram Passed button confirms this order
+  // (removes the "(unconfirmed)" tag) we jump straight to the success screen —
+  // the shopper doesn't have to wait out the countdown or tap "Verify status".
+  // A Failed mark jumps to the failed screen. When the 30s elapse with no
+  // verdict, we reveal the "Verify status" + WhatsApp buttons.
   useEffect(() => {
     if (upiPhase !== "counting") return;
+    const check = async () => {
+      try {
+        if (!upiOrderRef) return;
+        const r = await fetchOrderStatusById(upiOrderRef);
+        if (r?.confirmed) finalizeUPISuccess();
+        else if (r?.failed) triggerUpiFailed();
+      } catch {}
+    };
     const tick = setInterval(() => {
       setVerifyCountdown((p) => (p <= 1 ? 0 : p - 1));
     }, 1000);
-    upiPollRef.current = { poll: null, tick };
+    const poll = setInterval(check, 5000);
+    upiPollRef.current = { poll, tick };
     const to = setTimeout(() => {
       clearInterval(tick);
+      clearInterval(poll);
       setUpiPhase((ph) => (ph === "counting" ? "ready" : ph));
     }, 30500);
+    check(); // immediate first check
     return () => {
       clearInterval(tick);
+      clearInterval(poll);
       clearTimeout(to);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

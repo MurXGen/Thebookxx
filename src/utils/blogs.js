@@ -4,6 +4,179 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "kalinga-literary-festival-book-awards-2026-indian-books-to-read": {
+    "id": "blog-081",
+    "title": "Kalinga Literary Festival Book Awards 2026: Winners Announced and 15 Reads to Pick Up Next",
+    "slug": "kalinga-literary-festival-book-awards-2026-indian-books-to-read",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-17",
+    "lastModified": "2026-10-17",
+    "excerpt": "The 6th KLF Book Awards 2026 winners are out. See who won, plus 15 books to read next, from ₹1 with free delivery and Cash on Delivery across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The Kalinga Literary Festival (KLF) has announced the winners of its 6th KLF Book Awards 2026, honouring books published in 2025 across English and Hindi. Each category carries a cash prize of ₹1,00,000, a citation, a trophy and a traditional shawl. The awards will be presented on 18 December 2026 as part of the inaugural programme of the Ek Bharat, Anek Bol Literary Festival, which runs from 18 to 20 December at Travancore Palace in New Delhi."
+      },
+      {
+        "type": "paragraph",
+        "content": "Award lists are a useful nudge for readers who feel lost in a crowded market. This post covers the winners, then pairs the themes they point to, such as life in the digital age, memory and place, and stories retold across languages, with books you can order from TheBookX today. Books start from ₹1, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts",
+        "content": "Awards: 6th KLF Book Awards 2026. Eligible books: published in 2025. Prize: ₹1,00,000 plus citation, trophy and shawl per category. Ceremony: 18 December 2026, Ek Bharat, Anek Bol Literary Festival (18 to 20 December), Travancore Palace, New Delhi. KLF was founded in 2012 by the Odisha Diary Foundation. The announcement was issued as a press release, so details such as the jury were not published in it."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The 2026 winners in English"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Best Fiction: Ruchir Joshi, Great Eastern Hotel (HarperCollins India).",
+          "Best Non-Fiction (joint): Vauhini Vara, Searches: Selfhood in the Digital Age (Pantheon), and Snigdha Poonam, Scamlands (Penguin Viking).",
+          "Best Debut: Zahid Rafiq, The World With Its Mouth Open (Hamish Hamilton, Penguin Random House India).",
+          "Best Poetry Collection: Jennifer Robertson, Folie à Deux (Paperwall Publishing).",
+          "Best Translated Fiction: Jissa Jose, Mudritha, translated from Malayalam by Jayasree Kalathil (HarperCollins India)."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The 2026 winners in Hindi"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Best Fiction (joint): Pankaj Subir, Khaibar Darra (Rajpal and Sons), and Satyanarayan, Is Minkhajoon Mein Yayavar Ki Diary (Sambhavna Prakashan).",
+          "Best Non-Fiction: Seema Kapoor, Yoon Guzri Hai Ab Talak (Rajkamal Prakashan).",
+          "Best Debut: Malini Awasthi, Chandan Kivaar (Vani Prakashan).",
+          "Best Poetry Collection: Yatindra Mishra, Bina Kaling Vijay Ke (Vani Prakashan).",
+          "Best Translation: Yunus Khan, Jab Aurat Sochti Hai (Rajkamal Prakashan)."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What the list tells readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "Two of the English non-fiction winners look at life online: Vara on selfhood in the digital age and Poonam on scams. Translation is also recognised in both languages, a reminder that some of the best Indian writing reaches readers through a translator. If these themes interest you, the books below are good companions, and all are available at TheBookX."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you liked the digital-age non-fiction: read these"
+      },
+      {
+        "type": "paragraph",
+        "content": "Searches and Scamlands ask how technology shapes the way we think and decide. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport makes the case for protecting focused time in a distracted world, and <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear shows how small daily changes add up. For the mental side of information overload, <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman explains why we fall for tempting shortcuts, a useful read in a season of online scams."
+      },
+      {
+        "type": "paragraph",
+        "content": "Clear thinking is the best defence against noise. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to cutting confusion and deciding without overthinking, and <a href=\"/books/the-art-of-not-overthinking\" style=\"color:#fb8500;font-weight:600\">The Art of Not Overthinking</a> is a gentle companion for anyone who spends too long scrolling and second-guessing. On money, <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is a calm look at behaviour, which pairs well with Scamlands. For a wider lens, try <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you liked the fiction and debut winners: read these"
+      },
+      {
+        "type": "paragraph",
+        "content": "Joshi's Great Eastern Hotel and Rafiq's debut are rooted in place and memory. In the same spirit, <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy is a Booker-winning novel set in Kerala, and <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan gathers short stories from a small town that feels real. For a gentler escape, <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig and <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho are easy, absorbing novels to start with."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you liked the translated winners: read these"
+      },
+      {
+        "type": "paragraph",
+        "content": "Mudritha and Jab Aurat Sochti Hai show how translation widens a writer's audience. Indian epics are retold again and again, and <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni retells the Mahabharata through Draupadi. Devdutt Pattanaik's <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya</a> and <a href=\"/books/sita-an-illustrated-retelling-of-the-ramayana\" style=\"color:#fb8500;font-weight:600\">Sita</a> are illustrated retellings that suit readers of every age. For a story of ambition and learning, <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam remains a firm favourite."
+      },
+      {
+        "type": "blockquote",
+        "content": "A prize list is a map, not a rulebook. Pick the one book that sounds like you, and read twenty pages before you decide."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to use an awards list without feeling overwhelmed"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Choose one category that fits your mood, such as debut, poetry or translation.",
+          "Read a sample chapter before you commit to buying.",
+          "Pair each award title with an older book on the same theme so you build context.",
+          "Set a small target, such as 20 pages a day, so one book finishes in a couple of weeks."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Shop smart at TheBookX",
+        "content": "Books from ₹1, free delivery and Cash on Delivery across India. Titles above are from our catalogue; the award winners may be available through publishers and other stores."
+      },
+      {
+        "type": "paragraph",
+        "content": "Awards recognise a handful of books each year, but the real win is a reader finishing one more book than last month. Pick a title from this list, start tonight, and let the habit build."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/kalinga-literary-festival-book-awards-2026-indian-books-to-read.jpeg",
+    "images": [
+      {
+        "url": "/blogs/kalinga-literary-festival-book-awards-2026-indian-books-to-read.jpeg",
+        "alt": "A young woman reading a book by a sunlit window with a cup of tea beside her",
+        "caption": "Award season is a good time to pick up a new Indian read.",
+        "category": "Book Awards"
+      }
+    ],
+    "keywords": [
+      "KLF Book Awards 2026",
+      "Kalinga Literary Festival 2026",
+      "Indian book awards 2026",
+      "best Indian books 2026",
+      "Ek Bharat Anek Bol Literary Festival",
+      "books to read India",
+      "Hindi book awards 2026",
+      "buy books online India"
+    ],
+    "categories": [
+      "Book Awards",
+      "Indian Literature",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "What are the KLF Book Awards 2026?",
+        "answer": "They are the 6th edition of the Kalinga Literary Festival's awards, honouring books published in 2025 in English and Hindi across fiction, non-fiction, debut, poetry and translation."
+      },
+      {
+        "question": "When and where will the KLF Book Awards 2026 be presented?",
+        "answer": "The ceremony is on 18 December 2026 as part of the Ek Bharat, Anek Bol Literary Festival (18 to 20 December) at Travancore Palace, New Delhi."
+      },
+      {
+        "question": "How much is the prize?",
+        "answer": "Each category winner receives ₹1,00,000 in cash, a citation, a trophy and a traditional shawl."
+      },
+      {
+        "question": "Where can I buy books like the winners in India?",
+        "answer": "TheBookX stocks bestsellers, fiction and non-fiction from ₹1, with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "national-dictionary-day-2026-vocabulary-and-language-books-india": {
     "id": "blog-080",
     "title": "National Dictionary Day 2026 (16 October): 15 Books to Build Your Vocabulary and Write Better in India",

@@ -56,7 +56,6 @@ import {
   fetchOrderStatusById,
   fetchWalletBalance,
   updateOrderRow,
-  debitWallet,
 } from "@/utils/googleFormOrder";
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import CartSupportSheet from "./CartSupportSheet";
@@ -1148,7 +1147,13 @@ export default function AddressModal({
         );
         return s + unit * q;
       }, 0);
-      const walletForOrder = confirmed ? walletApplied || 0 : 0;
+      // Persist the applied wallet amount on the row from the start (even while
+      // "Unconfirmed"). The server debits it ONLY once the order is confirmed
+      // (reconcileOrderWalletDebit, gated on status), so an abandoned/unpaid UPI
+      // draft never deducts — but a UPI order confirmed LATER by an admin or the
+      // Telegram button (no client present) still has the amount to debit. This
+      // is what closes the "wallet used but never deducted" loophole.
+      const walletForOrder = walletApplied || 0;
       const advanceAmt = advance ? 99 : 0;
       const codCollectForOrder =
         paymentType === "COD" || advance
@@ -1179,13 +1184,9 @@ export default function AddressModal({
       updateOrderRow(orderId, updates).catch((e) =>
         console.error("Order upsert update failed:", e),
       );
-      if (confirmed && walletApplied > 0) {
-        debitWallet(
-          walletCheckedPhone || phone,
-          walletApplied,
-          orderId,
-        ).catch(() => {});
-      }
+      // Wallet spend is debited server-side & idempotently by /api/order-write
+      // (reconcileOrderWalletDebit) once this row is confirmed — no client-side
+      // debit, so nothing is dropped on navigation and nothing double-counts.
       return;
     }
     // First write for this checkout id → append below and remember it so any
@@ -1267,10 +1268,12 @@ export default function AddressModal({
         totalDiscounted,
         offerDiscount,
         offerLabel,
-        // Only debit the wallet on the CONFIRMED order row — the earlier
-        // "(unconfirmed)" draft row must not deduct, or it double-counts.
-        walletUsed: confirmed ? walletApplied : 0,
-        walletPhone: confirmed && walletApplied > 0 ? walletCheckedPhone : "",
+        // Store the applied wallet amount on the row from the start so a later
+        // server-side confirm (admin / Telegram button, no client present) can
+        // deduct it. The server only debits once the order is confirmed, so the
+        // unpaid draft never reduces the balance.
+        walletUsed: walletApplied,
+        walletPhone: walletApplied > 0 ? walletCheckedPhone : "",
         deliveryCharge: deliveryChargeForOrder,
         deliveryType: isFaster ? "Faster" : "Standard",
         giftWrapCharge: giftWrapAmountForOrder,

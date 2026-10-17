@@ -186,6 +186,155 @@ export function walletAppend(data) {
   });
 }
 
+// ── Order-driven wallet reconciliation (server-side, idempotent) ───────────
+// Why this exists: wallet spend used to be recorded by a client-side
+// fire-and-forget `keepalive` request sent right before the checkout redirect.
+// That request was silently dropped on navigation, and UPI orders confirmed
+// LATER by an admin had no client at all — so the spend vanished (coin shown
+// as "used" but never deducted). We now record the debit on the SERVER whenever
+// an order is written/confirmed, keyed by Order ID so it can never double-count.
+
+const fmtWalletTs = (date) => {
+  const d = new Date(date);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(
+    d.getHours(),
+  )}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+};
+
+// Read the Wallet ledger rows for one phone (scoped server-side via gviz).
+export async function walletRowsForPhone(phone) {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  if (digits.length !== 10) return [];
+  try {
+    const meta = await gvizQuery({
+      sheet: WALLET_SHEET_NAME,
+      tq: "select * limit 0",
+    });
+    const phoneCol = findColumn(meta, "Phone Number");
+    let where = "";
+    if (phoneCol) {
+      where =
+        phoneCol.type === "number"
+          ? `where ${phoneCol.id} = ${digits}`
+          : `where ${phoneCol.id} = '${digits}'`;
+    }
+    const table = await gvizQuery({
+      sheet: WALLET_SHEET_NAME,
+      tq: `select * ${where}`.trim(),
+    });
+    const rows = tableToObjects(table);
+    return phoneCol
+      ? rows
+      : rows.filter(
+          (r) =>
+            String(r["Phone Number"] ?? "").replace(/\D/g, "").slice(-10) ===
+            digits,
+        );
+  } catch {
+    return [];
+  }
+}
+
+// Does a wallet ledger row of the given kind ("debit" | "credit") already
+// exist for this Order ID? Powers idempotency for order-driven wallet writes.
+export async function walletHasOrderTx(phone, orderId, kind = "debit") {
+  const oid = String(orderId || "").trim();
+  if (!oid) return false;
+  const wantCredit = kind === "credit";
+  const rows = await walletRowsForPhone(phone);
+  return rows.some((r) => {
+    const rid = String(r["Order ID"] ?? r["Order Id"] ?? "").trim();
+    if (rid !== oid) return false;
+    let amt = parseFloat(r["Amount"] ?? r["amount"] ?? 0);
+    const t = String(r["Type"] ?? r["type"] ?? "").toLowerCase();
+    if (!isNaN(amt) && amt > 0 && t.startsWith("deb")) amt = -amt;
+    const isCredit = t.startsWith("cred") || (!t.startsWith("deb") && amt > 0);
+    return wantCredit ? isCredit : !isCredit;
+  });
+}
+
+// Process-local short-TTL guard so two near-simultaneous reconciles on a warm
+// serverless instance (e.g. append + an immediate status update, before the
+// gviz read reflects the first write) can't both append a debit.
+const _walletDebitInFlight = new Map(); // key -> expiry ms
+const _DEBIT_GUARD_MS = 30000;
+function _claimDebit(key) {
+  const now = Date.now();
+  for (const [k, exp] of _walletDebitInFlight)
+    if (exp < now) _walletDebitInFlight.delete(k);
+  if (_walletDebitInFlight.has(key)) return false;
+  _walletDebitInFlight.set(key, now + _DEBIT_GUARD_MS);
+  return true;
+}
+
+// Idempotently record a wallet DEBIT for an order's "Wallet Applied" spend.
+// Safe to call on every write/confirm of the order: it checks the ledger first
+// (by Order ID) and a process-local guard, and only appends when missing.
+export async function reconcileOrderWalletDebit({
+  phone,
+  orderId,
+  amount,
+  reason,
+} = {}) {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  const amt = Math.round(Number(amount) || 0);
+  const oid = String(orderId || "").trim();
+  if (digits.length !== 10 || amt <= 0 || !oid) return { ok: false, skipped: true };
+
+  const guardKey = `${digits}:${oid}:debit`;
+  if (!_claimDebit(guardKey)) return { ok: true, inflight: true };
+  try {
+    if (await walletHasOrderTx(digits, oid, "debit"))
+      return { ok: true, already: true };
+    const res = await walletAppend({
+      Timestamp: fmtWalletTs(new Date()),
+      "Phone Number": digits,
+      Amount: String(-Math.abs(amt)),
+      Type: "Debit",
+      Reason: reason || `Used on order ${oid}`,
+      "Order ID": oid,
+    });
+    return { ok: res?.success !== false, wrote: true };
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  } finally {
+    // Release the guard shortly after; keep it long enough to cover the gviz
+    // read lag of a racing reconcile, but not so long it blocks legit retries.
+    setTimeout(() => _walletDebitInFlight.delete(guardKey), 5000).unref?.();
+  }
+}
+
+// Read a single order row by Order ID (server-side). Returns the row object or
+// null. Used by the order-write reconcile to learn the authoritative phone /
+// Wallet Applied / status for status-only updates.
+export async function readOrderRowById(orderId) {
+  const oid = String(orderId || "").trim();
+  if (!oid) return null;
+  try {
+    const meta = await gvizQuery({
+      sheet: ORDERS_SHEET_NAME,
+      tq: "select * limit 0",
+    });
+    const idCol = findColumn(meta, "Order ID") || findColumn(meta, "Order Id");
+    const where = idCol ? `where ${idCol.id} = '${oid.replace(/'/g, "")}'` : "";
+    const table = await gvizQuery({
+      sheet: ORDERS_SHEET_NAME,
+      tq: `select * ${where}`.trim(),
+    });
+    const rows = tableToObjects(table);
+    return (
+      rows.find(
+        (r) => String(r["Order ID"] ?? r["Order Id"] ?? "").trim() === oid,
+      ) ||
+      rows[0] ||
+      null
+    );
+  } catch {
+    return null;
+  }
+}
+
 // Append one row to a referral tab (ReferralCodes / Referrals).
 export function referralAppend(sheet, data) {
   return appscriptPost(APPSCRIPT_REFERRAL_URL, {

@@ -13,8 +13,72 @@ import {
   APPSCRIPT_SHARED_SECRET,
   WALLET_SHEET_NAME,
   ORDERS_SHEET_NAME,
+  reconcileOrderWalletDebit,
+  readOrderRowById,
 } from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
+
+// After an order is written/confirmed, record its wallet spend as a debit —
+// server-side and idempotent (keyed by Order ID). This replaces the fragile
+// client-side fire-and-forget debit that was dropped on navigation, and it also
+// catches UPI orders confirmed LATER by an admin (no client present). An order
+// counts as "confirmed" once its status is set and is not unconfirmed / failed /
+// cancelled; only then is the spend deducted.
+async function reconcileOrderWallet({ action, orderId, data }) {
+  try {
+    let phone;
+    let walletApplied;
+    let status;
+    let oid;
+
+    if (action === "append") {
+      // The freshly-appended row isn't reliably queryable via gviz yet, so trust
+      // the payload we just wrote — it carries the authoritative values.
+      oid = String(data?.["Order ID"] ?? data?.["Order Id"] ?? "").trim();
+      phone = data?.["Phone Number"];
+      walletApplied = data?.["Wallet Applied"];
+      status = data?.["Order Status"];
+    } else {
+      // update: the row already exists — read it for the authoritative phone +
+      // Wallet Applied, and prefer any status carried in this update's data.
+      oid = String(orderId ?? "").trim();
+      if (!oid) return;
+      const row = await readOrderRowById(oid);
+      // Phone always comes from the stored row; amount/status prefer this
+      // update's payload (fresher — e.g. the client confirm carries them), then
+      // fall back to the row (e.g. a status-only Telegram/admin confirm).
+      phone = row?.["Phone Number"];
+      walletApplied =
+        data && data["Wallet Applied"] != null
+          ? data["Wallet Applied"]
+          : row?.["Wallet Applied"];
+      status =
+        data && data["Order Status"] != null
+          ? data["Order Status"]
+          : row?.["Order Status"];
+    }
+
+    const applied = Math.round(Number(walletApplied) || 0);
+    if (!oid || applied <= 0) return;
+
+    const s = String(status || "").toLowerCase();
+    const confirmed =
+      !!s &&
+      !/unconfirmed/.test(s) &&
+      !/fail/.test(s) &&
+      !/cancel/.test(s);
+    if (!confirmed) return; // UPI stays undebited until an admin confirms it
+
+    await reconcileOrderWalletDebit({
+      phone,
+      orderId: oid,
+      amount: applied,
+      reason: `Used on order ${oid}`,
+    });
+  } catch {
+    // Never let wallet reconciliation break the order write itself.
+  }
+}
 
 export async function POST(request) {
   const ip = clientIp(request);
@@ -107,6 +171,11 @@ export async function POST(request) {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
     });
+    // Order writes (not wallet/edit) reconcile the wallet spend server-side.
+    // Awaited so it completes before the serverless function can freeze.
+    if (target !== "wallet" && target !== "edit") {
+      await reconcileOrderWallet({ action, orderId, data });
+    }
     return Response.json({ success: true });
   } catch (e) {
     return Response.json({ success: false }, { status: 502 });

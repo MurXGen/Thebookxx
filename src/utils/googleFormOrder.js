@@ -528,7 +528,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       (coupon
         ? ` · Coupon ${coupon}${couponDiscount > 0 ? ` (₹${couponDiscount} OFF)` : ""}`
         : "") +
-      (walletUsed > 0
+      (confirmed && walletUsed > 0
         ? ` · Wallet used ₹${walletUsed}${walletPhone ? ` (${walletPhone})` : ""}`
         : ""),
     // Dedicated Coupon column (code only) for admin + per-order display.
@@ -575,19 +575,13 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     });
   }
 
-  // Record any wallet spent as a debit in the dedicated Wallet tab — FIRST,
-  // before the (slow) Google-Form order submit. Checkout usually navigates /
-  // unmounts right after this call resolves; if the debit were queued *after*
-  // the awaited form submit, the page could be torn down before that line ever
-  // executes and the spend would silently vanish (the "coin added but not
-  // deducted" bug). Firing it here initiates the request while the page is
-  // still alive, and `keepalive` on the fetch lets it finish through the
-  // navigation. It's fire-and-forget so it never delays the order write.
-  if (walletUsed > 0) {
-    debitWallet(walletPhone || addressData.phone, walletUsed, orderId).catch(
-      () => {},
-    );
-  }
+  // Wallet spend is NO LONGER debited from the client here. It is recorded
+  // server-side, idempotently, by /api/order-write once this order is written
+  // (and, for UPI, once an admin confirms it) — see reconcileOrderWalletDebit
+  // in serverSheets.js. The old client fire-and-forget debit was dropped on the
+  // checkout navigation and never ran at all for admin-confirmed UPI orders,
+  // which is exactly the "coin used but not deducted" bug. The order row carries
+  // "Wallet Applied" (walletApplied below) so the server knows how much to debit.
   await submitOrderToGoogleForm(formData);
   // Hand the order id back so the caller can poll this exact row.
   return formData.orderId;
@@ -670,8 +664,11 @@ export const submitConfirmedOrder = async (
       String(row["TinyURL"] || "") ||
       `https://thebookx.in?orderID=${encodeURIComponent(confirmedId)}`,
     orderStatus: "Processing",
-    // Wallet spent is recorded in the dedicated Wallet tab (debit below).
+    // Wallet spent is recorded in the dedicated Wallet tab server-side. The row
+    // carries "Wallet Applied" so /api/order-write knows how much to debit
+    // (idempotently) when this confirmed row is written.
     wallet: "",
+    walletApplied: Math.round(Number(walletUsed) || 0) || "",
     timestamp: fmtSheetTs(new Date()),
   };
 
@@ -691,8 +688,9 @@ export const submitConfirmedOrder = async (
   }
 
   const ok = await submitOrderToGoogleForm(orderData);
-  if (ok && walletUsed > 0) {
-    debitWallet(orderData.phone, walletUsed, confirmedId).catch(() => {});
-  }
+  // Wallet spend is debited server-side & idempotently by /api/order-write when
+  // this confirmed row is written (see reconcileOrderWalletDebit). We no longer
+  // fire a client-side debit here, so there's no double-deduction or dropped
+  // request. For this to deduct, the confirmed row must carry "Wallet Applied".
   return { success: !!ok, orderData };
 };

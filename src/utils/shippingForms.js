@@ -1932,7 +1932,10 @@ const LABEL_GAP = 48; // vertical space between/around labels (2x px)
 // note grows the label) — kept within PAGE_HEIGHT_BUDGET so printed A4 pages
 // don't shrink the labels too much.
 const MAX_LABELS_PER_PAGE = 2;
-const PAGE_HEIGHT_BUDGET = 2120;
+// Label canvases are rendered at 2× scale, so this budget is in 2× pixels.
+// ~A4 portrait height at the label's 2× width (≈2360 × 1.414) so two standard
+// labels sit on one page, dropping to one only when a label is very tall.
+const PAGE_HEIGHT_BUDGET = 3340;
 
 // Pack pre-built label canvases into pages: up to 3 short labels, or 2 (even 1)
 // when they're tall. Greedy by cumulative height against the budget.

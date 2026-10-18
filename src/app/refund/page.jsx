@@ -82,6 +82,33 @@ export default function RefundCancellationPolicy() {
           method within 5-7 business days.
         </p>
 
+        <h3 id="post-order-unavailability">
+          2.2a Book Unavailable After Ordering
+        </h3>
+        <p>
+          Our stock is sourced from shops, retailers, and distributors, so a book
+          listed on the site may occasionally become unavailable after your order
+          is placed (for example, the supplier&apos;s copy sells out or does not
+          pass
+          our quality check). If this happens, our team will contact you and,
+          based on your decision as the reader/customer, either:
+        </p>
+        <ul>
+          <li>
+            suggest one or more suitable alternative books of equal or comparable
+            value for you to choose instead, or
+          </li>
+          <li>
+            initiate a refund for the unavailable book — to your TheBookX wallet
+            or the original payment method, as you prefer.
+          </li>
+        </ul>
+        <p>
+          If only part of a multi-book order is affected, the remaining books are
+          shipped as normal and only the unavailable item is substituted or
+          refunded.
+        </p>
+
         <h3>2.3 Refusal of Delivery</h3>
         <p>
           If you refuse to accept delivery of a shipped order without a valid

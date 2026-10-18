@@ -293,6 +293,26 @@ const waMessages = (order) => {
       ),
     ) || parsedBooks.reduce((s, b) => s + (b.total || b.price * (b.quantity || 1) || 0), 0);
 
+  // COD collect-at-door amount for the Out-for-delivery message. For COD / ₹99-
+  // advance orders the customer pays the balance at the door PLUS a 1.5% COD
+  // charge. Prepaid online orders have nothing to collect.
+  const advancePaidFlag = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
+  const isCodOrder =
+    /cash on delivery|\bcod\b/i.test(String(order?.["Payment Type"] || "")) ||
+    advancePaidFlag;
+  const codCollectBase = (() => {
+    const col = Number(
+      String(order?.["COD Collectible"] ?? "").replace(/[^\d.]/g, ""),
+    );
+    if (Number.isFinite(col) && col > 0) return col;
+    const adv = advancePaidFlag
+      ? Number(String(order?.["Advance Amount"] ?? "").replace(/[^\d.]/g, "")) ||
+        99
+      : 0;
+    return Math.max(0, grandTotal - adv);
+  })();
+  const codPayAtDoor = Math.round(codCollectBase * 1.015);
+
   // Link block appended below every message: a divider, the customer's order
   // detail page link, their profile link, the tracking ID and the India Post
   // tracking link (tracking lines only when a tracking ID exists).
@@ -387,6 +407,9 @@ const waMessages = (order) => {
         `🛵 *Out for delivery today*\n\n${hi}\n` +
         `Your order is arriving today. *Delivery time window: 9 AM – 8 PM.* ` +
         `Our delivery person may *call you*, so please keep your phone reachable. 📞` +
+        (isCodOrder
+          ? `\n\n💵 *Please keep ₹${codPayAtDoor} ready* to pay on delivery (includes a 1.5% COD charge).`
+          : ``) +
         minimalBlock,
     },
     {
@@ -466,6 +489,24 @@ const emailMessages = (order) => {
       (s, b) => s + (b.total || b.price * (b.quantity || 1) || 0),
       0,
     );
+
+  // COD collect-at-door amount (balance + 1.5% COD charge) for the OFD email.
+  const advancePaidFlag = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
+  const isCodOrder =
+    /cash on delivery|\bcod\b/i.test(String(order?.["Payment Type"] || "")) ||
+    advancePaidFlag;
+  const codCollectBase = (() => {
+    const col = Number(
+      String(order?.["COD Collectible"] ?? "").replace(/[^\d.]/g, ""),
+    );
+    if (Number.isFinite(col) && col > 0) return col;
+    const adv = advancePaidFlag
+      ? Number(String(order?.["Advance Amount"] ?? "").replace(/[^\d.]/g, "")) ||
+        99
+      : 0;
+    return Math.max(0, grandTotal - adv);
+  })();
+  const codPayAtDoor = Math.round(codCollectBase * 1.015);
 
   const sign = `\n\nWarm regards,\nTeam TheBookX 📚\n${orderDetailUrl}`;
   const footer = (orderId ? `\n\nOrder ID: ${orderId}` : "") + sign;
@@ -552,6 +593,9 @@ const emailMessages = (order) => {
       body:
         `Hi ${first},\n\n` +
         `Your order is out for delivery today, anytime between 9 AM and 8 PM. Our delivery partner may call you, so please keep your phone reachable. 📞` +
+        (isCodOrder
+          ? `\n\nPlease keep ₹${codPayAtDoor} ready to pay on delivery (includes a 1.5% COD charge).`
+          : ``) +
         footer,
     },
     {

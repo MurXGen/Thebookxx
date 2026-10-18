@@ -173,6 +173,32 @@ export default function TermsAndConditions() {
           received, the full payment shall be refunded to the original payment
           method within 5-7 business days.
         </p>
+        <h3 id="post-order-unavailability">
+          Books that become unavailable after ordering
+        </h3>
+        <p>
+          Because our stock is sourced from shops, retailers, and distributors,
+          there may be occasions where a book listed on the Website becomes
+          unavailable after you have placed your Order (for example, if the
+          supplier&apos;s copy is sold out or fails our quality check). In such
+          cases,
+          our team will contact you and, based on your decision, either:
+        </p>
+        <ul>
+          <li>
+            suggest one or more suitable alternative books of equal or comparable
+            value that you may choose instead, or
+          </li>
+          <li>
+            initiate a refund for the unavailable book — to your TheBookX wallet
+            or the original payment method, as you prefer.
+          </li>
+        </ul>
+        <p>
+          The choice is always yours as the reader/customer. If only part of a
+          multi-book Order is affected, the rest of the Order proceeds normally
+          and only the unavailable item is substituted or refunded.
+        </p>
       </section>
 
       <section id="authenticity">

@@ -1266,7 +1266,16 @@ function drawBigAddressLabel(c, startY, data) {
     .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/i, "")
     .replace(/\s*,\s*$/, "")
     .trim();
-  ay = c.wrap(cleanAddress, innerX, ay, innerW, 30, {
+  // Build the full address line — append city & state when not already present.
+  const addrLc = cleanAddress.toLowerCase();
+  const cityStr = String(data.customerCity || "").trim();
+  const stateStr = String(data.customerState || "").trim();
+  const addrParts = [cleanAddress];
+  if (cityStr && !addrLc.includes(cityStr.toLowerCase())) addrParts.push(cityStr);
+  if (stateStr && !addrLc.includes(stateStr.toLowerCase()))
+    addrParts.push(stateStr);
+  const addressFull = addrParts.filter(Boolean).join(", ");
+  ay = c.wrap(addressFull, innerX, ay, innerW, 30, {
     font: "23px Poppins, sans-serif",
     color: "#222222",
   });
@@ -1288,26 +1297,18 @@ function drawBigAddressLabel(c, startY, data) {
     .filter(Boolean)
     .join(" / ");
   if (phones) {
-    // Delivery-contact "ribbon" — accent banner with fishtail ends, white bold
-    // text. Includes the main and alternate numbers.
+    // Delivery-contact box — plain black outline, no fill, black bold text.
     const stY = ay + 16;
     const stH = 46;
-    const notch = 16;
     ctx.save();
-    ctx.fillStyle = ACCENT;
-    ctx.beginPath();
-    ctx.moveTo(innerX, stY);
-    ctx.lineTo(innerX + innerW, stY);
-    ctx.lineTo(innerX + innerW - notch, stY + stH / 2);
-    ctx.lineTo(innerX + innerW, stY + stH);
-    ctx.lineTo(innerX, stY + stH);
-    ctx.lineTo(innerX + notch, stY + stH / 2);
-    ctx.closePath();
-    ctx.fill();
+    ctx.strokeStyle = "#111111";
+    ctx.lineWidth = 1.6;
+    rr(innerX, stY, innerW, stH, 8);
+    ctx.stroke();
     ctx.restore();
-    c.text(`📞 Call for delivery: ${phones}`, innerX + notch + 16, stY + 30, {
+    c.text(`📞  Call for delivery: ${phones}`, innerX + 16, stY + 30, {
       font: "bold 19px Poppins, sans-serif",
-      color: "#ffffff",
+      color: INK,
     });
     ay = stY + stH + 10;
   } else {
@@ -1319,8 +1320,11 @@ function drawBigAddressLabel(c, startY, data) {
   hline(y);
   y += 34;
 
-  // ===== Payment block (below the address) — a single, clear highlighted box.
-  const boxH = 62;
+  // ===== Payment block (below the address) — a single, clear highlighted box
+  // with the label and value neatly stacked, and a right-aligned helper note
+  // vertically centred.
+  const boxH = 74;
+  const payPadX = 20;
   const payTone = isCOD ? ACCENT : "#1d7a3a";
   const payBg = isCOD ? "#fff7ed" : "#eef8f0";
   ctx.save();
@@ -1333,23 +1337,23 @@ function drawBigAddressLabel(c, startY, data) {
   ctx.stroke();
   ctx.restore();
   if (isCOD) {
-    cap("COLLECT ON DELIVERY", innerX, y + 24, "#9a5a12");
-    c.text(`₹${data.codAmount || 0} /-`, innerX, y + 48, {
-      font: "bold 26px Poppins, sans-serif",
+    cap("COLLECT ON DELIVERY", X + payPadX, y + 28, "#9a5a12");
+    c.text(`₹ ${data.codAmount || 0} /-`, X + payPadX, y + 58, {
+      font: "bold 27px Poppins, sans-serif",
       color: "#c25e00",
     });
-    c.text("Pay cash / UPI to the delivery agent", rightX, y + 40, {
+    c.text("Pay cash / UPI to the delivery agent", X + W - payPadX, y + boxH / 2 + 6, {
       font: "14px Poppins, sans-serif",
       color: "#9a5a12",
       align: "right",
     });
   } else {
-    cap("PAYMENT", innerX, y + 24, "#1d7a3a");
-    c.text("PAID · PREPAID", innerX, y + 48, {
-      font: "bold 24px Poppins, sans-serif",
+    cap("PAYMENT", X + payPadX, y + 28, "#1d7a3a");
+    c.text("PAID · PREPAID", X + payPadX, y + 58, {
+      font: "bold 25px Poppins, sans-serif",
       color: "#1d7a3a",
     });
-    c.text("Nothing to collect on delivery", rightX, y + 40, {
+    c.text("Nothing to collect on delivery", X + W - payPadX, y + boxH / 2 + 6, {
       font: "14px Poppins, sans-serif",
       color: "#1d7a3a",
       align: "right",

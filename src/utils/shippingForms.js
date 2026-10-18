@@ -1280,8 +1280,12 @@ function drawBigAddressLabel(c, startY, data) {
     ay,
     { font: "bold 27px Poppins, sans-serif", color: INK },
   );
-  const phones = [data.customerPhone, data.customerAltPhone]
-    .filter((p) => String(p || "").trim())
+  const fmtPh = (p) => {
+    const d = String(p || "").replace(/\D/g, "").slice(-10);
+    return d ? `+91 ${d}` : "";
+  };
+  const phones = [fmtPh(data.customerPhone), fmtPh(data.customerAltPhone)]
+    .filter(Boolean)
     .join(" / ");
   if (phones) {
     // Delivery-contact "ribbon" — accent banner with fishtail ends, white bold
@@ -1301,7 +1305,7 @@ function drawBigAddressLabel(c, startY, data) {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
-    c.text(`Call for delivery: ${phones}`, innerX + notch + 16, stY + 30, {
+    c.text(`📞 Call for delivery: ${phones}`, innerX + notch + 16, stY + 30, {
       font: "bold 19px Poppins, sans-serif",
       color: "#ffffff",
     });
@@ -1315,64 +1319,43 @@ function drawBigAddressLabel(c, startY, data) {
   hline(y);
   y += 34;
 
-  // ===== Footer row: Order ID · Date · Amount/Payment =====
-  const rowY = y;
-  const col2 = X + Math.round(W * 0.42);
-  const col3 = X + Math.round(W * 0.7);
+  // ===== Payment block (below the address) — a single, clear highlighted box.
+  const boxH = 62;
+  const payTone = isCOD ? ACCENT : "#1d7a3a";
+  const payBg = isCOD ? "#fff7ed" : "#eef8f0";
   ctx.save();
-  ctx.strokeStyle = "#dcdcdc";
-  ctx.lineWidth = 1;
-  // col2 separator always; col3 only when there's no COD box (below).
-  ctx.beginPath();
-  ctx.moveTo(col2 - 22, rowY - 16);
-  ctx.lineTo(col2 - 22, rowY + 30);
+  ctx.fillStyle = payBg;
+  rr(X, y, W, boxH, 10);
+  ctx.fill();
+  ctx.strokeStyle = payTone;
+  ctx.lineWidth = 1.6;
+  rr(X, y, W, boxH, 10);
   ctx.stroke();
-  if (!isCOD) {
-    ctx.beginPath();
-    ctx.moveTo(col3 - 22, rowY - 16);
-    ctx.lineTo(col3 - 22, rowY + 30);
-    ctx.stroke();
-  }
   ctx.restore();
-  cap("ORDER ID", innerX, rowY, "#555555");
-  c.text(data.orderId || "", innerX, rowY + 26, {
-    font: "bold 21px Poppins, sans-serif",
-    color: INK,
-  });
-  cap("DATE", col2, rowY, "#555555");
-  c.text(
-    new Date().toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }),
-    col2,
-    rowY + 26,
-    { font: "bold 21px Poppins, sans-serif", color: INK },
-  );
   if (isCOD) {
-    // Bordered box around the amount to collect.
-    const bx = col3 - 10;
-    const bw = X + W - 26 - bx;
-    ctx.save();
-    ctx.strokeStyle = "#111111";
-    ctx.lineWidth = 1.8;
-    rr(bx, rowY - 22, bw, 56, 8);
-    ctx.stroke();
-    ctx.restore();
-    cap("COLLECT ON DELIVERY", col3, rowY, "#555555");
-    c.text(`₹${data.codAmount || 0} /-`, col3, rowY + 26, {
-      font: "bold 23px Poppins, sans-serif",
-      color: INK,
+    cap("COLLECT ON DELIVERY", innerX, y + 24, "#9a5a12");
+    c.text(`₹${data.codAmount || 0} /-`, innerX, y + 48, {
+      font: "bold 26px Poppins, sans-serif",
+      color: "#c25e00",
+    });
+    c.text("Pay cash / UPI to the delivery agent", rightX, y + 40, {
+      font: "14px Poppins, sans-serif",
+      color: "#9a5a12",
+      align: "right",
     });
   } else {
-    cap("PAYMENT", col3, rowY, "#555555");
-    c.text("Paid · Prepaid", col3, rowY + 26, {
-      font: "bold 21px Poppins, sans-serif",
+    cap("PAYMENT", innerX, y + 24, "#1d7a3a");
+    c.text("PAID · PREPAID", innerX, y + 48, {
+      font: "bold 24px Poppins, sans-serif",
       color: "#1d7a3a",
     });
+    c.text("Nothing to collect on delivery", rightX, y + 40, {
+      font: "14px Poppins, sans-serif",
+      color: "#1d7a3a",
+      align: "right",
+    });
   }
-  y = rowY + 50;
+  y += boxH + 22;
 
   // ===== Note — short + bold =====
   hline(y, "#ededed");
@@ -1392,7 +1375,16 @@ function drawBigAddressLabel(c, startY, data) {
     font: "bold 17px Poppins, sans-serif",
     color: "#333333",
   });
-  y += 28;
+  y += 24;
+
+  // ===== Order reference (bottom) — small, muted, below the note. =====
+  hline(y, "#f0f0f0");
+  y += 22;
+  c.text(`Order ID: ${data.orderId || "—"}`, innerX, y, {
+    font: "13px Poppins, sans-serif",
+    color: "#999999",
+  });
+  y += 20;
 
   // Outer frame — lightest, rounded, dashed. Drawn last so it sits above the
   // header band. Rounded corners match the header band's rounded top.

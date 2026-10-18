@@ -6139,6 +6139,11 @@ export default function ManageOrdersPage() {
     fetchReturns();
   }, [fetchReturns]);
 
+  const pendingReturnsCount = useMemo(
+    () =>
+      Object.values(returnsByOrder).filter((r) => r && !r.moneyReleased).length,
+    [returnsByOrder],
+  );
   const openReceiveReturn = (req) => {
     setRxReq(req);
     setRxAmount(
@@ -6766,6 +6771,13 @@ export default function ManageOrdersPage() {
                 if (f === "intransit-notrack") {
                   return s === "In Transit" && !hasTracking;
                 }
+                if (f === "returns") {
+                  // Orders with a return request still awaiting refund — shown
+                  // regardless of their delivery status.
+                  const req =
+                    returnsByOrder[String(order["Order ID"] || "").trim()];
+                  return !!req && !req.moneyReleased;
+                }
                 return s === f;
               });
         // Confirmation match (AND): confirmed hides "(unconfirmed)" rows.
@@ -6823,6 +6835,7 @@ export default function ManageOrdersPage() {
     dateFrom,
     dateTo,
     selectedDate,
+    returnsByOrder,
   ]);
 
   // Distinct Order Status / Payment Type values actually present in the sheet,
@@ -12915,6 +12928,14 @@ export default function ManageOrdersPage() {
                                 {
                                   value: "intransit-notrack",
                                   label: "In Transit — without tracking ID",
+                                },
+                                {
+                                  value: "returns",
+                                  label: `Returns — pending refund${
+                                    pendingReturnsCount
+                                      ? ` (${pendingReturnsCount})`
+                                      : ""
+                                  }`,
                                 },
                                 {
                                   value: "confirmed",

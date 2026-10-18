@@ -2360,10 +2360,14 @@ export default function OrderDetailPage() {
           ))}
       </section>
 
-      {/* COD → pay-online upgrade (only before the parcel is moving) */}
-      {/cash on delivery|cod/i.test(order["Payment Type"] || "") &&
+      {/* COD → pay-online upgrade (only before the parcel is moving). Also
+          shown for ANY unpaid order when the customer arrives via the "pay now"
+          link (?pay=online) — e.g. the "Payment not received" message for an
+          order that shows paid but wasn't. Only hidden once delivered/cancelled. */}
+      {((/cash on delivery|cod/i.test(order["Payment Type"] || "") &&
         !inTransit &&
-        !outForDelivery &&
+        !outForDelivery) ||
+        payParam) &&
         !delivered &&
         !cancelled && (
           <CodPayOnline

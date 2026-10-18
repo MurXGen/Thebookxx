@@ -341,6 +341,17 @@ const waMessages = (order) => {
         linkBlock,
     },
     {
+      key: "paynotreceived",
+      label: "Payment not received",
+      text:
+        `⚠️ *Payment not received*\n\n${hi}\n` +
+        `Your order currently shows as *paid*, but we haven't actually received the payment — so your order is *not confirmed* yet.\n\n` +
+        `Please complete the payment using the link below. Once you pay, it's *verified and your order is confirmed automatically*. 🙏\n\n` +
+        `Pay here 👉 ${orderDetailUrl}?pay=online\n` +
+        (grandTotal ? `*Amount to pay: ₹${grandTotal}*` : "") +
+        linkBlock,
+    },
+    {
       key: "predelivery",
       label: "Pre-delivery check-in",
       text:
@@ -480,6 +491,18 @@ const emailMessages = (order) => {
         (bookLines ? `${bookLines}\n\n` : "") +
         `Amount to pay: ₹${grandTotal}\n` +
         `Pay securely here: ${orderDetailUrl}` +
+        footer,
+    },
+    {
+      key: "paynotreceived",
+      label: "Payment not received",
+      subject: `Action needed: your TheBookX order${orderId ? ` #${orderId}` : ""} isn't paid yet ⚠️`,
+      body:
+        `Hi ${first},\n\n` +
+        `Your order currently shows as paid, but we haven't actually received the payment — so it isn't confirmed yet.\n\n` +
+        `Please complete the payment using the secure link below. Once you pay, it's verified and your order is confirmed automatically.\n\n` +
+        `Pay here: ${orderDetailUrl}?pay=online\n` +
+        (grandTotal ? `Amount to pay: ₹${grandTotal}` : "") +
         footer,
     },
     {

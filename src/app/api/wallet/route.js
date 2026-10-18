@@ -173,13 +173,17 @@ export async function GET(request) {
         e.amount < 0 && !!oid && ordersReadOk && !confirmedIds.has(oid);
       return {
         ...e,
-        // A reward credit whose linked order is NOT found for this phone is an
-        // orphan → locked (hidden + unspendable). Only applied on a good read.
+        // A SCRATCH-CARD reward credit whose linked order is NOT found for this
+        // phone is an orphan → locked (hidden + unspendable). Only scratch
+        // rewards are order-gated this way; refunds, recharges, referral and
+        // other manual credits are never locked (their "Order ID" may hold a
+        // request id, not a real order). Only applied on a good read.
         locked:
           ordersReadOk &&
           e.amount > 0 &&
           !!oid &&
-          !presentIds.has(oid),
+          !presentIds.has(oid) &&
+          /scratch/i.test(e.reason || ""),
         pending,
       };
     });

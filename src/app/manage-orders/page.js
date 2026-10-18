@@ -27,6 +27,8 @@ import {
   Loader2,
   Plus,
   Minus,
+  RotateCcw,
+  PackageCheck,
   Edit,
   X,
   ChevronRight,
@@ -5121,6 +5123,11 @@ export default function ManageOrdersPage() {
   const [rmOrder, setRmOrder] = useState(null); // order being edited
   const [rmLineIdx, setRmLineIdx] = useState(-1); // which book line to remove
   const [rmBusy, setRmBusy] = useState(false);
+  // Return/refund requests (Exchange Books tab), keyed by Order ID.
+  const [returnsByOrder, setReturnsByOrder] = useState({});
+  const [rxReq, setRxReq] = useState(null); // request open in the receive modal
+  const [rxAmount, setRxAmount] = useState(""); // approved refund amount input
+  const [rxBusy, setRxBusy] = useState(false);
   // ── Delivered reconcile (India Post bulk-articles-tracking upload) ──
   // Upload the India Post bulk-tracking .xlsx; every article the file marks
   // "Delivered" is matched to an order by Shipping ID. COD orders are proposed
@@ -6108,6 +6115,78 @@ export default function ManageOrdersPage() {
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  // Return/refund requests — map by Order ID so each card can show its status.
+  const fetchReturns = useCallback(async () => {
+    try {
+      const res = await fetch("/api/returns?all=1", { cache: "no-store" });
+      const json = await res.json();
+      const reqs = Array.isArray(json.requests) ? json.requests : [];
+      const map = {};
+      reqs.forEach((r) => {
+        const oid = String(r.orderId || "").trim();
+        if (!oid) return;
+        // Prefer an active (not-yet-refunded) request per order.
+        if (!map[oid] || (!r.moneyReleased && map[oid].moneyReleased))
+          map[oid] = r;
+      });
+      setReturnsByOrder(map);
+    } catch {
+      /* no-op */
+    }
+  }, []);
+  useEffect(() => {
+    fetchReturns();
+  }, [fetchReturns]);
+
+  const openReceiveReturn = (req) => {
+    setRxReq(req);
+    setRxAmount(
+      String(req.approvedRefund || req.estimatedRefund || ""),
+    );
+  };
+  const closeReceiveReturn = () => {
+    setRxReq(null);
+    setRxAmount("");
+  };
+  const confirmReceiveReturn = async () => {
+    if (!rxReq) return;
+    const amount = Math.max(0, Math.round(Number(rxAmount) || 0));
+    if (amount <= 0) {
+      showToast("Enter the approved refund amount first.", "warning");
+      return;
+    }
+    setRxBusy(true);
+    try {
+      const res = await fetch("/api/returns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "receive",
+          requestId: rxReq.requestId,
+          amount,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        showToast(
+          json.already
+            ? "Already refunded — no double credit."
+            : `₹${amount} refunded to the customer's wallet ✓`,
+          "success",
+        );
+        closeReceiveReturn();
+        fetchReturns();
+        fetchWalletSheet?.();
+      } else {
+        showToast(json.error || "Couldn't complete the refund.", "error");
+      }
+    } catch {
+      showToast("Something went wrong. Please try again.", "error");
+    } finally {
+      setRxBusy(false);
+    }
+  };
 
   // Wallet balances now live in the dedicated Wallet tab. Read it and aggregate
   // a signed balance per phone (+ earliest credit time for holding-days).
@@ -10154,6 +10233,43 @@ export default function ManageOrdersPage() {
                             })()}
 
                             <div className="mo2-div" />
+
+                            {/* Return/refund request for this order, if any */}
+                            {returnsByOrder[orderId] && (
+                              <div
+                                className={`mo2-return${returnsByOrder[orderId].moneyReleased ? " done" : ""}`}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="mo2-return-top">
+                                  <RotateCcw size={13} />
+                                  <span>
+                                    {returnsByOrder[orderId].moneyReleased
+                                      ? `Return refunded · ₹${returnsByOrder[orderId].approvedRefund}`
+                                      : "Return requested"}
+                                  </span>
+                                </div>
+                                <div className="mo2-return-books">
+                                  {[
+                                    returnsByOrder[orderId].returnBooks,
+                                    returnsByOrder[orderId].extraBooks,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" · ") || "—"}
+                                </div>
+                                {!returnsByOrder[orderId].moneyReleased && (
+                                  <button
+                                    type="button"
+                                    className="mo2-return-btn"
+                                    onClick={() =>
+                                      openReceiveReturn(returnsByOrder[orderId])
+                                    }
+                                  >
+                                    <PackageCheck size={13} /> Mark received &amp;
+                                    refund
+                                  </button>
+                                )}
+                              </div>
+                            )}
 
                             {/* Total order value */}
                             <div className="mo2-total" onClick={(e) => e.stopPropagation()}>
@@ -17162,6 +17278,109 @@ export default function ManageOrdersPage() {
                     </motion.div>
                   );
                 })()}
+            </AnimatePresence>,
+            document.body,
+          )}
+
+        {/* Mark return received & refund — centered modal (portaled). */}
+        {typeof document !== "undefined" &&
+          createPortal(
+            <AnimatePresence>
+              {rxReq && (
+                <motion.div
+                  className="mo-bd-overlay"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => !rxBusy && closeReceiveReturn()}
+                >
+                  <motion.div
+                    className="mo-bd-sheet mo-rx-sheet"
+                    initial={{ scale: 0.96, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.96, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="mo-ws-head">
+                      <div className="mo-ws-head-txt">
+                        <span className="mo-ws-title">
+                          <PackageCheck size={16} /> Mark received &amp; refund
+                        </span>
+                        <span className="mo-ws-sub">
+                          {rxReq.customerName} · Order {rxReq.orderId}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="mo-ws-close"
+                        onClick={() => !rxBusy && closeReceiveReturn()}
+                        aria-label="Close"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                    <div className="mo-rx-body">
+                      <div className="mo-rx-row">
+                        <span>Books returned</span>
+                        <b>
+                          {[rxReq.returnBooks, rxReq.extraBooks]
+                            .filter(Boolean)
+                            .join(" · ") || "—"}
+                        </b>
+                      </div>
+                      {rxReq.estimatedRefund > 0 && (
+                        <div className="mo-rx-row">
+                          <span>Customer estimate (50%)</span>
+                          <b>₹{rxReq.estimatedRefund}</b>
+                        </div>
+                      )}
+                      <label className="mo-rx-amt-label">
+                        Approved refund amount (to wallet)
+                      </label>
+                      <div className="mo-rx-amt">
+                        <span>₹</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={rxAmount}
+                          onChange={(e) => setRxAmount(e.target.value)}
+                          placeholder="0"
+                          autoFocus
+                        />
+                      </div>
+                      <p className="mo-rx-note">
+                        This credits the amount to the customer&apos;s TheBookX
+                        wallet (once only) and marks the request refunded.
+                      </p>
+                    </div>
+                    <div className="mo-ws-foot mo-rb-foot">
+                      <button
+                        type="button"
+                        className="mo-ws-cancel"
+                        onClick={() => !rxBusy && closeReceiveReturn()}
+                        disabled={rxBusy}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="mo-ws-save"
+                        onClick={confirmReceiveReturn}
+                        disabled={rxBusy}
+                      >
+                        {rxBusy ? (
+                          <Loader2 size={15} className="mo-spin" />
+                        ) : (
+                          <Wallet size={15} />
+                        )}
+                        Refund ₹
+                        {Math.max(0, Math.round(Number(rxAmount) || 0))} to wallet
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
             </AnimatePresence>,
             document.body,
           )}

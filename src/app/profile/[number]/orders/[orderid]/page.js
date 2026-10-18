@@ -21,6 +21,10 @@ import {
   ChevronDown,
   Truck,
   ShieldCheck,
+  RotateCcw,
+  PackageCheck,
+  Plus,
+  Trash2,
   Info,
   Train,
   Plane,
@@ -59,6 +63,7 @@ import {
 } from "@/utils/googleFormOrder";
 import { parseAddonsField } from "@/utils/addonsField";
 import { isGiftOrder } from "@/utils/giftOrder";
+import { showToast } from "@/context/ToastContext";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { books as ALL_BOOKS } from "@/utils/book";
 
@@ -344,6 +349,12 @@ export default function OrderDetailPage() {
   const [itemsOpen, setItemsOpen] = useState(false);
   const [mapFull, setMapFull] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+  // Return / refund-for-books-back request.
+  const [retOpen, setRetOpen] = useState(false);
+  const [retSel, setRetSel] = useState({}); // { lineIdx: true }
+  const [retExtra, setRetExtra] = useState([""]); // free-text extra book names
+  const [retBusy, setRetBusy] = useState(false);
+  const [retRequest, setRetRequest] = useState(null); // existing request, if any
   // Address edit sheet
   const [showAddrEdit, setShowAddrEdit] = useState(false);
   const [addrForm, setAddrForm] = useState(null);
@@ -457,6 +468,30 @@ export default function OrderDetailPage() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order]);
+
+  // Load any existing return/refund request for this order (to show its status).
+  useEffect(() => {
+    const oid = String(params?.orderid || "").trim();
+    if (!oid) return;
+    let ignore = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/returns?orderId=${encodeURIComponent(oid)}`,
+        );
+        const json = await res.json();
+        const reqs = Array.isArray(json.requests) ? json.requests : [];
+        const active =
+          reqs.find((r) => !/reject/i.test(r.status || "")) || reqs[0] || null;
+        if (!ignore) setRetRequest(active);
+      } catch {
+        /* no-op */
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+  }, [params?.orderid]);
 
   // Fetch a real road route whenever the receiver coords change.
   useEffect(() => {
@@ -1164,6 +1199,77 @@ export default function OrderDetailPage() {
       email: String(order["Email"] || "").trim(),
     });
     setShowAddrEdit(true);
+  };
+
+  // ── Return books for a refund (to wallet) ────────────────────────────────
+  const openReturn = () => {
+    setRetSel({});
+    setRetExtra([""]);
+    setRetOpen(true);
+  };
+  const retEstimate = () =>
+    books.reduce(
+      (s, b, i) => (retSel[i] ? s + Math.round((b.total || 0) * 0.5) : s),
+      0,
+    );
+  const retPickupAddress = () => {
+    const parts = [cleanAddr, order["City"], order["State"], order["Pincode"]]
+      .map((x) => String(x || "").trim())
+      .filter(Boolean);
+    return parts.join(", ");
+  };
+  const submitReturn = async () => {
+    const selectedBooks = books
+      .filter((_, i) => retSel[i])
+      .map((b) => `${b.name}${b.quantity > 1 ? ` ×${b.quantity}` : ""}`);
+    const extras = retExtra.map((s) => String(s || "").trim()).filter(Boolean);
+    if (selectedBooks.length === 0 && extras.length === 0) {
+      showToast("Please select at least one book to return.", "warning");
+      return;
+    }
+    setRetBusy(true);
+    try {
+      const res = await fetch("/api/returns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "create",
+          orderId: String(order["Order ID"] || params?.orderid || ""),
+          phone: number,
+          customerName: custName,
+          returnBooks: selectedBooks,
+          extraBooks: extras,
+          estimated: retEstimate(),
+          pickupFrom: retPickupAddress(),
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        showToast(
+          "Exchange request has been sent successfully. Our team might contact for images of the books to confirm.",
+          "success",
+        );
+        setRetOpen(false);
+        setRetRequest({
+          requestId: json.requestId,
+          status: "Requested",
+          moneyReleased: false,
+          approvedRefund: 0,
+          estimatedRefund: retEstimate(),
+          returnBooks: selectedBooks.join(" | "),
+          extraBooks: extras.join(" | "),
+        });
+      } else {
+        showToast(
+          "Couldn't raise the request right now. Please try again.",
+          "error",
+        );
+      }
+    } catch {
+      showToast("Something went wrong. Please try again.", "error");
+    } finally {
+      setRetBusy(false);
+    }
   };
 
   const saveAddr = async () => {
@@ -2208,6 +2314,50 @@ export default function OrderDetailPage() {
             <Download size={16} /> Download bill
           </button>
         </div>
+
+        {/* Return books for a refund (money back to wallet). Delivered only. */}
+        {delivered &&
+          !cancelled &&
+          (retRequest ? (
+            <div className="od-return-raised">
+              <div className="od-return-raised-top">
+                <PackageCheck size={16} />
+                <span>
+                  {retRequest.moneyReleased
+                    ? "Refund completed"
+                    : "Pickup request raised"}
+                </span>
+              </div>
+              <p className="od-return-raised-sub">
+                {retRequest.moneyReleased ? (
+                  <>
+                    ₹{retRequest.approvedRefund} has been added to your TheBookX
+                    wallet for the returned books.
+                  </>
+                ) : retRequest.approvedRefund > 0 ? (
+                  <>
+                    Approved refund:{" "}
+                    <b>₹{retRequest.approvedRefund}</b> — credited to your wallet
+                    once we receive &amp; verify the books.
+                  </>
+                ) : (
+                  <>
+                    We&apos;ll arrange a pickup for the selected books. Our team
+                    may contact you for photos to confirm, then the refund is
+                    credited to your wallet.
+                  </>
+                )}
+              </p>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="od-return-btn"
+              onClick={openReturn}
+            >
+              <RotateCcw size={16} /> Get money on return of the books
+            </button>
+          ))}
       </section>
 
       {/* COD → pay-online upgrade (only before the parcel is moving) */}
@@ -2332,6 +2482,146 @@ export default function OrderDetailPage() {
             onDetail
             onClose={() => setShowSupport(false)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Return books for a refund — bottom sheet */}
+      <AnimatePresence>
+        {retOpen && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !retBusy && setRetOpen(false)}
+          >
+            <motion.div
+              className="bill-modal od-return-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="od-return-head">
+                <div>
+                  <h3>Return books for a refund</h3>
+                  <p>
+                    Pick the books you want to send back. We arrange a free
+                    pickup, and once we receive &amp; verify them the refund is
+                    added to your TheBookX wallet.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="od-return-x"
+                  onClick={() => !retBusy && setRetOpen(false)}
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="od-return-body">
+                <div className="od-return-label">Books in this order</div>
+                <div className="od-return-books">
+                  {books.map((b, i) => {
+                    const on = !!retSel[i];
+                    const half = Math.round((b.total || 0) * 0.5);
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        className={`od-return-book${on ? " on" : ""}`}
+                        onClick={() =>
+                          setRetSel((s) => ({ ...s, [i]: !s[i] }))
+                        }
+                      >
+                        <span className="od-return-book-check">
+                          {on && <Check size={13} />}
+                        </span>
+                        <span className="od-return-book-name">
+                          {b.name}
+                          {b.quantity > 1 ? ` ×${b.quantity}` : ""}
+                        </span>
+                        <span className="od-return-book-val">
+                          ≈₹{half}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="od-return-label">
+                  Other books to return (optional)
+                </div>
+                <div className="od-return-extras">
+                  {retExtra.map((val, i) => (
+                    <div key={i} className="od-return-extra-row">
+                      <input
+                        className="od-return-extra-input"
+                        placeholder="Type a book title…"
+                        value={val}
+                        onChange={(e) =>
+                          setRetExtra((arr) =>
+                            arr.map((v, j) => (j === i ? e.target.value : v)),
+                          )
+                        }
+                      />
+                      {retExtra.length > 1 && (
+                        <button
+                          type="button"
+                          className="od-return-extra-del"
+                          onClick={() =>
+                            setRetExtra((arr) => arr.filter((_, j) => j !== i))
+                          }
+                          aria-label="Remove"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="od-return-addmore"
+                    onClick={() => setRetExtra((arr) => [...arr, ""])}
+                  >
+                    <Plus size={14} /> Add another book
+                  </button>
+                </div>
+
+                <div className="od-return-estimate">
+                  <span>Estimated refund (≈50% of value)</span>
+                  <b>₹{retEstimate()}</b>
+                </div>
+                <p className="od-return-note">
+                  This is an estimate. Our team confirms the final refund after
+                  inspecting the books — extra books you add are assessed then.
+                  Refund is credited to your TheBookX wallet.
+                </p>
+              </div>
+
+              <div className="od-return-foot">
+                <button
+                  type="button"
+                  className="od-return-cancel"
+                  onClick={() => !retBusy && setRetOpen(false)}
+                  disabled={retBusy}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="od-return-submit"
+                  onClick={submitReturn}
+                  disabled={retBusy}
+                >
+                  {retBusy ? "Sending…" : "Raise pickup request"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

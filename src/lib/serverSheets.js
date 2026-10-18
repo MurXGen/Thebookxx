@@ -63,6 +63,19 @@ export const REVIEWS_SHEET_NAME =
 export const REFERRER_REWARD = Number(process.env.REFERRER_REWARD || 50);
 export const REFEREE_REWARD = Number(process.env.REFEREE_REWARD || 30);
 
+// Return / exchange pickup requests tab. One row per request. Columns:
+// Request ID | Timestamp | Order ID | Phone Number | Customer Name |
+// Return Books | Extra Books | Estimated Refund | Approved Refund Amount |
+// Status (Requested/Received/Refunded/Rejected) | Money Released (No/Yes) |
+// Pickup From | Pickup To | Notes | Updated At.
+export const EXCHANGE_SHEET_NAME =
+  process.env.EXCHANGE_SHEET_NAME || "Exchange Books";
+
+// Our return pickup destination (printed as the "to" address on the request).
+export const RETURN_TO_ADDRESS =
+  process.env.RETURN_TO_ADDRESS ||
+  "TheBookX Returns, Rajkot, Gujarat 360001";
+
 // Apps Script web apps (writes/edits). Keep these on the server so nobody can
 // call them directly to forge/modify sheet rows.
 export const APPSCRIPT_ORDER_URL =
@@ -305,6 +318,33 @@ export async function reconcileOrderWalletDebit({
   }
 }
 
+// Idempotently CREDIT the wallet for an approved return/refund. Keyed by the
+// return's Request ID (stored in the row's "Order ID" column) so marking a
+// request "received" twice can never double-credit.
+export async function creditWalletForReturn({
+  phone,
+  requestId,
+  amount,
+  reason,
+} = {}) {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  const amt = Math.round(Number(amount) || 0);
+  const rid = String(requestId || "").trim();
+  if (digits.length !== 10 || amt <= 0 || !rid)
+    return { ok: false, skipped: true };
+  if (await walletHasOrderTx(digits, rid, "credit"))
+    return { ok: true, already: true };
+  const res = await walletAppend({
+    Timestamp: fmtWalletTs(new Date()),
+    "Phone Number": digits,
+    Amount: String(Math.abs(amt)),
+    Type: "Credit",
+    Reason: reason || `Return refund ${rid}`,
+    "Order ID": rid,
+  });
+  return { ok: res?.success !== false, wrote: true };
+}
+
 // Read a single order row by Order ID (server-side). Returns the row object or
 // null. Used by the order-write reconcile to learn the authoritative phone /
 // Wallet Applied / status for status-only updates.
@@ -513,6 +553,44 @@ export function reviewRewardUpdate(subId, data) {
     matchValue: String(subId),
     data,
   });
+}
+
+// ── Return / exchange pickup requests ─────────────────────────────────────
+// Append one return request row.
+export function exchangeAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "append",
+    sheet: EXCHANGE_SHEET_NAME,
+    data,
+  });
+}
+// Update a request row matched on its Request ID.
+export function exchangeUpdate(requestId, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: EXCHANGE_SHEET_NAME,
+    matchColumn: "Request ID",
+    matchValue: String(requestId),
+    data,
+  });
+}
+// Read every return request (small table; callers filter by order / phone).
+export async function exchangeAllRows() {
+  try {
+    const table = await gvizQuery({ sheet: EXCHANGE_SHEET_NAME });
+    return tableToObjects(table);
+  } catch {
+    return [];
+  }
+}
+// Read return requests for one order id.
+export async function exchangeRowsForOrder(orderId) {
+  const oid = String(orderId || "").trim();
+  if (!oid) return [];
+  const rows = await exchangeAllRows();
+  return rows.filter(
+    (r) => String(r["Order ID"] ?? r["Order Id"] ?? "").trim() === oid,
+  );
 }
 
 // Read Pro Plan rows for one phone (scoped server-side via gviz `where`).

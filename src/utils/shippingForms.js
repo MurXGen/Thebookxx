@@ -1073,7 +1073,284 @@ export function downloadCombinedFormsPDF(dataArray, filename) {
 // header + payment badge, big COD collect banner (COD only), a hero DELIVER-TO
 // block, a highlighted call-before-delivery box, a compact FROM strip, optional
 // note, and an order-id/date footer. Returns the y where the label ends.
+// Landscape, minimal B&W address label with three auto-picked variants:
+//   normal  — clean black-on-white, one thin orange accent
+//   gift    — soft festive header + warm message (any gift occasion)
+//   speed   — bold priority/express header for faster-delivery orders
+// The deliver-to address dominates in every variant. Returns the end-Y.
 function drawBigAddressLabel(c, startY, data) {
+  const ctx = c.ctx;
+  const INK = "#111111";
+  const isCOD = !!data.isCOD;
+  const isGift = !!data.isGift;
+  const isFaster = !!data.isFaster;
+  const variant = isGift ? "gift" : isFaster ? "speed" : "normal";
+  const ACCENT = isGift ? "#ec4899" : "#fb8500";
+  const LBL = isGift ? "#b03a6e" : "#c25e00";
+
+  const X = 34;
+  const W = c.W - X * 2;
+  const innerX = X + 28;
+  const innerW = W - 56;
+  const rightX = X + W - 28;
+  let y = startY;
+
+  const rr = (x, yy, w, h, r) => {
+    ctx.beginPath();
+    ctx.moveTo(x + r, yy);
+    ctx.arcTo(x + w, yy, x + w, yy + h, r);
+    ctx.arcTo(x + w, yy + h, x, yy + h, r);
+    ctx.arcTo(x, yy + h, x, yy, r);
+    ctx.arcTo(x, yy, x + w, yy, r);
+    ctx.closePath();
+  };
+  const hline = (yy, color = "#dcdcdc") => {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(X, yy);
+    ctx.lineTo(X + W, yy);
+    ctx.stroke();
+    ctx.restore();
+  };
+  const cap = (txt, x, yy, color) =>
+    c.text(txt, x, yy, {
+      font: "bold 15px Poppins, sans-serif",
+      color: color || "#555555",
+    });
+
+  // ===== Header (per variant) =====
+  if (variant === "gift") {
+    const bandH = 132;
+    ctx.fillStyle = "#fff4f9";
+    ctx.fillRect(X, y, W, bandH);
+    [
+      ["#ec4899", 0.1],
+      ["#8b5cf6", 0.28],
+      ["#fb8500", 0.46],
+      ["#10b981", 0.64],
+      ["#8b5cf6", 0.82],
+      ["#ec4899", 0.92],
+    ].forEach(([col, fx], i) => {
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.arc(X + W * fx, y + 20 + (i % 2) * 10, 6, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.fillStyle = ACCENT;
+    rr(innerX, y + 22, 9, 9, 2);
+    ctx.fill();
+    c.text("TheBookX", innerX + 17, y + 32, {
+      font: "bold 22px Poppins, sans-serif",
+      color: INK,
+    });
+    c.text("A GIFT FOR YOU", rightX, y + 32, {
+      font: "bold 14px Poppins, sans-serif",
+      color: LBL,
+      align: "right",
+    });
+    c.text("A gift, just for you!", innerX, y + 84, {
+      font: "bold 42px Georgia, serif",
+      color: "#d6336c",
+    });
+    c.text("Hope it brightens your day — happy reading!", innerX, y + 115, {
+      font: "20px Poppins, sans-serif",
+      color: "#8a4a63",
+    });
+    y += bandH;
+  } else if (variant === "speed") {
+    const barH = 112;
+    ctx.fillStyle = INK;
+    ctx.fillRect(X, y, W, barH);
+    ctx.fillStyle = ACCENT;
+    const lx = innerX;
+    const ly = y + 30;
+    ctx.beginPath();
+    ctx.moveTo(lx + 24, ly);
+    ctx.lineTo(lx, ly + 38);
+    ctx.lineTo(lx + 18, ly + 38);
+    ctx.lineTo(lx + 9, ly + 66);
+    ctx.lineTo(lx + 40, ly + 28);
+    ctx.lineTo(lx + 20, ly + 28);
+    ctx.closePath();
+    ctx.fill();
+    c.text("PRIORITY EXPRESS", innerX + 60, y + 60, {
+      font: "bold 36px Poppins, sans-serif",
+      color: "#ffffff",
+    });
+    c.text("SPEED POST", rightX, y + 46, {
+      font: "bold 15px Poppins, sans-serif",
+      color: ACCENT,
+      align: "right",
+    });
+    c.text("DELIVER FIRST · TIME-CRITICAL", rightX, y + 74, {
+      font: "bold 16px Poppins, sans-serif",
+      color: "#ffffff",
+      align: "right",
+    });
+    y += barH;
+  } else {
+    ctx.fillStyle = ACCENT;
+    rr(innerX, y + 20, 9, 9, 2);
+    ctx.fill();
+    c.text("TheBookX", innerX + 17, y + 32, {
+      font: "bold 30px Poppins, sans-serif",
+      color: INK,
+    });
+    c.text("SHIPPING LABEL", rightX, y + 30, {
+      font: "bold 16px Poppins, sans-serif",
+      color: "#444444",
+      align: "right",
+    });
+    y += 62;
+    hline(y);
+  }
+  y += 36;
+
+  // ===== FROM =====
+  cap("FROM", innerX, y, "#555555");
+  y += 24;
+  let fy = c.wrap(
+    `TheBookX · ${SENDER.addressLines.join(", ")}`,
+    innerX,
+    y,
+    innerW,
+    22,
+    { font: "15px Poppins, sans-serif", color: "#333333" },
+  );
+  fy += 22;
+  c.text(
+    `Mobile ${SENDER.mobile} — call this number for any seller assistance`,
+    innerX,
+    fy,
+    { font: "15px Poppins, sans-serif", color: "#333333" },
+  );
+  y = fy + 20;
+  hline(y);
+  y += 34;
+
+  // ===== DELIVER TO (hero) =====
+  const toTop = y - 14;
+  c.text("DELIVER TO", innerX, y, {
+    font: "bold 17px Poppins, sans-serif",
+    color: LBL,
+  });
+  const nameY = y + 46;
+  c.text(data.customerName || "", innerX, nameY, {
+    font: "bold 46px Poppins, sans-serif",
+    color: INK,
+  });
+  let ay = nameY + 36;
+  ay = c.wrap(data.customerAddress || "", innerX, ay, innerW, 30, {
+    font: "23px Poppins, sans-serif",
+    color: "#222222",
+  });
+  ay += 42;
+  const cityState = [data.customerCity, data.customerState]
+    .filter(Boolean)
+    .join(", ");
+  c.text(
+    `${cityState}${cityState ? " — " : ""}${data.customerPincode || ""}`,
+    innerX,
+    ay,
+    { font: "bold 27px Poppins, sans-serif", color: INK },
+  );
+  ay += 32;
+  const phones = [data.customerPhone, data.customerAltPhone]
+    .filter((p) => String(p || "").trim())
+    .join(" / ");
+  if (phones) {
+    c.text(`Call this number for delivery: ${phones}`, innerX, ay, {
+      font: "21px Poppins, sans-serif",
+      color: "#222222",
+    });
+    ay += 8;
+  } else {
+    ay -= 24;
+  }
+  ctx.fillStyle = ACCENT;
+  ctx.fillRect(X, toTop, 5, ay - toTop);
+  y = ay + 26;
+  hline(y);
+  y += 34;
+
+  // ===== Footer row: Order ID · Date · Amount/Payment =====
+  const rowY = y;
+  const col2 = X + Math.round(W * 0.42);
+  const col3 = X + Math.round(W * 0.7);
+  ctx.save();
+  ctx.strokeStyle = "#dcdcdc";
+  ctx.lineWidth = 1;
+  [col2 - 22, col3 - 22].forEach((vx) => {
+    ctx.beginPath();
+    ctx.moveTo(vx, rowY - 16);
+    ctx.lineTo(vx, rowY + 30);
+    ctx.stroke();
+  });
+  ctx.restore();
+  cap("ORDER ID", innerX, rowY, "#555555");
+  c.text(data.orderId || "", innerX, rowY + 26, {
+    font: "bold 21px Poppins, sans-serif",
+    color: INK,
+  });
+  cap("DATE", col2, rowY, "#555555");
+  c.text(
+    new Date().toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    col2,
+    rowY + 26,
+    { font: "bold 21px Poppins, sans-serif", color: INK },
+  );
+  if (isCOD) {
+    cap("COLLECT ON DELIVERY", col3, rowY, "#555555");
+    c.text(`₹${data.codAmount || 0} /-`, col3, rowY + 26, {
+      font: "bold 23px Poppins, sans-serif",
+      color: INK,
+    });
+  } else {
+    cap("PAYMENT", col3, rowY, "#555555");
+    c.text("Paid · Prepaid", col3, rowY + 26, {
+      font: "bold 21px Poppins, sans-serif",
+      color: "#1d7a3a",
+    });
+  }
+  y = rowY + 46;
+
+  // ===== Note =====
+  hline(y, "#ededed");
+  y += 28;
+  let noteText;
+  if (variant === "gift") {
+    noteText =
+      "Gift order — price is not enclosed. Please hand it over with a smile.";
+  } else {
+    const dn = deliveryNoteFor(data.note);
+    noteText = dn.isCustomer
+      ? `Note: ${dn.text}`
+      : `${dn.text} ${dn.textHi}`.trim();
+  }
+  y = c.wrap(noteText, innerX, y, innerW, 22, {
+    font: "17px Poppins, sans-serif",
+    color: "#777777",
+  });
+  y += 18;
+
+  // Outer frame (square, crisp) drawn last so it sits above header fills.
+  ctx.save();
+  ctx.strokeStyle = "#111111";
+  ctx.lineWidth = 2.4;
+  ctx.strokeRect(X, startY, W, y - startY);
+  ctx.restore();
+
+  return y;
+}
+
+// eslint-disable-next-line no-unused-vars
+function drawBigAddressLabelLegacy(c, startY, data) {
   const ctx = c.ctx;
   // High-contrast black-and-white label — minimal colour, everything dark for
   // crisp printing on any printer.
@@ -1551,9 +1828,12 @@ export function buildAddressLabelCanvas(data, opts = {}) {
     customerPincode: data.customerPincode,
     customerPhone: data.customerPhone,
     customerAltPhone: data.customerAltPhone,
+    customerState: data.customerState,
     isCOD,
     codAmount: data.codAmount,
     note: data.note,
+    isGift: data.isGift,
+    isFaster: data.isFaster,
   });
   const finalH = Math.min(endY + botPad, SAFE_H);
   if (decor) drawLabelDecor(c.ctx, W, finalH);

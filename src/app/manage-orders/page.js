@@ -6460,6 +6460,10 @@ export default function ManageOrdersPage() {
       codAmount,
       note: gift ? "" : cleanNote(note),
       isGift: gift,
+      // Faster / express orders get the "Priority Express" label variant.
+      isFaster:
+        /faster|express/i.test(String(o["Delivery Type"] || "")) ||
+        /^e/i.test(String(o.shippingId || o["Shipping ID"] || "").trim()),
       giftQrUrl,
     };
   };

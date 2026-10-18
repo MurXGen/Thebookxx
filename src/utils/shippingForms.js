@@ -1104,7 +1104,21 @@ function drawBigAddressLabel(c, startY, data) {
     ctx.arcTo(x, yy, x + w, yy, r);
     ctx.closePath();
   };
-  const hline = (yy, color = "#dcdcdc") => {
+  // Rounded only on the TOP corners — used for the full-bleed header bands so
+  // they tuck inside the card's rounded top corners instead of poking out.
+  const roundTopRect = (x, yy, w, h, r) => {
+    ctx.beginPath();
+    ctx.moveTo(x, yy + h);
+    ctx.lineTo(x, yy + r);
+    ctx.arcTo(x, yy, x + r, yy, r);
+    ctx.lineTo(x + w - r, yy);
+    ctx.arcTo(x + w, yy, x + w, yy + r, r);
+    ctx.lineTo(x + w, yy + h);
+    ctx.closePath();
+  };
+  const RAD = 16;
+  // Inner left/right padding is (innerX - X); keep the top gap equal to it.
+  const hline = (yy, color = "#ededed") => {
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
@@ -1124,7 +1138,8 @@ function drawBigAddressLabel(c, startY, data) {
   if (variant === "gift") {
     const bandH = 152;
     ctx.fillStyle = "#fff4f9";
-    ctx.fillRect(X, y, W, bandH);
+    roundTopRect(X, y, W, bandH, RAD);
+    ctx.fill();
     [
       ["#ec4899", 0.1],
       ["#8b5cf6", 0.28],
@@ -1164,7 +1179,8 @@ function drawBigAddressLabel(c, startY, data) {
   } else if (variant === "speed") {
     const barH = 112;
     ctx.fillStyle = INK;
-    ctx.fillRect(X, y, W, barH);
+    roundTopRect(X, y, W, barH, RAD);
+    ctx.fill();
     ctx.fillStyle = ACCENT;
     const lx = innerX;
     const ly = y + 30;
@@ -1194,18 +1210,18 @@ function drawBigAddressLabel(c, startY, data) {
     y += barH;
   } else {
     ctx.fillStyle = ACCENT;
-    rr(innerX, y + 20, 9, 9, 2);
+    rr(innerX, y + 28, 9, 9, 2);
     ctx.fill();
-    c.text("TheBookX", innerX + 17, y + 32, {
+    c.text("TheBookX", innerX + 17, y + 40, {
       font: "bold 30px Poppins, sans-serif",
       color: INK,
     });
-    c.text("SHIPPING LABEL", rightX, y + 30, {
+    c.text("SHIPPING LABEL", rightX, y + 38, {
       font: "bold 16px Poppins, sans-serif",
       color: "#444444",
       align: "right",
     });
-    y += 62;
+    y += 72;
     hline(y);
   }
   y += 36;
@@ -1339,19 +1355,22 @@ function drawBigAddressLabel(c, startY, data) {
     font: "17px Poppins, sans-serif",
     color: "#777777",
   });
-  y += 18;
+  y += 28;
 
-  // Outer frame (square, crisp) drawn last so it sits above header fills.
+  // Outer frame — lightest, rounded, dashed. Drawn last so it sits above the
+  // header band. Rounded corners match the header band's rounded top.
   ctx.save();
-  ctx.strokeStyle = "#111111";
-  ctx.lineWidth = 2.4;
-  ctx.strokeRect(X, startY, W, y - startY);
+  ctx.strokeStyle = "#d9d9d9";
+  ctx.lineWidth = 1.4;
+  ctx.setLineDash([9, 7]);
+  rr(X, startY, W, y - startY, RAD);
+  ctx.stroke();
+  ctx.setLineDash([]);
   ctx.restore();
 
   return y;
 }
 
-// eslint-disable-next-line no-unused-vars
 function drawBigAddressLabelLegacy(c, startY, data) {
   const ctx = c.ctx;
   // High-contrast black-and-white label — minimal colour, everything dark for
@@ -1875,50 +1894,68 @@ export function downloadAddressLabelsPNGs(dataArray) {
 // trim along. Labels are centered horizontally and share the widest width.
 const LABELS_PER_PAGE = 3;
 
-export function buildAddressLabelSheetCanvas(group, opts = {}) {
-  const labels = group.map((d) => buildAddressLabelCanvas(d, opts));
-  const GAP = 48; // vertical space between/around labels (2x px)
+const LABEL_GAP = 48; // vertical space between/around labels (2x px)
+// Each label already carries its own dashed card border, so pages hold at most
+// MAX_LABELS_PER_PAGE labels but drop to fewer when the labels are tall (a long
+// note grows the label) — kept within PAGE_HEIGHT_BUDGET so printed A4 pages
+// don't shrink the labels too much.
+const MAX_LABELS_PER_PAGE = 3;
+const PAGE_HEIGHT_BUDGET = 2120;
+
+// Pack pre-built label canvases into pages: up to 3 short labels, or 2 (even 1)
+// when they're tall. Greedy by cumulative height against the budget.
+function packLabelPages(labels) {
+  const pages = [];
+  let cur = [];
+  let curH = LABEL_GAP;
+  for (const l of labels) {
+    const next = curH + l.height + LABEL_GAP;
+    if (
+      cur.length &&
+      (cur.length >= MAX_LABELS_PER_PAGE || next > PAGE_HEIGHT_BUDGET)
+    ) {
+      pages.push(cur);
+      cur = [];
+      curH = LABEL_GAP;
+    }
+    cur.push(l);
+    curH += l.height + LABEL_GAP;
+  }
+  if (cur.length) pages.push(cur);
+  return pages;
+}
+
+// Stack already-built label canvases onto one sheet (centered, equal gaps).
+function stackLabelCanvases(labels) {
   const width = Math.max(...labels.map((l) => l.width));
   const totalH =
-    labels.reduce((s, l) => s + l.height, 0) + GAP * (labels.length + 1);
-
+    labels.reduce((s, l) => s + l.height, 0) + LABEL_GAP * (labels.length + 1);
   const out = document.createElement("canvas");
   out.width = width;
   out.height = totalH;
   const ctx = out.getContext("2d");
   ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, out.width, out.height);
-
-  let y = GAP;
-  labels.forEach((l, i) => {
-    const x = (width - l.width) / 2;
-    ctx.drawImage(l, x, y);
-    y += l.height;
-    if (i < labels.length - 1) {
-      // dashed cut line centered in the gap
-      ctx.strokeStyle = "#bbb";
-      ctx.setLineDash([14, 9]);
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(24, y + GAP / 2);
-      ctx.lineTo(width - 24, y + GAP / 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      y += GAP;
-    }
+  let y = LABEL_GAP;
+  labels.forEach((l) => {
+    ctx.drawImage(l, (width - l.width) / 2, y);
+    y += l.height + LABEL_GAP;
   });
   return out;
 }
 
+export function buildAddressLabelSheetCanvas(group, opts = {}) {
+  return stackLabelCanvases(group.map((d) => buildAddressLabelCanvas(d, opts)));
+}
+
 // Many address labels → ONE ordered PDF, three labels per page, no CDF.
 export function downloadAddressLabelsPDF(dataArray, filename, opts = {}) {
-  const pages = [];
-  for (let i = 0; i < dataArray.length; i += LABELS_PER_PAGE) {
-    const group = dataArray.slice(i, i + LABELS_PER_PAGE);
-    const cv = buildAddressLabelSheetCanvas(group, opts);
+  const labels = dataArray.map((d) => buildAddressLabelCanvas(d, opts));
+  const pages = packLabelPages(labels).map((group) => {
+    const cv = stackLabelCanvases(group);
     const url = cv.toDataURL("image/jpeg", 0.92);
-    pages.push({ data: dataUrlToBytes(url), w: cv.width, h: cv.height });
-  }
+    return { data: dataUrlToBytes(url), w: cv.width, h: cv.height };
+  });
   const blob = jpegPagesToPdf(pages, 14);
   triggerDownload(
     blob,

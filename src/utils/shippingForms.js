@@ -1260,7 +1260,13 @@ function drawBigAddressLabel(c, startY, data) {
     color: INK,
   });
   let ay = nameY + 36;
-  ay = c.wrap(data.customerAddress || "", innerX, ay, innerW, 30, {
+  // Address with any "Pinned location: <map link>" stripped — map URLs are not
+  // printed on the label.
+  const cleanAddress = String(data.customerAddress || "")
+    .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/i, "")
+    .replace(/\s*,\s*$/, "")
+    .trim();
+  ay = c.wrap(cleanAddress, innerX, ay, innerW, 30, {
     font: "23px Poppins, sans-serif",
     color: "#222222",
   });
@@ -1274,18 +1280,31 @@ function drawBigAddressLabel(c, startY, data) {
     ay,
     { font: "bold 27px Poppins, sans-serif", color: INK },
   );
-  ay += 32;
   const phones = [data.customerPhone, data.customerAltPhone]
     .filter((p) => String(p || "").trim())
     .join(" / ");
   if (phones) {
-    c.text(`Call this number for delivery: ${phones}`, innerX, ay, {
-      font: "21px Poppins, sans-serif",
-      color: "#222222",
+    // Delivery-contact "stripe" — light bar, bold text, accent bottom border.
+    const stY = ay + 16;
+    const stH = 46;
+    ctx.fillStyle = "#f4f4f4";
+    rr(innerX, stY, innerW, stH, 8);
+    ctx.fill();
+    ctx.save();
+    ctx.strokeStyle = ACCENT;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(innerX + 3, stY + stH);
+    ctx.lineTo(innerX + innerW - 3, stY + stH);
+    ctx.stroke();
+    ctx.restore();
+    c.text(`Call this number for delivery: ${phones}`, innerX + 16, stY + 30, {
+      font: "bold 19px Poppins, sans-serif",
+      color: INK,
     });
-    ay += 8;
+    ay = stY + stH + 8;
   } else {
-    ay -= 24;
+    ay += 12;
   }
   ctx.fillStyle = ACCENT;
   ctx.fillRect(X, toTop, 5, ay - toTop);
@@ -1300,12 +1319,17 @@ function drawBigAddressLabel(c, startY, data) {
   ctx.save();
   ctx.strokeStyle = "#dcdcdc";
   ctx.lineWidth = 1;
-  [col2 - 22, col3 - 22].forEach((vx) => {
+  // col2 separator always; col3 only when there's no COD box (below).
+  ctx.beginPath();
+  ctx.moveTo(col2 - 22, rowY - 16);
+  ctx.lineTo(col2 - 22, rowY + 30);
+  ctx.stroke();
+  if (!isCOD) {
     ctx.beginPath();
-    ctx.moveTo(vx, rowY - 16);
-    ctx.lineTo(vx, rowY + 30);
+    ctx.moveTo(col3 - 22, rowY - 16);
+    ctx.lineTo(col3 - 22, rowY + 30);
     ctx.stroke();
-  });
+  }
   ctx.restore();
   cap("ORDER ID", innerX, rowY, "#555555");
   c.text(data.orderId || "", innerX, rowY + 26, {
@@ -1324,6 +1348,15 @@ function drawBigAddressLabel(c, startY, data) {
     { font: "bold 21px Poppins, sans-serif", color: INK },
   );
   if (isCOD) {
+    // Bordered box around the amount to collect.
+    const bx = col3 - 10;
+    const bw = X + W - 26 - bx;
+    ctx.save();
+    ctx.strokeStyle = "#111111";
+    ctx.lineWidth = 1.8;
+    rr(bx, rowY - 22, bw, 56, 8);
+    ctx.stroke();
+    ctx.restore();
     cap("COLLECT ON DELIVERY", col3, rowY, "#555555");
     c.text(`₹${data.codAmount || 0} /-`, col3, rowY + 26, {
       font: "bold 23px Poppins, sans-serif",
@@ -1336,24 +1369,23 @@ function drawBigAddressLabel(c, startY, data) {
       color: "#1d7a3a",
     });
   }
-  y = rowY + 46;
+  y = rowY + 50;
 
-  // ===== Note =====
+  // ===== Note — short + bold =====
   hline(y, "#ededed");
   y += 28;
   let noteText;
   if (variant === "gift") {
-    noteText =
-      "Gift order — price is not enclosed. Please hand it over with a smile.";
+    noteText = "Gift order — price not enclosed. Hand over with a smile.";
   } else {
     const dn = deliveryNoteFor(data.note);
     noteText = dn.isCustomer
       ? `Note: ${dn.text}`
-      : `${dn.text} ${dn.textHi}`.trim();
+      : "Deliver to the customer — do not return. ग्राहक को ही डिलीवर करें, वापस न लौटाएँ।";
   }
-  y = c.wrap(noteText, innerX, y, innerW, 22, {
-    font: "17px Poppins, sans-serif",
-    color: "#777777",
+  y = c.wrap(noteText, innerX, y, innerW, 24, {
+    font: "bold 17px Poppins, sans-serif",
+    color: "#333333",
   });
   y += 28;
 
@@ -1899,7 +1931,7 @@ const LABEL_GAP = 48; // vertical space between/around labels (2x px)
 // MAX_LABELS_PER_PAGE labels but drop to fewer when the labels are tall (a long
 // note grows the label) — kept within PAGE_HEIGHT_BUDGET so printed A4 pages
 // don't shrink the labels too much.
-const MAX_LABELS_PER_PAGE = 3;
+const MAX_LABELS_PER_PAGE = 2;
 const PAGE_HEIGHT_BUDGET = 2120;
 
 // Pack pre-built label canvases into pages: up to 3 short labels, or 2 (even 1)

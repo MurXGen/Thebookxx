@@ -26,6 +26,7 @@ import {
   Camera,
   Loader2,
   Plus,
+  Minus,
   Edit,
   X,
   ChevronRight,
@@ -5116,6 +5117,10 @@ export default function ManageOrdersPage() {
   const [abPick, setAbPick] = useState(null); // chosen book to add
   const [abQty, setAbQty] = useState(1); // how many copies
   const [abBusy, setAbBusy] = useState(false);
+  // "Remove a book" from an existing order — pick a line + checkout-style recompute.
+  const [rmOrder, setRmOrder] = useState(null); // order being edited
+  const [rmLineIdx, setRmLineIdx] = useState(-1); // which book line to remove
+  const [rmBusy, setRmBusy] = useState(false);
   // ── Delivered reconcile (India Post bulk-articles-tracking upload) ──
   // Upload the India Post bulk-tracking .xlsx; every article the file marks
   // "Delivered" is matched to an order by Shipping ID. COD orders are proposed
@@ -8607,6 +8612,179 @@ export default function ManageOrdersPage() {
     }
   };
 
+  // ── Remove a book from an existing order ─────────────────────────────────
+  const openRemoveBook = (order) => {
+    setRmOrder(order);
+    setRmLineIdx(-1);
+  };
+  const closeRemoveBook = () => {
+    setRmOrder(null);
+    setRmLineIdx(-1);
+  };
+  // Recompute the whole bill the way checkout does once the line is removed:
+  // subtotal from the remaining cart, delivery re-tiered, recorded gift /
+  // bookmark / COD fees + offer / coupon / wallet kept.
+  const rmCompute = () => {
+    if (!rmOrder) return null;
+    const lines =
+      rmOrder.parsedBooks || parseBooksList(rmOrder["Books List"]) || [];
+    const oldTotalPaid =
+      Number(rmOrder["Total Amount"]) || Number(rmOrder.revenue) || 0;
+    const removeLine = rmLineIdx >= 0 ? lines[rmLineIdx] : null;
+    const newLines = lines.filter((_, i) => i !== rmLineIdx);
+    const newSubtotal = newLines.reduce((s, b) => s + (b.total || 0), 0);
+    const num = (k) => {
+      const v = parseFloat(String(rmOrder[k] ?? "").replace(/[^\d.-]/g, ""));
+      return Number.isFinite(v) ? v : 0;
+    };
+    const giftFee = num("Gift Wrap Charge");
+    const bookmarkFee = num("Bookmark Charge");
+    const codFee = num("COD Fee");
+    const quickReadsTotal = num("QuickReads Total");
+    const offerDiscount = num("Offer Discount");
+    const couponDiscount = num("Coupon Discount");
+    const walletApplied = num("Wallet Applied");
+    const isFaster = /faster|express/i.test(rmOrder["Delivery Type"] || "");
+    const delivery = newLines.length
+      ? getDeliveryCharge(newSubtotal, isFaster, false)
+      : 0;
+    const freeDelivery = delivery === 0;
+    const isCOD = /cash|cod/i.test(rmOrder["Payment Type"] || "");
+    const advancePaid = /^\s*yes/i.test(String(rmOrder["Advance Paid"] || ""));
+    const oldMrp = num("Total MRP");
+    // Drop the removed line's MRP from the recorded total so Item Discount stays
+    // consistent. Resolve the book's true MRP from the catalogue when possible,
+    // else fall back to a ×1.5 heuristic on its selling price.
+    const bk = removeLine
+      ? ALL_BOOKS.find(
+          (b) =>
+            String(b.name || "").toLowerCase() ===
+            String(removeLine.name || "").toLowerCase(),
+        )
+      : null;
+    const removeMrp = removeLine
+      ? (Math.round(Number(bk?.originalPrice ?? 0)) ||
+          Math.round((removeLine.price || 0) * 1.5)) *
+        (Number(removeLine.quantity) || 1)
+      : 0;
+    const newMrp =
+      oldMrp > 0 ? Math.max(newSubtotal, oldMrp - removeMrp) : 0;
+    const itemDiscount = newMrp > 0 ? Math.max(0, newMrp - newSubtotal) : 0;
+
+    let newTotal =
+      newSubtotal +
+      delivery +
+      giftFee +
+      bookmarkFee +
+      codFee +
+      quickReadsTotal -
+      offerDiscount -
+      couponDiscount -
+      walletApplied;
+    newTotal = Math.max(0, Math.round(newTotal));
+    const delta = newTotal - oldTotalPaid; // negative when something is removed
+    const advanceAmount = advancePaid ? 99 : 0;
+    const codCollectible = Math.max(0, newTotal - advanceAmount);
+    return {
+      lines,
+      newLines,
+      removeLine,
+      removeName: removeLine?.name || "",
+      oldTotalPaid,
+      newSubtotal,
+      newMrp,
+      itemDiscount,
+      delivery,
+      freeDelivery,
+      giftFee,
+      bookmarkFee,
+      codFee,
+      quickReadsTotal,
+      offerDiscount,
+      couponDiscount,
+      walletApplied,
+      newTotal,
+      delta,
+      isCOD,
+      advancePaid,
+      advanceAmount,
+      codCollectible,
+      emptied: newLines.length === 0,
+      removeMrp,
+    };
+  };
+  const rmFirstName = () =>
+    String(rmOrder?.["Customer Name"] || "")
+      .replace(/\(unconfirmed\)/i, "")
+      .trim()
+      .split(/\s+/)[0] || "there";
+  const rmSaveOrder = async (c, extraFields = {}) => {
+    const oid = rmOrder["Order ID"];
+    const fields = {
+      "Books List": serializeBooksList(c.newLines),
+      "Total Amount": String(extraFields["Total Amount"] ?? c.newTotal),
+      Subtotal: String(c.newSubtotal),
+      "Delivery Charge": String(c.delivery),
+      ...(c.newMrp > 0 ? { "Total MRP": String(c.newMrp) } : {}),
+      ...(c.newMrp > 0 ? { "Item Discount": String(c.itemDiscount) } : {}),
+      "COD Collectible": String(
+        extraFields["Total Amount"] != null
+          ? extraFields["Total Amount"]
+          : c.codCollectible,
+      ),
+      ...extraFields,
+    };
+    patchLocalOrder(oid, {
+      ...fields,
+      revenue: Number(fields["Total Amount"]) || c.newTotal,
+      parsedBooks: c.newLines,
+    });
+    await updateOrderRow(oid, fields);
+  };
+  // COD order: just update the books + the new (lower) collectible total.
+  const applyRemoveBookUpdate = async () => {
+    const c = rmCompute();
+    if (!c || !c.removeLine) return;
+    setRmBusy(true);
+    try {
+      await rmSaveOrder(c);
+      showToast(
+        `Removed "${c.removeName}" · new total ₹${c.newTotal}`,
+        "success",
+      );
+      setTimeout(fetchOrders, 1300);
+      closeRemoveBook();
+    } finally {
+      setRmBusy(false);
+    }
+  };
+  // Prepaid order: removing a book lowers the bill → refund the difference to
+  // the customer's wallet and notify them.
+  const applyRemoveBookRefund = async () => {
+    const c = rmCompute();
+    if (!c || !c.removeLine) return;
+    const refund = Math.abs(Math.min(0, c.delta));
+    setRmBusy(true);
+    try {
+      await rmSaveOrder(c);
+      if (refund > 0) {
+        await creditWalletReward(
+          rmOrder["Phone Number"],
+          refund,
+          rmOrder["Order ID"],
+          "Book removal refund",
+        );
+      }
+      const msg = `Hi ${rmFirstName()}, we've updated your order ${rmOrder["Order ID"]} — "${c.removeName}" was removed. We've added ₹${refund} back to your TheBookX wallet 🎁 Use it on your next order. Happy reading! 📚`;
+      openWhatsApp(rmOrder["Phone Number"], msg);
+      showToast(`₹${refund} refunded to wallet ✓`, "success");
+      setTimeout(fetchOrders, 1300);
+      closeRemoveBook();
+    } finally {
+      setRmBusy(false);
+    }
+  };
+
   // Append a NEW order row via the Apps Script (action=append). `fields` is
   // keyed by sheet-column header (e.g. { "Order ID": "...", ... }). Used instead
   // of the Google Form, which rejects submissions when a question is Required.
@@ -10144,6 +10322,17 @@ export default function ManageOrdersPage() {
                                         }}
                                       >
                                         <Plus size={14} /> Add a book
+                                      </button>
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item"
+                                        onClick={() => {
+                                          openRemoveBook(order);
+                                          setCardMenuId(null);
+                                        }}
+                                      >
+                                        <Minus size={14} /> Remove a book
                                       </button>
                                       <div className="mo-kebab-group">Advanced</div>
                                       <button
@@ -16760,6 +16949,213 @@ export default function ManageOrdersPage() {
                                 Collect COD
                               </button>
                             </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  );
+                })()}
+            </AnimatePresence>,
+            document.body,
+          )}
+
+        {/* Remove-a-book — slide-up sheet (portaled, no blur). */}
+        {typeof document !== "undefined" &&
+          createPortal(
+            <AnimatePresence>
+              {rmOrder &&
+                (() => {
+                  const c = rmCompute();
+                  const picked = rmLineIdx >= 0 && !!c?.removeLine;
+                  return (
+                    <motion.div
+                      className="mo-bd-overlay"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      onClick={closeRemoveBook}
+                    >
+                      <motion.div
+                        className="mo-bd-sheet mo-rb-sheet"
+                        initial={{ y: "100%" }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.32, ease: "easeOut" }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="mo-ws-head">
+                          <div className="mo-ws-head-txt">
+                            <span className="mo-ws-title">
+                              <Minus size={16} /> Remove a book
+                            </span>
+                            <span className="mo-ws-sub">
+                              {rmOrder["Customer Name"]} ·{" "}
+                              {c?.isCOD ? "COD" : "Prepaid"}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            className="mo-ws-close"
+                            onClick={closeRemoveBook}
+                            aria-label="Close"
+                          >
+                            <X size={18} />
+                          </button>
+                        </div>
+
+                        <div className="mo-rb-body">
+                          <div className="mo-rb-section-label">
+                            Which book to remove?
+                          </div>
+                          <div className="mo-rb-lines">
+                            {(c?.lines || []).map((b, i) => (
+                              <button
+                                key={i}
+                                type="button"
+                                className={`mo-rb-line${rmLineIdx === i ? " on" : ""}`}
+                                onClick={() => setRmLineIdx(i)}
+                              >
+                                <span className="mo-rb-line-name">{b.name}</span>
+                                <span className="mo-rb-line-meta">
+                                  ×{b.quantity} · ₹{b.total}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+
+                          {picked && c.emptied && (
+                            <div className="mo-rb-warn">
+                              This is the only book in the order. To remove it,
+                              cancel the order instead.
+                            </div>
+                          )}
+
+                          {/* checkout-style bill preview */}
+                          {picked && !c.emptied && (
+                            <div className="mo-rb-preview">
+                              {c.newMrp > 0 && (
+                                <div className="mo-rb-prow">
+                                  <span>Total MRP</span>
+                                  <span>₹{c.newMrp}</span>
+                                </div>
+                              )}
+                              {c.itemDiscount > 0 && (
+                                <div className="mo-rb-prow mo-rb-save">
+                                  <span>Discount on MRP</span>
+                                  <span>−₹{c.itemDiscount}</span>
+                                </div>
+                              )}
+                              <div className="mo-rb-prow">
+                                <span>Total after discount</span>
+                                <span>₹{c.newSubtotal}</span>
+                              </div>
+                              {c.offerDiscount > 0 && (
+                                <div className="mo-rb-prow mo-rb-save">
+                                  <span>Offer discount</span>
+                                  <span>−₹{c.offerDiscount}</span>
+                                </div>
+                              )}
+                              {c.couponDiscount > 0 && (
+                                <div className="mo-rb-prow mo-rb-save">
+                                  <span>Coupon</span>
+                                  <span>−₹{c.couponDiscount}</span>
+                                </div>
+                              )}
+                              <div className="mo-rb-prow">
+                                <span>Delivery</span>
+                                <span>
+                                  {c.freeDelivery ? "FREE" : `+₹${c.delivery}`}
+                                </span>
+                              </div>
+                              {c.giftFee > 0 && (
+                                <div className="mo-rb-prow">
+                                  <span>Gift wrap</span>
+                                  <span>+₹{c.giftFee}</span>
+                                </div>
+                              )}
+                              {c.bookmarkFee > 0 && (
+                                <div className="mo-rb-prow">
+                                  <span>Bookmarks</span>
+                                  <span>+₹{c.bookmarkFee}</span>
+                                </div>
+                              )}
+                              {c.codFee > 0 && (
+                                <div className="mo-rb-prow">
+                                  <span>COD handling fee</span>
+                                  <span>+₹{c.codFee}</span>
+                                </div>
+                              )}
+                              {c.walletApplied > 0 && (
+                                <div className="mo-rb-prow mo-rb-save">
+                                  <span>Wallet applied</span>
+                                  <span>−₹{c.walletApplied}</span>
+                                </div>
+                              )}
+                              <div className="mo-rb-prow mo-rb-ptotal">
+                                <span>New total</span>
+                                <span>₹{c.newTotal}</span>
+                              </div>
+                              <div className="mo-rb-prow mo-rb-delta down">
+                                <span>
+                                  {c.isCOD
+                                    ? "Collect less"
+                                    : "Refund to wallet"}
+                                </span>
+                                <span>
+                                  {c.delta === 0
+                                    ? "₹0"
+                                    : `−₹${Math.abs(c.delta)}`}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mo-ws-foot mo-rb-foot">
+                          <button
+                            type="button"
+                            className="mo-ws-cancel"
+                            onClick={closeRemoveBook}
+                            disabled={rmBusy}
+                          >
+                            Cancel
+                          </button>
+                          {!picked ? (
+                            <button type="button" className="mo-ws-save" disabled>
+                              Pick a book
+                            </button>
+                          ) : c.emptied ? (
+                            <button type="button" className="mo-ws-save" disabled>
+                              Can&apos;t remove last book
+                            </button>
+                          ) : c.isCOD || c.delta === 0 ? (
+                            <button
+                              type="button"
+                              className="mo-ws-save"
+                              onClick={applyRemoveBookUpdate}
+                              disabled={rmBusy}
+                            >
+                              {rmBusy ? (
+                                <Loader2 size={15} className="mo-spin" />
+                              ) : (
+                                <Check size={15} />
+                              )}
+                              Remove &amp; update
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="mo-ws-save"
+                              onClick={applyRemoveBookRefund}
+                              disabled={rmBusy}
+                            >
+                              {rmBusy ? (
+                                <Loader2 size={15} className="mo-spin" />
+                              ) : (
+                                <Wallet size={15} />
+                              )}
+                              Refund ₹{Math.abs(c.delta)} &amp; notify
+                            </button>
                           )}
                         </div>
                       </motion.div>

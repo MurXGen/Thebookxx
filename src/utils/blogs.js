@@ -4,6 +4,171 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "valmiki-jayanti-2026-ramayana-books-to-read-india": {
+    "id": "blog-082",
+    "title": "Valmiki Jayanti 2026 (26 October): The Adi Kavi, the Ramayana and 12 Books to Read Next",
+    "slug": "valmiki-jayanti-2026-ramayana-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-18",
+    "lastModified": "2026-10-18",
+    "excerpt": "Valmiki Jayanti falls on 26 October 2026. Meet the Adi Kavi and the Ramayana, with 12 books to read next, from ₹1 with free delivery and COD across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Maharishi Valmiki Jayanti marks the birth anniversary of Valmiki, traditionally honoured as the Adi Kavi, the first poet, and the author of the Ramayana. It is observed on Ashwin Purnima, and in 2026 listings place it on Monday, 26 October. The Purnima tithi runs across 25 and 26 October, so some panchangs mention 25 October; check your local calendar for the exact timing."
+      },
+      {
+        "type": "paragraph",
+        "content": "Whatever the date on your calendar, the day is a good reason to pick up a book. The Ramayana has been retold in many languages and forms across centuries, and Valmiki's Sanskrit epic is where that long tradition begins. This guide explains who Valmiki is, why his poem still matters, and which books can take you deeper, whether you are a first-time reader, a parent, or someone who wants a fresh look at an old story. Books at TheBookX start from ₹1, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts",
+        "content": "Occasion: Maharishi Valmiki Jayanti, observed on Ashwin Purnima. Date in 2026: Monday, 26 October (Purnima tithi spans 25 and 26 October). Valmiki is traditionally called the Adi Kavi and credited with composing the Ramayana. Tradition says he sheltered Sita at his hermitage, where Lava and Kusha were born and learned the epic from him."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Who was Valmiki, the Adi Kavi?"
+      },
+      {
+        "type": "paragraph",
+        "content": "Tradition describes Valmiki as a sage who began life as Ratnakar, a man who took to robbery. After meeting the sage Narada, he turned to penance and meditation so deeply that an anthill grew around him, which is why he came to be called Valmiki. The same tradition says the first verse of the Ramayana arose from his sorrow at witnessing the death of a bird, and from that moment poetry in the Sanskrit metre was born. These accounts come from tradition and retelling, so treat them as the stories India has told about its first poet rather than as recorded history."
+      },
+      {
+        "type": "paragraph",
+        "content": "The Valmiki Ramayana is organised into seven kandas, from the Bala Kanda to the Uttara Kanda, and follows the life of Rama, his exile, the abduction of Sita and the war in Lanka. Its lasting appeal is human: duty against desire, loyalty, loss, and the question of what a good ruler owes his people."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why the Ramayana still matters to readers today"
+      },
+      {
+        "type": "paragraph",
+        "content": "Every generation reads the epic differently. A teenager may see an adventure, a parent may see a family bound by promises, and a modern reader may ask hard questions about fairness and about the women at the heart of the story. This is why retellings keep finding readers, and why the best way into the Ramayana is to choose a version that suits your age and mood."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Start here: accessible retellings of the Ramayana"
+      },
+      {
+        "type": "paragraph",
+        "content": "For a clear, story-first introduction, <a href=\"/books/ramayan-unraveled\" style=\"color:#fb8500;font-weight:600\">Ramayan Unraveled</a> by Amritanshu Pandey is written for readers who want the plot without heavy scholarship. If you prefer a mythologist's lens, <a href=\"/books/ram-sita-raavan\" style=\"color:#fb8500;font-weight:600\">Ram Sita Raavan</a> by Devdutt Pattanaik explores the three central figures and the ideas they stand for. Pattanaik's illustrated <a href=\"/books/sita-an-illustrated-retelling-of-the-ramayana\" style=\"color:#fb8500;font-weight:600\">Sita: An Illustrated Retelling of the Ramayana</a> follows the epic through its heroine and works well for readers of every age."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you like fast, novel-style fiction, <a href=\"/books/sita-warrior-of-mithila\" style=\"color:#fb8500;font-weight:600\">Sita: Warrior of Mithila</a> by Amish Tripathi reimagines Sita as a strong, capable leader. Fans of his writing may also enjoy <a href=\"/books/the-shiva-trilogy-meluha-nagas-vayaputra\" style=\"color:#fb8500;font-weight:600\">The Shiva Trilogy</a>, which carries the same mix of myth and adventure into a different story world."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Beyond the Ramayana: the wider Indian epic tradition"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Mahabharata offers a darker, more tangled mirror to the Ramayana. <a href=\"/books/mahabharat-unraveled\" style=\"color:#fb8500;font-weight:600\">Mahabharat Unraveled</a> by Amritanshu Pandey gives a readable overview, while <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya</a> by Devdutt Pattanaik adds illustrations and context. For a fresh voice, <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni retells the Mahabharata through Draupadi."
+      },
+      {
+        "type": "paragraph",
+        "content": "The Gita sits inside the Mahabharata and speaks to everyday dilemmas. <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> in Eknath Easwaran's edition is a popular, readable translation, and <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita for Children</a> is a gentle way to share its ideas with younger readers."
+      },
+      {
+        "type": "blockquote",
+        "content": "A poem becomes a tradition when each generation is willing to read it again in its own voice."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on purpose, clarity and a well-lived life"
+      },
+      {
+        "type": "paragraph",
+        "content": "The epics keep returning to one question: how should a person act when duty and desire pull in different directions? That question is as relevant to a Monday morning as to an ancient forest. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to cutting through confusion and deciding without overthinking, a modern companion to the old idea of acting with a clear mind. For a spiritual classic, <a href=\"/books/autobiography-of-a-yogi\" style=\"color:#fb8500;font-weight:600\">Autobiography of a Yogi</a> by Paramahansa Yogananda is a long-loved read, and <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam shows how discipline and faith can shape a life of service."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you want a lighter story that still carries a lesson, <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho is a short, easy novel about following your purpose, and <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan offers gentle, very Indian short stories you can read in one sitting. To build the habits that make reading and reflection stick, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is a reliable choice."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple Valmiki Jayanti reading plan"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one retelling that matches your mood: story-led, mythology-led, or illustrated.",
+          "Read one kanda or a few chapters aloud with family on the day, as many households do with the epic.",
+          "Pair the epic with one reflective book on purpose or decision-making, so the ideas stay with you.",
+          "Share a children's edition with a younger reader and ask them which character they would want to meet.",
+          "Set a small target, such as 15 pages a day, and finish your book by Diwali."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Shop smart at TheBookX",
+        "content": "Books from ₹1, free delivery and Cash on Delivery across India. Planning a gift for the festive season? Gift wrapping is available for +₹25 per order. All titles above are from our catalogue."
+      },
+      {
+        "type": "paragraph",
+        "content": "Valmiki gave India a poem that has outlived empires and languages. You do not need to read all seven kandas to honour that; one good retelling, one quiet hour and one conversation with someone you love is a fine way to begin."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/valmiki-jayanti-2026-ramayana-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/valmiki-jayanti-2026-ramayana-books-to-read-india.jpeg",
+        "alt": "A cheerful young woman reading a hardcover book beside a glowing brass diya on a wooden table",
+        "caption": "Valmiki Jayanti is a good day to open the Ramayana in a retelling that suits you.",
+        "category": "Festivals"
+      }
+    ],
+    "keywords": [
+      "Valmiki Jayanti 2026",
+      "Valmiki Jayanti date 2026",
+      "Ramayana books",
+      "best Ramayana retelling",
+      "Adi Kavi Valmiki",
+      "Indian mythology books",
+      "Amish Tripathi Sita",
+      "Devdutt Pattanaik books",
+      "books to gift India",
+      "buy books online India"
+    ],
+    "categories": [
+      "Festivals",
+      "Indian Mythology",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "When is Valmiki Jayanti in 2026?",
+        "answer": "Valmiki Jayanti is listed for Monday, 26 October 2026, observed on Ashwin Purnima. The Purnima tithi spans 25 and 26 October, so some panchangs mention 25 October."
+      },
+      {
+        "question": "Who was Maharishi Valmiki?",
+        "answer": "Valmiki is traditionally honoured as the Adi Kavi, the first poet, and the author of the Sanskrit Ramayana. Tradition says he began life as Ratnakar before turning to penance."
+      },
+      {
+        "question": "Which Ramayana book is best for beginners?",
+        "answer": "Story-first retellings such as Ramayan Unraveled by Amritanshu Pandey or the illustrated Sita by Devdutt Pattanaik are easy starting points. Amish Tripathi's Sita: Warrior of Mithila suits readers who prefer a novel."
+      },
+      {
+        "question": "Where can I buy Ramayana and Indian mythology books online in India?",
+        "answer": "TheBookX stocks Ramayana retellings, Mahabharata books and the Gita from ₹1, with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "kalinga-literary-festival-book-awards-2026-indian-books-to-read": {
     "id": "blog-081",
     "title": "Kalinga Literary Festival Book Awards 2026: Winners Announced and 15 Reads to Pick Up Next",

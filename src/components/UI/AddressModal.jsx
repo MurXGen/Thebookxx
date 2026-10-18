@@ -1190,6 +1190,10 @@ export default function AddressModal({
         "Bookmark Charge": String(n0(bookmarkCharge)),
         "QuickReads Total": String(n0((quickReadItems || []).length * 19)),
         "COD Fee": String(n0(feeForThisOrder)),
+        // Handling & Care fee — the delivery charge on >₹499 carts (the 20% band).
+        "Handling & Care": String(
+          netPayable > 499 ? n0(deliveryChargeForOrder) : 0,
+        ),
         "Advance Amount": String(n0(advanceAmt)),
         "COD Collectible": String(n0(codCollectForOrder)),
       };

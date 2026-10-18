@@ -48,6 +48,7 @@ const SHEET_HEADERS = {
   bookmarkChargeCol: "Bookmark Charge",
   quickReadsTotalCol: "QuickReads Total",
   codFeeCol: "COD Fee",
+  handlingCareCol: "Handling & Care",
   advanceAmountCol: "Advance Amount",
   codCollectibleCol: "COD Collectible",
 };
@@ -456,6 +457,12 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     (quickReadItems || []).length * (Number(quickReadUnitPrice) || 19),
   );
   const codFeeVal = n0(codHandlingFee);
+  // Handling & Care fee — the delivery charge on carts that cross into the
+  // "Handling & Care" band (>₹499). Stored in its own column so it's tracked and
+  // shown distinctly from a plain/flat delivery charge.
+  const handlingCareVal = /handling/i.test(String(deliveryLabel || ""))
+    ? n0(deliveryCharge)
+    : 0;
   const advanceAmountVal = advancePaid ? n0(advanceAmountIn || 99) : 0;
   const grandTotalVal = n0(totalWithDelivery || finalPayable);
   // Amount collected at the door: supplied value, else for a COD/advance order
@@ -560,6 +567,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     bookmarkChargeCol: n0(bookmarkChargeIn),
     quickReadsTotalCol: quickReadsTotalVal,
     codFeeCol: codFeeVal,
+    handlingCareCol: handlingCareVal,
     advanceAmountCol: advanceAmountVal,
     codCollectibleCol: codCollectibleVal,
     timestamp: formattedTimestamp,

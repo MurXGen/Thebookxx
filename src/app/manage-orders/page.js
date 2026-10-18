@@ -10621,6 +10621,13 @@ export default function ManageOrdersPage() {
                                         const sub = bn("Subtotal");
                                         const itemDisc = bn("Item Discount");
                                         const deliv = bn("Delivery Charge");
+                                        const hc =
+                                          bn("Handling & Care") ||
+                                          (/handling/i.test(
+                                            order["Delivery Type"] || "",
+                                          )
+                                            ? deliv
+                                            : 0);
                                         const gift = bn("Gift Wrap Charge");
                                         const bm = bn("Bookmark Charge");
                                         const qr = bn("QuickReads Total");
@@ -10658,11 +10665,19 @@ export default function ManageOrdersPage() {
                                                   "muted",
                                                 )}
                                               {sub > 0 && R("Subtotal", `₹${sub}`)}
-                                              {R(
-                                                "Delivery",
-                                                deliv > 0 ? `+₹${deliv}` : "FREE",
-                                                "muted",
-                                              )}
+                                              {hc > 0
+                                                ? R(
+                                                    "Handling & Care",
+                                                    `+₹${hc}`,
+                                                    "muted",
+                                                  )
+                                                : R(
+                                                    "Delivery",
+                                                    deliv > 0
+                                                      ? `+₹${deliv}`
+                                                      : "FREE",
+                                                    "muted",
+                                                  )}
                                               {gift > 0 &&
                                                 R("Gift wrap", `+₹${gift}`, "muted")}
                                               {bm > 0 &&

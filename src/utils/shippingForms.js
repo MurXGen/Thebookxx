@@ -1122,7 +1122,7 @@ function drawBigAddressLabel(c, startY, data) {
 
   // ===== Header (per variant) =====
   if (variant === "gift") {
-    const bandH = 132;
+    const bandH = 152;
     ctx.fillStyle = "#fff4f9";
     ctx.fillRect(X, y, W, bandH);
     [
@@ -1138,24 +1138,26 @@ function drawBigAddressLabel(c, startY, data) {
       ctx.arc(X + W * fx, y + 20 + (i % 2) * 10, 6, 0, Math.PI * 2);
       ctx.fill();
     });
+    // Brand row (top), then headline + description centred in the band with
+    // comfortable padding so nothing sits on the stripe's edge.
     ctx.fillStyle = ACCENT;
-    rr(innerX, y + 22, 9, 9, 2);
+    rr(innerX, y + 24, 9, 9, 2);
     ctx.fill();
-    c.text("TheBookX", innerX + 17, y + 32, {
+    c.text("TheBookX", innerX + 17, y + 34, {
       font: "bold 22px Poppins, sans-serif",
       color: INK,
     });
-    c.text("A GIFT FOR YOU", rightX, y + 32, {
+    c.text("A GIFT FOR YOU", rightX, y + 34, {
       font: "bold 14px Poppins, sans-serif",
       color: LBL,
       align: "right",
     });
-    c.text("A gift, just for you!", innerX, y + 84, {
-      font: "bold 42px Georgia, serif",
+    c.text("A gift, just for you!", innerX, y + 94, {
+      font: "bold 40px Georgia, serif",
       color: "#d6336c",
     });
-    c.text("Hope it brightens your day — happy reading!", innerX, y + 115, {
-      font: "20px Poppins, sans-serif",
+    c.text("Hope it brightens your day — happy reading!", innerX, y + 126, {
+      font: "19px Poppins, sans-serif",
       color: "#8a4a63",
     });
     y += bandH;

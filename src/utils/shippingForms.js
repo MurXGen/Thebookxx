@@ -1284,25 +1284,28 @@ function drawBigAddressLabel(c, startY, data) {
     .filter((p) => String(p || "").trim())
     .join(" / ");
   if (phones) {
-    // Delivery-contact "stripe" — light bar, bold text, accent bottom border.
+    // Delivery-contact "ribbon" — accent banner with fishtail ends, white bold
+    // text. Includes the main and alternate numbers.
     const stY = ay + 16;
     const stH = 46;
-    ctx.fillStyle = "#f4f4f4";
-    rr(innerX, stY, innerW, stH, 8);
-    ctx.fill();
+    const notch = 16;
     ctx.save();
-    ctx.strokeStyle = ACCENT;
-    ctx.lineWidth = 3;
+    ctx.fillStyle = ACCENT;
     ctx.beginPath();
-    ctx.moveTo(innerX + 3, stY + stH);
-    ctx.lineTo(innerX + innerW - 3, stY + stH);
-    ctx.stroke();
+    ctx.moveTo(innerX, stY);
+    ctx.lineTo(innerX + innerW, stY);
+    ctx.lineTo(innerX + innerW - notch, stY + stH / 2);
+    ctx.lineTo(innerX + innerW, stY + stH);
+    ctx.lineTo(innerX, stY + stH);
+    ctx.lineTo(innerX + notch, stY + stH / 2);
+    ctx.closePath();
+    ctx.fill();
     ctx.restore();
-    c.text(`Call this number for delivery: ${phones}`, innerX + 16, stY + 30, {
+    c.text(`Call for delivery: ${phones}`, innerX + notch + 16, stY + 30, {
       font: "bold 19px Poppins, sans-serif",
-      color: INK,
+      color: "#ffffff",
     });
-    ay = stY + stH + 8;
+    ay = stY + stH + 10;
   } else {
     ay += 12;
   }
@@ -1376,7 +1379,9 @@ function drawBigAddressLabel(c, startY, data) {
   y += 28;
   let noteText;
   if (variant === "gift") {
-    noteText = "Gift order — price not enclosed. Hand over with a smile.";
+    noteText = isCOD
+      ? "Wishing you joyful reading and happy moments ahead — enjoy your gift!"
+      : "Wishing you joyful reading and happy moments — your gift is all taken care of, just enjoy!";
   } else {
     const dn = deliveryNoteFor(data.note);
     noteText = dn.isCustomer

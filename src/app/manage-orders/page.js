@@ -3991,6 +3991,10 @@ export default function ManageOrdersPage() {
   };
   const [orderView, setOrderView] = useState("cards"); // cards | table
   const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
+  // Card view renders only this many at a time (perf — "Load more" reveals the
+  // rest). Reset to the first page whenever the filter/search changes.
+  const ORDERS_PAGE = 5;
+  const [visibleCount, setVisibleCount] = useState(ORDERS_PAGE);
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
   const [cardSelectMode, setCardSelectMode] = useState(false); // card-view multi-select
   const [cardMenuId, setCardMenuId] = useState(null); // per-card kebab menu open
@@ -6206,6 +6210,11 @@ export default function ManageOrdersPage() {
     fetchReturns();
   }, [fetchReturns]);
 
+  // Reset the card view to the first page when the pick filter changes.
+  useEffect(() => {
+    setVisibleCount(ORDERS_PAGE);
+  }, [orderPickFilter]);
+
   const pendingReturnsCount = useMemo(
     () =>
       Object.values(returnsByOrder).filter((r) => r && !r.moneyReleased).length,
@@ -6894,6 +6903,8 @@ export default function ManageOrdersPage() {
     }
 
     setFilteredOrders(sortByDate(filtered, sortOrder));
+    // Any filter/search/sort change resets the card view to the first page.
+    setVisibleCount(ORDERS_PAGE);
     // First filtered result after the fetch is ready — now reveal the list
     // (this keeps the loader up until content is already filtered, no flash).
     if (fetchedRef.current) setLoading(false);
@@ -9566,9 +9577,12 @@ export default function ManageOrdersPage() {
       return !!(orderNotes[o["Order ID"]] || o["Comment"]);
     return true;
   });
-  // Lazy-render the list in batches of 10 (infinite scroll).
-  // Load every order at once (no scroll-lazy pagination in the card view).
+  // `visibleOrders` stays the FULL filtered list (bulk actions / IP pools rely
+  // on it). The card grid renders only `renderedOrders` (first N) for perf; a
+  // "Load more" button reveals the rest in pages.
   const visibleOrders = listOrders;
+  const renderedOrders = visibleOrders.slice(0, visibleCount);
+  const remainingCount = Math.max(0, visibleOrders.length - renderedOrders.length);
 
   // Book tab — resolve the pasted order IDs to actual orders (match by full ID
   // or the last digits, case-insensitive), preserving paste order.
@@ -15404,6 +15418,34 @@ export default function ManageOrdersPage() {
                         >
                           <List size={16} />
                         </button>
+                        <span className="mo-view-div" />
+                        <select
+                          className="mo-status-quick"
+                          title="Filter by status"
+                          value={
+                            Array.isArray(statusFilter) &&
+                            statusFilter.length === 1
+                              ? statusFilter[0]
+                              : "custom"
+                          }
+                          onChange={(e) => setStatusFilter([e.target.value])}
+                        >
+                          {Array.isArray(statusFilter) &&
+                            statusFilter.length !== 1 && (
+                              <option value="custom" disabled>
+                                Custom…
+                              </option>
+                            )}
+                          <option value="active">Active</option>
+                          <option value="all">All statuses</option>
+                          {distinctStatuses.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                          <option value="returns">Returns · pending</option>
+                          <option value="unconfirmed">Unconfirmed</option>
+                        </select>
                         {orderView === "cards" && (
                           <>
                             <span className="mo-view-div" />
@@ -15869,9 +15911,25 @@ export default function ManageOrdersPage() {
                   )}
 
                   {orderView === "cards" ? (
-                    <div className="admin-orders-grid">
-                      {visibleOrders.map((order, idx) => renderOrderCard(order, idx))}
-                    </div>
+                    <>
+                      <div className="admin-orders-grid">
+                        {renderedOrders.map((order, idx) =>
+                          renderOrderCard(order, idx),
+                        )}
+                      </div>
+                      {remainingCount > 0 && (
+                        <button
+                          type="button"
+                          className="mo-loadmore"
+                          onClick={() =>
+                            setVisibleCount((c) => c + ORDERS_PAGE * 2)
+                          }
+                        >
+                          Load more · {remainingCount} more order
+                          {remainingCount === 1 ? "" : "s"}
+                        </button>
+                      )}
+                    </>
                   ) : (
                     <div className="mo-table-wrap">
                       <table className="mo-table">

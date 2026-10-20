@@ -24650,11 +24650,11 @@ img[data-loaded="true"] {
 
 /* ── Conventional filter bar: search + filter button + chips + panel ── */
 .admin-search-bar{
-  display:flex; gap:10px; align-items:stretch; width:100%;
+  display:flex; gap:8px; align-items:stretch; width:100%;
 }
 .admin-search-input{
-  flex:1; min-width:0; display:flex; align-items:center; gap:9px;
-  padding:0 14px; height:44px; border-radius:12px;
+  flex:1; min-width:0; display:flex; align-items:center; gap:8px;
+  padding:0 13px; height:40px; border-radius:11px;
   border:1px solid var(--dark-50); background:var(--background,#fff); color:var(--dark-50,#6b7280);
   transition:border-color .15s ease, box-shadow .15s ease;
 }
@@ -24673,13 +24673,21 @@ img[data-loaded="true"] {
 .admin-search-x:hover{ background:rgba(0,0,0,.05); color:var(--foreground); }
 .admin-filter-btn{
   flex:0 0 auto; display:inline-flex; align-items:center; gap:8px;
-  padding:0 16px; height:44px; border-radius:12px;
+  padding:0 16px; height:40px; border-radius:11px;
   border:1px solid var(--dark-50); background:var(--background,#fff);
   font-size:14px; font-weight:700; color:var(--foreground,#0a0a0a); cursor:pointer;
   transition:border-color .15s ease, background .15s ease;
 }
+/* Icon-only variant — a compact 40px square, no label. */
+.admin-filter-btn-icon{
+  position:relative; width:40px; padding:0; gap:0;
+  align-items:center; justify-content:center; color:var(--dark-50,#6b7280);
+}
+.admin-filter-btn-icon .admin-filter-count{
+  position:absolute; top:-6px; right:-6px; min-width:18px; height:18px; font-size:10.5px;
+}
 .admin-filter-btn:hover{ border-color:var(--dark-20,#d4d4d4); }
-.admin-filter-btn.open{ border-color:var(--tertiary,#fb8500); background:rgba(251,133,0,.06); }
+.admin-filter-btn.open{ border-color:var(--tertiary,#fb8500); background:rgba(251,133,0,.06); color:var(--tertiary,#fb8500); }
 .admin-filter-count{
   display:inline-flex; align-items:center; justify-content:center;
   min-width:20px; height:20px; padding:0 6px; border-radius:999px;
@@ -24909,6 +24917,45 @@ img[data-loaded="true"] {
 .mo-dark .mo-ov-k, .mo-dark .mo-ov-num, .mo-dark .mo-ov-li b{ color:#f3f4f6; }
 .mo-dark .mo-ov-li{ border-bottom-color:rgba(255,255,255,.08); color:#cbd5e1; }
 .mo-dark .mo-ov-sep{ background:rgba(255,255,255,.14); }
+
+/* ===== Tools group: just the search pill, then a slim accordion that slides
+   open to reveal the controls row + overview. No outer card chrome. ===== */
+.mo-tools-card{
+  border:none; border-radius:0; background:none;
+  padding:0; margin-bottom:0; box-shadow:none;
+}
+/* Inner sections drop their own card chrome. */
+.mo-tools-card .mo-ov{ border:none; border-radius:0; padding:0; margin:0; background:none; }
+.mo-tools-card .mo-ohead{ margin:0; }
+.mo-tools-sep{ height:1px; background:#e6e8ec; margin:2px 0; border:none; }
+.mo-dark .mo-tools-sep{ background:rgba(255,255,255,.08); }
+/* One outer box: header (toggle) + controls + overview, divided by hairlines.
+   No inner pills — the box owns the only border. */
+.mo-tools-box{
+  border:1px solid #e6e8ec; border-radius:14px; background:#fff; overflow:hidden;
+}
+.mo-dark .mo-tools-box{ background:#15181d; border-color:rgba(255,255,255,.1); }
+/* Animated reveal container (framer-motion sets height/opacity). */
+.mo-tools-reveal{ display:flex; flex-direction:column; }
+.mo-tools-box .mo-tools-reveal-inner{
+  display:flex; flex-direction:column; gap:12px;
+  padding:13px 15px 15px; border-top:1px solid #e6e8ec;
+}
+.mo-dark .mo-tools-box .mo-tools-reveal-inner{ border-top-color:rgba(255,255,255,.08); }
+/* Inner sections drop their own chrome. */
+.mo-tools-box .mo-ov{ border:none; border-radius:0; padding:0; margin:0; background:none; }
+.mo-tools-box .mo-ohead{ margin:0; }
+/* Accordion toggle = the box header row, borderless. */
+.mo-tools-accordion{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  width:100%; padding:13px 15px; border:none; border-radius:0;
+  background:none; color:var(--foreground,#111827); font-size:14px; font-weight:700;
+  cursor:pointer; transition:background .15s ease;
+}
+.mo-tools-accordion:hover{ background:#fafbfc; }
+.mo-tools-accordion svg{ flex:0 0 auto; color:#9aa1ab; transition:transform .2s ease; }
+.mo-dark .mo-tools-accordion{ color:#f3f4f6; }
+.mo-dark .mo-tools-accordion:hover{ background:rgba(255,255,255,.03); }
 
 /* Orders header (Frame 74/75): title + clean control chips, status in green. */
 .mo-ohead{

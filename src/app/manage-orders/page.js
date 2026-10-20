@@ -4003,6 +4003,9 @@ export default function ManageOrdersPage() {
   const [compactCards, setCompactCards] = useState(false);
   // Overview card: collapsed shows counts + layout; "Show all" expands the list.
   const [overviewOpen, setOverviewOpen] = useState(false);
+  // Tools accordion: collapsed shows only the search bar; expanding reveals the
+  // controls row + Overview card (all three live in one bordered card).
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
   const [cardSelectMode, setCardSelectMode] = useState(false); // card-view multi-select
   const [cardMenuId, setCardMenuId] = useState(null); // per-card kebab menu open
@@ -12942,7 +12945,7 @@ export default function ManageOrdersPage() {
 
         {/* Search + Filter row — inside the Orders tab only */}
         {activeTab === "orders" && (
-          <div className="admin-search">
+          <div className="admin-search mo-tools-card">
             {(() => {
               const chips = [];
               const statusSel = Array.isArray(statusFilter)
@@ -13051,12 +13054,13 @@ export default function ManageOrdersPage() {
                     </div>
                     <button
                       type="button"
-                      className={`admin-filter-btn${showFilters ? " open" : ""}`}
+                      className={`admin-filter-btn admin-filter-btn-icon${showFilters ? " open" : ""}`}
                       onClick={() => setShowFilters(!showFilters)}
                       aria-expanded={showFilters}
+                      aria-label="Filters"
+                      title="Filters"
                     >
-                      <Filter size={16} />
-                      Filters
+                      <Filter size={17} />
                       {chips.length > 0 && (
                         <span className="admin-filter-count">
                           {chips.length}
@@ -15467,11 +15471,36 @@ export default function ManageOrdersPage() {
           </div>
         )}
 
-        {/* ===== Orders (accordion) ===== */}
         {activeTab === "orders" && (
           <>
               {filteredOrders.length > 0 ? (
                 <div className="flex flex-col gap-12">
+            {filteredOrders.length > 0 && (
+              <div className="mo-tools-box">
+                <button
+                  type="button"
+                  className={`mo-tools-accordion${toolsOpen ? " open" : ""}`}
+                  onClick={() => setToolsOpen((v) => !v)}
+                  aria-expanded={toolsOpen}
+                >
+                  <span>{toolsOpen ? "Hide tools & overview" : "Tools & overview"}</span>
+                  {toolsOpen ? (
+                    <ChevronUp size={16} />
+                  ) : (
+                    <ChevronDown size={16} />
+                  )}
+                </button>
+                <AnimatePresence initial={false}>
+                {toolsOpen && (
+                  <motion.div
+                    className="mo-tools-reveal"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
+                    style={{ overflow: "hidden" }}
+                  >
+                  <div className="mo-tools-reveal-inner">
                   <div className="orders-list-header mo-ohead">
                     <div className="orders-header-right mo-menu-wrap">
                       {/* Unconfirmed count moved to the Overview card ("Review orders"). */}
@@ -15641,6 +15670,7 @@ export default function ManageOrdersPage() {
                   </div>
 
                   {/* Overview — collapsible stats + quick links (Show all / Hide all) */}
+                  <div className="mo-tools-sep" />
                   <div className={`mo-ov${overviewOpen ? " open" : ""}`}>
                     {!overviewOpen ? (
                       <div className="mo-ov-collapsed">
@@ -15758,6 +15788,13 @@ export default function ManageOrdersPage() {
                       </div>
                     )}
                   </div>
+                  </div>
+                  </motion.div>
+                )}
+                </AnimatePresence>
+              </div>
+            )}
+
 
                   {Object.keys(pendingStatus).length > 0 && (
                     <div className="mo-status-pushbar">

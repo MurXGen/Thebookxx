@@ -24923,15 +24923,19 @@ img[data-loaded="true"] {
 }
 .mo-ohead .mo-view-toggle.mo-view-icons{ display:contents; }
 .mo-ohead .mo-view-div{ display:none; }
-.mo-ohead .mo-view-btn{
+.mo-ohead .orders-header-right .mo-view-btn{
   flex:0 0 auto; width:40px; height:40px; min-width:40px; padding:0;
   display:inline-flex; align-items:center; justify-content:center;
-  border:1px solid #d6d8de; border-radius:10px; background:#fff; color:#374151;
+  border:1px solid #d6d8de !important; border-radius:10px !important;
+  background:#fff !important; color:#374151 !important;
   transition:background .15s ease, border-color .15s ease, transform .1s ease;
 }
-.mo-ohead .mo-view-btn:active{ transform:scale(.95); }
-.mo-ohead .mo-view-btn.active{ background:var(--tertiary,#fb8500); border-color:var(--tertiary,#fb8500); color:#fff; }
-.mo-ohead .mo-select-btn{ width:auto; min-width:0; padding:0 14px; gap:7px; }
+.mo-ohead .orders-header-right .mo-view-btn:active{ transform:scale(.95); }
+.mo-ohead .orders-header-right .mo-view-btn.active{
+  background:var(--tertiary,#fb8500) !important;
+  border-color:var(--tertiary,#fb8500) !important; color:#fff !important;
+}
+.mo-ohead .orders-header-right .mo-select-btn{ width:auto; min-width:0; padding:0 14px; gap:7px; }
 .mo-ohead .mo-status-filter{ flex:0 1 auto; min-width:128px; max-width:180px; height:40px; }
 /* Status dropdown in green (matches the mockup). */
 .mo-status-green{

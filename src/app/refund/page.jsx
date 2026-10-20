@@ -223,6 +223,20 @@ export default function RefundCancellationPolicy() {
           </li>
         </ul>
         <p>
+          <strong>Return pickup eligibility (5-minute rule):</strong> Once a
+          book has been delivered, a return pickup is arranged{" "}
+          <strong>only</strong> where the book is{" "}
+          <strong>severely damaged</strong> (for example, badly torn, broken
+          binding, or pages missing). To qualify for a pickup, you must record
+          and share a clear <strong>photo or video within 5 minutes of
+          delivery</strong> that shows the condition of the book as received. If
+          no photo or video is shared within that 5-minute window, we are{" "}
+          <strong>unable to accept a return pickup</strong> for the Order.
+          Instead, our team will assess the condition in which the book was
+          delivered and issue an appropriate refund, at our reasonable
+          discretion, based on that assessed condition.
+        </p>
+        <p>
           For condition-related issues we do{" "}
           <strong>not refund the full amount</strong>. Instead, we assess the
           reported condition and issue a <strong>partial refund</strong>{" "}

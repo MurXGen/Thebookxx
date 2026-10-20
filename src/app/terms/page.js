@@ -292,6 +292,14 @@ export default function TermsAndConditions() {
             delivery accompanied by clear photographic or video evidence.
           </li>
           <li>
+            A return pickup is arranged only where a delivered book is severely
+            damaged and you share a clear photo or video within{" "}
+            <strong>5 minutes of delivery</strong> showing its condition. If no
+            such photo or video is shared within that window, a return pickup
+            will not be accepted, and we will assess and refund based on the
+            condition in which the book was delivered.
+          </li>
+          <li>
             Cancellations are permitted prior to Order dispatch. Once shipped,
             Orders cannot be cancelled.
           </li>
@@ -326,6 +334,15 @@ export default function TermsAndConditions() {
             For Cash on Delivery (COD) Orders, our team may call or send a
             WhatsApp message to confirm the Order before dispatch. Please stay
             responsive so your Order isn't delayed.
+          </li>
+          <li>
+            <strong>Once an Order has been placed and delivered, it cannot be
+            cancelled.</strong> If you are not satisfied with a delivered book,
+            you may raise a return request as per our return terms. Our team
+            will inspect the returned book and, based on its condition, process
+            an appropriate refund to your TheBookX wallet or original payment
+            method. The refund amount is determined at TheBookX's reasonable
+            discretion after assessing the condition of the returned book.
           </li>
         </ul>
       </section>

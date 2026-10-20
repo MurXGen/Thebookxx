@@ -9666,7 +9666,8 @@ export default function ManageOrdersPage() {
   // hidden from the list unless the admin explicitly filters for them — they're
   // handled through the unconfirmed-orders modal instead.
   const wantUnconfirmed =
-    Array.isArray(statusFilter) && statusFilter.includes("unconfirmed");
+    Array.isArray(statusFilter) &&
+    statusFilter.some((f) => /unconfirmed/i.test(String(f)));
   const isUnconfirmedOrder = (o) =>
     /unconfirmed/i.test(o["Order Status"] || "") ||
     /\(unconfirmed\)/i.test(o["Customer Name"] || "");

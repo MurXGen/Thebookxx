@@ -24910,6 +24910,40 @@ img[data-loaded="true"] {
 .mo-dark .mo-ov-li{ border-bottom-color:rgba(255,255,255,.08); color:#cbd5e1; }
 .mo-dark .mo-ov-sep{ background:rgba(255,255,255,.14); }
 
+/* Orders header (Frame 74/75): title + clean control chips, status in green. */
+.mo-ohead{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; flex-wrap:wrap; margin-bottom:10px;
+}
+.mo-ohead-title{ font-size:20px; font-weight:800; color:var(--foreground,#111827); }
+.mo-ohead .mo-view-toggle.mo-view-icons{
+  background:transparent; border:none; padding:0; gap:8px; border-radius:0; overflow:visible;
+}
+.mo-ohead .mo-view-div{ display:none; }
+.mo-ohead .mo-view-btn{
+  width:40px; height:40px; min-width:40px; padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid #d6d8de; border-radius:10px; background:#fff; color:#374151;
+  transition:background .15s ease, border-color .15s ease, transform .1s ease;
+}
+.mo-ohead .mo-view-btn:active{ transform:scale(.95); }
+.mo-ohead .mo-view-btn.active{ background:var(--tertiary,#fb8500); border-color:var(--tertiary,#fb8500); color:#fff; }
+.mo-ohead .mo-select-btn{ width:auto; min-width:0; padding:0 14px; gap:7px; }
+/* Status dropdown in green (matches the mockup). */
+.mo-status-green{
+  color:#15803d !important; font-weight:800 !important;
+  border:1px solid #bfe3cb !important; background-color:#fff !important;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2315803d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") !important;
+  background-repeat:no-repeat !important; background-position:right 10px center !important;
+}
+.mo-status-green option{ color:#111827; font-weight:600; }
+.mo-dark .mo-ohead-title{ color:#f3f4f6; }
+.mo-dark .mo-ohead .mo-view-btn{ background:#1b1f26; border-color:rgba(255,255,255,.14); color:#e5e7eb; }
+@media (max-width:640px){
+  .mo-ohead-title{ font-size:18px; }
+  .mo-ohead .mo-view-toggle.mo-view-icons{ flex-wrap:wrap; }
+}
+
 .admin-stats-summary{
   display:flex; align-items:center; gap:8px; padding:14px 16px;
   font-size:15px; font-weight:800; color:var(--foreground); cursor:pointer; list-style:none;
@@ -33731,114 +33765,19 @@ img[data-loaded="true"] {
 .orders-header-right.mo-menu-wrap {
   position: relative;
 }
-/* Mobile: the view/status/select pill can hold many controls — let it scroll
-   horizontally instead of overflowing or wrapping messily. */
+/* Mobile: controls wrap under the "Orders" title (handled by .mo-ohead). */
 @media (max-width: 768px) {
-  .orders-list-header {
+  .mo-ohead .orders-header-right.mo-menu-wrap {
     flex-wrap: wrap;
-    row-gap: 8px;
-  }
-  /* ONE enhanced toolbar container holding every control as a uniform chip. */
-  .orders-header-right.mo-menu-wrap {
-    flex: 1 1 100%;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
     gap: 8px;
-    padding: 10px;
-    border: 1px solid #d6d8de;
-    border-radius: 14px;
-    background: #fff;
+    justify-content: flex-start;
   }
-  /* Inner pill goes transparent — the outer card is the single container. */
-  .mo-view-toggle.mo-view-icons {
-    display: contents;
-  }
-  .mo-view-toggle.mo-view-icons .mo-view-div {
-    display: none;
-  }
-  /* Equal-size square icon buttons (42×42) with smooth press feedback. */
-  .orders-header-right.mo-menu-wrap .mo-view-btn {
-    flex: 0 0 auto;
-    width: 42px;
-    height: 42px;
-    min-width: 42px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #c3c7cf;
-    border-radius: 12px;
-    background: #fff;
-    color: #374151;
-    transition:
-      background 0.16s ease,
-      border-color 0.16s ease,
-      transform 0.1s ease;
-  }
-  .orders-header-right.mo-menu-wrap .mo-view-btn:active {
-    transform: scale(0.95);
-  }
-  .orders-header-right.mo-menu-wrap .mo-view-btn.active {
-    background: var(--tertiary);
-    border-color: var(--tertiary);
-    color: #fff;
-  }
-  /* Unconfirmed badge: a labelled pill (icon + count), not a square. */
-  .orders-header-right.mo-menu-wrap .mo-unconf-btn {
-    flex: 0 0 auto;
-    height: 42px;
-    padding: 0 13px;
-    gap: 6px;
-    border: 1px solid #c3c7cf;
-    border-radius: 12px;
-    background: #fff;
-  }
-  /* Labelled buttons keep auto width + their label. */
-  .orders-header-right.mo-menu-wrap .mo-select-btn {
-    width: auto;
-    min-width: 0;
-    height: 42px;
-    padding: 0 16px;
-    gap: 7px;
-    order: 3;
-  }
-  /* Unavailable → a full-width amber banner below the icon row. */
-  .orders-header-right.mo-menu-wrap .mo-unavail-btn {
-    order: 2;
-    flex: 1 1 100%;
-    width: 100%;
-    height: 42px;
-    padding: 0 14px;
-    gap: 8px;
-    justify-content: center;
-    color: #b45309;
-    border: 1px solid #f3d19a;
-    background: #fff8ef;
-    font-weight: 700;
-  }
-  /* Status filter — a clear dropdown (border + chevron), fills the row width. */
-  .mo-status-filter {
-    flex: 1 1 100%;
-    order: -1;
+  .mo-ohead .mo-status-filter {
+    flex: 1 1 130px;
     max-width: none;
-    height: 42px;
-    font-size: 13.5px;
-    font-weight: 700;
   }
   .mo-select-btn-lbl {
     display: inline;
-  }
-  .mo-dark .orders-header-right.mo-menu-wrap {
-    background: #15181d;
-    border-color: rgba(255, 255, 255, 0.12);
-  }
-  .mo-dark .orders-header-right.mo-menu-wrap .mo-view-btn,
-  .mo-dark .orders-header-right.mo-menu-wrap .mo-unconf-btn {
-    background: #1b1f26;
-    border-color: rgba(255, 255, 255, 0.14);
-    color: #e5e7eb;
   }
 }
 

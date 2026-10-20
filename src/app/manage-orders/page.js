@@ -9692,6 +9692,31 @@ export default function ManageOrdersPage() {
   const renderedOrders = visibleOrders.slice(0, visibleCount);
   const remainingCount = Math.max(0, visibleOrders.length - renderedOrders.length);
 
+  // Overview stats for the current filter (component-scope so the Overview card
+  // can render inside the orders header, below the controls).
+  const orderStats = useMemo(() => {
+    const real = filteredOrders.filter((o) => o["Order ID"]);
+    const revenue = real.reduce((s, o) => s + (Number(o.revenue) || 0), 0);
+    const codAll = real.filter((o) => /cod|cash/i.test(o["Payment Type"] || ""));
+    const prepaid = codAll.filter((o) =>
+      /^\s*yes/i.test(String(o["Advance Paid"] || "")),
+    ).length;
+    const books = real.reduce(
+      (s, o) =>
+        s +
+        (o.parsedBooks || []).reduce((a, b) => a + (Number(b.quantity) || 1), 0),
+      0,
+    );
+    return {
+      total: real.length,
+      revenue,
+      books,
+      cod: codAll.length - prepaid,
+      upi: real.length - codAll.length,
+      prepaid,
+    };
+  }, [filteredOrders]);
+
   // Book tab — resolve the pasted order IDs to actual orders (match by full ID
   // or the last digits, case-insensitive), preserving paste order.
   const bookMatchedOrders = (() => {
@@ -13066,125 +13091,7 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
-                  {/* Overview — collapsible stats + quick links (Show all / Hide all) */}
-                  {realOrders.length > 0 && (
-                    <div className={`mo-ov${overviewOpen ? " open" : ""}`}>
-                      {!overviewOpen ? (
-                        <div className="mo-ov-collapsed">
-                          <span className="mo-ov-k">Overview</span>
-                          <span className="mo-ov-counts">
-                            <span className="mo-ov-num" title="Total orders">
-                              {realOrders.length}
-                            </span>
-                            <span className="mo-ov-sep" />
-                            <button
-                              type="button"
-                              className="mo-ov-num link"
-                              onClick={() => setShowUnconfirmed(true)}
-                              title="Review orders (unconfirmed)"
-                            >
-                              {unconfirmedOrders.length}
-                            </button>
-                            <span className="mo-ov-sep" />
-                            <button
-                              type="button"
-                              className="mo-ov-num link warn"
-                              onClick={() => setUnavailOpen(true)}
-                              title="Unavailable books"
-                            >
-                              {unavailCandidates.length}
-                            </button>
-                            <span className="mo-ov-sep" />
-                            <button
-                              type="button"
-                              className={`mo-ov-ly${orderView === "cards" ? " on" : ""}`}
-                              onClick={() =>
-                                setOrderView(
-                                  orderView === "cards" ? "table" : "cards",
-                                )
-                              }
-                              title="Toggle layout"
-                              aria-label="Toggle layout"
-                            >
-                              <LayoutGrid size={16} />
-                            </button>
-                          </span>
-                          <button
-                            type="button"
-                            className="mo-ov-toggle"
-                            onClick={() => setOverviewOpen(true)}
-                          >
-                            Show all <ChevronDown size={14} />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="mo-ov-list">
-                          <div className="mo-ov-li">
-                            <span>Total orders</span>
-                            <b>{realOrders.length}</b>
-                          </div>
-                          <div className="mo-ov-li">
-                            <span>Revenue</span>
-                            <b>₹{fRevenue.toLocaleString()}</b>
-                          </div>
-                          <div className="mo-ov-li">
-                            <span>Books sold</span>
-                            <b>{fBooks}</b>
-                          </div>
-                          <div className="mo-ov-li">
-                            <span>COD / UPI / ₹99</span>
-                            <b>
-                              {fCod} / {fUpi} / {fPrepaid}
-                            </b>
-                          </div>
-                          <button
-                            type="button"
-                            className="mo-ov-li link"
-                            onClick={() => setShowUnconfirmed(true)}
-                          >
-                            <span>Review orders</span>
-                            <b>{unconfirmedOrders.length}</b>
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-ov-li link"
-                            onClick={() => setUnavailOpen(true)}
-                          >
-                            <span>Unavailable books</span>
-                            <b className="warn">{unavailCandidates.length}</b>
-                          </button>
-                          <div className="mo-ov-li">
-                            <span>Layout</span>
-                            <span className="mo-ov-ly-toggle">
-                              <button
-                                type="button"
-                                className={orderView === "cards" ? "on" : ""}
-                                onClick={() => setOrderView("cards")}
-                                aria-label="Card view"
-                              >
-                                <LayoutGrid size={15} />
-                              </button>
-                              <button
-                                type="button"
-                                className={orderView === "table" ? "on" : ""}
-                                onClick={() => setOrderView("table")}
-                                aria-label="Table view"
-                              >
-                                <List size={15} />
-                              </button>
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            className="mo-ov-toggle"
-                            onClick={() => setOverviewOpen(false)}
-                          >
-                            Hide all <ChevronUp size={14} />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {/* Overview card now renders inside the orders header below. */}
 
                   {/* Filter dropdown panel — absolute overlay */}
                   <AnimatePresence>
@@ -15565,14 +15472,8 @@ export default function ManageOrdersPage() {
           <>
               {filteredOrders.length > 0 ? (
                 <div className="flex flex-col gap-12">
-                  <div className="orders-list-header">
-                    <span className="orders-count">
-                      {listOrders.length}{" "}
-                      {listOrders.length === 1 ? "Order" : "Orders"}
-                      <span className="orders-picked-stat">
-                        · {pickedOrdersCount}/{filteredOrders.length} picked
-                      </span>
-                    </span>
+                  <div className="orders-list-header mo-ohead">
+                    <span className="mo-ohead-title">Orders</span>
                     <div className="orders-header-right mo-menu-wrap">
                       {/* Unconfirmed count moved to the Overview card ("Review orders"). */}
                       {dismissedIds.length > 0 && (
@@ -15613,27 +15514,8 @@ export default function ManageOrdersPage() {
                           </motion.span>
                         </button>
                         <span className="mo-view-div" />
-                        <button
-                          type="button"
-                          className={`mo-view-btn${orderView === "cards" ? " active" : ""}`}
-                          onClick={() => setOrderView("cards")}
-                          title="Card view"
-                          aria-label="Card view"
-                        >
-                          <LayoutGrid size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          className={`mo-view-btn${orderView === "table" ? " active" : ""}`}
-                          onClick={() => setOrderView("table")}
-                          title="Table view"
-                          aria-label="Table view"
-                        >
-                          <List size={16} />
-                        </button>
-                        <span className="mo-view-div" />
                         <select
-                          className="mo-status-filter"
+                          className="mo-status-filter mo-status-green"
                           title="Filter by status"
                           value={
                             Array.isArray(statusFilter) &&
@@ -15757,6 +15639,125 @@ export default function ManageOrdersPage() {
                         )}
                       </AnimatePresence>
                     </div>
+                  </div>
+
+                  {/* Overview — collapsible stats + quick links (Show all / Hide all) */}
+                  <div className={`mo-ov${overviewOpen ? " open" : ""}`}>
+                    {!overviewOpen ? (
+                      <div className="mo-ov-collapsed">
+                        <span className="mo-ov-k">Overview</span>
+                        <span className="mo-ov-counts">
+                          <span className="mo-ov-num" title="Total orders">
+                            {orderStats.total}
+                          </span>
+                          <span className="mo-ov-sep" />
+                          <button
+                            type="button"
+                            className="mo-ov-num link"
+                            onClick={() => setShowUnconfirmed(true)}
+                            title="Review orders (unconfirmed)"
+                          >
+                            {unconfirmedOrders.length}
+                          </button>
+                          <span className="mo-ov-sep" />
+                          <button
+                            type="button"
+                            className="mo-ov-num link warn"
+                            onClick={() => setUnavailOpen(true)}
+                            title="Unavailable books"
+                          >
+                            {unavailCandidates.length}
+                          </button>
+                          <span className="mo-ov-sep" />
+                          <button
+                            type="button"
+                            className={`mo-ov-ly${orderView === "cards" ? " on" : ""}`}
+                            onClick={() =>
+                              setOrderView(
+                                orderView === "cards" ? "table" : "cards",
+                              )
+                            }
+                            title="Toggle layout"
+                            aria-label="Toggle layout"
+                          >
+                            <LayoutGrid size={16} />
+                          </button>
+                        </span>
+                        <button
+                          type="button"
+                          className="mo-ov-toggle"
+                          onClick={() => setOverviewOpen(true)}
+                        >
+                          Show all <ChevronDown size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="mo-ov-list">
+                        <div className="mo-ov-li">
+                          <span>Total orders</span>
+                          <b>{orderStats.total}</b>
+                        </div>
+                        <div className="mo-ov-li">
+                          <span>Revenue</span>
+                          <b>₹{orderStats.revenue.toLocaleString()}</b>
+                        </div>
+                        <div className="mo-ov-li">
+                          <span>Books sold</span>
+                          <b>{orderStats.books}</b>
+                        </div>
+                        <div className="mo-ov-li">
+                          <span>COD / UPI / ₹99</span>
+                          <b>
+                            {orderStats.cod} / {orderStats.upi} /{" "}
+                            {orderStats.prepaid}
+                          </b>
+                        </div>
+                        <button
+                          type="button"
+                          className="mo-ov-li link"
+                          onClick={() => setShowUnconfirmed(true)}
+                        >
+                          <span>Review orders</span>
+                          <b>{unconfirmedOrders.length}</b>
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-ov-li link"
+                          onClick={() => setUnavailOpen(true)}
+                        >
+                          <span>Unavailable books</span>
+                          <b className="warn">{unavailCandidates.length}</b>
+                        </button>
+                        <div className="mo-ov-li">
+                          <span>Layout</span>
+                          <span className="mo-ov-ly-toggle">
+                            <button
+                              type="button"
+                              className={orderView === "cards" ? "on" : ""}
+                              onClick={() => setOrderView("cards")}
+                              aria-label="Card view"
+                            >
+                              <LayoutGrid size={15} />
+                            </button>
+                            <button
+                              type="button"
+                              className={orderView === "table" ? "on" : ""}
+                              onClick={() => setOrderView("table")}
+                              aria-label="Table view"
+                            >
+                              <List size={15} />
+                            </button>
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="mo-ov-toggle"
+                          onClick={() => setOverviewOpen(false)}
+                        >
+                          Hide all <ChevronUp size={14} />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {Object.keys(pendingStatus).length > 0 && (

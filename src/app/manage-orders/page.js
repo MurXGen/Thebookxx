@@ -15473,7 +15473,6 @@ export default function ManageOrdersPage() {
               {filteredOrders.length > 0 ? (
                 <div className="flex flex-col gap-12">
                   <div className="orders-list-header mo-ohead">
-                    <span className="mo-ohead-title">Orders</span>
                     <div className="orders-header-right mo-menu-wrap">
                       {/* Unconfirmed count moved to the Overview card ("Review orders"). */}
                       {dismissedIds.length > 0 && (

@@ -24919,7 +24919,7 @@ img[data-loaded="true"] {
 /* Flatten the inner pill so every control sits in ONE wrapping row. */
 .mo-ohead .orders-header-right.mo-menu-wrap{
   flex:1 1 auto; display:flex; flex-wrap:wrap; align-items:center;
-  gap:8px; justify-content:flex-end; position:relative;
+  gap:8px; justify-content:flex-start; position:relative;
 }
 .mo-ohead .mo-view-toggle.mo-view-icons{ display:contents; }
 .mo-ohead .mo-view-div{ display:none; }

@@ -34186,9 +34186,21 @@ img[data-loaded="true"] {
 /* Download section wrapper — makes the dl-group stretch full width */
 .bulk-section {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 .bulk-section .mo-dl-group {
-  flex: 1 1 auto;
+  flex: 1 1 220px;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  .bulk-section {
+    flex-direction: column;
+  }
+  .bulk-section .mo-dl-group {
+    flex: 1 1 auto;
+    width: 100%;
+  }
 }
 /* Line divider between the download and WhatsApp sections */
 .bulk-divider {

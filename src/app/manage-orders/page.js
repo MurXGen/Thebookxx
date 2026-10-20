@@ -68,6 +68,8 @@ import {
   LayoutGrid,
   List,
   CheckSquare,
+  Minimize2,
+  Maximize2,
   Wallet,
   Pin,
   Pencil,
@@ -3993,8 +3995,10 @@ export default function ManageOrdersPage() {
   const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
   // Card view renders only this many at a time (perf — "Load more" reveals the
   // rest). Reset to the first page whenever the filter/search changes.
-  const ORDERS_PAGE = 5;
+  const ORDERS_PAGE = 6;
   const [visibleCount, setVisibleCount] = useState(ORDERS_PAGE);
+  // Collapse all order cards to a tiny summary (name, status, price, books).
+  const [compactCards, setCompactCards] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
   const [cardSelectMode, setCardSelectMode] = useState(false); // card-view multi-select
   const [cardMenuId, setCardMenuId] = useState(null); // per-card kebab menu open
@@ -6931,6 +6935,22 @@ export default function ManageOrdersPage() {
     return [...set].sort((a, b) => a.localeCompare(b));
   }, [orders]);
 
+  // Case-insensitive dedupe for the quick status dropdown, and drop every
+  // "Unconfirmed" variant — those are offered as ONE option that uses the
+  // dedicated unconfirmed filter (so it actually shows unconfirmed orders).
+  const quickStatuses = useMemo(() => {
+    const seen = new Set();
+    const out = [];
+    distinctStatuses.forEach((s) => {
+      const lc = s.toLowerCase();
+      if (/unconfirmed/.test(lc)) return;
+      if (seen.has(lc)) return;
+      seen.add(lc);
+      out.push(s);
+    });
+    return out;
+  }, [distinctStatuses]);
+
   // Orders that carry a tracking (Shipping) ID, filtered by the export panel's
   // status + date range, newest first.
   const tidRows = useMemo(() => {
@@ -9837,6 +9857,41 @@ export default function ManageOrdersPage() {
 
   // Shared order-card renderer — used by BOTH the Orders grid and the
   // Dispatch queue so the dispatch list shows the exact same cards.
+  // Tiny collapsed card — name, status, price, books only. Click opens the full
+  // bill/details; the whole card is clickable to the order's detail flow.
+  const renderCompactCard = (order) => {
+    const orderId = order["Order ID"];
+    const books = order.parsedBooks || [];
+    const status = String(order["Order Status"] || "").trim() || "—";
+    const total = Number(order.revenue || 0);
+    const name = String(order["Customer Name"] || "")
+      .replace(/\s*\(unconfirmed\)\s*/i, "")
+      .trim();
+    return (
+      <div
+        key={orderId}
+        className={`mo-compact-card${/cash|cod/i.test(order["Payment Type"] || "") ? " cod" : " online"}`}
+        onClick={() => setBillOrderId(orderId)}
+        role="button"
+        tabIndex={0}
+      >
+        <div className="mo-compact-top">
+          <span className="mo-compact-name">{name || "Customer"}</span>
+          <span className="mo-compact-status">{status}</span>
+        </div>
+        <div className="mo-compact-bottom">
+          <span className="mo-compact-books">
+            {books.length} book{books.length === 1 ? "" : "s"}
+            {books.length ? ` · ${books[0]?.name || ""}` : ""}
+          </span>
+          <span className="mo-compact-price">
+            ₹{total.toLocaleString("en-IN")}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   const renderOrderCard = (order, idx) => {
                         const orderId = order["Order ID"];
                         const books = order.parsedBooks || [];
@@ -15438,7 +15493,7 @@ export default function ManageOrdersPage() {
                             )}
                           <option value="active">Active</option>
                           <option value="all">All statuses</option>
-                          {distinctStatuses.map((s) => (
+                          {quickStatuses.map((s) => (
                             <option key={s} value={s}>
                               {s}
                             </option>
@@ -15448,6 +15503,28 @@ export default function ManageOrdersPage() {
                         </select>
                         {orderView === "cards" && (
                           <>
+                            <span className="mo-view-div" />
+                            <button
+                              type="button"
+                              className={`mo-view-btn${compactCards ? " active" : ""}`}
+                              onClick={() => setCompactCards((v) => !v)}
+                              title={
+                                compactCards
+                                  ? "Expand all cards"
+                                  : "Collapse all cards"
+                              }
+                              aria-label={
+                                compactCards
+                                  ? "Expand all cards"
+                                  : "Collapse all cards"
+                              }
+                            >
+                              {compactCards ? (
+                                <Maximize2 size={16} />
+                              ) : (
+                                <Minimize2 size={16} />
+                              )}
+                            </button>
                             <span className="mo-view-div" />
                             <button
                               type="button"
@@ -15912,9 +15989,13 @@ export default function ManageOrdersPage() {
 
                   {orderView === "cards" ? (
                     <>
-                      <div className="admin-orders-grid">
+                      <div
+                        className={`admin-orders-grid${compactCards ? " mo-compact-grid" : ""}`}
+                      >
                         {renderedOrders.map((order, idx) =>
-                          renderOrderCard(order, idx),
+                          compactCards
+                            ? renderCompactCard(order)
+                            : renderOrderCard(order, idx),
                         )}
                       </div>
                       {remainingCount > 0 && (

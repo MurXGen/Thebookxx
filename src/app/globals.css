@@ -24743,6 +24743,29 @@ img[data-loaded="true"] {
   background:#fff; box-shadow:var(--shadow-xs,0 1px 3px rgba(0,0,0,.05));
   margin-bottom:14px;
 }
+/* Collapsed (compact) order cards — name, status, price, books only */
+.admin-orders-grid.mo-compact-grid{
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:10px;
+}
+.mo-compact-card{
+  display:flex; flex-direction:column; gap:6px;
+  padding:11px 13px; border-radius:12px; cursor:pointer;
+  border:1.5px solid #c3c7cf; background:#fff;
+  transition:border-color .15s, box-shadow .15s;
+}
+.mo-compact-card:hover{ border-color:#9aa0aa; box-shadow:var(--shadow-xs); }
+.mo-compact-card.cod{ background:#f4f9ff; border-color:#a7c8f0; }
+.mo-compact-card.online{ background:#f4fdf8; border-color:#a6d8b8; }
+.mo-compact-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.mo-compact-name{ font-size:13.5px; font-weight:800; color:var(--foreground,#111827); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mo-compact-status{ flex:0 0 auto; font-size:10.5px; font-weight:700; color:#6b7280; white-space:nowrap; }
+.mo-compact-bottom{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.mo-compact-books{ font-size:11px; font-weight:600; color:var(--dark-50,#6b7280); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mo-compact-price{ flex:0 0 auto; font-size:13px; font-weight:800; color:var(--foreground,#111827); }
+.mo-dark .mo-compact-card{ background:#15181d; border-color:rgba(255,255,255,.14); }
+.mo-dark .mo-compact-name,.mo-dark .mo-compact-price{ color:#f3f4f6; }
+
 /* Load-more button under the orders card grid */
 .mo-loadmore{
   display:block; width:100%; margin:14px 0 4px;

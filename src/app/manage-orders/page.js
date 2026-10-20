@@ -12891,75 +12891,42 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
-                  {/* Compact stats for the filtered orders */}
+                  {/* Compact stats — a single minimal row, no accordion */}
                   {realOrders.length > 0 && (
-                    <details className="admin-stats">
-                      <summary className="admin-stats-summary">
-                        <BarChart3 size={14} />
-                        Stats · {realOrders.length} order
-                        {realOrders.length === 1 ? "" : "s"}
-                        <ChevronDown size={15} className="admin-stats-caret" />
-                      </summary>
-                      <div className="admin-stats-grid an2-stats">
-                        <div className="an2-stat s-orders">
-                          <div className="an2-stat-ic">
-                            <ShoppingBag size={16} />
-                          </div>
-                          <div className="an2-stat-body">
-                            <span className="an2-stat-val">
-                              {realOrders.length}
-                            </span>
-                            <span className="an2-stat-lbl">Orders</span>
-                            <span className="an2-stat-x">in this filter</span>
-                          </div>
-                        </div>
-                        <div className="an2-stat s-rev">
-                          <div className="an2-stat-ic">
-                            <IndianRupee size={16} />
-                          </div>
-                          <div className="an2-stat-body">
-                            <span className="an2-stat-val">
-                              ₹{fRevenue.toLocaleString()}
-                            </span>
-                            <span className="an2-stat-lbl">Revenue</span>
-                            <span className="an2-stat-x">
-                              Avg ₹
-                              {realOrders.length
-                                ? Math.round(
-                                    fRevenue / realOrders.length,
-                                  ).toLocaleString()
-                                : 0}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="an2-stat s-units">
-                          <div className="an2-stat-ic">
-                            <BarChart3 size={16} />
-                          </div>
-                          <div className="an2-stat-body">
-                            <span className="an2-stat-val">{fBooks}</span>
-                            <span className="an2-stat-lbl">Books sold</span>
-                            <span className="an2-stat-x">
-                              across {realOrders.length} orders
-                            </span>
-                          </div>
-                        </div>
-                        <div className="an2-stat s-wallet">
-                          <div className="an2-stat-ic">
-                            <Wallet size={16} />
-                          </div>
-                          <div className="an2-stat-body">
-                            <span className="an2-stat-val">
-                              {fCod} / {fUpi} / {fPrepaid}
-                            </span>
-                            <span className="an2-stat-lbl">
-                              COD / UPI / ₹99
-                            </span>
-                            <span className="an2-stat-x">payment split</span>
-                          </div>
-                        </div>
+                    <div className="mo-statsbar">
+                      <div className="mo-statcell">
+                        <span className="mo-statcell-v">
+                          {realOrders.length}
+                        </span>
+                        <span className="mo-statcell-l">Orders</span>
                       </div>
-                    </details>
+                      <span className="mo-statcell-div" />
+                      <div className="mo-statcell">
+                        <span className="mo-statcell-v">
+                          ₹{fRevenue.toLocaleString()}
+                        </span>
+                        <span className="mo-statcell-l">
+                          Revenue · Avg ₹
+                          {realOrders.length
+                            ? Math.round(
+                                fRevenue / realOrders.length,
+                              ).toLocaleString()
+                            : 0}
+                        </span>
+                      </div>
+                      <span className="mo-statcell-div" />
+                      <div className="mo-statcell">
+                        <span className="mo-statcell-v">{fBooks}</span>
+                        <span className="mo-statcell-l">Books sold</span>
+                      </div>
+                      <span className="mo-statcell-div" />
+                      <div className="mo-statcell">
+                        <span className="mo-statcell-v">
+                          {fCod} / {fUpi} / {fPrepaid}
+                        </span>
+                        <span className="mo-statcell-l">COD / UPI / ₹99</span>
+                      </div>
+                    </div>
                   )}
 
                   {/* Filter dropdown panel — absolute overlay */}

@@ -1031,7 +1031,7 @@ function WalletModal({ user, busy, onClose, onApply }) {
             type="button"
             className="wm-btn wm-deduct"
             disabled={busy || !delta}
-            onClick={() => onApply(user, cur - delta, reason)}
+            onClick={() => onApply(user, cur - delta, reason, -delta)}
           >
             − Deduct ₹{delta || 0}
           </button>
@@ -1039,7 +1039,7 @@ function WalletModal({ user, busy, onClose, onApply }) {
             type="button"
             className="wm-btn wm-add"
             disabled={busy || !delta}
-            onClick={() => onApply(user, cur + delta, reason)}
+            onClick={() => onApply(user, cur + delta, reason, delta)}
           >
             + Add ₹{delta || 0}
           </button>
@@ -7985,10 +7985,24 @@ export default function ManageOrdersPage() {
   // sheet (phone + delta + timestamp). The balance is the SUM of every Wallet
   // entry, so a positive delta credits and a negative delta deducts — exactly
   // what the customer profile reads. Never overwrite existing rows.
-  const applyWalletChange = async (user, newBalance, reason = "") => {
-    const target = Math.max(0, Math.round(newBalance));
-    const cur = Math.round(user.wallet || 0);
-    const delta = target - cur;
+  const applyWalletChange = async (
+    user,
+    newBalance,
+    reason = "",
+    directDelta = null,
+  ) => {
+    // Add / Deduct pass the exact signed amount to move (directDelta), so the
+    // write never depends on a possibly-stale current balance (that bug made
+    // deductions silently collapse to ₹0). "Set balance" still diffs against
+    // the current balance to reach the target.
+    let delta;
+    if (directDelta != null) {
+      delta = Math.round(directDelta);
+    } else {
+      const target = Math.max(0, Math.round(newBalance));
+      const cur = Math.round(user.wallet || 0);
+      delta = target - cur;
+    }
     if (delta === 0) {
       setWalletModal(null);
       return;

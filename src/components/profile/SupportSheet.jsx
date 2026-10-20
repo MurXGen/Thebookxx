@@ -53,9 +53,12 @@ export default function SupportSheet({
       ),
     ) || 0;
   const refundAfterFee = Math.max(0, grandTotal - CANCEL_FEE);
-  // "Placed" and still cancellable online: an active order that hasn't shipped,
-  // been delivered, or already cancelled.
-  const canCancel = !!order && !delivered && !cancelled && !inTransit;
+  // Cancellation is always offered when an order row is present, regardless of
+  // its current status.
+  const canCancel = !!order;
+  void delivered;
+  void cancelled;
+  void inTransit;
   const [upiCopied, setUpiCopied] = useState(false);
   const copyUpi = () => {
     try {

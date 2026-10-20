@@ -15578,7 +15578,7 @@ export default function ManageOrdersPage() {
                         </button>
                         <span className="mo-view-div" />
                         <select
-                          className="mo-status-quick"
+                          className="mo-status-filter"
                           title="Filter by status"
                           value={
                             Array.isArray(statusFilter) &&

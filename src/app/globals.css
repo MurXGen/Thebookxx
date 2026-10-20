@@ -24823,15 +24823,16 @@ img[data-loaded="true"] {
 .mo-loadmore:hover{ background:#fafafa; border-color:#9aa0aa; }
 .mo-dark .mo-loadmore{ background:#15181d; border-color:rgba(255,255,255,.14); color:#f3f4f6; }
 /* Quick status filter select in the orders toolbar */
-.mo-status-quick{
+.mo-status-filter{
   height:34px; border:1px solid #c3c7cf; border-radius:10px;
-  background:#fff; padding:0 28px 0 12px; font-size:13px; font-weight:600;
+  background-color:#fff; padding:0 30px 0 12px; font-size:13px; font-weight:600;
   color:var(--foreground,#111827); cursor:pointer; max-width:170px;
   -webkit-appearance:none; appearance:none;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat:no-repeat; background-position:right 10px center;
 }
-.mo-dark .mo-status-quick{ background-color:#15181d; border-color:rgba(255,255,255,.14); color:#f3f4f6; }
+.mo-status-filter:hover{ border-color:#9aa0aa; }
+.mo-dark .mo-status-filter{ background-color:#15181d; border-color:rgba(255,255,255,.14); color:#f3f4f6; }
 
 /* Minimal bordered-grid stats bar (replaces the accordion stats card).
    Gridlines come from the 1px gap showing the container background through. */
@@ -33731,17 +33732,13 @@ img[data-loaded="true"] {
     background: #fff8ef;
   }
   /* Status filter — a clear dropdown (border + chevron), fills the row width. */
-  .mo-status-quick {
+  .mo-status-filter {
     flex: 1 1 100%;
     order: -1;
     max-width: none;
     height: 40px;
     font-size: 13.5px;
     font-weight: 700;
-    border: 1px solid #c3c7cf !important;
-    border-radius: 10px;
-    background-color: #fff !important;
-    color: var(--foreground, #111827) !important;
   }
   .mo-select-btn-lbl {
     display: inline;

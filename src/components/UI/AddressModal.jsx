@@ -844,21 +844,45 @@ export default function AddressModal({
   const bookmarkFreeApplied = Math.min(bookmarkQty, freeBookmarks);
   const addOnsCharge = (giftWrap ? giftWrapCharge : 0) + bookmarkCharge;
 
-  // For the COD fee modal comparison.
-  const upiTotalForFlow = getTotalWithDelivery(fasterDelivery) + addOnsCharge;
+  // Raw UPI bill (goods after wallet-on-goods + delivery + add-ons), BEFORE the
+  // full-use wallet coupon covers the remaining charges.
+  const upiRawTotal = getTotalWithDelivery(fasterDelivery) + addOnsCharge;
   // COD handling fee: a minimum of ₹29, or 5.9% of the bill when that exceeds
   // ₹29 (whichever is higher). Members ("TheBookX Exclusive") pay NO COD fee.
+  // Computed on the pre-wallet-coupon bill so the fee itself is consistent.
   const codFeeAmount = proActive
     ? 0
-    : Math.max(29, Math.round(upiTotalForFlow * 0.059));
-  const codTotalWithFee = upiTotalForFlow + codFeeAmount;
+    : Math.max(29, Math.round(upiRawTotal * 0.059));
+
+  // ── Full-use wallet coupon ("100% Use of wallet") ──────────────────────────
+  // The normal wallet only offsets the goods (finalPayable). With this coupon
+  // the wallet also covers ALL other charges — QuickReads, delivery, gift wrap,
+  // bookmarks and the COD fee. `couponWalletExtra(raw)` is how much of the
+  // balance left after the goods a given flow total consumes. Non-coupon orders
+  // get 0 here, so their totals are unchanged.
+  const walletExtraBalance = isWalletCoupon
+    ? Math.max(0, walletBalance - walletApplied)
+    : 0;
+  const couponWalletExtra = (raw) =>
+    Math.min(walletExtraBalance, Math.max(0, raw));
+
+  const upiTotalForFlow = Math.max(0, upiRawTotal - couponWalletExtra(upiRawTotal));
+  const codRawTotal = upiRawTotal + codFeeAmount;
+  const codTotalWithFee = Math.max(0, codRawTotal - couponWalletExtra(codRawTotal));
 
   // ₹99-advance ("Pay in two parts"): NO COD / handling fee — priced the same
   // as full online payment. The customer prepays ₹99 online and pays the rest
   // at delivery, with no extra charge on the balance.
   const advanceHandlingFee = 0;
-  const advanceOrderTotal = upiTotalForFlow + advanceHandlingFee;
+  const advanceOrderTotal = Math.max(
+    0,
+    upiRawTotal + advanceHandlingFee - couponWalletExtra(upiRawTotal),
+  );
   const advanceRemaining = Math.max(0, advanceOrderTotal - codAdvanceAmount);
+  // Full wallet actually used (goods + charges it covers for the standard flow)
+  // — used for display and when storing the order.
+  const walletAppliedTotal =
+    (walletApplied || 0) + couponWalletExtra(upiRawTotal);
 
   // Only ONE ₹1 book is allowed per order. Count the total quantity of
   // ₹1-priced books; if it's more than one, checkout is blocked.
@@ -1127,12 +1151,15 @@ export default function AddressModal({
         : paymentType === "COD"
           ? codFeeAmount
           : 0;
-      const totalForOrder =
+      const rawTotalForOrder =
         netPayable +
         deliveryChargeForOrder +
         giftWrapAmt +
         bookmarkCharge +
         feeForThisOrder;
+      // Full-use wallet coupon: the wallet also covers these charges.
+      const extraWalletForOrder = couponWalletExtra(rawTotalForOrder);
+      const totalForOrder = Math.max(0, rawTotalForOrder - extraWalletForOrder);
       let resolvedPay =
         paymentLabel ||
         (paymentType === "COD"
@@ -1165,7 +1192,7 @@ export default function AddressModal({
       // draft never deducts — but a UPI order confirmed LATER by an admin or the
       // Telegram button (no client present) still has the amount to debit. This
       // is what closes the "wallet used but never deducted" loophole.
-      const walletForOrder = walletApplied || 0;
+      const walletForOrder = (walletApplied || 0) + extraWalletForOrder;
       const advanceAmt = advance ? 99 : 0;
       const codCollectForOrder =
         paymentType === "COD" || advance
@@ -1241,6 +1268,9 @@ export default function AddressModal({
         : paymentType === "COD"
           ? codFeeAmount
           : 0;
+      // Full-use wallet coupon: wallet also covers delivery / add-ons / COD fee.
+      const rawTotalAppend = onlineBase + feeForThisOrder;
+      const extraWalletAppend = couponWalletExtra(rawTotalAppend);
 
       // Names are always stored clean + Title-Cased (each word capitalised) so
       // the order page and shipping labels show them consistently regardless of
@@ -1268,12 +1298,7 @@ export default function AddressModal({
         fasterDeliveryChoice: isFaster,
         giftWrapSelected: giftWrapOn,
         shortLink,
-        totalWithDelivery:
-          netPayable +
-          deliveryChargeForOrder +
-          giftWrapAmountForOrder +
-          bookmarkAmountForOrder +
-          feeForThisOrder,
+        totalWithDelivery: Math.max(0, rawTotalAppend - extraWalletAppend),
         bookmarkSelected: bookmarkQty > 0,
         bookmarkCharge: bookmarkAmountForOrder,
         bookmarkQty,
@@ -1288,7 +1313,7 @@ export default function AddressModal({
         // server-side confirm (admin / Telegram button, no client present) can
         // deduct it. The server only debits once the order is confirmed, so the
         // unpaid draft never reduces the balance.
-        walletUsed: walletApplied,
+        walletUsed: (walletApplied || 0) + extraWalletAppend,
         walletPhone: walletApplied > 0 ? walletCheckedPhone : "",
         deliveryCharge: deliveryChargeForOrder,
         deliveryType: isFaster ? "Faster" : "Standard",
@@ -2892,7 +2917,7 @@ export default function AddressModal({
                             </span>
                             <span className="pa-row-sub free">
                               {isWalletCoupon
-                                ? `Full wallet unlocked · ₹${walletApplied} applied`
+                                ? `Full wallet unlocked · ₹${walletAppliedTotal} applied`
                                 : `You saved ₹${couponDiscount}`}
                             </span>
                           </span>
@@ -2967,7 +2992,7 @@ export default function AddressModal({
                       </span>
                       <span className="wc-apply-note">
                         {isWalletCoupon
-                          ? `Full wallet unlocked — applying ₹${walletApplied}, rest payable`
+                          ? `Full wallet unlocked — applying ₹${walletAppliedTotal}, rest payable`
                           : walletEnabled
                             ? `Applying ₹${walletApplied} to this order`
                             : `You can use up to ₹${maxWalletUsable} on this order`}
@@ -4054,7 +4079,7 @@ export default function AddressModal({
         {showUPIPayment && (
           <UPIPaymentModal
             finalPayable={netPayable}
-            walletApplied={walletApplied}
+            walletApplied={walletAppliedTotal}
             fasterDelivery={fasterDelivery}
             fasterDeliveryCharge={fasterDeliveryCharge}
             standardDeliveryCharge={standardDeliveryCharge}

@@ -33683,6 +33683,38 @@ img[data-loaded="true"] {
 .orders-header-right.mo-menu-wrap {
   position: relative;
 }
+/* Mobile: the view/status/select pill can hold many controls — let it scroll
+   horizontally instead of overflowing or wrapping messily. */
+@media (max-width: 768px) {
+  .orders-header-right.mo-menu-wrap {
+    min-width: 0;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+  .mo-view-toggle.mo-view-icons {
+    max-width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mo-view-toggle.mo-view-icons::-webkit-scrollbar {
+    display: none;
+  }
+  .mo-view-toggle.mo-view-icons .mo-view-btn {
+    padding: 6px 9px;
+    flex: 0 0 auto;
+  }
+  .mo-status-quick {
+    max-width: 118px;
+    height: 30px;
+    font-size: 12px;
+    flex: 0 0 auto;
+  }
+  .mo-select-btn-lbl {
+    display: none;
+  }
+}
 
 /* ===== Orders table (responsive) ===== */
 .mo-table-wrap {

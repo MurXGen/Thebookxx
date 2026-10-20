@@ -21426,7 +21426,7 @@ img[data-loaded="true"] {
 
 /* Order card */
 .admin-order-card {
-  border: 1px solid var(--hairline);
+  border: 1.5px solid #c3c7cf;
   border-radius: 18px;
   box-shadow: var(--shadow-xs);
   padding: 20px 20px;
@@ -24743,24 +24743,34 @@ img[data-loaded="true"] {
   background:#fff; box-shadow:var(--shadow-xs,0 1px 3px rgba(0,0,0,.05));
   margin-bottom:14px;
 }
-/* Minimal single-row stats bar (replaces the accordion stats card) */
+/* Minimal bordered-grid stats bar (replaces the accordion stats card).
+   Gridlines come from the 1px gap showing the container background through. */
 .mo-statsbar{
-  display:flex; align-items:center; flex-wrap:wrap; gap:6px 18px;
-  padding:12px 16px; margin-bottom:12px;
-  border:1px solid var(--hairline,#ececec); border-radius:14px;
-  background:#fff;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+  background:var(--dark-15,#d6d8de);
+  border:1px solid var(--dark-15,#d6d8de); border-radius:14px;
+  overflow:hidden; margin-bottom:12px;
 }
-.mo-statcell{ display:flex; flex-direction:column; gap:1px; min-width:0; }
-.mo-statcell-v{ font-size:16px; font-weight:800; color:var(--foreground,#111827); line-height:1.15; }
-.mo-statcell-l{ font-size:11.5px; font-weight:600; color:var(--dark-50,#6b7280); white-space:nowrap; }
-.mo-statcell-div{ width:1px; align-self:stretch; background:var(--hairline,#ececec); }
-.mo-dark .mo-statsbar{ background:#15181d; border-color:rgba(255,255,255,.08); }
+.mo-statcell{
+  display:flex; align-items:center; gap:10px;
+  padding:13px 14px; background:#fff; min-width:0;
+}
+.mo-statcell-ic{
+  flex:0 0 auto; width:30px; height:30px; border-radius:9px;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.mo-statcell-ic.s-ord{ background:#fff3e6; color:#c25e00; }
+.mo-statcell-ic.s-rev{ background:#eef2ff; color:#4f46e5; }
+.mo-statcell-ic.s-book{ background:#f3e8ff; color:#7c3aed; }
+.mo-statcell-ic.s-pay{ background:#ecfdf5; color:#0f766e; }
+.mo-statcell-body{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+.mo-statcell-v{ font-size:16px; font-weight:800; color:var(--foreground,#111827); line-height:1.1; white-space:nowrap; }
+.mo-statcell-l{ font-size:11px; font-weight:600; color:var(--dark-50,#6b7280); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mo-dark .mo-statsbar{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.12); }
+.mo-dark .mo-statcell{ background:#15181d; }
 .mo-dark .mo-statcell-v{ color:#f3f4f6; }
-.mo-dark .mo-statcell-div{ background:rgba(255,255,255,.1); }
 @media (max-width:640px){
-  .mo-statsbar{ gap:6px 12px; }
-  .mo-statcell-div{ display:none; }
-  .mo-statcell{ flex:1 1 40%; }
+  .mo-statsbar{ grid-template-columns:repeat(2,1fr); }
 }
 .admin-stats-summary{
   display:flex; align-items:center; gap:8px; padding:14px 16px;
@@ -30114,12 +30124,12 @@ img[data-loaded="true"] {
 /* Card background tint by payment type (forced over the old white rule). */
 .admin-orders-grid .admin-order-card.mo-card.mo-card-cod {
   background: #f4f9ff !important; /* very light blue — Cash on Delivery */
-  border-color: #d7e8ff !important;
+  border-color: #a7c8f0 !important;
 }
 .admin-orders-grid .admin-order-card.mo-card.mo-card-online,
 .admin-orders-grid .admin-order-card.mo-card.mo-card-prepaid {
   background: #f4fdf8 !important; /* very light green — Online / Advance paid */
-  border-color: #d4efdd !important;
+  border-color: #a6d8b8 !important;
 }
 /* Dispatch page — sub-tabs */
 .mo-book-subtabs {

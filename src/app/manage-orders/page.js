@@ -12891,40 +12891,57 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
-                  {/* Compact stats — a single minimal row, no accordion */}
+                  {/* Compact stats — a minimal bordered grid, no accordion */}
                   {realOrders.length > 0 && (
                     <div className="mo-statsbar">
                       <div className="mo-statcell">
-                        <span className="mo-statcell-v">
-                          {realOrders.length}
+                        <span className="mo-statcell-ic s-ord">
+                          <ShoppingBag size={15} />
                         </span>
-                        <span className="mo-statcell-l">Orders</span>
+                        <div className="mo-statcell-body">
+                          <span className="mo-statcell-v">
+                            {realOrders.length}
+                          </span>
+                          <span className="mo-statcell-l">Orders</span>
+                        </div>
                       </div>
-                      <span className="mo-statcell-div" />
                       <div className="mo-statcell">
-                        <span className="mo-statcell-v">
-                          ₹{fRevenue.toLocaleString()}
+                        <span className="mo-statcell-ic s-rev">
+                          <IndianRupee size={15} />
                         </span>
-                        <span className="mo-statcell-l">
-                          Revenue · Avg ₹
-                          {realOrders.length
-                            ? Math.round(
-                                fRevenue / realOrders.length,
-                              ).toLocaleString()
-                            : 0}
-                        </span>
+                        <div className="mo-statcell-body">
+                          <span className="mo-statcell-v">
+                            ₹{fRevenue.toLocaleString()}
+                          </span>
+                          <span className="mo-statcell-l">
+                            Revenue · Avg ₹
+                            {realOrders.length
+                              ? Math.round(
+                                  fRevenue / realOrders.length,
+                                ).toLocaleString()
+                              : 0}
+                          </span>
+                        </div>
                       </div>
-                      <span className="mo-statcell-div" />
                       <div className="mo-statcell">
-                        <span className="mo-statcell-v">{fBooks}</span>
-                        <span className="mo-statcell-l">Books sold</span>
-                      </div>
-                      <span className="mo-statcell-div" />
-                      <div className="mo-statcell">
-                        <span className="mo-statcell-v">
-                          {fCod} / {fUpi} / {fPrepaid}
+                        <span className="mo-statcell-ic s-book">
+                          <BarChart3 size={15} />
                         </span>
-                        <span className="mo-statcell-l">COD / UPI / ₹99</span>
+                        <div className="mo-statcell-body">
+                          <span className="mo-statcell-v">{fBooks}</span>
+                          <span className="mo-statcell-l">Books sold</span>
+                        </div>
+                      </div>
+                      <div className="mo-statcell">
+                        <span className="mo-statcell-ic s-pay">
+                          <Wallet size={15} />
+                        </span>
+                        <div className="mo-statcell-body">
+                          <span className="mo-statcell-v">
+                            {fCod} / {fUpi} / {fPrepaid}
+                          </span>
+                          <span className="mo-statcell-l">COD / UPI / ₹99</span>
+                        </div>
                       </div>
                     </div>
                   )}

@@ -23078,6 +23078,86 @@ img[data-loaded="true"] {
   margin-top: 8px;
   border-top: 1px solid var(--hairline, #ececec);
 }
+/* ── Cancel-order flow inside the support sheet ───────────────────────────── */
+.support-cancel {
+  padding-top: 14px;
+  margin-top: 8px;
+  border-top: 1px solid var(--hairline, #ececec);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.support-cancel-lead {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text, #374151);
+}
+.support-cancel-lead b {
+  color: #c25e00;
+}
+.support-cancel-qr {
+  width: 180px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+}
+.support-cancel-qr img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+.support-cancel-upi {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #374151;
+  background: var(--surface-2, #f3f4f6);
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.support-cancel-confirm {
+  width: 100%;
+  justify-content: center;
+  background: #111827 !important;
+  color: #fff !important;
+  border: none !important;
+}
+.support-cancel-refund {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+.support-cancel-refund b {
+  color: #065f46;
+}
+.support-cancel-blocked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #92400e;
+}
+.support-cancel-blocked p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text, #374151);
+}
 .support-actions > button {
   flex: 1 1 0;
   min-width: 0;

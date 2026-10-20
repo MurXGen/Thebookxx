@@ -2,11 +2,23 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { X, Check, Mail, MessageCircle, MapPin, Truck } from "lucide-react";
+import {
+  X,
+  Check,
+  Mail,
+  MessageCircle,
+  MapPin,
+  Truck,
+  Copy,
+  Ban,
+  Wallet,
+} from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 const SUPPORT_WHATSAPP = "917710892108";
 const SUPPORT_EMAIL = "uskillbook@gmail.com";
+const UPI_ID = "7977960242-1@okbizaxis";
+const CANCEL_FEE = 99;
 
 // "How can we help?" bottom-sheet — pick a reason, then reach us on WhatsApp
 // or by email. The same reason message is prefilled into whichever channel is
@@ -18,11 +30,55 @@ export default function SupportSheet({
   orderId = "",
   eta = "4–9",
   onDetail = false,
+  order = null,
   onClose,
 }) {
   const num = String(phone || "").replace(/\D/g, "").slice(-10);
   const ref = orderId ? ` (order ${orderId})` : "";
   const sig = num ? ` My number is ${num}.` : "";
+
+  // Cancellation eligibility + economics (only meaningful when an order row is
+  // provided, i.e. on the order-detail page).
+  const payType = String(order?.["Payment Type"] || "");
+  const isCOD = /cash on delivery|\bcod\b/i.test(payType);
+  const orderStatus = String(order?.["Order Status"] || "");
+  const delivered = /deliver|money received/i.test(orderStatus);
+  const cancelled = /cancel/i.test(orderStatus);
+  const inTransit = /transit|out for delivery|shipped/i.test(orderStatus);
+  const grandTotal =
+    Number(
+      String(order?.["Total Amount"] ?? order?.revenue ?? "").replace(
+        /[^\d.]/g,
+        "",
+      ),
+    ) || 0;
+  const refundAfterFee = Math.max(0, grandTotal - CANCEL_FEE);
+  // "Placed" and still cancellable online: an active order that hasn't shipped,
+  // been delivered, or already cancelled.
+  const canCancel = !!order && !delivered && !cancelled && !inTransit;
+  const [upiCopied, setUpiCopied] = useState(false);
+  const copyUpi = () => {
+    try {
+      navigator.clipboard.writeText(UPI_ID);
+      setUpiCopied(true);
+      setTimeout(() => setUpiCopied(false), 1600);
+    } catch (_) {}
+  };
+  const requestCancellation = (paidFee) => {
+    const msg = isCOD
+      ? `Hi TheBookX, I'd like to cancel my order ${orderId}. ${
+          paidFee
+            ? `I've paid the ₹${CANCEL_FEE} cancellation fee via UPI.`
+            : `I understand a ₹${CANCEL_FEE} cancellation fee applies.`
+        }${sig}${linkLine}`
+      : `Hi TheBookX, I'd like to cancel my prepaid order ${orderId}. I understand ₹${CANCEL_FEE} is retained as a cancellation fee and the remaining ₹${refundAfterFee} is refunded to my TheBookX wallet.${sig}${linkLine}`;
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+    onClose && onClose();
+  };
 
   // Link the customer's own order page so support can pull it up instantly:
   // the specific order-detail page when an order is open, otherwise their
@@ -44,10 +100,13 @@ export default function SupportSheet({
     { label: "Bookmark compensation", msg: `Hi TheBookX, I'd like to claim compensation for my missing bookmark${ref}.${sig}${linkLine}` },
     { label: "Something else", msg: `Hi TheBookX, I need some help with my order${ref}.${sig}${linkLine}` },
   ];
+  // Cancellation is offered only on the order-detail page (order row present).
+  if (order) topics.push({ label: "Cancel my order", msg: "" });
 
   const [selected, setSelected] = useState(0);
   const [autoReply, setAutoReply] = useState(false);
   const topic = topics[selected] || topics[0];
+  const isCancel = topic.label === "Cancel my order";
 
   // Two reasons get an instant, in-app answer instead of opening a channel.
   const autoTopics = new Set(["Where is my order?", "Delivery estimate"]);
@@ -173,22 +232,106 @@ export default function SupportSheet({
               ))}
             </div>
 
-            <div className="support-actions">
-              <button
-                type="button"
-                className="sec-big-btn support-wa"
-                onClick={openWhatsApp}
-              >
-                <FaWhatsapp size={17} /> WhatsApp
-              </button>
-              <button
-                type="button"
-                className="sec-big-btn support-email"
-                onClick={openEmail}
-              >
-                <Mail size={16} /> Email us
-              </button>
-            </div>
+            {isCancel ? (
+              <div className="support-cancel">
+                {!canCancel ? (
+                  <div className="support-cancel-blocked">
+                    <Ban size={18} />
+                    <p>
+                      This order can&apos;t be cancelled online anymore
+                      {inTransit ? " — it's already on the way" : ""}. Please
+                      chat with us and we&apos;ll help.
+                    </p>
+                    <button
+                      type="button"
+                      className="sec-big-btn support-wa"
+                      onClick={() =>
+                        window.open(
+                          `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
+                            `Hi TheBookX, I need help cancelling my order ${orderId}.${sig}${linkLine}`,
+                          )}`,
+                          "_blank",
+                          "noopener,noreferrer",
+                        )
+                      }
+                    >
+                      <FaWhatsapp size={16} /> Chat with us
+                    </button>
+                  </div>
+                ) : isCOD ? (
+                  <>
+                    <p className="support-cancel-lead">
+                      Cancelling a Cash-on-Delivery order needs a one-time{" "}
+                      <b>₹{CANCEL_FEE} cancellation fee</b> (it covers the
+                      packing &amp; handling already done). Scan &amp; pay ₹
+                      {CANCEL_FEE}, then request cancellation below.
+                    </p>
+                    <div className="support-cancel-qr">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/books/uskillbook.png"
+                        alt="Scan to pay the cancellation fee"
+                        width={180}
+                        height={216}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="support-cancel-upi"
+                      onClick={copyUpi}
+                    >
+                      <Copy size={13} /> {upiCopied ? "Copied!" : UPI_ID}
+                    </button>
+                    <button
+                      type="button"
+                      className="sec-big-btn support-cancel-confirm"
+                      onClick={() => requestCancellation(true)}
+                    >
+                      <FaWhatsapp size={16} /> I&apos;ve paid ₹{CANCEL_FEE} —
+                      cancel my order
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="support-cancel-refund">
+                      <Wallet size={18} />
+                      <div>
+                        <p className="support-cancel-lead">
+                          Your order is prepaid (₹{grandTotal}). On cancellation,
+                          a <b>₹{CANCEL_FEE} fee</b> is retained and the
+                          remaining <b>₹{refundAfterFee}</b> is refunded to your
+                          TheBookX wallet.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="sec-big-btn support-cancel-confirm"
+                      onClick={() => requestCancellation(false)}
+                    >
+                      <FaWhatsapp size={16} /> Confirm cancellation
+                    </button>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="support-actions">
+                <button
+                  type="button"
+                  className="sec-big-btn support-wa"
+                  onClick={openWhatsApp}
+                >
+                  <FaWhatsapp size={17} /> WhatsApp
+                </button>
+                <button
+                  type="button"
+                  className="sec-big-btn support-email"
+                  onClick={openEmail}
+                >
+                  <Mail size={16} /> Email us
+                </button>
+              </div>
+            )}
           </>
         )}
       </motion.div>

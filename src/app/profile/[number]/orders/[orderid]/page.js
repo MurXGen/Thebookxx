@@ -2484,6 +2484,7 @@ export default function OrderDetailPage() {
             orderId={orderId}
             eta={`${etaMin}–${etaMax}`}
             onDetail
+            order={order}
             onClose={() => setShowSupport(false)}
           />
         )}

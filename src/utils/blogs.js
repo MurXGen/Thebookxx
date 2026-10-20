@@ -4,6 +4,357 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "halloween-2026-spooky-season-thrillers-mysteries-books-to-read-india": {
+    "id": "blog-084",
+    "title": "Halloween 2026 (31 October): 15 Spooky-Season Thrillers, Mysteries and Dark Reads to Pick Up in India",
+    "slug": "halloween-2026-spooky-season-thrillers-mysteries-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-20",
+    "lastModified": "2026-10-20",
+    "excerpt": "Halloween falls on Saturday 31 October 2026. 15 psychological thrillers, classic mysteries and dark reads for spooky season, from ₹1 with free delivery and COD.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Halloween is not a traditional Indian festival, but spooky season has quietly become part of how many readers here spend late October. Halloween falls on Saturday, 31 October 2026, which means a long weekend evening is available for a book, a blanket and a very good scare. Publishers have timed the season well: trade coverage of October 2026 horror releases lists new titles from Stephen King with Peter Straub, Elizabeth Kostova, Stephen Graham Jones and many more, so the genre is in the news this month."
+      },
+      {
+        "type": "paragraph",
+        "content": "You do not need gore to enjoy the season. Most Indian readers prefer the quieter end of the spectrum: psychological thrillers, locked-room mysteries, unreliable narrators and the kind of story that makes you check the door twice. This guide groups 15 books from the TheBookX catalogue by the type of chill they deliver. Books start from ₹1, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts",
+        "content": "Occasion: Halloween. Date: Saturday, 31 October 2026. Best for: a themed reading weekend, a book-club night or a gift for a thriller fan. Offer at TheBookX: books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why we love being scared by a book"
+      },
+      {
+        "type": "paragraph",
+        "content": "A book scare is a safe scare. Your heart rate rises, your imagination does the heavy lifting, and you can close the cover whenever you like. Psychologists often describe this as a controlled way of rehearsing fear, which is part of why thrillers and mysteries stay popular in every season, not only in October. The reading experience also rewards focus: a plot with twists demands attention, and that is a welcome break from scrolling."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Psychological thrillers: unreliable narrators and twisty plots"
+      },
+      {
+        "type": "paragraph",
+        "content": "These are the books that dominate bestseller tables and book-club discussions. They work through voice and suspicion rather than monsters."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> by Alex Michaelides: a woman stops speaking after a shocking event, and a therapist becomes determined to understand why. A fast, twisty read.",
+          "<a href=\"/books/gone-girl\" style=\"color:#fb8500;font-weight:600\">Gone Girl</a> by Gillian Flynn: a marriage, a disappearance and two versions of the truth. A modern benchmark for the unreliable-narrator thriller.",
+          "<a href=\"/books/the-girl-on-the-train\" style=\"color:#fb8500;font-weight:600\">The Girl on the Train</a> by Paula Hawkins: a commuter watches the same houses every day until she sees something she should not have.",
+          "<a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a> by Freida McFadden: a quick, compulsive domestic thriller about a household where nothing is quite as polite as it looks.",
+          "<a href=\"/books/the-girl-with-the-dragon-tattoo\" style=\"color:#fb8500;font-weight:600\">The Girl with the Dragon Tattoo</a> by Stieg Larsson: a long, atmospheric Nordic crime novel for readers who want a proper winter-evening commitment."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Classic whodunits for a cosy chill"
+      },
+      {
+        "type": "paragraph",
+        "content": "If your idea of spooky is a closed circle of suspects and a detective gathering everyone in one room, Agatha Christie is the reliable answer. Her plots are short, clever and ideal for a one-night read."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/murder-on-the-orient-express\" style=\"color:#fb8500;font-weight:600\">Murder on the Orient Express</a>: a snowbound train, a locked compartment and a detective with twelve suspects.",
+          "<a href=\"/books/death-on-the-nile\" style=\"color:#fb8500;font-weight:600\">Death on the Nile</a>: a holiday cruise where a glamorous honeymoon turns into an investigation.",
+          "<a href=\"/books/the-murder-of-roger-ackroyd\" style=\"color:#fb8500;font-weight:600\">The Murder of Roger Ackroyd</a>: famous for an ending that readers still argue about. Do not read spoilers first.",
+          "<a href=\"/books/a-good-girl-s-guide-to-murder\" style=\"color:#fb8500;font-weight:600\">A Good Girl's Guide to Murder</a> by Holly Jackson: a teenager reopens a closed case for a school project, a good pick for younger thriller readers."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Reading-weekend tip",
+        "content": "Pick one thriller and one classic mystery, and alternate them by chapter if you like. Short Christie novels are easy to finish in a single evening, which makes them ideal for a Halloween night."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Dark, eerie and literary"
+      },
+      {
+        "type": "paragraph",
+        "content": "Some of the most unsettling reading is not in the thriller aisle at all. These books suit readers who want mood and ideas along with the suspense."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/crime-and-punishment\" style=\"color:#fb8500;font-weight:600\">Crime and Punishment</a> by Fyodor Dostoevsky: a classic of guilt and paranoia that reads like a psychological thriller told from inside the guilty mind.",
+          "<a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig: not frightening, but eerie and reflective, a good palate cleanser when you want atmosphere without dread.",
+          "<a href=\"/books/haunting-adeline\" style=\"color:#fb8500;font-weight:600\">Haunting Adeline</a> by H. D. Carlton: a dark romance with stalking and other mature themes. It is for adult readers who know the genre, so check content warnings first."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Real-life dark minds: non-fiction for curious readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "True fear is often about people, not ghosts. If you want facts rather than fiction, these two books look at manipulation and personality from different angles."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/talking-with-psychopaths\" style=\"color:#fb8500;font-weight:600\">Talking with Psychopaths</a>: a look at some of the best-known criminal cases through the lens of interviews and psychology.",
+          "<a href=\"/books/dark-psychology\" style=\"color:#fb8500;font-weight:600\">Dark Psychology</a>: an introduction to manipulation, persuasion and how to recognise them in daily life."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "And if the spooky weekend leaves you wanting a calmer head, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical read on sorting thoughts from noise. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is a good companion for turning a reading weekend into a regular reading habit."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to plan a Halloween reading night"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Choose your mood first: twisty thriller, classic whodunit or eerie literary read.",
+          "Set a start time and silence your phone. A scare works best without notifications.",
+          "Make a hot drink and keep the lights low, but not so low that you strain your eyes.",
+          "Read in company if you like. A book-club group chat or a shared weekend read is half the fun.",
+          "Finish with something gentle so you can sleep well."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting a thriller fan"
+      },
+      {
+        "type": "paragraph",
+        "content": "A well-chosen thriller is a lovely gift for a friend or sibling who loves a page-turner, and the Diwali gifting season is only a few weeks away. Gift wrapping is available for +₹25, and with books starting from ₹1 you can build a small spooky bundle without stretching the budget. Delivery is free across India, with Cash on Delivery."
+      },
+      {
+        "type": "blockquote",
+        "content": "A reader lives a thousand lives before he dies. The man who never reads lives only one. — George R. R. Martin"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/halloween-2026-spooky-season-thrillers-mysteries-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/halloween-2026-spooky-season-thrillers-mysteries-books-to-read-india.jpeg",
+        "alt": "A young woman reading a thriller on a sofa by warm lamplight on a quiet October evening",
+        "caption": "A quiet October evening and a good thriller: the simplest way to enjoy spooky season.",
+        "category": "Halloween Reading"
+      }
+    ],
+    "keywords": [
+      "Halloween 2026 books",
+      "spooky season books India",
+      "best thriller books India",
+      "psychological thriller books",
+      "Agatha Christie books India",
+      "mystery books to read",
+      "horror books India",
+      "books for Halloween night",
+      "31 October 2026"
+    ],
+    "categories": [
+      "Thriller & Mystery",
+      "Reading Guides",
+      "Seasonal Reads"
+    ],
+    "faqs": [
+      {
+        "question": "When is Halloween in 2026?",
+        "answer": "Halloween falls on Saturday, 31 October 2026."
+      },
+      {
+        "question": "Which books are good for Halloween if I do not like gore?",
+        "answer": "Psychological thrillers such as The Silent Patient and Gone Girl, and classic whodunits such as Murder on the Orient Express, create suspense without graphic horror."
+      },
+      {
+        "question": "Where can I buy thriller and mystery books online in India?",
+        "answer": "TheBookX stocks thrillers, mysteries and classics with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "question": "Can I gift thriller books?",
+        "answer": "Yes. Gift wrapping is available for +₹25, and a small bundle of two or three thrillers makes a thoughtful gift for a page-turner fan."
+      }
+    ]
+  },
+  "sardar-patel-jayanti-2026-national-unity-day-books-to-read-india": {
+    "id": "blog-083",
+    "title": "Sardar Patel Jayanti 2026 (31 October): National Unity Day and 14 Books on Leadership, Resolve and a United India",
+    "slug": "sardar-patel-jayanti-2026-national-unity-day-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-19",
+    "lastModified": "2026-10-19",
+    "excerpt": "Sardar Patel Jayanti and National Unity Day fall on 31 October 2026. 14 books on leadership, nation-building and resolve, from ₹1 with free delivery and COD.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Every year on 31 October, India marks the birth anniversary of Sardar Vallabhbhai Patel, who was born in Nadiad, Gujarat, in 1875. The government introduced National Unity Day, also called Rashtriya Ekta Diwas, in 2014 to observe the date, and 2026 marks his 151st birth anniversary. A nationwide Run for Unity is a familiar part of the day, and schools, colleges and offices hold pledges and talks on national integration."
+      },
+      {
+        "type": "paragraph",
+        "content": "Most of us meet Patel through a paragraph in a school textbook. A reading day is a better way to meet him again. This guide gives you the essential facts, explains why his story still speaks to anyone who has to lead a team, a family or themselves through a hard stretch, and recommends 14 books that carry the same themes: unity, resolve, discipline and clear thinking. Books at TheBookX start from ₹1, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts",
+        "content": "Occasion: Sardar Vallabhbhai Patel Jayanti and National Unity Day (Rashtriya Ekta Diwas). Date: Saturday, 31 October 2026. Born: 31 October 1875, Nadiad, Gujarat. National Unity Day was introduced by the Government of India in 2014. Patel served as the first Deputy Prime Minister and Home Minister of India from 1947 to 1950."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why Sardar Patel still matters"
+      },
+      {
+        "type": "paragraph",
+        "content": "At Independence, India was not one tidy map. Alongside the British Indian provinces there were more than 560 princely states, together covering roughly two-fifths of the country's territory. Bringing them into the Union was one of the most delicate tasks of the early republic, and Patel, as Home Minister, was the leader most closely tied to that work. Historians continue to debate details of individual accessions, so it is best to read more than one account, but few dispute that persistence, negotiation and a firm sense of the goal were central to it."
+      },
+      {
+        "type": "paragraph",
+        "content": "Earlier, Patel had become known as an organiser in the freedom movement, including the 1928 Bardoli Satyagraha in Gujarat, after which he is widely remembered with the title Sardar, meaning leader or chief. The Statue of Unity in Gujarat stands as a national tribute to him. For a reader today, the lesson is less about monuments and more about method: set a clear goal, keep your temper, talk to everyone, and do not stop halfway."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on nation, history and the idea of India"
+      },
+      {
+        "type": "paragraph",
+        "content": "Start with the large picture. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari asks how millions of strangers came to cooperate under shared stories such as nations, laws and currencies, which is a useful lens on what 'unity' actually takes. <a href=\"/books/why-nations-fail\" style=\"color:#fb8500;font-weight:600\">Why Nations Fail</a> by Daron Acemoglu and James A. Robinson explores why some countries build lasting institutions while others stall, and is a thoughtful companion for any discussion about governance and nation-building."
+      },
+      {
+        "type": "paragraph",
+        "content": "For something closer to home, <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a>, the autobiography of APJ Abdul Kalam, shows what steady, service-minded national work looks like from the inside of India's science and space programmes. And <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a>, in Eknath Easwaran's translation, is a classic on duty, clarity under pressure and acting without being paralysed by doubt, ideas that leaders of every era have returned to."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels that make you feel the cost of division"
+      },
+      {
+        "type": "paragraph",
+        "content": "Stories often teach what policy papers cannot. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy is a luminous novel about family, caste and the small boundaries that shape lives, while <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini follows two boys, a friendship and a betrayal set against the turmoil of a divided society. For something lighter that still pokes at regional and cultural divides, <a href=\"/books/2-states\" style=\"color:#fb8500;font-weight:600\">2 States</a> by Chetan Bhagat is a popular love story about two families from different parts of India, and a good pick for younger readers."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Leadership and resolve: lessons from the Patel playbook"
+      },
+      {
+        "type": "paragraph",
+        "content": "A leader who unites people usually has a few habits in common: discipline, humility and the ability to keep going when the work is slow. <a href=\"/books/the-leadership-engine\" style=\"color:#fb8500;font-weight:600\">The Leadership Engine</a> by Noel Tichy looks at how winning organisations build leaders at every level. <a href=\"/books/ego-is-the-enemy\" style=\"color:#fb8500;font-weight:600\">Ego Is the Enemy</a> by Ryan Holiday argues that humility is a practical advantage, not a soft skill. <a href=\"/books/the-art-of-war\" style=\"color:#fb8500;font-weight:600\">The Art of War</a> by Sun Tzu remains a compact guide to strategy, patience and knowing when to negotiate rather than fight."
+      },
+      {
+        "type": "paragraph",
+        "content": "On personal resolve, <a href=\"/books/can-t-hurt-me\" style=\"color:#fb8500;font-weight:600\">Can't Hurt Me</a> by David Goggins is an intense account of mental toughness, and <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear shows how small daily systems create big results over time. If you want a calmer take on money and decisions, <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel explains why behaviour matters more than intelligence when it comes to long-term outcomes."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Featured read: The Art of Clarity",
+        "content": "Unity starts with clear thinking. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to cutting through mental noise, making sharper decisions and communicating with purpose, a good companion if you lead a team or simply want a calmer mind."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple way to mark National Unity Day with a book"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one book from the list above and read the first chapter today, before the festive rush of Karwa Chauth, Dhanteras and Diwali begins.",
+          "Read a short biography or essay on Sardar Patel alongside it, and compare at least two sources for the same event.",
+          "Share what you learn with a child, a colleague or a friend, since a day about unity works best when it is a conversation.",
+          "Gift a book to someone from a different background or community than your own, and add a handwritten note. Gift wrapping is available at +₹25 per book."
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": "A nation is built the way a habit is built: by showing up for the same goal, day after day, until it becomes ordinary."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Where to buy these books in India"
+      },
+      {
+        "type": "paragraph",
+        "content": "All of the books above are available at TheBookX. Books start from ₹1, delivery is free across India, and you can pay with Cash on Delivery. If you are buying for a school library, a reading club or an office desk, order a few titles together and add gift wrapping for the ones that will be handed over in person."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/sardar-patel-jayanti-2026-national-unity-day-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/sardar-patel-jayanti-2026-national-unity-day-books-to-read-india.jpeg",
+        "alt": "A young Indian reader sitting by a window with a book on a bright autumn morning, ready to read for National Unity Day",
+        "caption": "A quiet reading hour is a good way to mark Sardar Patel Jayanti and National Unity Day.",
+        "category": "Festivals"
+      }
+    ],
+    "keywords": [
+      "Sardar Patel Jayanti 2026",
+      "National Unity Day 2026",
+      "Rashtriya Ekta Diwas",
+      "31 October",
+      "books on Sardar Vallabhbhai Patel",
+      "books on leadership India",
+      "books on Indian history",
+      "Statue of Unity",
+      "books to read on National Unity Day",
+      "buy books online India"
+    ],
+    "categories": [
+      "Festivals",
+      "Book Recommendations",
+      "History and Leadership"
+    ],
+    "faqs": [
+      {
+        "question": "When is Sardar Patel Jayanti in 2026?",
+        "answer": "Sardar Patel Jayanti is observed every year on 31 October, and in 2026 it falls on a Saturday. The same day is marked as National Unity Day (Rashtriya Ekta Diwas), which the Government of India introduced in 2014."
+      },
+      {
+        "question": "Why is 31 October celebrated as National Unity Day?",
+        "answer": "31 October is the birth anniversary of Sardar Vallabhbhai Patel, born in 1875. National Unity Day honours his role in uniting the princely states with the Union of India and encourages citizens to value national integration."
+      },
+      {
+        "question": "Which books can I read to understand leadership and nation-building?",
+        "answer": "Good starting points include Sapiens, Why Nations Fail, Wings of Fire, The Leadership Engine, Ego Is the Enemy and The Art of War. For personal clarity and decision-making, The Art of Clarity by Murthy Thevar pairs well with them."
+      },
+      {
+        "question": "Does TheBookX offer free delivery and Cash on Delivery?",
+        "answer": "Yes. TheBookX offers free delivery and Cash on Delivery across India, with books starting from ₹1 and optional gift wrapping at +₹25 per book."
+      }
+    ]
+  },
   "valmiki-jayanti-2026-ramayana-books-to-read-india": {
     "id": "blog-082",
     "title": "Valmiki Jayanti 2026 (26 October): The Adi Kavi, the Ramayana and 12 Books to Read Next",

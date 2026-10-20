@@ -24743,6 +24743,52 @@ img[data-loaded="true"] {
   background:#fff; box-shadow:var(--shadow-xs,0 1px 3px rgba(0,0,0,.05));
   margin-bottom:14px;
 }
+/* Unavailable-books notify button + modal */
+.mo-unavail-btn{ color:#b45309 !important; }
+.mo-unavail-sheet{ max-width:520px; display:flex; flex-direction:column; max-height:86vh; }
+.mo-unavail-tabs{ display:flex; gap:8px; padding:4px 18px 10px; }
+.mo-unavail-tab{
+  flex:1 1 0; display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:9px 12px; border-radius:10px; border:1px solid var(--hairline,#e5e7eb);
+  background:#fff; font-size:13px; font-weight:700; color:#374151; cursor:pointer;
+}
+.mo-unavail-tab.on{ border-color:#111827; background:#111827; color:#fff; }
+.mo-unavail-sendall{
+  margin:0 18px 10px; padding:11px 14px; border-radius:11px; border:none;
+  background:#16a34a; color:#fff; font-size:13.5px; font-weight:800; cursor:pointer;
+}
+.mo-unavail-sendall:disabled{ opacity:.6; cursor:default; }
+.mo-unavail-list{ overflow-y:auto; padding:0 18px 16px; display:flex; flex-direction:column; gap:8px; }
+.mo-unavail-row{
+  display:flex; align-items:center; gap:10px; justify-content:space-between;
+  padding:10px 12px; border-radius:11px; border:1px solid var(--hairline,#eceef1); background:#fff;
+}
+.mo-unavail-row-main{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.mo-unavail-name{ display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:800; color:#111827; }
+.mo-unavail-pay{ font-size:10px; font-weight:800; color:#6b7280; background:#f3f4f6; border-radius:999px; padding:1px 7px; }
+.mo-unavail-books{ font-size:12px; color:#b45309; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mo-unavail-send{
+  flex:0 0 auto; display:inline-flex; align-items:center; gap:6px;
+  padding:7px 13px; border-radius:9px; border:none; background:#111827; color:#fff;
+  font-size:12.5px; font-weight:700; cursor:pointer;
+}
+.mo-unavail-email{ flex:0 0 auto; font-size:11.5px; color:#374151; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mo-unavail-email.none{ color:#9ca3af; font-style:italic; }
+
+/* Clickable book cover → mark picked (green tick overlay, dimmed cover) */
+.mo2-cover-pick{ cursor:pointer; position:relative; }
+.mo2-cover-pick.picked::after{
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  background:rgba(22,163,74,.22); border:2px solid #16a34a;
+}
+.mo2-cover-tick{
+  position:absolute; top:4px; right:4px; z-index:2;
+  width:22px; height:22px; border-radius:50%;
+  background:#16a34a; color:#fff;
+  display:inline-flex; align-items:center; justify-content:center;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+}
+
 /* Collapsed (compact) order cards — name, status, price, books only */
 .admin-orders-grid.mo-compact-grid{
   grid-template-columns:repeat(auto-fill,minmax(230px,1fr));

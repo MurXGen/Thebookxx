@@ -70,6 +70,7 @@ import {
   CheckSquare,
   Minimize2,
   Maximize2,
+  AlertTriangle,
   Wallet,
   Pin,
   Pencil,
@@ -6553,6 +6554,89 @@ export default function ManageOrdersPage() {
     return bks.length > 0 && bks.every((_b, i) => pickChecked[bookKey(oid, i)]);
   };
 
+  // Books in an order the operator has NOT marked picked = treated as the
+  // out-of-stock / unavailable books for the "notify unavailable" flow.
+  const unavailBooksFor = (o) => {
+    const oid = o["Order ID"] || o._rowIndex;
+    const bks = o.parsedBooks || [];
+    return bks.filter((_b, i) => !pickChecked[bookKey(oid, i)]);
+  };
+  // Message a customer when some of their books are unavailable. Paid orders are
+  // offered a swap or refund; COD orders a swap or cancellation.
+  const unavailMessage = (o) => {
+    const name =
+      String(o["Customer Name"] || "")
+        .replace(/\s*\(unconfirmed\)\s*/i, "")
+        .trim()
+        .split(/\s+/)[0] || "there";
+    const oid = o["Order ID"] || "";
+    const list = unavailBooksFor(o)
+      .map((b) => b.name)
+      .filter(Boolean)
+      .join(", ");
+    const isCODo = /cash|cod/i.test(o["Payment Type"] || "");
+    const choice = isCODo
+      ? "we can *swap* it with another book of your choice (same value), or *cancel* this order for you"
+      : "we can *swap* it with another book of your choice (same value), or *refund* you for it";
+    return (
+      `Hi ${name} 👋\nWe're really sorry — *${list}* from your order ${oid} is *currently out of stock*.\n\n` +
+      `No worries though — ${choice}. Just reply here and we'll sort it out right away. 📚\n\n— Team *TheBookX*`
+    );
+  };
+  const [unavailOpen, setUnavailOpen] = useState(false);
+  const [unavailTab, setUnavailTab] = useState("whatsapp"); // whatsapp | email
+  const [unavailBulkProgress, setUnavailBulkProgress] = useState(null);
+  // Orders (in the current filter) with at least one un-picked (unavailable)
+  // book — candidates for a stock-unavailable notification.
+  const unavailCandidates = filteredOrders.filter(
+    (o) => (o.parsedBooks || []).length > 0 && unavailBooksFor(o).length > 0,
+  );
+  const sendUnavailEmailAll = async () => {
+    const scope = unavailCandidates.filter((o) =>
+      String(o["Email"] || "").trim(),
+    );
+    if (!scope.length) {
+      showToast("None of these orders have an email.", "error");
+      return;
+    }
+    setUnavailBulkProgress({ done: 0, total: scope.length });
+    let ok = 0;
+    const CH = 5;
+    for (let i = 0; i < scope.length; i += CH) {
+      const batch = scope.slice(i, i + CH);
+      // eslint-disable-next-line no-await-in-loop
+      const res = await Promise.all(
+        batch.map((o) => {
+          const items = (o.parsedBooks || []).map((b) => ({
+            name: b.name,
+            qty: Number(b.quantity) || 1,
+            price:
+              Number(b.total) ||
+              (Number(b.price) || 0) * (Number(b.quantity) || 1),
+          }));
+          const isCODo = /cash|cod/i.test(o["Payment Type"] || "");
+          const list = unavailBooksFor(o)
+            .map((b) => b.name)
+            .filter(Boolean)
+            .join(", ");
+          return sendOrderStatusEmail({
+            to: String(o["Email"]).trim(),
+            order: orderEmailFromRow(o, items),
+            status: "Books unavailable",
+            heading: `${list} is currently unavailable`,
+            subheading: isCODo
+              ? "We can swap it with another book of the same value, or cancel this order — just reply and let us know."
+              : "We can swap it with another book of the same value, or refund you for it — just reply and let us know.",
+          }).catch(() => false);
+        }),
+      );
+      ok += res.filter(Boolean).length;
+      setUnavailBulkProgress({ done: Math.min(i + CH, scope.length), total: scope.length });
+    }
+    setUnavailBulkProgress(null);
+    showToast(`Unavailable-book email sent to ${ok}/${scope.length} ✓`, "success");
+  };
+
   // Global single-frame PNG grid of every un-picked book cover (dense grid,
   // fits many covers per sheet). Async: waits for images to load.
   const downloadCoversPNG = async (mode = "unpicked", orderList = null) => {
@@ -6862,7 +6946,7 @@ export default function ManageOrdersPage() {
                     returnsByOrder[String(order["Order ID"] || "").trim()];
                   return !!req && !req.moneyReleased;
                 }
-                return s === f;
+                return s.toLowerCase() === String(f).toLowerCase();
               });
         // Confirmation match (AND): confirmed hides "(unconfirmed)" rows.
         const confPass = !confSel.length
@@ -10209,9 +10293,22 @@ export default function ManageOrdersPage() {
                                   const img = getBookImage(b.name);
                                   const price =
                                     b.total > 0 ? b.total : b.price > 0 ? b.price : 0;
+                                  const picked =
+                                    !!pickChecked[bookKey(orderId, ci)];
                                   return (
                                     <div className="mo2-cover-item" key={ci}>
-                                      <div className="mo2-cover">
+                                      <div
+                                        className={`mo2-cover mo2-cover-pick${picked ? " picked" : ""}`}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleBook(orderId, ci);
+                                        }}
+                                        title={
+                                          picked
+                                            ? "Picked — click to unmark"
+                                            : "Click to mark picked"
+                                        }
+                                      >
                                         <BookCoverImg
                                           src={img}
                                           name={b.name}
@@ -10220,6 +10317,11 @@ export default function ManageOrdersPage() {
                                         />
                                         {b.quantity > 1 && (
                                           <span className="mo-cover-qty">×{b.quantity}</span>
+                                        )}
+                                        {picked && (
+                                          <span className="mo2-cover-tick">
+                                            <Check size={16} strokeWidth={3} />
+                                          </span>
                                         )}
                                       </div>
                                       <span className="mo2-cover-name" title={b.name}>
@@ -15525,6 +15627,22 @@ export default function ManageOrdersPage() {
                                 <Minimize2 size={16} />
                               )}
                             </button>
+                            {unavailCandidates.length > 0 && (
+                              <>
+                                <span className="mo-view-div" />
+                                <button
+                                  type="button"
+                                  className="mo-view-btn mo-unavail-btn"
+                                  onClick={() => setUnavailOpen(true)}
+                                  title="Notify customers about unavailable books"
+                                >
+                                  <AlertTriangle size={15} />
+                                  <span className="mo-select-btn-lbl">
+                                    Unavailable · {unavailCandidates.length}
+                                  </span>
+                                </button>
+                              </>
+                            )}
                             <span className="mo-view-div" />
                             <button
                               type="button"
@@ -16002,9 +16120,7 @@ export default function ManageOrdersPage() {
                         <button
                           type="button"
                           className="mo-loadmore"
-                          onClick={() =>
-                            setVisibleCount((c) => c + ORDERS_PAGE * 2)
-                          }
+                          onClick={() => setVisibleCount((c) => c + 10)}
                         >
                           Load more · {remainingCount} more order
                           {remainingCount === 1 ? "" : "s"}
@@ -17522,6 +17638,133 @@ export default function ManageOrdersPage() {
                     </motion.div>
                   );
                 })()}
+            </AnimatePresence>,
+            document.body,
+          )}
+
+        {/* Notify customers about unavailable (un-picked) books — portaled. */}
+        {typeof document !== "undefined" &&
+          createPortal(
+            <AnimatePresence>
+              {unavailOpen && (
+                <motion.div
+                  className="mo-bd-overlay"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setUnavailOpen(false)}
+                >
+                  <motion.div
+                    className="mo-bd-sheet mo-unavail-sheet"
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="mo-ws-head">
+                      <div className="mo-ws-head-txt">
+                        <span className="mo-ws-title">
+                          <AlertTriangle size={16} /> Unavailable books ·{" "}
+                          {unavailCandidates.length}
+                        </span>
+                        <span className="mo-ws-sub">
+                          Books you haven&apos;t picked are treated as out of
+                          stock. Notify these customers to swap, refund or cancel.
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="mo-ws-close"
+                        onClick={() => setUnavailOpen(false)}
+                        aria-label="Close"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+
+                    <div className="mo-unavail-tabs">
+                      <button
+                        type="button"
+                        className={`mo-unavail-tab${unavailTab === "whatsapp" ? " on" : ""}`}
+                        onClick={() => setUnavailTab("whatsapp")}
+                      >
+                        <FaWhatsapp size={15} /> WhatsApp
+                      </button>
+                      <button
+                        type="button"
+                        className={`mo-unavail-tab${unavailTab === "email" ? " on" : ""}`}
+                        onClick={() => setUnavailTab("email")}
+                      >
+                        <Mail size={15} /> Email
+                      </button>
+                    </div>
+
+                    {unavailTab === "email" && (
+                      <button
+                        type="button"
+                        className="mo-unavail-sendall"
+                        disabled={!!unavailBulkProgress}
+                        onClick={sendUnavailEmailAll}
+                      >
+                        {unavailBulkProgress
+                          ? `Sending… ${unavailBulkProgress.done}/${unavailBulkProgress.total}`
+                          : `Send email to all with email (${unavailCandidates.filter((o) => String(o["Email"] || "").trim()).length})`}
+                      </button>
+                    )}
+
+                    <div className="mo-unavail-list">
+                      {unavailCandidates.map((o) => {
+                        const oid = o["Order ID"];
+                        const name = String(o["Customer Name"] || "")
+                          .replace(/\s*\(unconfirmed\)\s*/i, "")
+                          .trim();
+                        const isCODo = /cash|cod/i.test(
+                          o["Payment Type"] || "",
+                        );
+                        const email = String(o["Email"] || "").trim();
+                        const books = unavailBooksFor(o)
+                          .map((b) => b.name)
+                          .filter(Boolean)
+                          .join(", ");
+                        return (
+                          <div className="mo-unavail-row" key={oid}>
+                            <div className="mo-unavail-row-main">
+                              <span className="mo-unavail-name">
+                                {name || "Customer"}
+                                <span className="mo-unavail-pay">
+                                  {isCODo ? "COD" : "Paid"}
+                                </span>
+                              </span>
+                              <span className="mo-unavail-books">{books}</span>
+                            </div>
+                            {unavailTab === "whatsapp" ? (
+                              <button
+                                type="button"
+                                className="mo-unavail-send"
+                                onClick={() =>
+                                  openWhatsApp(
+                                    o["Phone Number"],
+                                    unavailMessage(o),
+                                  )
+                                }
+                              >
+                                <FaWhatsapp size={14} /> Send
+                              </button>
+                            ) : (
+                              <span
+                                className={`mo-unavail-email${email ? "" : " none"}`}
+                              >
+                                {email || "No email"}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
             </AnimatePresence>,
             document.body,
           )}

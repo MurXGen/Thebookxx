@@ -117,7 +117,7 @@ import {
   sendOrderStatusEmail,
   reviewBooksFor,
 } from "@/utils/orderEmail";
-import { getDeliveryCharge } from "@/utils/cartOffers";
+import { getDeliveryCharge, getCodFee } from "@/utils/cartOffers";
 import {
   classifyOrderProduct,
   buildPreviewRow,
@@ -9236,88 +9236,122 @@ export default function ManageOrdersPage() {
     }
   };
 
+  // Recompute the full bill breakdown for the edit modal from the current form
+  // inputs, preserving the per-order components that aren't edited here
+  // (bookmarks, QuickReads, offer/coupon/wallet discounts, MRP). Delivery and
+  // COD fee follow the same checkout tiers, so switching Standard ↔ Faster (or
+  // changing books/gift) updates the total live.
+  const computeEditBreakdown = (fd, baseOrder = {}) => {
+    const num = (k) => {
+      const v = parseFloat(String(baseOrder[k] ?? "").replace(/[^\d.-]/g, ""));
+      return Number.isFinite(v) ? v : 0;
+    };
+    const lines = parseBooksList(fd.booksList || "");
+    const parsedSubtotal = lines.reduce((s, b) => s + (b.total || 0), 0);
+    const subtotal =
+      parsedSubtotal > 0
+        ? parsedSubtotal
+        : num("Subtotal") || num("Total Amount");
+    const isFaster = /faster|express/i.test(fd.deliveryType || "");
+    const hasOneRupee = lines.some((b) => Number(b.price) === 1);
+    const delivery = getDeliveryCharge(subtotal, isFaster, hasOneRupee);
+    const giftFee = /^yes/i.test(fd.giftWrap || "")
+      ? parseFloat(fd.giftWrapCharge) || 0
+      : 0;
+    const bookmarkFee = num("Bookmark Charge");
+    const quickReadsTotal = num("QuickReads Total");
+    const offerDiscount = num("Offer Discount");
+    const couponDiscount = num("Coupon Discount");
+    const walletApplied = num("Wallet Applied");
+    const isCOD = /cash|cod/i.test(fd.paymentType || "");
+    const preCod =
+      subtotal +
+      delivery +
+      giftFee +
+      bookmarkFee +
+      quickReadsTotal -
+      offerDiscount -
+      couponDiscount -
+      walletApplied;
+    const codFee = isCOD ? getCodFee(Math.max(0, preCod)) : 0;
+    const total = Math.max(0, Math.round(preCod + codFee));
+    const mrp = num("Total MRP");
+    const itemDiscount = mrp > 0 ? Math.max(0, mrp - subtotal) : 0;
+    const advancePaid = /^\s*yes/i.test(String(baseOrder["Advance Paid"] || ""));
+    const advanceAmount = advancePaid ? 99 : 0;
+    const codCollectible = isCOD ? Math.max(0, total - advanceAmount) : 0;
+    return {
+      lines,
+      subtotal,
+      isFaster,
+      delivery,
+      giftFee,
+      bookmarkFee,
+      quickReadsTotal,
+      offerDiscount,
+      couponDiscount,
+      walletApplied,
+      isCOD,
+      codFee,
+      total,
+      mrp,
+      itemDiscount,
+      advanceAmount,
+      codCollectible,
+    };
+  };
+
   const handleEditOrder = async () => {
     if (!selectedOrder) return;
-
-    // Preferred path: edit the existing row in place via the Apps Script API.
-    if (SHEET_EDIT_API_URL) {
-      const fields = {
-        "Customer Name": formData.customerName,
-        "Phone Number": formData.phoneNumber,
-        Pincode: formData.pincode,
-        City: formData.city,
-        State: formData.state,
-        Address: formData.address,
-        "Books List": formData.booksList,
-        "Total Amount": formData.totalAmount,
-        "Payment Type": formData.paymentType,
-        "Delivery Type": formData.deliveryType,
-        "Order Status": formData.orderStatus,
-        "Shipping ID": formData.shippingId,
-        TinyURL: formData.tinyUrl,
-      };
-      try {
-        await updateOrderRow(formData.orderId, fields);
-        setShowEditModal(false);
-        setTimeout(fetchOrders, 1300);
-      } catch (e) {
-        console.error("Update failed:", e);
-        alert("Failed to update order");
-      }
+    if (!SHEET_EDIT_API_URL) {
+      alert(
+        "Editing needs the Sheet edit endpoint. Deploy the Apps Script and set SHEET_EDIT_API_URL.",
+      );
       return;
     }
 
-    // Preserve the original order date, do NOT overwrite with the current time.
-    // The raw value from gviz can be either the serialized form
-    // "Date(2026,4,20,23,14,14)"
-    // or the plain-text form
-    // "20/05/2026 23:14:14"
-    // We normalize both via parseAnyDate, then re-emit in the same
-    // `dd/mm/yyyy hh:mm:ss` format that new orders use, so the sheet stays
-    // consistent. If parsing fails for any reason, fall back to the raw value
-    // (string) so we never accidentally stamp a fresh "now" onto an edit.
-    const originalRaw =
-      selectedOrder["Timestamp (D)"] || selectedOrder["Timestamp"] || "";
-    const parsedOriginal = parseAnyDate(originalRaw);
-    const originalTimestamp = parsedOriginal
-      ? formatDateForSheet(parsedOriginal)
-      : typeof originalRaw === "string" && originalRaw.trim()
-        ? originalRaw
-        : formatDateForSheet(new Date());
-
-    const params = new URLSearchParams();
-    params.append(FORM_FIELD_IDS.timestamp, originalTimestamp);
-    params.append(FORM_FIELD_IDS.orderId, formData.orderId);
-    params.append(FORM_FIELD_IDS.customerName, formData.customerName);
-    params.append(FORM_FIELD_IDS.phoneNumber, formData.phoneNumber);
-    params.append(FORM_FIELD_IDS.pincode, formData.pincode);
-    params.append(FORM_FIELD_IDS.city, formData.city);
-    params.append(FORM_FIELD_IDS.state, formData.state);
-    params.append(FORM_FIELD_IDS.address, formData.address);
-    params.append(FORM_FIELD_IDS.booksList, formData.booksList);
-    params.append(FORM_FIELD_IDS.totalAmount, formData.totalAmount);
-    params.append(FORM_FIELD_IDS.paymentType, formData.paymentType);
-    params.append(FORM_FIELD_IDS.deliveryType, formData.deliveryType);
-    params.append(FORM_FIELD_IDS.deliveryCharge, formData.deliveryCharge);
-    params.append(FORM_FIELD_IDS.giftWrap, formData.giftWrap);
-    params.append(FORM_FIELD_IDS.giftWrapCharge, formData.giftWrapCharge);
-    params.append(FORM_FIELD_IDS.offerApplied, formData.offerApplied);
-    params.append(FORM_FIELD_IDS.tinyUrl, formData.tinyUrl);
-    params.append(FORM_FIELD_IDS.orderStatus, formData.orderStatus);
-    params.append(FORM_FIELD_IDS.userAgent, navigator.userAgent);
-    params.append(FORM_FIELD_IDS.shippingId, formData.shippingId);
-
+    // Recompute the bill from the current inputs so the breakdown columns stay
+    // correct after an edit. The timestamp is intentionally NOT sent — the
+    // Apps Script patches only the given columns in place, so the original
+    // order date (and any column we don't touch) is preserved.
+    const b = computeEditBreakdown(formData, selectedOrder);
+    const fields = {
+      "Customer Name": formData.customerName,
+      "Phone Number": formData.phoneNumber,
+      Pincode: formData.pincode,
+      City: formData.city,
+      State: formData.state,
+      Address: formData.address,
+      "Books List": formData.booksList,
+      "Payment Type": formData.paymentType,
+      "Delivery Type": formData.deliveryType,
+      "Order Status": formData.orderStatus,
+      "Shipping ID": formData.shippingId,
+      TinyURL: formData.tinyUrl,
+      "Offer Applied": formData.offerApplied,
+      "Gift Wrap": formData.giftWrap,
+      "Gift Wrap Charge": String(b.giftFee),
+      Subtotal: String(b.subtotal),
+      "Delivery Charge": String(b.delivery),
+      "COD Fee": String(b.codFee),
+      "Total Amount": String(b.total),
+      "COD Collectible": String(b.isCOD ? b.codCollectible : b.total),
+      ...(b.mrp > 0
+        ? { "Total MRP": String(b.mrp), "Item Discount": String(b.itemDiscount) }
+        : {}),
+    };
     try {
-      await fetch(FORM_SUBMIT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: params,
+      patchLocalOrder(formData.orderId, {
+        ...fields,
+        revenue: b.total,
+        parsedBooks: b.lines,
       });
-      alert("Order updated successfully!");
+      await updateOrderRow(formData.orderId, fields);
+      showToast("Order updated", "success");
       setShowEditModal(false);
-      fetchOrders();
-    } catch (error) {
-      console.error("Error updating order:", error);
+      setTimeout(fetchOrders, 1300);
+    } catch (e) {
+      console.error("Update failed:", e);
       alert("Failed to update order");
     }
   };
@@ -9806,7 +9840,6 @@ export default function ManageOrdersPage() {
   // book lines are combined, the subtotal is summed, and delivery + COD
   // handling (₹29) are recomputed on the merged total via the same checkout
   // tiers used on the bag page.
-  const MERGE_COD_HANDLING_FEE = 29;
   const normMergePhone = (p) => String(p || "").replace(/\D/g, "").slice(-10);
   const isMergeableOrder = (o) =>
     !/cancel|merged/i.test(String(o["Order Status"] || ""));
@@ -9846,9 +9879,38 @@ export default function ManageOrdersPage() {
     const isCOD = grpOrders.some((o) =>
       /cash|cod/i.test(o["Payment Type"] || ""),
     );
-    const deliveryCharge = getDeliveryCharge(subtotal, false, false);
-    const codFee = isCOD ? MERGE_COD_HANDLING_FEE : 0;
-    const total = subtotal + deliveryCharge + codFee;
+    // Sum the component columns across every order being merged so the merged
+    // order carries a correct, checkout-consistent breakdown (not just a flat
+    // total). Delivery + COD fee are recomputed on the combined subtotal.
+    const sumCol = (k) =>
+      grpOrders.reduce((s, o) => {
+        const v = parseFloat(String(o[k] ?? "").replace(/[^\d.-]/g, ""));
+        return s + (Number.isFinite(v) ? v : 0);
+      }, 0);
+    const mrpTotal = sumCol("Total MRP");
+    const giftFee = sumCol("Gift Wrap Charge");
+    const bookmarkFee = sumCol("Bookmark Charge");
+    const quickReadsTotal = sumCol("QuickReads Total");
+    const offerDiscount = sumCol("Offer Discount");
+    const couponDiscount = sumCol("Coupon Discount");
+    const walletApplied = sumCol("Wallet Applied");
+    const itemDiscount = mrpTotal > 0 ? Math.max(0, mrpTotal - subtotal) : 0;
+    const isFaster = grpOrders.some((o) =>
+      /faster|express/i.test(o["Delivery Type"] || ""),
+    );
+    const deliveryCharge = getDeliveryCharge(subtotal, isFaster, false);
+    const preCod =
+      subtotal +
+      deliveryCharge +
+      giftFee +
+      bookmarkFee +
+      quickReadsTotal -
+      offerDiscount -
+      couponDiscount -
+      walletApplied;
+    const codFee = isCOD ? getCodFee(Math.max(0, preCod)) : 0;
+    const total = Math.max(0, Math.round(preCod + codFee));
+    const codCollectible = isCOD ? total : 0;
     // Most-recent order supplies the address / name for the merged order.
     const primary = grpOrders.reduce((a, b) => {
       const ta = getOrderDate(a)?.getTime() || 0;
@@ -9866,8 +9928,18 @@ export default function ManageOrdersPage() {
       books,
       subtotal,
       isCOD,
+      isFaster,
       deliveryCharge,
       codFee,
+      giftFee,
+      bookmarkFee,
+      quickReadsTotal,
+      offerDiscount,
+      couponDiscount,
+      walletApplied,
+      mrpTotal,
+      itemDiscount,
+      codCollectible,
       total,
       primary,
       booksListStr,
@@ -9903,10 +9975,24 @@ export default function ManageOrdersPage() {
         "Payment Type": m.isCOD
           ? "Cash on Delivery (COD)"
           : primary["Payment Type"] || "Prepaid",
-        "Delivery Type": primary["Delivery Type"] || "Standard",
+        "Delivery Type": m.isFaster ? "Faster Delivery" : "Standard Delivery",
         "Delivery Charge": String(m.deliveryCharge),
-        "Gift Wrap": "No",
-        "Gift Wrap Charge": "0",
+        Subtotal: String(m.subtotal),
+        "COD Fee": String(m.codFee),
+        "COD Collectible": String(m.isCOD ? m.codCollectible : m.total),
+        "Gift Wrap": m.giftFee > 0 ? "Yes" : "No",
+        "Gift Wrap Charge": String(m.giftFee),
+        "Bookmark Charge": String(m.bookmarkFee),
+        "QuickReads Total": String(m.quickReadsTotal),
+        "Offer Discount": String(m.offerDiscount),
+        "Coupon Discount": String(m.couponDiscount),
+        "Wallet Applied": String(m.walletApplied),
+        ...(m.mrpTotal > 0
+          ? {
+              "Total MRP": String(m.mrpTotal),
+              "Item Discount": String(m.itemDiscount),
+            }
+          : {}),
         "Offer Applied": `Merged from ${m.orders.length} orders: ${m.orders
           .map((o) => o["Order ID"])
           .join(", ")}`,
@@ -19952,28 +20038,86 @@ export default function ManageOrdersPage() {
                     <div className="merge-totals">
                       <div className="merge-total-row">
                         <span>Combined subtotal ({m.books.length} titles)</span>
-                        <span>₹{m.subtotal}</span>
+                        <span>₹{m.subtotal.toLocaleString()}</span>
                       </div>
+                      {m.itemDiscount > 0 && (
+                        <div className="merge-total-row">
+                          <span>Item discount</span>
+                          <span className="green">
+                            −₹{m.itemDiscount.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
                       <div className="merge-total-row">
-                        <span>Delivery / handling</span>
+                        <span>
+                          Delivery{m.isFaster ? " · Faster" : ""}
+                        </span>
                         <span>
                           {m.deliveryCharge === 0
                             ? "FREE"
-                            : `₹${m.deliveryCharge}`}
+                            : `₹${m.deliveryCharge.toLocaleString()}`}
                         </span>
                       </div>
+                      {m.giftFee > 0 && (
+                        <div className="merge-total-row">
+                          <span>Gift wrap</span>
+                          <span>₹{m.giftFee.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {m.bookmarkFee > 0 && (
+                        <div className="merge-total-row">
+                          <span>Bookmark</span>
+                          <span>₹{m.bookmarkFee.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {m.quickReadsTotal > 0 && (
+                        <div className="merge-total-row">
+                          <span>QuickReads</span>
+                          <span>₹{m.quickReadsTotal.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {m.offerDiscount > 0 && (
+                        <div className="merge-total-row">
+                          <span>Offer discount</span>
+                          <span className="green">
+                            −₹{m.offerDiscount.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                      {m.couponDiscount > 0 && (
+                        <div className="merge-total-row">
+                          <span>Coupon discount</span>
+                          <span className="green">
+                            −₹{m.couponDiscount.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                      {m.walletApplied > 0 && (
+                        <div className="merge-total-row">
+                          <span>Wallet applied</span>
+                          <span className="green">
+                            −₹{m.walletApplied.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
                       {m.isCOD && (
                         <div className="merge-total-row">
-                          <span>COD handling</span>
-                          <span>₹{m.codFee}</span>
+                          <span>COD fee</span>
+                          <span>₹{m.codFee.toLocaleString()}</span>
                         </div>
                       )}
                       <div className="merge-total-row merge-grand">
                         <span>
                           Total {m.isCOD ? "(COD)" : "(Prepaid)"}
                         </span>
-                        <span>₹{m.total}</span>
+                        <span>₹{m.total.toLocaleString()}</span>
                       </div>
+                      {m.isCOD && (
+                        <div className="merge-total-row">
+                          <span>Collect at door</span>
+                          <span>₹{m.codCollectible.toLocaleString()}</span>
+                        </div>
+                      )}
                     </div>
 
                     <p className="merge-note">
@@ -20719,123 +20863,255 @@ export default function ManageOrdersPage() {
                 <div className="dashed-border my-16"></div>
 
                 <h4 className="font-14 weight-600 mb-12">Order Details</h4>
-                <div className="input-group">
-                  <label>Books List</label>
-                  <textarea
-                    name="booksList"
-                    className="sec-mid-btn textarea"
-                    placeholder="1. Book Name | Qty: X | ₹Price each | Total: ₹XXX"
-                    rows={4}
-                    value={formData.booksList}
-                    onChange={handleInputChange}
-                  />
-                </div>
+                {(() => {
+                  const eb = computeEditBreakdown(formData, selectedOrder || {});
+                  const setField = (key, val) =>
+                    setFormData((p) => ({ ...p, [key]: val }));
+                  const payChips = [
+                    { v: "COD", label: "Cash on Delivery" },
+                    { v: "UPI Payment", label: "UPI" },
+                    { v: "Card Payment", label: "Card" },
+                  ];
+                  const statusChips = [
+                    "Processing",
+                    "Shipped",
+                    "In Transit",
+                    "Out for Delivery",
+                    "Delivered",
+                    "Cancelled",
+                  ];
+                  return (
+                    <>
+                      <div className="input-group">
+                        <label>Books List</label>
+                        <textarea
+                          name="booksList"
+                          className="sec-mid-btn textarea"
+                          placeholder="1. Book Name | Qty: X | ₹Price each | Total: ₹XXX"
+                          rows={4}
+                          value={formData.booksList}
+                          onChange={handleInputChange}
+                        />
+                      </div>
 
-                <div className="flex flex-row gap-12">
-                  <div className="input-group flex-1">
-                    <label>Total Amount (₹)</label>
-                    <input
-                      type="number"
-                      name="totalAmount"
-                      className="sec-mid-btn width100"
-                      value={formData.totalAmount}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="input-group flex-1">
-                    <label>Payment Type</label>
-                    <select
-                      name="paymentType"
-                      className="sec-mid-btn width100"
-                      value={formData.paymentType}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Select</option>
-                      <option value="COD">Cash on Delivery</option>
-                      <option value="UPI Payment">UPI Payment</option>
-                      <option value="Card Payment">Card Payment</option>
-                    </select>
-                  </div>
-                </div>
+                      <div className="input-group">
+                        <label>Payment Type</label>
+                        <div className="mo-chip-row">
+                          {payChips.map((c) => (
+                            <button
+                              key={c.v}
+                              type="button"
+                              className={`mo-chip${
+                                formData.paymentType === c.v ? " on" : ""
+                              }`}
+                              onClick={() => setField("paymentType", c.v)}
+                            >
+                              {c.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-                <div className="flex flex-row gap-12">
-                  <div className="input-group flex-1">
-                    <label>Delivery Type</label>
-                    <input
-                      type="text"
-                      name="deliveryType"
-                      className="sec-mid-btn width100"
-                      placeholder="Standard/Faster Delivery"
-                      value={formData.deliveryType}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="input-group flex-1">
-                    <label>Delivery Charge (₹)</label>
-                    <input
-                      type="number"
-                      name="deliveryCharge"
-                      className="sec-mid-btn width100"
-                      value={formData.deliveryCharge}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
+                      <div className="input-group">
+                        <label>Delivery Type</label>
+                        <div className="mo-chip-row">
+                          {[
+                            { v: "Standard Delivery", label: "Standard" },
+                            { v: "Faster Delivery", label: "Faster" },
+                          ].map((c) => (
+                            <button
+                              key={c.v}
+                              type="button"
+                              className={`mo-chip${
+                                eb.isFaster === /faster/i.test(c.v) ? " on" : ""
+                              }`}
+                              onClick={() => setField("deliveryType", c.v)}
+                            >
+                              {c.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-                <div className="flex flex-row gap-12">
-                  <div className="input-group flex-1">
-                    <label>Gift Wrap</label>
-                    <select
-                      name="giftWrap"
-                      className="sec-mid-btn width100"
-                      value={formData.giftWrap}
-                      onChange={handleInputChange}
-                    >
-                      <option value="No">No</option>
-                      <option value="Yes">Yes</option>
-                    </select>
-                  </div>
-                  <div className="input-group flex-1">
-                    <label>Gift Wrap Charge (₹)</label>
-                    <input
-                      type="number"
-                      name="giftWrapCharge"
-                      className="sec-mid-btn width100"
-                      value={formData.giftWrapCharge}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
+                      <div className="flex flex-row gap-12">
+                        <div className="input-group flex-1">
+                          <label>Gift Wrap</label>
+                          <div className="mo-chip-row">
+                            {["No", "Yes"].map((v) => (
+                              <button
+                                key={v}
+                                type="button"
+                                className={`mo-chip${
+                                  (formData.giftWrap || "No") === v ? " on" : ""
+                                }`}
+                                onClick={() => setField("giftWrap", v)}
+                              >
+                                {v}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="input-group flex-1">
+                          <label>Gift Wrap Charge (₹)</label>
+                          <input
+                            type="number"
+                            name="giftWrapCharge"
+                            className="sec-mid-btn width100"
+                            value={formData.giftWrapCharge}
+                            onChange={handleInputChange}
+                            disabled={!/^yes/i.test(formData.giftWrap || "")}
+                          />
+                        </div>
+                      </div>
 
-                <div className="flex flex-row gap-12">
-                  <div className="input-group flex-1">
-                    <label>Offer Applied</label>
-                    <input
-                      type="text"
-                      name="offerApplied"
-                      className="sec-mid-btn width100"
-                      placeholder="e.g. ₹100 OFF"
-                      value={formData.offerApplied}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="input-group flex-1">
-                    <label>Order Status</label>
-                    <select
-                      name="orderStatus"
-                      className="sec-mid-btn width100"
-                      value={formData.orderStatus}
-                      onChange={handleInputChange}
-                    >
-                      <option value="Processing">Processing</option>
-                      <option value="Shipped">Shipped</option>
-                      <option value="In Transit">In Transit</option>
-                      <option value="Out for Delivery">Out for Delivery</option>
-                      <option value="Delivered">Delivered</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
-                  </div>
-                </div>
+                      <div className="input-group">
+                        <label>Offer Applied</label>
+                        <input
+                          type="text"
+                          name="offerApplied"
+                          className="sec-mid-btn width100"
+                          placeholder="e.g. ₹100 OFF"
+                          value={formData.offerApplied}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="input-group">
+                        <label>Order Status</label>
+                        <div className="mo-chip-row">
+                          {statusChips.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              className={`mo-chip${
+                                formData.orderStatus === s ? " on" : ""
+                              }`}
+                              onClick={() => setField("orderStatus", s)}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {showEditModal ? (
+                        <div className="mo-editbill">
+                          <div className="mo-editbill-head">
+                            <span>Bill breakdown</span>
+                            <span className="mo-editbill-auto">
+                              auto · {eb.isFaster ? "Faster" : "Standard"}
+                            </span>
+                          </div>
+                          <div className="mo-editbill-row">
+                            <span>Subtotal</span>
+                            <b>₹{eb.subtotal.toLocaleString()}</b>
+                          </div>
+                          {eb.itemDiscount > 0 && (
+                            <div className="mo-editbill-row">
+                              <span>Item discount</span>
+                              <b className="green">
+                                −₹{eb.itemDiscount.toLocaleString()}
+                              </b>
+                            </div>
+                          )}
+                          <div className="mo-editbill-row">
+                            <span>
+                              Delivery
+                              {eb.isFaster ? " · Faster" : ""}
+                            </span>
+                            <b>
+                              {eb.delivery > 0
+                                ? `₹${eb.delivery.toLocaleString()}`
+                                : "FREE"}
+                            </b>
+                          </div>
+                          {eb.giftFee > 0 && (
+                            <div className="mo-editbill-row">
+                              <span>Gift wrap</span>
+                              <b>₹{eb.giftFee.toLocaleString()}</b>
+                            </div>
+                          )}
+                          {eb.bookmarkFee > 0 && (
+                            <div className="mo-editbill-row">
+                              <span>Bookmark</span>
+                              <b>₹{eb.bookmarkFee.toLocaleString()}</b>
+                            </div>
+                          )}
+                          {eb.quickReadsTotal > 0 && (
+                            <div className="mo-editbill-row">
+                              <span>QuickReads</span>
+                              <b>₹{eb.quickReadsTotal.toLocaleString()}</b>
+                            </div>
+                          )}
+                          {eb.offerDiscount > 0 && (
+                            <div className="mo-editbill-row">
+                              <span>Offer discount</span>
+                              <b className="green">
+                                −₹{eb.offerDiscount.toLocaleString()}
+                              </b>
+                            </div>
+                          )}
+                          {eb.couponDiscount > 0 && (
+                            <div className="mo-editbill-row">
+                              <span>Coupon discount</span>
+                              <b className="green">
+                                −₹{eb.couponDiscount.toLocaleString()}
+                              </b>
+                            </div>
+                          )}
+                          {eb.walletApplied > 0 && (
+                            <div className="mo-editbill-row">
+                              <span>Wallet applied</span>
+                              <b className="green">
+                                −₹{eb.walletApplied.toLocaleString()}
+                              </b>
+                            </div>
+                          )}
+                          {eb.codFee > 0 && (
+                            <div className="mo-editbill-row">
+                              <span>COD fee</span>
+                              <b>₹{eb.codFee.toLocaleString()}</b>
+                            </div>
+                          )}
+                          <div className="mo-editbill-sep" />
+                          <div className="mo-editbill-row total">
+                            <span>Total Amount</span>
+                            <b>₹{eb.total.toLocaleString()}</b>
+                          </div>
+                          {eb.isCOD && (
+                            <div className="mo-editbill-row">
+                              <span>Collect at door</span>
+                              <b>₹{eb.codCollectible.toLocaleString()}</b>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex flex-row gap-12">
+                          <div className="input-group flex-1">
+                            <label>Total Amount (₹)</label>
+                            <input
+                              type="number"
+                              name="totalAmount"
+                              className="sec-mid-btn width100"
+                              value={formData.totalAmount}
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                          <div className="input-group flex-1">
+                            <label>Delivery Charge (₹)</label>
+                            <input
+                              type="number"
+                              name="deliveryCharge"
+                              className="sec-mid-btn width100"
+                              value={formData.deliveryCharge}
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
 
                 <div className="input-group mt-8">
                   <label className="flex flex-row gap-4 items-center">

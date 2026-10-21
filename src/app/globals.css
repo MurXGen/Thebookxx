@@ -24929,6 +24929,51 @@ img[data-loaded="true"] {
 .mo-tools-card .mo-ohead{ margin:0; }
 .mo-tools-sep{ height:1px; background:#e6e8ec; margin:2px 0; border:none; }
 .mo-dark .mo-tools-sep{ background:rgba(255,255,255,.08); }
+.merge-total-row .green{ color:#15803d; }
+
+/* Edit/Add order modal — prefill chips + live bill breakdown. */
+.mo-chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+.mo-chip{
+  padding:8px 14px; border:1px solid #d6d8de; border-radius:999px;
+  background:#fff; color:#374151; font-size:13px; font-weight:600;
+  cursor:pointer; transition:all .14s ease; line-height:1;
+}
+.mo-chip:hover{ border-color:#b9bdc6; background:#fafbfc; }
+.mo-chip.on{
+  border-color:var(--tertiary,#fb8500); background:rgba(251,133,0,.08);
+  color:#c25e00;
+}
+.mo-dark .mo-chip{ background:#1b1f26; border-color:rgba(255,255,255,.12); color:#cbd5e1; }
+.mo-dark .mo-chip.on{ background:rgba(251,133,0,.15); color:#ffb765; border-color:var(--tertiary,#fb8500); }
+.mo-editbill{
+  margin-top:16px; border:1px solid #e6e8ec; border-radius:12px;
+  background:#fafbfc; padding:14px 15px;
+}
+.mo-dark .mo-editbill{ background:#15181d; border-color:rgba(255,255,255,.1); }
+.mo-editbill-head{
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:13px; font-weight:800; color:var(--foreground,#111827); margin-bottom:10px;
+}
+.mo-editbill-auto{
+  font-size:11px; font-weight:700; color:#6b7280; background:#eef0f2;
+  padding:3px 9px; border-radius:999px;
+}
+.mo-dark .mo-editbill-head{ color:#f3f4f6; }
+.mo-dark .mo-editbill-auto{ background:rgba(255,255,255,.08); color:#cbd5e1; }
+.mo-editbill-row{
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:13.5px; color:#4b5563; padding:4px 0;
+}
+.mo-editbill-row b{ color:var(--foreground,#111827); font-weight:700; }
+.mo-editbill-row .green{ color:#15803d; }
+.mo-editbill-row.total{ font-size:15px; }
+.mo-editbill-row.total span{ font-weight:700; color:var(--foreground,#111827); }
+.mo-editbill-row.total b{ color:var(--tertiary,#fb8500); font-weight:800; }
+.mo-editbill-sep{ height:1px; background:#e6e8ec; margin:8px 0; }
+.mo-dark .mo-editbill-row{ color:#cbd5e1; }
+.mo-dark .mo-editbill-row b{ color:#f3f4f6; }
+.mo-dark .mo-editbill-sep{ background:rgba(255,255,255,.1); }
+
 /* One outer box: header (toggle) + controls + overview, divided by hairlines.
    No inner pills — the box owns the only border. */
 .mo-tools-box{

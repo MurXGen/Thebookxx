@@ -25024,6 +25024,97 @@ img[data-loaded="true"] {
 .mo-dark .mo-ov-li{ border-bottom-color:rgba(255,255,255,.08); color:#cbd5e1; }
 .mo-dark .mo-ov-sep{ background:rgba(255,255,255,.14); }
 
+/* ===== Overview analytics (expanded) — tiles, segmented + progress bars. ===== */
+.mo-ov2{ gap:0; }
+.mo-ov2-range{
+  display:flex; align-items:center; gap:7px; padding:8px 10px; margin-bottom:12px;
+  border-radius:10px; background:#f5f7fa; color:#475569; font-size:12.5px; font-weight:600;
+}
+.mo-ov2-range svg{ color:#94a3b8; flex:0 0 auto; }
+.mo-ov2-range b{ margin-left:auto; color:var(--foreground,#111827); font-weight:800; }
+.mo-dark .mo-ov2-range{ background:rgba(255,255,255,.05); color:#cbd5e1; }
+.mo-dark .mo-ov2-range b{ color:#f3f4f6; }
+.mo-ov2-tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+.mo-ov2-tile{
+  display:flex; flex-direction:column; gap:3px; padding:11px 10px;
+  border:1px solid #eceef1; border-radius:12px; background:#fff;
+}
+.mo-dark .mo-ov2-tile{ background:#191d24; border-color:rgba(255,255,255,.08); }
+.mo-ov2-ic{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:28px; border-radius:8px; margin-bottom:3px; flex:0 0 auto;
+}
+.mo-ov2-ic.ic-blue{ background:#e8f0fe; color:#2563eb; }
+.mo-ov2-ic.ic-green{ background:#e7f7ee; color:#15803d; }
+.mo-ov2-ic.ic-violet{ background:#f0ebfe; color:#7c3aed; }
+.mo-ov2-ic.ic-amber{ background:#fef4e5; color:#b45309; }
+.mo-ov2-ic.ic-red{ background:#fdeaea; color:#dc2626; }
+.mo-ov2-val{ font-size:16px; font-weight:800; color:var(--foreground,#111827); line-height:1.1; }
+.mo-ov2-cap{ font-size:11px; font-weight:600; color:#6b7280; }
+.mo-dark .mo-ov2-val{ color:#f3f4f6; }
+.mo-ov2-block{ margin-bottom:14px; }
+.mo-ov2-block-head{
+  display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700;
+  color:#475569; margin-bottom:8px;
+}
+.mo-ov2-block-head svg{ color:#94a3b8; }
+.mo-dark .mo-ov2-block-head{ color:#cbd5e1; }
+.mo-ov2-seg{
+  display:flex; height:10px; border-radius:999px; overflow:hidden; background:#eceef1;
+}
+.mo-ov2-seg i{ height:100%; transition:width .4s ease; }
+.mo-ov2-seg .seg-cod{ background:#3b82f6; }
+.mo-ov2-seg .seg-upi{ background:#22c55e; }
+.mo-ov2-seg .seg-adv{ background:#f59e0b; }
+.mo-dark .mo-ov2-seg{ background:rgba(255,255,255,.08); }
+.mo-ov2-legend{ display:flex; gap:14px; margin-top:8px; font-size:11.5px; font-weight:600; color:#6b7280; }
+.mo-ov2-legend span{ display:inline-flex; align-items:center; gap:5px; }
+.mo-ov2-legend i{ width:9px; height:9px; border-radius:3px; display:inline-block; }
+.mo-ov2-legend .dot-cod{ background:#3b82f6; }
+.mo-ov2-legend .dot-upi{ background:#22c55e; }
+.mo-ov2-legend .dot-adv{ background:#f59e0b; }
+/* Orders-by-date list. */
+.mo-ov2-days{ display:flex; flex-direction:column; gap:12px; max-height:230px; overflow-y:auto; padding-right:2px; }
+.mo-ov2-day-top{
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:12.5px; margin-bottom:6px;
+}
+.mo-ov2-day-date{ font-weight:700; color:var(--foreground,#111827); }
+.mo-ov2-day-top b{ font-weight:700; color:#6b7280; font-size:11.5px; }
+.mo-dark .mo-ov2-day-date{ color:#f3f4f6; }
+.mo-ov2-seg.sm{ height:8px; }
+.mo-ov2-day-legend{
+  display:flex; gap:14px; margin-top:6px; font-size:11px; font-weight:600; color:#6b7280;
+}
+.mo-ov2-day-legend span{ display:inline-flex; align-items:center; gap:5px; }
+.mo-ov2-day-legend i{ width:8px; height:8px; border-radius:3px; display:inline-block; }
+.mo-ov2-day-legend .dot-cod{ background:#3b82f6; }
+.mo-ov2-day-legend .dot-upi{ background:#22c55e; }
+.mo-ov2-prog{
+  display:flex; align-items:center; gap:10px; width:100%; padding:9px 2px;
+  border:none; background:none; cursor:pointer; text-align:left;
+}
+.mo-ov2-prog-body{ flex:1 1 auto; min-width:0; }
+.mo-ov2-prog-top{
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:13px; color:#374151; margin-bottom:6px;
+}
+.mo-ov2-prog-top b{ font-weight:800; color:var(--foreground,#111827); }
+.mo-ov2-prog-top b.warn{ color:#b45309; }
+.mo-dark .mo-ov2-prog-top{ color:#cbd5e1; }
+.mo-dark .mo-ov2-prog-top b{ color:#f3f4f6; }
+.mo-ov2-bar{ height:7px; border-radius:999px; background:#eceef1; overflow:hidden; }
+.mo-ov2-bar i{ display:block; height:100%; border-radius:999px; transition:width .4s ease; }
+.mo-ov2-bar .b-amber{ background:#f59e0b; }
+.mo-ov2-bar .b-red{ background:#ef4444; }
+.mo-dark .mo-ov2-bar{ background:rgba(255,255,255,.08); }
+.mo-ov2-layout span:first-child{ display:inline-flex; align-items:center; gap:6px; }
+.mo-ov2-layout svg{ color:#94a3b8; }
+@media (max-width:420px){
+  .mo-ov2-tiles{ grid-template-columns:repeat(3,1fr); gap:6px; }
+  .mo-ov2-val{ font-size:14px; }
+}
+
 /* ===== Tools group: just the search pill, then a slim accordion that slides
    open to reveal the controls row + overview. No outer card chrome. ===== */
 .mo-tools-card{

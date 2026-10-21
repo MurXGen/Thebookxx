@@ -9816,6 +9816,31 @@ export default function ManageOrdersPage() {
         (o.parsedBooks || []).reduce((a, b) => a + (Number(b.quantity) || 1), 0),
       0,
     );
+    // Oldest ↔ newest order date + a per-day breakdown (count + COD vs online,
+    // where "online" counts UPI/card AND ₹99-advance COD orders).
+    let minDate = null;
+    let maxDate = null;
+    const dayMap = new Map();
+    real.forEach((o) => {
+      const d = getOrderDate(o);
+      if (!d) return;
+      if (!minDate || d < minDate) minDate = d;
+      if (!maxDate || d > maxDate) maxDate = d;
+      const isCod = /cod|cash/i.test(o["Payment Type"] || "");
+      const hasAdv = /^\s*yes/i.test(String(o["Advance Paid"] || ""));
+      const online = !isCod || hasAdv;
+      const key = d.toDateString();
+      const rec =
+        dayMap.get(key) ||
+        { date: d, dateT: d.getTime(), count: 0, cod: 0, online: 0 };
+      rec.count += 1;
+      if (online) rec.online += 1;
+      else rec.cod += 1;
+      dayMap.set(key, rec);
+    });
+    const byDate = Array.from(dayMap.values()).sort(
+      (a, b) => b.dateT - a.dateT,
+    );
     return {
       total: real.length,
       revenue,
@@ -9823,6 +9848,9 @@ export default function ManageOrdersPage() {
       cod: codAll.length - prepaid,
       upi: real.length - codAll.length,
       prepaid,
+      minDate,
+      maxDate,
+      byDate,
     };
   }, [filteredOrders]);
 
@@ -15766,7 +15794,14 @@ export default function ManageOrdersPage() {
                 <button
                   type="button"
                   className={`mo-tools-accordion${toolsOpen ? " open" : ""}`}
-                  onClick={() => setToolsOpen((v) => !v)}
+                  onClick={() =>
+                    setToolsOpen((v) => {
+                      // Opening the tools accordion also expands the inner
+                      // Overview so everything is visible in one tap.
+                      if (!v) setOverviewOpen(true);
+                      return !v;
+                    })
+                  }
                   aria-expanded={toolsOpen}
                 >
                   <span>{toolsOpen ? "Hide tools & overview" : "Tools & overview"}</span>
@@ -16007,71 +16042,248 @@ export default function ManageOrdersPage() {
                         </button>
                       </div>
                     ) : (
-                      <div className="mo-ov-list">
-                        <div className="mo-ov-li">
-                          <span>Total orders</span>
-                          <b>{orderStats.total}</b>
-                        </div>
-                        <div className="mo-ov-li">
-                          <span>Revenue</span>
-                          <b>₹{orderStats.revenue.toLocaleString()}</b>
-                        </div>
-                        <div className="mo-ov-li">
-                          <span>Books sold</span>
-                          <b>{orderStats.books}</b>
-                        </div>
-                        <div className="mo-ov-li">
-                          <span>COD / UPI / ₹99</span>
-                          <b>
-                            {orderStats.cod} / {orderStats.upi} /{" "}
-                            {orderStats.prepaid}
-                          </b>
-                        </div>
-                        <button
-                          type="button"
-                          className="mo-ov-li link"
-                          onClick={() => setShowUnconfirmed(true)}
-                        >
-                          <span>Review orders</span>
-                          <b>{unconfirmedOrders.length}</b>
-                        </button>
-                        <button
-                          type="button"
-                          className="mo-ov-li link"
-                          onClick={() => setUnavailOpen(true)}
-                        >
-                          <span>Unavailable books</span>
-                          <b className="warn">{unavailCandidates.length}</b>
-                        </button>
-                        <div className="mo-ov-li">
-                          <span>Layout</span>
-                          <span className="mo-ov-ly-toggle">
+                      (() => {
+                        const total = Math.max(1, orderStats.total);
+                        const pct = (n) =>
+                          Math.min(100, Math.round((n / total) * 100));
+                        const fmtD = (d, withYear) =>
+                          d
+                            ? d.toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                ...(withYear ? { year: "numeric" } : {}),
+                              })
+                            : "";
+                        const sameDay =
+                          orderStats.minDate &&
+                          orderStats.maxDate &&
+                          orderStats.minDate.toDateString() ===
+                            orderStats.maxDate.toDateString();
+                        return (
+                          <div className="mo-ov-list mo-ov2">
+                            {orderStats.minDate && (
+                              <div className="mo-ov2-range">
+                                <Calendar size={14} />
+                                <span>
+                                  {sameDay
+                                    ? fmtD(orderStats.minDate, true)
+                                    : `${fmtD(orderStats.minDate)} – ${fmtD(
+                                        orderStats.maxDate,
+                                        true,
+                                      )}`}
+                                </span>
+                                <b>{orderStats.total} orders</b>
+                              </div>
+                            )}
+
+                            <div className="mo-ov2-tiles">
+                              <div className="mo-ov2-tile">
+                                <span className="mo-ov2-ic ic-blue">
+                                  <ShoppingBag size={15} />
+                                </span>
+                                <span className="mo-ov2-val">
+                                  {orderStats.total}
+                                </span>
+                                <span className="mo-ov2-cap">Total orders</span>
+                              </div>
+                              <div className="mo-ov2-tile">
+                                <span className="mo-ov2-ic ic-green">
+                                  <IndianRupee size={15} />
+                                </span>
+                                <span className="mo-ov2-val">
+                                  ₹{orderStats.revenue.toLocaleString()}
+                                </span>
+                                <span className="mo-ov2-cap">Revenue</span>
+                              </div>
+                              <div className="mo-ov2-tile">
+                                <span className="mo-ov2-ic ic-violet">
+                                  <Package size={15} />
+                                </span>
+                                <span className="mo-ov2-val">
+                                  {orderStats.books}
+                                </span>
+                                <span className="mo-ov2-cap">Books sold</span>
+                              </div>
+                            </div>
+
+                            <div className="mo-ov2-block">
+                              <div className="mo-ov2-block-head">
+                                <Wallet size={14} />
+                                <span>Payment split</span>
+                              </div>
+                              <div className="mo-ov2-seg">
+                                <i
+                                  className="seg-cod"
+                                  style={{ width: `${pct(orderStats.cod)}%` }}
+                                />
+                                <i
+                                  className="seg-upi"
+                                  style={{ width: `${pct(orderStats.upi)}%` }}
+                                />
+                                <i
+                                  className="seg-adv"
+                                  style={{
+                                    width: `${pct(orderStats.prepaid)}%`,
+                                  }}
+                                />
+                              </div>
+                              <div className="mo-ov2-legend">
+                                <span>
+                                  <i className="dot-cod" /> COD {orderStats.cod}
+                                </span>
+                                <span>
+                                  <i className="dot-upi" /> UPI {orderStats.upi}
+                                </span>
+                                <span>
+                                  <i className="dot-adv" /> ₹99{" "}
+                                  {orderStats.prepaid}
+                                </span>
+                              </div>
+                            </div>
+
+                            {orderStats.byDate.length > 0 && (
+                              <div className="mo-ov2-block">
+                                <div className="mo-ov2-block-head">
+                                  <Calendar size={14} />
+                                  <span>
+                                    Orders by date
+                                    <b> · {orderStats.byDate.length} day
+                                      {orderStats.byDate.length === 1 ? "" : "s"}</b>
+                                  </span>
+                                </div>
+                                <div className="mo-ov2-days">
+                                  {orderStats.byDate.map((day) => {
+                                    const dp = (n) =>
+                                      Math.round(
+                                        (n / Math.max(1, day.count)) * 100,
+                                      );
+                                    return (
+                                      <div
+                                        className="mo-ov2-day"
+                                        key={day.dateT}
+                                      >
+                                        <div className="mo-ov2-day-top">
+                                          <span className="mo-ov2-day-date">
+                                            {fmtD(day.date, true)}
+                                          </span>
+                                          <b>
+                                            {day.count} order
+                                            {day.count === 1 ? "" : "s"}
+                                          </b>
+                                        </div>
+                                        <div className="mo-ov2-seg sm">
+                                          <i
+                                            className="seg-cod"
+                                            style={{ width: `${dp(day.cod)}%` }}
+                                          />
+                                          <i
+                                            className="seg-upi"
+                                            style={{
+                                              width: `${dp(day.online)}%`,
+                                            }}
+                                          />
+                                        </div>
+                                        <div className="mo-ov2-day-legend">
+                                          <span>
+                                            <i className="dot-cod" /> COD{" "}
+                                            {day.cod}
+                                          </span>
+                                          <span>
+                                            <i className="dot-upi" /> Online{" "}
+                                            {day.online}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
                             <button
                               type="button"
-                              className={orderView === "cards" ? "on" : ""}
-                              onClick={() => setOrderView("cards")}
-                              aria-label="Card view"
+                              className="mo-ov2-prog link"
+                              onClick={() => setShowUnconfirmed(true)}
                             >
-                              <LayoutGrid size={15} />
+                              <span className="mo-ov2-ic ic-amber">
+                                <AlertCircle size={15} />
+                              </span>
+                              <div className="mo-ov2-prog-body">
+                                <div className="mo-ov2-prog-top">
+                                  <span>Review orders</span>
+                                  <b>{unconfirmedOrders.length}</b>
+                                </div>
+                                <div className="mo-ov2-bar">
+                                  <i
+                                    className="b-amber"
+                                    style={{
+                                      width: `${pct(unconfirmedOrders.length)}%`,
+                                    }}
+                                  />
+                                </div>
+                              </div>
                             </button>
+
                             <button
                               type="button"
-                              className={orderView === "table" ? "on" : ""}
-                              onClick={() => setOrderView("table")}
-                              aria-label="Table view"
+                              className="mo-ov2-prog link"
+                              onClick={() => setUnavailOpen(true)}
                             >
-                              <List size={15} />
+                              <span className="mo-ov2-ic ic-red">
+                                <AlertTriangle size={15} />
+                              </span>
+                              <div className="mo-ov2-prog-body">
+                                <div className="mo-ov2-prog-top">
+                                  <span>Unavailable books</span>
+                                  <b className="warn">
+                                    {unavailCandidates.length}
+                                  </b>
+                                </div>
+                                <div className="mo-ov2-bar">
+                                  <i
+                                    className="b-red"
+                                    style={{
+                                      width: `${pct(unavailCandidates.length)}%`,
+                                    }}
+                                  />
+                                </div>
+                              </div>
                             </button>
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          className="mo-ov-toggle"
-                          onClick={() => setOverviewOpen(false)}
-                        >
-                          Hide all <ChevronUp size={14} />
-                        </button>
-                      </div>
+
+                            <div className="mo-ov-li mo-ov2-layout">
+                              <span>
+                                <LayoutDashboard size={14} /> Layout
+                              </span>
+                              <span className="mo-ov-ly-toggle">
+                                <button
+                                  type="button"
+                                  className={orderView === "cards" ? "on" : ""}
+                                  onClick={() => setOrderView("cards")}
+                                  aria-label="Card view"
+                                >
+                                  <LayoutGrid size={15} />
+                                </button>
+                                <button
+                                  type="button"
+                                  className={orderView === "table" ? "on" : ""}
+                                  onClick={() => setOrderView("table")}
+                                  aria-label="Table view"
+                                >
+                                  <List size={15} />
+                                </button>
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              className="mo-ov-toggle"
+                              onClick={() => setOverviewOpen(false)}
+                            >
+                              Hide all <ChevronUp size={14} />
+                            </button>
+                          </div>
+                        );
+                      })()
                     )}
                   </div>
                   </div>

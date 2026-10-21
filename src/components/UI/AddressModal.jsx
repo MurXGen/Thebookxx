@@ -332,6 +332,9 @@ export default function AddressModal({
   // "timeout" — no confirmation in 30s; offer a WhatsApp verify fallback
   const [upiPhase, setUpiPhase] = useState("await");
   const [verifyCountdown, setVerifyCountdown] = useState(30);
+  // Whether the "open your UPI app" picker is revealed on the QR screen. The QR
+  // sits idle (showing a "Pay by UPI app" button) until the shopper taps it.
+  const [upiAppsOpen, setUpiAppsOpen] = useState(false);
   const [upiOrderRef, setUpiOrderRef] = useState("");
   const upiPollRef = useRef({ poll: null, tick: null });
   // Once the shopper taps "Check again"/"I've paid", we optimistically flip
@@ -406,6 +409,35 @@ export default function AddressModal({
   const BOOKMARK_UNIT = 9;
 
   const UPI_ID = "7977960242-1@okbizaxis";
+  // VPA copied when launching a UPI app on mobile (paste-and-pay flow).
+  const APP_PAY_UPI = "Q298087535@ybl";
+  // Open ONLY the chosen app (no payee/amount → no risky collect intent).
+  const UPI_APP_LAUNCH = {
+    Paytm: { pkg: "net.one97.paytm", ios: "paytmmp://" },
+    PhonePe: { pkg: "com.phonepe.app", ios: "phonepe://" },
+    "Google Pay": {
+      pkg: "com.google.android.apps.nbu.paisa.user",
+      ios: "gpay://",
+    },
+  };
+  // Copy our UPI ID (so it can be pasted) and, on a phone, open ONLY the picked
+  // app (no payee/amount → no risky collect intent). On desktop it just copies.
+  const launchUpiApp = (appName) => {
+    const launch = UPI_APP_LAUNCH[appName];
+    if (!launch) return;
+    try {
+      navigator.clipboard.writeText(APP_PAY_UPI);
+    } catch (_) {}
+    showToast("UPI ID has been copied", "success");
+    if (typeof window !== "undefined" && window.innerWidth < 600) {
+      const isAndroid = /android/i.test(navigator.userAgent || "");
+      try {
+        window.location.assign(
+          isAndroid ? `intent://#Intent;package=${launch.pkg};end` : launch.ios,
+        );
+      } catch (_) {}
+    }
+  };
 
   useEffect(() => {
     if (open) {
@@ -1000,14 +1032,16 @@ export default function AddressModal({
     const t = setTimeout(() => {
       setQrUnlocked(true);
       setVerifyCountdown(30);
-      setUpiPhase("counting");
+      // Sit idle (show the "Pay by UPI app" button) until the shopper taps it;
+      // only then do we start the verifying countdown.
+      setUpiPhase("idle");
       trackPurchase({
         cartItems: cartBooks,
         totalAmount: netPayable,
         paymentId: `UPI-${upiOrderRef || Date.now()}`,
       });
-      // QR is live and the 30s counter has started → post the order to Telegram
-      // with the Passed/Failed buttons so the team can mark it from the chat.
+      // QR is live → post the order to Telegram with the Passed/Failed buttons
+      // so the team can mark it from the chat.
       notifyUpiQrToTelegram();
     }, 2000);
     return () => clearTimeout(t);
@@ -1019,6 +1053,16 @@ export default function AddressModal({
   const handleCheckUPIStatus = () => {
     setVerifyCountdown(20);
     setUpiPhase("rechecking");
+  };
+
+  // "Pay by UPI app" tapped on the QR screen → reveal the app picker AND start
+  // the verifying countdown (the behaviour we used to run automatically).
+  const handlePayByApp = () => {
+    setUpiAppsOpen(true);
+    if (upiPhase === "idle") {
+      setVerifyCountdown(30);
+      setUpiPhase("counting");
+    }
   };
 
   useEffect(() => {
@@ -1623,6 +1667,7 @@ export default function AddressModal({
     setUpiOrderRef(ref);
     setUpiPhase("await");
     setQrUnlocked(false);
+    setUpiAppsOpen(false);
     if (advanceMode) {
       // ₹99 advance → record as a COD order with Advance Paid = Yes (no COD
       // fee). Merchant confirms once the ₹99 lands, just like a UPI order.
@@ -4098,6 +4143,9 @@ export default function AddressModal({
             upiPhase={upiPhase}
             verifyCountdown={verifyCountdown}
             reassured={upiReassured}
+            appsOpen={upiAppsOpen}
+            onPayByApp={handlePayByApp}
+            onLaunchApp={launchUpiApp}
             onVerifyStatus={handleVerifyStatus}
             upiId={UPI_ID}
             onRevealQR={handleUPIPaymentClick}
@@ -4107,6 +4155,7 @@ export default function AddressModal({
             onClose={() => {
               clearUpiTimers();
               setUpiPhase("await");
+              setUpiAppsOpen(false);
               setShowUPIPayment(false);
             }}
             onWhatsAppFallback={handleUPIWhatsAppVerify}
@@ -5322,6 +5371,9 @@ function UPIPaymentModal({
   upiPhase = "await",
   verifyCountdown = 30,
   reassured = false,
+  appsOpen = false,
+  onPayByApp,
+  onLaunchApp,
   onVerifyStatus,
   upiId,
   onRevealQR,
@@ -5522,15 +5574,39 @@ function UPIPaymentModal({
             </div>
           </motion.div>
 
-          {/* Works with — real UPI apps */}
-          <div className="upiv3-apps" aria-hidden="true">
-            <span className="upiv3-apps-lbl">Works with</span>
-            <span className="upiv3-app-chip gpay">GPay</span>
-            <span className="upiv3-app-chip phonepe">PhonePe</span>
-            <span className="upiv3-app-chip paytm">Paytm</span>
-            <span className="upiv3-app-chip bhim">BHIM</span>
-            <span className="upiv3-apps-more">+ all UPI</span>
-          </div>
+          {appsOpen ? (
+            /* Tapped "Pay by UPI app" → open the app (copies our UPI ID). */
+            <div className="upiv3-open">
+              <span className="upiv3-open-lbl">Open your UPI app</span>
+              <div className="upiv3-open-apps">
+                {["Google Pay", "PhonePe", "Paytm"].map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    className={`upiv3-open-app ${
+                      k === "Google Pay" ? "gpay" : k.toLowerCase()
+                    }`}
+                    onClick={() => onLaunchApp && onLaunchApp(k)}
+                  >
+                    {k === "Google Pay" ? "GPay" : k}
+                  </button>
+                ))}
+              </div>
+              <span className="upiv3-open-hint">
+                <Copy size={12} /> We&apos;ll open the app and copy UPI ID{" "}
+                <b>Q298087535@ybl</b> — paste it, enter ₹{finalPayable} and pay.
+              </span>
+            </div>
+          ) : (
+            <div className="upiv3-apps" aria-hidden="true">
+              <span className="upiv3-apps-lbl">Works with</span>
+              <span className="upiv3-app-chip gpay">GPay</span>
+              <span className="upiv3-app-chip phonepe">PhonePe</span>
+              <span className="upiv3-app-chip paytm">Paytm</span>
+              <span className="upiv3-app-chip bhim">BHIM</span>
+              <span className="upiv3-apps-more">+ all UPI</span>
+            </div>
+          )}
 
           {/* Trust footer */}
           <div className="upiv3-trust">
@@ -5562,10 +5638,19 @@ function UPIPaymentModal({
           </div>
 
           <div className="upiv3-actions-row">
-            {upiPhase === "await" || upiPhase === "counting" ? (
-              // QR generating ("await") + the initial 30s counter ("counting")
-              // BOTH show the loader — no buttons yet. This stops the buttons
-              // from flashing for the first ~2s before the counter starts.
+            {upiPhase === "idle" ? (
+              // QR ready, waiting for the shopper to tap "Pay by UPI app" — this
+              // reveals the app picker and starts the verifying countdown.
+              <button
+                type="button"
+                className="pri-big-btn width100 flex flex-row items-center justify-center gap-6"
+                onClick={onPayByApp}
+              >
+                <Smartphone size={16} /> Pay by UPI app
+              </button>
+            ) : upiPhase === "await" || upiPhase === "counting" ? (
+              // QR generating ("await") + the 30s verify counter ("counting")
+              // BOTH show the loader.
               <span className="sec-big-btn width100 is-loading flex flex-row items-center justify-center gap-6">
                 <span className="upiv3-spin dark" />{" "}
                 {upiPhase === "await" ? (

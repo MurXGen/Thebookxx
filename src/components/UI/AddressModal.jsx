@@ -409,34 +409,62 @@ export default function AddressModal({
   const BOOKMARK_UNIT = 9;
 
   const UPI_ID = "7977960242-1@okbizaxis";
-  // VPA copied when launching a UPI app on mobile (paste-and-pay flow).
+  // Merchant VPA used for the UPI pay deep-links (opens the app's pay screen
+  // with amount prefilled). Also copied so it can be pasted if needed.
   const APP_PAY_UPI = "Q298087535@ybl";
-  // Open ONLY the chosen app (no payee/amount → no risky collect intent).
+  // Per-app launch targets: Android package (via upi intent) + iOS URL scheme.
   const UPI_APP_LAUNCH = {
     Paytm: { pkg: "net.one97.paytm", ios: "paytmmp://" },
     PhonePe: { pkg: "com.phonepe.app", ios: "phonepe://" },
     "Google Pay": {
       pkg: "com.google.android.apps.nbu.paisa.user",
-      ios: "gpay://",
+      ios: "tez://upi/",
     },
   };
-  // Copy our UPI ID (so it can be pasted) and, on a phone, open ONLY the picked
-  // app (no payee/amount → no risky collect intent). On desktop it just copies.
+  // Standard UPI pay query (payee + amount + note) built from the live total.
+  const upiPayQuery = () => {
+    const amt = Math.max(
+      0,
+      Math.round(Number(advanceMode ? codAdvanceAmount : netPayable) || 0),
+    );
+    const ref = String(upiOrderRef || Date.now());
+    return (
+      `pa=${encodeURIComponent(APP_PAY_UPI)}` +
+      `&pn=${encodeURIComponent("TheBookX")}` +
+      `&am=${amt}&cu=INR` +
+      `&tr=${encodeURIComponent(ref)}` +
+      `&tn=${encodeURIComponent(`TheBookX order ${ref}`)}`
+    );
+  };
+  // "Pay by UPI app" on a phone → fire a generic upi: intent so the OS shows its
+  // UPI-app chooser (GPay / PhonePe / Paytm…) with the amount prefilled.
+  const openUpiChooser = () => {
+    try {
+      navigator.clipboard.writeText(APP_PAY_UPI);
+    } catch (_) {}
+    const isMobile =
+      typeof navigator !== "undefined" &&
+      /android|iphone|ipad|ipod/i.test(navigator.userAgent || "");
+    if (!isMobile) return;
+    try {
+      window.location.assign(`upi://pay?${upiPayQuery()}`);
+    } catch (_) {}
+  };
+  // A specific app tile → open THAT app straight to its pay screen (prefilled).
   const launchUpiApp = (appName) => {
     const launch = UPI_APP_LAUNCH[appName];
     if (!launch) return;
     try {
       navigator.clipboard.writeText(APP_PAY_UPI);
     } catch (_) {}
-    showToast("UPI ID has been copied", "success");
-    if (typeof window !== "undefined" && window.innerWidth < 600) {
-      const isAndroid = /android/i.test(navigator.userAgent || "");
-      try {
-        window.location.assign(
-          isAndroid ? `intent://#Intent;package=${launch.pkg};end` : launch.ios,
-        );
-      } catch (_) {}
-    }
+    const q = upiPayQuery();
+    const isAndroid = /android/i.test(navigator.userAgent || "");
+    const url = isAndroid
+      ? `intent://pay?${q}#Intent;scheme=upi;package=${launch.pkg};end`
+      : `${launch.ios}pay?${q}`;
+    try {
+      window.location.assign(url);
+    } catch (_) {}
   };
 
   useEffect(() => {
@@ -1063,6 +1091,9 @@ export default function AddressModal({
       setVerifyCountdown(30);
       setUpiPhase("counting");
     }
+    // Fire the OS UPI-app chooser (amount prefilled). The per-app buttons below
+    // stay as a fallback to open a specific app.
+    openUpiChooser();
   };
 
   useEffect(() => {
@@ -5593,8 +5624,8 @@ function UPIPaymentModal({
                 ))}
               </div>
               <span className="upiv3-open-hint">
-                <Copy size={12} /> We&apos;ll open the app and copy UPI ID{" "}
-                <b>Q298087535@ybl</b> — paste it, enter ₹{finalPayable} and pay.
+                <Copy size={12} /> Tap an app to pay ₹{finalPayable}. If it
+                doesn&apos;t prefill, paste UPI ID <b>Q298087535@ybl</b>.
               </span>
             </div>
           ) : (

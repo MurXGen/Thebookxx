@@ -4,6 +4,169 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "kirkus-prize-2026-winners-kin-tayari-jones-books-to-read-india": {
+    "id": "blog-085",
+    "title": "Kirkus Prize 2026 Winners: Kin, Catch the Devil and Anger Is Only a Shadow, Plus Books to Read in India",
+    "slug": "kirkus-prize-2026-winners-kin-tayari-jones-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-21",
+    "lastModified": "2026-10-21",
+    "excerpt": "The 2026 Kirkus Prize winners are Tayari Jones, Pamela Colloff and Elizabeth Acevedo. 14 books to read in India, from ₹1 with free delivery and COD.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The Kirkus Prize is one of the biggest English-language book awards in the world, and its 2026 winners were announced on 7 October 2026 at a ceremony in New York City. Each winning author receives $50,000. This year the three winners are Tayari Jones for the novel Kin, Pamela Colloff for the true-crime investigation Catch the Devil, and Elizabeth Acevedo for the verse novel Anger Is Only a Shadow. If you read in India, the question is simple: which books can you pick up right now that give you the same experience?"
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts",
+        "content": "Prize: Kirkus Prize 2026. Announced: 7 October 2026, New York City. Fiction: Kin by Tayari Jones (Alfred A. Knopf). Nonfiction: Catch the Devil by Pamela Colloff (Knopf). Young Readers' Literature: Anger Is Only a Shadow by Elizabeth Acevedo (Quill Tree Books). Prize money: $50,000 per category. Offer at TheBookX: books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The three 2026 Kirkus Prize winners"
+      },
+      {
+        "type": "paragraph",
+        "content": "<strong>Fiction: Kin by Tayari Jones.</strong> The novel follows Niecy and Annie, two Black women who lost their mothers and grew up as close friends in a small Louisiana town in the 1950s. Their lives then diverge, and the book uses those two paths to examine social injustice. The jury praised its compelling voice."
+      },
+      {
+        "type": "paragraph",
+        "content": "<strong>Nonfiction: Catch the Devil by Pamela Colloff.</strong> This investigation looks at Jim Dailey's 1987 murder conviction for the death of 14-year-old Shelly Boggio. It shows how a jailhouse informant's testimony helped send Dailey to death row for decades, and how plea deals can produce injustice inside a justice system."
+      },
+      {
+        "type": "paragraph",
+        "content": "<strong>Young Readers' Literature: Anger Is Only a Shadow by Elizabeth Acevedo.</strong> Written in verse, it follows Liliana, who is awaiting trial while wearing an ankle monitor. As her brother's mental health declines, she weighs whether to risk her own future to reach him."
+      },
+      {
+        "type": "paragraph",
+        "content": "A pattern runs through all three: justice, family loyalty and what a community owes the people it fails. That makes this a good year to read around the theme, and the Indian-edition catalogue has plenty of strong options."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "If you loved the idea of Kin: novels about friendship, family and injustice"
+      },
+      {
+        "type": "paragraph",
+        "content": "Novels that follow people across decades while a society shapes their choices are the closest cousins of Kin. <a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> remains the classic about prejudice and a courtroom, seen through a child's eyes. <a href=\"/books/a-thousand-splendid-suns\" style=\"color:#fb8500;font-weight:600\">A Thousand Splendid Suns</a> follows two women in Afghanistan whose lives are bound together, and it is one of the best novels about female friendship under pressure."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy is the Indian counterpart: a family, a forbidden love and a community that punishes it. For a quieter and sharper read, <a href=\"/books/a-woman-is-no-man\" style=\"color:#fb8500;font-weight:600\">A Woman Is No Man</a> looks at three generations of women in a Palestinian-American family and the weight of expectation they carry."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "If Catch the Devil caught your eye: true stories and thrillers about justice"
+      },
+      {
+        "type": "paragraph",
+        "content": "Nonfiction about wrongful conviction is a specialised shelf, but readers who enjoy it often move between real cases and fiction built on the same questions. <a href=\"/books/crime-and-punishment\" style=\"color:#fb8500;font-weight:600\">Crime and Punishment</a> is the foundational novel on guilt and conscience. <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a>, <a href=\"/books/gone-girl\" style=\"color:#fb8500;font-weight:600\">Gone Girl</a> and <a href=\"/books/the-girl-with-the-dragon-tattoo\" style=\"color:#fb8500;font-weight:600\">The Girl with the Dragon Tattoo</a> are page-turners that keep asking who is telling the truth and who is believed."
+      },
+      {
+        "type": "paragraph",
+        "content": "For real lives that show how institutions can fail or be changed, <a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a> and <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> are two of the most widely read true accounts of courage under pressure, and both work well for teenagers and adults. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl is a short, powerful book on finding purpose in suffering."
+      },
+      {
+        "type": "blockquote",
+        "content": "The best award lists are not a shopping list. They are a map of the questions writers are asking this year. — TheBookX Editorial"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "If Anger Is Only a Shadow speaks to you: young-adult and emotional reads"
+      },
+      {
+        "type": "paragraph",
+        "content": "Verse novels are a gentle way into reading for teenagers, and the themes of anger, family and responsibility are universal. Two widely loved young-adult picks in our catalogue are <a href=\"/books/the-fault-in-our-stars\" style=\"color:#fb8500;font-weight:600\">The Fault in Our Stars</a> and <a href=\"/books/the-sun-is-also-a-star\" style=\"color:#fb8500;font-weight:600\">The Sun Is Also a Star</a>. Both pair fast, readable prose with serious questions about fate, family and what we owe each other."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A book on handling anger and noise, from our own shelf"
+      },
+      {
+        "type": "paragraph",
+        "content": "Anger, worry and a mind that will not settle are at the heart of Acevedo's novel, and they are everyday problems for many of us. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to thinking clearly, filtering noise and responding rather than reacting. It pairs well with any of the novels above when you want one book that makes you feel and another that helps you act."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "How to read a prize list without feeling overwhelmed",
+        "content": "Pick one theme from the winners (for example justice or family), choose one novel, one true story and one lighter read, and finish them over three weekends. A small, themed stack beats a long wish list."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple three-book Kirkus-inspired reading plan"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Week one: a novel about friendship and injustice, such as To Kill a Mockingbird or A Thousand Splendid Suns.",
+          "Week two: one true account or thriller, such as I Am Malala or The Silent Patient.",
+          "Week three: a short, practical book to reflect on what you read, such as The Art of Clarity."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "All of these are available from TheBookX with books from ₹1, free delivery and Cash on Delivery across India, so you can build the stack without worrying about shipping costs. The imported 2026 winners themselves may take longer to reach Indian shelves, so reading adjacent classics now is a good way to stay in the conversation."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/kirkus-prize-2026-winners-kin-tayari-jones-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/kirkus-prize-2026-winners-kin-tayari-jones-books-to-read-india.jpeg",
+        "alt": "A young woman reading a novel by a window in soft afternoon light with a cup of tea beside her",
+        "caption": "Award season is a good excuse to start a themed reading stack.",
+        "category": "Book Awards"
+      }
+    ],
+    "keywords": [
+      "Kirkus Prize 2026 winners",
+      "Kin Tayari Jones",
+      "Catch the Devil Pamela Colloff",
+      "Anger Is Only a Shadow Elizabeth Acevedo",
+      "book awards 2026",
+      "books to read in India",
+      "novels about justice",
+      "best fiction 2026",
+      "books like Kin",
+      "buy books online India"
+    ],
+    "categories": [
+      "Book Awards",
+      "Reading Guides",
+      "Fiction"
+    ],
+    "faqs": [
+      {
+        "question": "Who won the 2026 Kirkus Prize?",
+        "answer": "Tayari Jones won fiction for Kin, Pamela Colloff won nonfiction for Catch the Devil, and Elizabeth Acevedo won Young Readers' Literature for Anger Is Only a Shadow. The winners were announced on 7 October 2026."
+      },
+      {
+        "question": "How much is the Kirkus Prize worth?",
+        "answer": "Each winning author receives $50,000."
+      },
+      {
+        "question": "What can I read in India while waiting for the 2026 winners?",
+        "answer": "Related reads such as To Kill a Mockingbird, A Thousand Splendid Suns, The God of Small Things and I Am Malala cover the same themes of justice, family and courage."
+      },
+      {
+        "question": "Where can I buy these books online in India?",
+        "answer": "TheBookX stocks them with books from ₹1, free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "halloween-2026-spooky-season-thrillers-mysteries-books-to-read-india": {
     "id": "blog-084",
     "title": "Halloween 2026 (31 October): 15 Spooky-Season Thrillers, Mysteries and Dark Reads to Pick Up in India",

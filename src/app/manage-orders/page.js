@@ -291,10 +291,9 @@ const waMessages = (order) => {
     .join("\n");
   const grandTotal =
     Number(
-      String(order?.["Total Amount"] ?? order?.revenue ?? "").replace(
-        /[^\d.]/g,
-        "",
-      ),
+      String(
+        order?.["Total Amount"] ?? order?.revenue ?? order?.amount ?? "",
+      ).replace(/[^\d.]/g, ""),
     ) || parsedBooks.reduce((s, b) => s + (b.total || b.price * (b.quantity || 1) || 0), 0);
 
   // COD collect-at-door amount for the Out-for-delivery message. For COD / ₹99-
@@ -412,7 +411,7 @@ const waMessages = (order) => {
         `Your order is arriving today. *Delivery time window: 9 AM – 8 PM.* ` +
         `Our delivery person may *call you*, so please keep your phone reachable. 📞` +
         (isCodOrder
-          ? `\n\n💵 *Please keep ₹${codPayAtDoor} ready* to pay on delivery (includes a 1.5% COD charge).`
+          ? `\n\n💵 *Please keep ₹${codPayAtDoor} ready* to pay on delivery.`
           : ``) +
         minimalBlock,
     },
@@ -484,10 +483,9 @@ const emailMessages = (order) => {
     .join("\n");
   const grandTotal =
     Number(
-      String(order?.["Total Amount"] ?? order?.revenue ?? "").replace(
-        /[^\d.]/g,
-        "",
-      ),
+      String(
+        order?.["Total Amount"] ?? order?.revenue ?? order?.amount ?? "",
+      ).replace(/[^\d.]/g, ""),
     ) ||
     parsedBooks.reduce(
       (s, b) => s + (b.total || b.price * (b.quantity || 1) || 0),
@@ -598,7 +596,7 @@ const emailMessages = (order) => {
         `Hi ${first},\n\n` +
         `Your order is out for delivery today, anytime between 9 AM and 8 PM. Our delivery partner may call you, so please keep your phone reachable. 📞` +
         (isCodOrder
-          ? `\n\nPlease keep ₹${codPayAtDoor} ready to pay on delivery (includes a 1.5% COD charge).`
+          ? `\n\nPlease keep ₹${codPayAtDoor} ready to pay on delivery.`
           : ``) +
         footer,
     },
@@ -4001,6 +3999,8 @@ export default function ManageOrdersPage() {
   const [visibleCount, setVisibleCount] = useState(ORDERS_PAGE);
   // Collapse all order cards to a tiny summary (name, status, price, books).
   const [compactCards, setCompactCards] = useState(false);
+  // Tap-to-enlarge book cover (lightbox) — { src, name }.
+  const [viewerImg, setViewerImg] = useState(null);
   // Overview card: collapsed shows counts + layout; "Show all" expands the list.
   const [overviewOpen, setOverviewOpen] = useState(false);
   // Tools accordion: collapsed shows only the search bar; expanding reveals the
@@ -5167,6 +5167,12 @@ export default function ManageOrdersPage() {
   const [tidSel, setTidSel] = useState([]); // selected Order IDs
   const [tidCopied, setTidCopied] = useState(false);
   const [trackPicks, setTrackPicks] = useState({});
+  // Per-row email template pick + bulk email template + bulk send progress for
+  // the matched-tracking list (mirrors the WhatsApp picker, but actually sends
+  // branded emails via the API to every tracked order that has an email).
+  const [trackEmailPicks, setTrackEmailPicks] = useState({});
+  const [trackEmailBulkKey, setTrackEmailBulkKey] = useState("ofd");
+  const [trackEmailBulkProgress, setTrackEmailBulkProgress] = useState(null);
   const [trackFailed, setTrackFailed] = useState([]);
   const [trackSummary, setTrackSummary] = useState(null);
   const [trackDateOpen, setTrackDateOpen] = useState({});
@@ -5394,11 +5400,21 @@ export default function ManageOrdersPage() {
         "Order ID": match["Order ID"] || "",
         "Customer Name": match["Customer Name"] || "",
         "Phone Number": match["Phone Number"] || "",
+        Email: String(match["Email"] || "").trim(),
         "Shipping ID": id,
         shippingId: id,
         booksList: String(match["Books List"] || ""),
         city: String(match["City"] || ""),
         amount: match.revenue || 0,
+        // Carry the billing fields so the Out-for-delivery message can show the
+        // correct COD amount to collect (net payable + 1.5%).
+        "Total Amount": match["Total Amount"] || match.revenue || "",
+        revenue: match.revenue || 0,
+        "COD Collectible": match["COD Collectible"] || "",
+        "Advance Paid": match["Advance Paid"] || "",
+        "Advance Amount": match["Advance Amount"] || "",
+        "Delivery Type": String(match["Delivery Type"] || ""),
+        parsedBooks: Array.isArray(match.parsedBooks) ? match.parsedBooks : [],
         "Payment Type": String(match["Payment Type"] || ""),
         dateT: d ? d.getTime() : 0,
         dateLabel: d
@@ -8518,6 +8534,62 @@ export default function ManageOrdersPage() {
       ok ? "success" : "error",
     );
   };
+
+  // Track tab: email the chosen template to EVERY tracked (pasted & matched)
+  // order that carries an email address — actually sent via the branded API,
+  // the same template set used by the per-row email picker.
+  const sendBulkTrackEmail = async () => {
+    const tplKey = trackEmailBulkKey;
+    const scope = trackList.filter((r) => String(r["Email"] || "").trim());
+    if (!scope.length) {
+      showToast("No tracked orders have an email.", "error");
+      return;
+    }
+    setTrackEmailBulkProgress({ done: 0, total: scope.length });
+    let ok = 0;
+    const CH = 5;
+    for (let i = 0; i < scope.length; i += CH) {
+      const batch = scope.slice(i, i + CH);
+      // eslint-disable-next-line no-await-in-loop
+      const res = await Promise.all(
+        batch.map((row) => {
+          const tpl = emailStatusTemplates(row).find((t) => t.key === tplKey);
+          if (!tpl) return Promise.resolve(false);
+          const items = (row.parsedBooks || []).map((b) => ({
+            name: b.name,
+            qty: Number(b.quantity) || 1,
+            price:
+              Number(b.total) ||
+              (Number(b.price) || 0) * (Number(b.quantity) || 1),
+          }));
+          const tracking = String(
+            row.shippingId || row["Shipping ID"] || "",
+          ).trim();
+          return sendOrderStatusEmail({
+            to: String(row["Email"]).trim(),
+            order: orderEmailFromRow(row, items),
+            status: tpl.status,
+            tracking,
+            heading: tpl.heading,
+            subheading: tpl.subheading,
+            reviewBooks: tpl.review ? reviewBooksFor(items) : undefined,
+          }).catch(() => false);
+        }),
+      );
+      ok += res.filter(Boolean).length;
+      setTrackEmailBulkProgress({
+        done: Math.min(scope.length, i + CH),
+        total: scope.length,
+      });
+    }
+    setTrackEmailBulkProgress(null);
+    const tplLabel =
+      emailStatusTemplates({}).find((t) => t.key === tplKey)?.label || "email";
+    showToast(
+      `Sent “${tplLabel}” to ${ok}/${scope.length} tracked order(s) ✓`,
+      ok ? "success" : "error",
+    );
+  };
   const saveWeightSize = async () => {
     if (!wsOrder) return;
     const oid = wsOrder["Order ID"];
@@ -10082,10 +10154,39 @@ export default function ManageOrdersPage() {
           <span className="mo-compact-status">{status}</span>
         </div>
         <div className="mo-compact-bottom">
-          <span className="mo-compact-books">
-            {books.length} book{books.length === 1 ? "" : "s"}
-            {books.length ? ` · ${books[0]?.name || ""}` : ""}
-          </span>
+          <div className="mo-compact-covers">
+            {books.slice(0, 5).map((b, i) => {
+              const img = getBookImage(b.name);
+              return img ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={i}
+                  src={img}
+                  alt={b.name}
+                  loading="lazy"
+                  className="mo-compact-cover"
+                  title={b.name}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setViewerImg({ src: img, name: b.name });
+                  }}
+                />
+              ) : (
+                <span
+                  key={i}
+                  className="mo-compact-cover mo-compact-cover-ph"
+                  title={b.name}
+                >
+                  <Package size={12} />
+                </span>
+              );
+            })}
+            {books.length > 5 && (
+              <span className="mo-compact-cover mo-compact-more">
+                +{books.length - 5}
+              </span>
+            )}
+          </div>
           <span className="mo-compact-price">
             ₹{total.toLocaleString("en-IN")}
           </span>
@@ -15530,6 +15631,56 @@ export default function ManageOrdersPage() {
                                           <FaWhatsapp size={15} />
                                         </button>
                                       </div>
+                                      <div className="mo-track-wa mo-track-email">
+                                        <select
+                                          className="bulk-wa-select"
+                                          value={trackEmailPicks[key] || "ofd"}
+                                          disabled={!r["Email"]}
+                                          title={
+                                            r["Email"]
+                                              ? "Email template"
+                                              : "No email on this order"
+                                          }
+                                          onChange={(e) =>
+                                            setTrackEmailPicks((p) => ({
+                                              ...p,
+                                              [key]: e.target.value,
+                                            }))
+                                          }
+                                        >
+                                          {emailStatusTemplates(r).map((t) => (
+                                            <option key={t.key} value={t.key}>
+                                              {t.label}
+                                            </option>
+                                          ))}
+                                        </select>
+                                        <button
+                                          type="button"
+                                          className="mo-track-send mo-track-send-email"
+                                          disabled={
+                                            !r["Email"] || emailingOrder !== ""
+                                          }
+                                          title={
+                                            r["Email"]
+                                              ? `Email ${r["Email"]}`
+                                              : "No email on this order"
+                                          }
+                                          aria-label="Send email"
+                                          onClick={() => {
+                                            const tpl = emailStatusTemplates(
+                                              r,
+                                            ).find(
+                                              (t) =>
+                                                t.key ===
+                                                (trackEmailPicks[key] || "ofd"),
+                                            );
+                                            if (tpl)
+                                              sendStatusEmailTemplate(r, tpl);
+                                          }}
+                                        >
+                                          <Mail size={15} />
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
                                 );
@@ -15539,6 +15690,55 @@ export default function ManageOrdersPage() {
                         </div>
                       );
                     })}
+                    {(() => {
+                      const withEmail = trackList.filter((r) =>
+                        String(r["Email"] || "").trim(),
+                      ).length;
+                      if (trackList.length === 0) return null;
+                      return (
+                        <div className="mo-track-emailall">
+                          <div className="mo-track-emailall-head">
+                            <Mail size={15} />
+                            <span>
+                              Email all tracked
+                              <b> · {withEmail} with email</b>
+                            </span>
+                          </div>
+                          <div className="mo-track-emailall-row">
+                            <select
+                              className="bulk-wa-select"
+                              value={trackEmailBulkKey}
+                              onChange={(e) =>
+                                setTrackEmailBulkKey(e.target.value)
+                              }
+                            >
+                              {emailStatusTemplates({}).map((t) => (
+                                <option key={t.key} value={t.key}>
+                                  {t.label}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              className="mo-track-emailall-btn"
+                              disabled={
+                                withEmail === 0 || !!trackEmailBulkProgress
+                              }
+                              onClick={sendBulkTrackEmail}
+                            >
+                              {trackEmailBulkProgress ? (
+                                `Sending ${trackEmailBulkProgress.done}/${trackEmailBulkProgress.total}…`
+                              ) : (
+                                <>
+                                  <Mail size={14} /> Email {withEmail} order
+                                  {withEmail === 1 ? "" : "s"}
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
                     <div className="mo-track-foot">
                       <span>{trackList.length} tracked</span>
                       <button
@@ -15690,14 +15890,14 @@ export default function ManageOrdersPage() {
                                   return !v;
                                 });
                               }}
+                              aria-label={
+                                cardSelectMode ? "Exit select mode" : "Select orders"
+                              }
                               title={
                                 cardSelectMode ? "Exit select mode" : "Select orders"
                               }
                             >
                               <CheckSquare size={16} />
-                              <span className="mo-select-btn-lbl">
-                                {cardSelectMode ? "Done" : "Select"}
-                              </span>
                             </button>
                           </>
                         )}
@@ -21171,6 +21371,42 @@ export default function ManageOrdersPage() {
                   Cancel
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Book-cover lightbox — tap a compact-card cover to enlarge it. */}
+      <AnimatePresence>
+        {viewerImg && (
+          <motion.div
+            className="mo-img-viewer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setViewerImg(null)}
+          >
+            <button
+              type="button"
+              className="mo-img-viewer-x"
+              onClick={() => setViewerImg(null)}
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
+            <motion.div
+              className="mo-img-viewer-body"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={viewerImg.src} alt={viewerImg.name} />
+              {viewerImg.name && (
+                <span className="mo-img-viewer-cap">{viewerImg.name}</span>
+              )}
             </motion.div>
           </motion.div>
         )}

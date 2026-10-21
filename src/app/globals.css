@@ -19578,6 +19578,76 @@ img[data-loaded="true"] {
   color: #fff;
   cursor: pointer;
 }
+/* Email counterpart of the WhatsApp send — blue send button, disabled grey. */
+.mo-track-send-email {
+  background: #2563eb;
+}
+.mo-track-send-email:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+.mo-track-email .bulk-wa-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+/* Bulk "Email all tracked" bar. */
+.mo-track-emailall {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #dbe4f3;
+  border-radius: 12px;
+  background: #f5f8ff;
+}
+.mo-dark .mo-track-emailall {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.25);
+}
+.mo-track-emailall-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e40af;
+}
+.mo-track-emailall-head b {
+  font-weight: 600;
+  color: #475569;
+}
+.mo-dark .mo-track-emailall-head {
+  color: #93b4fb;
+}
+.mo-track-emailall-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.mo-track-emailall-row .bulk-wa-select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.mo-track-emailall-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.mo-track-emailall-btn:disabled {
+  background: #a9bbd9;
+  cursor: not-allowed;
+}
 .mo-track-del {
   display: inline-flex;
   align-items: center;
@@ -24817,8 +24887,44 @@ img[data-loaded="true"] {
 .mo-compact-bottom{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
 .mo-compact-books{ font-size:11px; font-weight:600; color:var(--dark-50,#6b7280); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .mo-compact-price{ flex:0 0 auto; font-size:13px; font-weight:800; color:var(--foreground,#111827); }
+/* Small book covers in the compact card (replaces the book name). */
+.mo-compact-covers{ display:flex; align-items:center; gap:5px; min-width:0; overflow:hidden; }
+.mo-compact-cover{
+  flex:0 0 auto; width:26px; height:34px; border-radius:4px; object-fit:cover;
+  border:1px solid rgba(0,0,0,.08); background:#eef0f2; cursor:zoom-in;
+  transition:transform .12s ease;
+}
+.mo-compact-cover:hover{ transform:scale(1.07); }
+.mo-compact-cover-ph{
+  display:inline-flex; align-items:center; justify-content:center;
+  color:#9aa1ab; cursor:default;
+}
+.mo-compact-more{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:auto; min-width:26px; padding:0 5px; font-size:11px; font-weight:800;
+  color:#6b7280; background:#eef0f2; cursor:default;
+}
 .mo-dark .mo-compact-card{ background:#15181d; border-color:rgba(255,255,255,.14); }
 .mo-dark .mo-compact-name,.mo-dark .mo-compact-price{ color:#f3f4f6; }
+.mo-dark .mo-compact-cover-ph,.mo-dark .mo-compact-more{ background:#20242b; color:#9aa1ab; }
+
+/* Book-cover lightbox. */
+.mo-img-viewer{
+  position:fixed; inset:0; z-index:9999; display:flex; align-items:center;
+  justify-content:center; padding:24px; background:rgba(15,18,22,.82);
+}
+.mo-img-viewer-body{ display:flex; flex-direction:column; align-items:center; gap:12px; max-width:92vw; }
+.mo-img-viewer-body img{
+  max-width:min(440px,90vw); max-height:78vh; border-radius:12px;
+  box-shadow:0 18px 60px rgba(0,0,0,.5); object-fit:contain;
+}
+.mo-img-viewer-cap{ color:#f3f4f6; font-size:14px; font-weight:600; text-align:center; max-width:90vw; }
+.mo-img-viewer-x{
+  position:absolute; top:18px; right:18px; width:40px; height:40px; border-radius:999px;
+  border:none; background:rgba(255,255,255,.14); color:#fff; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.mo-img-viewer-x:hover{ background:rgba(255,255,255,.25); }
 
 /* Load-more button under the orders card grid */
 .mo-loadmore{
@@ -25008,11 +25114,13 @@ img[data-loaded="true"] {
   gap:10px 12px; flex-wrap:wrap; margin-bottom:10px;
 }
 .mo-ohead-title{ flex:0 0 auto; font-size:20px; font-weight:800; color:var(--foreground,#111827); }
-/* Flatten the inner pill so every control sits in ONE wrapping row. */
+/* Flatten the inner pill so every control sits in ONE non-wrapping row:
+   status select pinned far-left, all other controls pushed to the right. */
 .mo-ohead .orders-header-right.mo-menu-wrap{
-  flex:1 1 auto; display:flex; flex-wrap:wrap; align-items:center;
+  flex:1 1 auto; display:flex; flex-wrap:nowrap; align-items:center;
   gap:8px; justify-content:flex-start; position:relative;
 }
+.mo-ohead .mo-status-filter{ order:-1; margin-right:auto; }
 .mo-ohead .mo-view-toggle.mo-view-icons{ display:contents; }
 .mo-ohead .mo-view-div{ display:none; }
 .mo-ohead .orders-header-right .mo-view-btn{
@@ -25027,8 +25135,10 @@ img[data-loaded="true"] {
   background:var(--tertiary,#fb8500) !important;
   border-color:var(--tertiary,#fb8500) !important; color:#fff !important;
 }
-.mo-ohead .orders-header-right .mo-select-btn{ width:auto; min-width:0; padding:0 14px; gap:7px; }
-.mo-ohead .mo-status-filter{ flex:0 1 auto; min-width:128px; max-width:180px; height:40px; }
+/* Select button is now icon-only — a 40px square like the other controls. */
+.mo-ohead .orders-header-right .mo-select-btn{ width:40px; min-width:40px; padding:0; gap:0; }
+.mo-ohead .mo-select-btn-lbl{ display:none; }
+.mo-ohead .mo-status-filter{ flex:0 1 auto; min-width:120px; max-width:200px; height:40px; }
 /* Status dropdown in green (matches the mockup). */
 .mo-status-green{
   color:#15803d !important; font-weight:800 !important;
@@ -33865,19 +33975,22 @@ img[data-loaded="true"] {
 .orders-header-right.mo-menu-wrap {
   position: relative;
 }
-/* Mobile: controls wrap under the "Orders" title (handled by .mo-ohead). */
+/* Mobile: keep every control on ONE row — status far-left, icons on the
+   right (no wrapping, Select stays icon-only). */
 @media (max-width: 768px) {
   .mo-ohead .orders-header-right.mo-menu-wrap {
-    flex-wrap: wrap;
-    gap: 8px;
+    flex-wrap: nowrap;
+    gap: 6px;
     justify-content: flex-start;
   }
   .mo-ohead .mo-status-filter {
-    flex: 1 1 130px;
-    max-width: none;
+    flex: 0 1 auto;
+    order: -1;
+    margin-right: auto;
+    min-width: 112px;
   }
-  .mo-select-btn-lbl {
-    display: inline;
+  .mo-ohead .mo-select-btn-lbl {
+    display: none;
   }
 }
 

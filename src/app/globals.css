@@ -46607,6 +46607,69 @@ img[data-loaded="true"] {
 }
 
 /* UPI app chips */
+/* Mobile: tap-to-open UPI app launcher (no payee attached). */
+.upiv3-open {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 13px;
+  border: 1px solid #e6e8ec;
+  border-radius: 14px;
+  background: #fafbfc;
+}
+.upiv3-open-lbl {
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+.upiv3-open-apps {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+.upiv3-open-app {
+  flex: 1 1 0;
+  padding: 11px 6px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e5ea;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.1s ease, border-color 0.15s ease;
+}
+.upiv3-open-app:active {
+  transform: scale(0.96);
+}
+.upiv3-open-app.gpay {
+  color: #1a73e8;
+  border-color: #cfe0fb;
+}
+.upiv3-open-app.phonepe {
+  color: #5f259f;
+  border-color: #e0d2f1;
+}
+.upiv3-open-app.paytm {
+  color: #00b9f1;
+  border-color: #c7edfb;
+}
+.upiv3-open-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  text-align: center;
+  line-height: 1.35;
+}
+.upiv3-open-hint svg {
+  flex: 0 0 auto;
+}
+
 .upiv3-apps {
   display: flex;
   flex-direction: column;

@@ -21,7 +21,37 @@ import { updateOrderRow } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
 
 const UPI_ID = "7977960242-1@okbizaxis";
+// VPA copied when launching a UPI app on mobile (paste-and-pay flow).
+const APP_PAY_UPI = "Q298087535@ybl";
 const SUPPORT_WA = "917710892108";
+
+// UPI apps we offer to open on mobile. We launch ONLY the app (no payee/amount
+// attached) — so there's no third-party collect intent for the app to flag as
+// risky. We copy the UPI ID to the clipboard first so the shopper can paste it
+// inside the app and pay manually.
+const UPI_APPS = [
+  {
+    key: "gpay",
+    label: "GPay",
+    cls: "gpay",
+    pkg: "com.google.android.apps.nbu.paisa.user",
+    ios: "gpay://",
+  },
+  {
+    key: "phonepe",
+    label: "PhonePe",
+    cls: "phonepe",
+    pkg: "com.phonepe.app",
+    ios: "phonepe://",
+  },
+  {
+    key: "paytm",
+    label: "Paytm",
+    cls: "paytm",
+    pkg: "net.one97.paytm",
+    ios: "paytmmp://",
+  },
+];
 
 // COD → pay-online upgrade for the order-detail page. Shows the perks (free
 // bookmark, no COD fee), lets the shopper choose "pay in full" or "pay ₹99
@@ -135,6 +165,28 @@ export default function CodPayOnline({
       navigator.clipboard.writeText(UPI_ID);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
+    } catch {}
+  };
+  // Mobile UPI-app launcher: copy the UPI ID, then open ONLY the chosen app
+  // (no payee/amount in the link). The shopper pastes the ID and pays manually.
+  const isMobile =
+    typeof navigator !== "undefined" &&
+    /android|iphone|ipad|ipod/i.test(navigator.userAgent || "");
+  const isAndroid =
+    typeof navigator !== "undefined" &&
+    /android/i.test(navigator.userAgent || "");
+  const openUpiApp = (app) => {
+    try {
+      navigator.clipboard.writeText(APP_PAY_UPI);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+    showToast("UPI ID has been copied", "success");
+    const url = isAndroid
+      ? `intent://#Intent;package=${app.pkg};end`
+      : app.ios;
+    try {
+      window.location.assign(url);
     } catch {}
   };
   const saveQR = () => {
@@ -498,15 +550,51 @@ export default function CodPayOnline({
                       </div>
                     </motion.div>
 
-                    {/* Works with — real UPI apps */}
-                    <div className="upiv3-apps" aria-hidden="true">
-                      <span className="upiv3-apps-lbl">Works with</span>
-                      <span className="upiv3-app-chip gpay">GPay</span>
-                      <span className="upiv3-app-chip phonepe">PhonePe</span>
-                      <span className="upiv3-app-chip paytm">Paytm</span>
-                      <span className="upiv3-app-chip bhim">BHIM</span>
-                      <span className="upiv3-apps-more">+ all UPI</span>
-                    </div>
+                    {/* Mobile only: open a UPI app directly (no payee attached),
+                        UPI ID is copied so the shopper can paste & pay. */}
+                    {isMobile ? (
+                      <div className="upiv3-open">
+                        <span className="upiv3-open-lbl">
+                          Pay from your UPI app
+                        </span>
+                        <div className="upiv3-open-apps">
+                          {UPI_APPS.map((a) => (
+                            <button
+                              key={a.key}
+                              type="button"
+                              className={`upiv3-open-app ${a.cls}`}
+                              onClick={() => openUpiApp(a)}
+                            >
+                              {a.label}
+                            </button>
+                          ))}
+                        </div>
+                        <span className="upiv3-open-hint">
+                          {copied ? (
+                            <>
+                              <Check size={12} /> UPI ID{" "}
+                              <b>{APP_PAY_UPI}</b> has been copied — paste it,
+                              enter ₹{payAmount} and pay.
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={12} /> We&apos;ll open the app and copy
+                              UPI ID <b>{APP_PAY_UPI}</b> — paste it, enter ₹
+                              {payAmount} and pay.
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="upiv3-apps" aria-hidden="true">
+                        <span className="upiv3-apps-lbl">Works with</span>
+                        <span className="upiv3-app-chip gpay">GPay</span>
+                        <span className="upiv3-app-chip phonepe">PhonePe</span>
+                        <span className="upiv3-app-chip paytm">Paytm</span>
+                        <span className="upiv3-app-chip bhim">BHIM</span>
+                        <span className="upiv3-apps-more">+ all UPI</span>
+                      </div>
+                    )}
 
                     {/* Trust footer */}
                     <div className="upiv3-trust">

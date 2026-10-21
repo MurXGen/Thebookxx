@@ -18,7 +18,17 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 
 const UPI_ID = "7977960242-1@okbizaxis";
+// VPA copied when launching a UPI app on mobile (paste-and-pay flow).
+const APP_PAY_UPI = "Q298087535@ybl";
 const SUPPORT_WA = "917710892108";
+
+// Mobile UPI-app launchers — open ONLY the app (no payee/amount attached, so no
+// risky collect intent); the UPI ID is copied for the shopper to paste & pay.
+const UPI_APPS = [
+  { key: "gpay", label: "GPay", cls: "gpay", pkg: "com.google.android.apps.nbu.paisa.user", ios: "gpay://" },
+  { key: "phonepe", label: "PhonePe", cls: "phonepe", pkg: "com.phonepe.app", ios: "phonepe://" },
+  { key: "paytm", label: "Paytm", cls: "paytm", pkg: "net.one97.paytm", ios: "paytmmp://" },
+];
 
 // Inline UPI-app brand marks (no PNG assets to host). Rendered inside the
 // 40×40 tile — recognisable logos so shoppers pick the right app at a glance.
@@ -104,6 +114,24 @@ export default function PayNowChooser({
       navigator.clipboard.writeText(UPI_ID);
       setUpiCopied(true);
       setTimeout(() => setUpiCopied(false), 1500);
+    } catch {}
+  };
+  const isMobile =
+    typeof navigator !== "undefined" &&
+    /android|iphone|ipad|ipod/i.test(navigator.userAgent || "");
+  const isAndroid =
+    typeof navigator !== "undefined" &&
+    /android/i.test(navigator.userAgent || "");
+  const openUpiApp = (app) => {
+    try {
+      navigator.clipboard.writeText(APP_PAY_UPI);
+      setUpiCopied(true);
+      setTimeout(() => setUpiCopied(false), 2000);
+    } catch {}
+    try {
+      window.location.assign(
+        isAndroid ? `intent://#Intent;package=${app.pkg};end` : app.ios,
+      );
     } catch {}
   };
   const saveQR = () => {
@@ -288,6 +316,37 @@ export default function PayNowChooser({
                 {upiCopied ? "Copied" : "Copy"}
               </button>
             </div>
+
+            {isMobile && (
+              <div className="upiv3-open">
+                <span className="upiv3-open-lbl">Pay from your UPI app</span>
+                <div className="upiv3-open-apps">
+                  {UPI_APPS.map((a) => (
+                    <button
+                      key={a.key}
+                      type="button"
+                      className={`upiv3-open-app ${a.cls}`}
+                      onClick={() => openUpiApp(a)}
+                    >
+                      {a.label}
+                    </button>
+                  ))}
+                </div>
+                <span className="upiv3-open-hint">
+                  {upiCopied ? (
+                    <>
+                      <Check size={12} /> UPI ID <b>{APP_PAY_UPI}</b> has been
+                      copied — paste it, enter ₹{amount} and pay.
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={12} /> We&apos;ll open the app and copy UPI ID{" "}
+                      <b>{APP_PAY_UPI}</b> — paste it, enter ₹{amount} and pay.
+                    </>
+                  )}
+                </span>
+              </div>
+            )}
             <div className="paynow-upi-btns">
               <button
                 type="button"

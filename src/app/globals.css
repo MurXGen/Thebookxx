@@ -1869,7 +1869,7 @@ label.sec-mid-btn {
   gap: 12px;
   margin: 0 12px calc(12px + env(safe-area-inset-bottom, 0px));
   padding: 10px 12px;
-  background: #14171d;
+  background: var(--card-bg, #14171d);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
   box-shadow: 0 16px 40px -14px rgba(0, 0, 0, 0.6),
@@ -18552,51 +18552,59 @@ img[data-loaded="true"] {
    Dark mode — scoped to the Manage Orders page (.mo-dark)
    ============================================================ */
 .mo-dark {
-  --background: #0e1014;
-  --foreground: #e8eaed;
-  --surface-2: #171a21;
-  --hairline: #2b303b;
-  --dark: #e8eaed;
-  --dark-50: #9aa0a6;
+  /* Subtle warm dark (Claude-like), not pure black. These generic tokens drive
+     every component — cards, inputs, chips, tables — so the theme applies
+     consistently everywhere. */
+  --background: #211d1a;
+  --foreground: #ededea;
+  --surface-2: #2a2622;
+  --card-bg: #2b2724;
+  --input-bg: #322e2a;
+  --hairline: rgba(255, 255, 255, 0.1);
+  --dark: #ededea;
+  --dark-50: #a8a19a;
   --dark-20: rgba(255, 255, 255, 0.16);
-  --dark-10: rgba(255, 255, 255, 0.08);
-  --dark-4: rgba(255, 255, 255, 0.05);
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.65);
-  background: #0e1014;
-  color: #e8eaed;
+  --dark-10: rgba(255, 255, 255, 0.06);
+  --dark-4: rgba(255, 255, 255, 0.04);
+  --dark-950: #322e2a;
+  --gray-500: #a8a19a;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.6);
+  background: #211d1a;
+  color: var(--foreground);
   min-height: 100vh;
 }
 /* Surfaces that hard-code white */
 .mo-dark .bill-modal {
-  background: #1c2029;
+  background: var(--surface-2, #1c2029);
   color: var(--foreground);
 }
 .mo-dark .admin-order-card,
-.mo-dark .mo-card {
-  background: #14171d;
+.mo-dark .mo-card,
+.mo-dark .admin-order-card.mo-card {
+  background: var(--card-bg, #14171d);
 }
 .mo-dark .dc-stat,
 .mo-dark .calc-key,
 .mo-dark .mo-menu,
 .mo-dark .mo-bell,
 .mo-dark .mo-view-toggle {
-  background: #1c2029;
+  background: var(--surface-2, #1c2029);
 }
 /* Accordion shells + count badge */
 .mo-dark .acc {
-  background: #14171d;
+  background: var(--card-bg, #14171d);
   border-color: var(--hairline);
 }
 .mo-dark .acc-head {
-  background: linear-gradient(180deg, #191d25, #14171d);
+  background: linear-gradient(180deg, var(--surface-2), var(--card-bg));
 }
 .mo-dark .acc-count {
   background: rgba(255, 255, 255, 0.08);
   color: var(--foreground);
 }
 .mo-dark .admin-chart-card {
-  background: #14171d;
+  background: var(--card-bg, #14171d);
   border-color: var(--hairline);
 }
 .mo-dark .orders-bulk-bar {
@@ -18607,7 +18615,7 @@ img[data-loaded="true"] {
 }
 .mo-dark .calc-screen,
 .mo-dark .calc-key.op {
-  background: #14171d;
+  background: var(--card-bg, #14171d);
 }
 .mo-dark .calc-key.op {
   background: rgba(251, 133, 0, 0.16);
@@ -18618,7 +18626,7 @@ img[data-loaded="true"] {
 .mo-dark .admin-select,
 .mo-dark .note-editor-input,
 .mo-dark .wa-custom-input {
-  background: #14171d;
+  background: var(--card-bg, #14171d);
   color: var(--foreground);
   border-color: var(--dark-50);
 }
@@ -18629,7 +18637,7 @@ img[data-loaded="true"] {
 /* Table */
 .mo-dark .mo-table th,
 .mo-dark .mo-thead {
-  background: #14171d;
+  background: var(--card-bg, #14171d);
   color: var(--foreground);
 }
 .mo-dark .mo-table td,
@@ -19685,6 +19693,78 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+/* Dashed tap-to-paste box. */
+.mo-paste-dash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 26px 20px;
+  border: 2px dashed #d0d4db;
+  border-radius: 16px;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  text-align: center;
+}
+.mo-paste-dash:hover {
+  border-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.04);
+}
+.mo-paste-dash:active {
+  transform: scale(0.995);
+}
+.mo-paste-dash-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(251, 133, 0, 0.1);
+  color: var(--tertiary, #fb8500);
+  margin-bottom: 2px;
+}
+.mo-paste-dash-t {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--foreground, #111827);
+}
+.mo-paste-dash-s {
+  font-size: 12.5px;
+  color: #6b7280;
+  max-width: 440px;
+  line-height: 1.4;
+}
+.mo-dark .mo-paste-dash {
+  background: #15181d;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.mo-dark .mo-paste-dash-t {
+  color: #f3f4f6;
+}
+.mo-paste-manual {
+  border-top: 1px solid #eceef1;
+  padding-top: 10px;
+}
+.mo-paste-manual > summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #6b7280;
+  list-style: none;
+  padding: 2px 0;
+}
+.mo-paste-manual > summary::-webkit-details-marker {
+  display: none;
+}
+.mo-paste-manual[open] > summary {
+  margin-bottom: 10px;
+}
+.mo-dark .mo-paste-manual {
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 .mo-track-textarea {
   width: 100%;
@@ -20748,15 +20828,22 @@ img[data-loaded="true"] {
 .mo-track-card {
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  padding: 12px;
-  border: 1px solid var(--hairline, #e5e7eb);
-  border-radius: 11px;
+  gap: 12px;
+  padding: 16px;
+  border: 1.5px solid #e3e6ea;
+  border-radius: 16px;
   background: #fff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.mo-track-card:hover {
+  border-color: #d0d4db;
+  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.07);
 }
 .mo-dark .mo-track-card {
   background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
 }
 .mo-track-card-top {
   display: flex;
@@ -20807,6 +20894,303 @@ img[data-loaded="true"] {
   color: var(--dark-50);
   line-height: 1.4;
   white-space: pre-line;
+}
+/* Book-cover thumbnails on a tracked card. */
+.mo-track-card-covers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px;
+  border-radius: 12px;
+  background: #f6f7f9;
+}
+.mo-dark .mo-track-card-covers {
+  background: rgba(255, 255, 255, 0.04);
+}
+.mo-track-cover {
+  width: 46px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #eef0f2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  cursor: zoom-in;
+  flex: 0 0 auto;
+  transition: transform 0.12s ease;
+}
+.mo-track-cover:hover {
+  transform: scale(1.06);
+}
+.mo-track-cover.ph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #9aa1ab;
+  cursor: default;
+  box-shadow: none;
+}
+.mo-track-cover.more {
+  width: auto;
+  min-width: 34px;
+  height: 60px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #6b7280;
+  box-shadow: none;
+  border-style: dashed;
+}
+/* Advance-paid / collect-at-door line. */
+.mo-track-paid-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.mo-track-paid-line.online {
+  color: #15803d;
+}
+.mo-track-paid-adv {
+  color: #6b7280;
+}
+.mo-track-paid-due {
+  font-weight: 800;
+  color: #b45309;
+}
+.mo-track-paid-due i {
+  font-style: normal;
+  font-weight: 600;
+  color: #9aa1ab;
+  font-size: 11px;
+}
+/* Clickable Order ID + email on the card top. */
+.mo-track-oid-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--tertiary, #fb8500);
+  font-weight: 700;
+  text-decoration: none;
+}
+.mo-track-oid-link:hover {
+  text-decoration: underline;
+}
+.mo-track-card-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 1px;
+}
+/* Refund-missing-books action on the card. */
+.mo-track-refund-row {
+  border-top: 1px solid #eceef1;
+  padding-top: 12px;
+}
+.mo-dark .mo-track-refund-row {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+.mo-track-refund-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 11px;
+  border: 1px solid #f0b27a;
+  background: #fff6ed;
+  color: #c25e00;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.mo-track-refund-btn:hover {
+  background: #ffeedd;
+}
+.mo-dark .mo-track-refund-btn {
+  background: rgba(251, 133, 0, 0.1);
+  border-color: rgba(251, 133, 0, 0.4);
+  color: #ffb765;
+}
+
+/* Refund modal — uses the standard bill-modal drawer (same as the number
+   modal); content + buttons scroll together, no pinned footer. */
+.mo-refund-sub {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.45;
+  margin: 0 0 14px;
+}
+.mo-refund-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 10px;
+  border: 1.5px solid #e6e8ec;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.mo-refund-row.on {
+  border-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.05);
+}
+.mo-refund-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.mo-refund-check {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 1.5px solid #c3c7cf;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.mo-refund-check.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+}
+.mo-refund-cover {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 54px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #eef0f2;
+}
+.mo-refund-cover.ph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #9aa1ab;
+}
+.mo-refund-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mo-refund-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--foreground, #111827);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mo-refund-qty {
+  font-size: 11.5px;
+  color: #6b7280;
+}
+.mo-refund-line-price {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+}
+/* Refund-amount input — a line below the book, inside the same card. */
+.mo-refund-amt-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #f0b27a;
+}
+.mo-refund-amt-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: #c25e00;
+}
+.mo-refund-amt {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 1.5px solid #f0b27a;
+  border-radius: 10px;
+  padding: 0 10px;
+  background: #fff;
+  font-weight: 800;
+  color: var(--foreground, #111827);
+}
+.mo-refund-amt input {
+  width: 92px;
+  border: none;
+  outline: none;
+  padding: 9px 2px;
+  font-size: 15px;
+  font-weight: 800;
+  background: transparent;
+  text-align: right;
+  color: inherit;
+}
+.mo-refund-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+.mo-refund-total b {
+  font-size: 20px;
+  color: var(--foreground, #111827);
+}
+.mo-refund-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+.mo-dark .mo-refund-row {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.mo-dark .mo-refund-amt {
+  background: #1b1f26;
+}
+.mo-dark .mo-refund-name,
+.mo-dark .mo-refund-total b {
+  color: #f3f4f6;
+}
+.mo-track-share-lbl {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  padding-top: 12px;
+  margin-top: 2px;
+  border-top: 1px solid #eceef1;
+}
+.mo-dark .mo-track-share-lbl {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+.mo-track-share-lbl svg {
+  color: var(--tertiary, #fb8500);
 }
 .mo-track-card-row {
   display: flex;
@@ -21251,7 +21635,7 @@ img[data-loaded="true"] {
 .mo-dark .bp-sum-card,
 .mo-dark .bp-table thead th,
 .mo-dark .bp-table tfoot td {
-  background: #14171d;
+  background: var(--card-bg, #14171d);
   border-color: var(--hairline);
 }
 .mo-dark .bp-table-scroll {
@@ -25238,6 +25622,18 @@ img[data-loaded="true"] {
   background-repeat:no-repeat !important; background-position:right 10px center !important;
 }
 .mo-status-green option{ color:#111827; font-weight:600; }
+/* Dark-mode overrides for the forced-white header controls. */
+.mo-dark .mo-ohead .orders-header-right .mo-view-btn{
+  background: var(--surface-2, #2a2622) !important;
+  border-color: var(--hairline, rgba(255,255,255,0.12)) !important;
+  color: var(--dark-50, #a8a19a) !important;
+}
+.mo-dark .mo-status-green{
+  background-color: var(--surface-2, #2a2622) !important;
+  border-color: rgba(74,222,128,0.4) !important;
+  color:#4ade80 !important;
+}
+.mo-dark .mo-status-green option{ color:#ededea; background:#2a2622; }
 .mo-dark .mo-ohead-title{ color:#f3f4f6; }
 .mo-dark .mo-ohead .mo-view-btn{ background:#1b1f26; border-color:rgba(255,255,255,.14); color:#e5e7eb; }
 @media (max-width:640px){
@@ -26120,7 +26516,7 @@ img[data-loaded="true"] {
 .mo-dark .mo-card-cod,
 .mo-dark .mo-card-online,
 .mo-dark .mo-card-prepaid {
-  background: #14171d;
+  background: var(--card-bg, #14171d);
 }
 /* (tints removed — see the transparent rule above) */
 .mo-card.packed {
@@ -30594,16 +30990,8 @@ img[data-loaded="true"] {
   color: #fff;
   cursor: pointer;
 }
-/* Card background tint by payment type (forced over the old white rule). */
-.admin-orders-grid .admin-order-card.mo-card.mo-card-cod {
-  background: #f4f9ff !important; /* very light blue — Cash on Delivery */
-  border-color: #a7c8f0 !important;
-}
-.admin-orders-grid .admin-order-card.mo-card.mo-card-online,
-.admin-orders-grid .admin-order-card.mo-card.mo-card-prepaid {
-  background: #f4fdf8 !important; /* very light green — Online / Advance paid */
-  border-color: #a6d8b8 !important;
-}
+/* Payment type is conveyed by the badge only — no card background tint.
+   (Tints removed per the flat-card redesign; dark mode controls card bg.) */
 /* Dispatch page — sub-tabs */
 .mo-book-subtabs {
   display: flex;

@@ -98,14 +98,15 @@
   --g-ink-2: #c4bcb4;
   --g-ink-3: #8f867e;
 
-  --g-canvas-1: #14110e;
-  --g-canvas-2: #1a1612;
-  --g-canvas-3: #120f0d;
+  /* Subtle warm dark (Claude-like) — not pure black. */
+  --g-canvas-1: #262220;
+  --g-canvas-2: #211d1a;
+  --g-canvas-3: #1c1916;
 
-  --g-surface: rgba(42, 36, 31, 0.55);
-  --g-surface-2: rgba(48, 41, 35, 0.68);
-  --g-surface-3: rgba(54, 46, 39, 0.82);
-  --g-surface-solid: #201b17;
+  --g-surface: rgba(62, 55, 48, 0.5);
+  --g-surface-2: rgba(70, 62, 54, 0.62);
+  --g-surface-3: rgba(78, 69, 60, 0.78);
+  --g-surface-solid: #2b2724;
 
   --g-hairline: rgba(255, 255, 255, 0.09);
   --g-hairline-2: rgba(255, 183, 3, 0.18);

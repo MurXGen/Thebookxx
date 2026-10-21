@@ -4108,7 +4108,7 @@ export default function ManageOrdersPage() {
   const [bookSubTab, setBookSubTab] = useState("queue");
   // Users + Track pages — sub-tabs for their stacked sections.
   const [userSubTab, setUserSubTab] = useState("customers");
-  const [trackSubTab, setTrackSubTab] = useState("copy");
+  const [trackSubTab, setTrackSubTab] = useState("paste");
   const [scanBusy, setScanBusy] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [scanIds, setScanIds] = useState([]); // array of strings
@@ -5166,6 +5166,70 @@ export default function ManageOrdersPage() {
   const [trackEmailPicks, setTrackEmailPicks] = useState({});
   const [trackEmailBulkKey, setTrackEmailBulkKey] = useState("ofd");
   const [trackEmailBulkProgress, setTrackEmailBulkProgress] = useState(null);
+  // Per-book refund-to-wallet (missing / not-found books) from a tracked card.
+  const [refundOrder, setRefundOrder] = useState(null); // the track row
+  const [refundChecks, setRefundChecks] = useState({}); // { idx: true }
+  const [refundPrices, setRefundPrices] = useState({}); // { idx: "199" }
+  const [refundBusy, setRefundBusy] = useState(false);
+  const openRefund = (row) => {
+    const books = Array.isArray(row?.parsedBooks) ? row.parsedBooks : [];
+    const prices = {};
+    books.forEach((b, i) => {
+      prices[i] = String(
+        Math.round(Number(b.total) || Number(b.price) || 0) || 0,
+      );
+    });
+    setRefundPrices(prices);
+    setRefundChecks({});
+    setRefundOrder(row);
+  };
+  const refundTotal = () => {
+    if (!refundOrder) return 0;
+    return Object.keys(refundChecks).reduce((s, i) => {
+      if (!refundChecks[i]) return s;
+      const v = parseFloat(String(refundPrices[i] ?? "").replace(/[^\d.]/g, ""));
+      return s + (Number.isFinite(v) ? v : 0);
+    }, 0);
+  };
+  const submitRefund = async () => {
+    if (!refundOrder || refundBusy) return;
+    const books = refundOrder.parsedBooks || [];
+    const picked = Object.keys(refundChecks)
+      .filter((i) => refundChecks[i])
+      .map((i) => ({ i: Number(i), name: books[Number(i)]?.name || "book" }));
+    const total = Math.round(refundTotal());
+    if (picked.length === 0 || total <= 0) {
+      showToast("Pick at least one book and a refund amount.", "error");
+      return;
+    }
+    setRefundBusy(true);
+    try {
+      await creditWalletReward(
+        refundOrder["Phone Number"],
+        total,
+        refundOrder["Order ID"],
+        `Refund — unavailable book${picked.length > 1 ? "s" : ""}: ${picked
+          .map((p) => p.name)
+          .join(", ")}`,
+      );
+      const first =
+        String(refundOrder["Customer Name"] || "")
+          .replace(/\(unconfirmed\)/i, "")
+          .trim()
+          .split(/\s+/)[0] || "there";
+      const names = picked.map((p) => `"${p.name}"`).join(", ");
+      const msg = `Hi ${first}, we're sorry — ${names} from your order ${refundOrder["Order ID"]} ${picked.length > 1 ? "were" : "was"} unavailable. We've credited ₹${total} back to your TheBookX wallet 🎁 — use it on your next order. Apologies for the inconvenience! 📚`;
+      openWhatsApp(refundOrder["Phone Number"], msg);
+      showToast(`₹${total} refunded to wallet ✓`, "success");
+      setRefundOrder(null);
+      setTimeout(fetchOrders, 1300);
+    } catch (e) {
+      console.error("Refund failed:", e);
+      showToast("Refund failed — please try again.", "error");
+    } finally {
+      setRefundBusy(false);
+    }
+  };
   const [trackFailed, setTrackFailed] = useState([]);
   const [trackSummary, setTrackSummary] = useState(null);
   const [trackDateOpen, setTrackDateOpen] = useState({});
@@ -5308,11 +5372,12 @@ export default function ManageOrdersPage() {
     String(v || "")
       .trim()
       .toUpperCase();
-  const addTrackingBatch = () => {
+  const addTrackingBatch = (textOverride) => {
     // Parse per line so a receiver name / order id on the SAME pasted line
     // (e.g. rows copied from India Post "My Bookings") can link a brand-new
     // tracking number to its order — not just numbers already saved on a row.
-    const lines = String(trackInput || "").split(/\r?\n/);
+    const src = typeof textOverride === "string" ? textOverride : trackInput;
+    const lines = String(src || "").split(/\r?\n/);
     const idCtx = [];
     const seen = new Set();
     lines.forEach((ln) => {
@@ -5450,6 +5515,33 @@ export default function ManageOrdersPage() {
     });
     setTrackError("");
     if (added > 0) setTrackInput("");
+  };
+  // Tap-to-paste: read the clipboard, keep ONLY the tracking IDs (ignore the
+  // rest), append them and match the orders straight away. Keep tapping as you
+  // copy more — each tap adds its IDs and shows the matched orders below.
+  const pasteFromClipboard = async () => {
+    let clip = "";
+    try {
+      clip = await navigator.clipboard.readText();
+    } catch {
+      clip = "";
+    }
+    if (!clip) {
+      setTrackError(
+        "Couldn't read your clipboard — paste (⌘/Ctrl+V) into “Or paste manually” below instead.",
+      );
+      return;
+    }
+    const ids = extractArticleNumbers(clip);
+    if (ids.length === 0) {
+      setTrackError(
+        "No tracking IDs in what you copied — copy the IDs (or the SMS / booking rows) and tap again.",
+      );
+      return;
+    }
+    const combined = (trackInput ? trackInput + "\n" : "") + clip;
+    setTrackInput(combined);
+    addTrackingBatch(combined);
   };
   const removeTracking = (sid) => {
     setTrackList((prev) => {
@@ -14566,11 +14658,11 @@ export default function ManageOrdersPage() {
           <div className="mo-track-notify mo-track-plain">
             <div className="mo-book-subtabs" role="tablist">
               {[
+                { k: "paste", label: "Paste & match" },
                 { k: "copy", label: "Copy IDs" },
                 { k: "live", label: "Live status" },
                 { k: "paid", label: "Mark paid" },
                 { k: "deliv", label: "Mark delivered" },
-                { k: "paste", label: "Paste & match" },
               ].map((t) => (
                 <button key={t.k} type="button"
                   className={`mo-book-subtab${trackSubTab === t.k ? " on" : ""}`}
@@ -15278,32 +15370,49 @@ export default function ManageOrdersPage() {
             {trackSubTab === "paste" && (
               <>
             <div className="mo-track-paste">
-              <textarea
-                className="admin-input mo-track-textarea"
-                rows={5}
-                placeholder={
-                  "Paste tracking IDs, the SMS text, or India Post booking rows (with receiver names to auto-link new numbers)…\ne.g. CX042819326IN EY484883105IN CM149478023IN"
-                }
-                value={trackInput}
-                onChange={(e) => setTrackInput(e.target.value)}
-              />
-              <div className="mo-track-paste-actions">
-                <span className="mo-track-hint">
-                  {extractArticleNumbers(trackInput).length} ID
-                  {extractArticleNumbers(trackInput).length === 1
-                    ? ""
-                    : "s"}{" "}
-                  detected
+              <button
+                type="button"
+                className="mo-paste-dash"
+                onClick={pasteFromClipboard}
+              >
+                <span className="mo-paste-dash-ic">
+                  <Copy size={22} />
                 </span>
-                <button
-                  type="button"
-                  className="mo-track-add"
-                  disabled={extractArticleNumbers(trackInput).length === 0}
-                  onClick={addTrackingBatch}
-                >
-                  <Search size={15} /> Match orders
-                </button>
-              </div>
+                <span className="mo-paste-dash-t">
+                  Tap to paste tracking IDs
+                </span>
+                <span className="mo-paste-dash-s">
+                  We&apos;ll pull only the IDs from your clipboard and match the
+                  orders below — keep tapping as you copy more.
+                </span>
+              </button>
+              <details className="mo-paste-manual">
+                <summary>Or paste manually</summary>
+                <textarea
+                  className="admin-input mo-track-textarea"
+                  rows={4}
+                  placeholder={
+                    "Paste tracking IDs, the SMS text, or India Post booking rows (with receiver names to auto-link new numbers)…\ne.g. CX042819326IN EY484883105IN CM149478023IN"
+                  }
+                  value={trackInput}
+                  onChange={(e) => setTrackInput(e.target.value)}
+                />
+                <div className="mo-track-paste-actions">
+                  <span className="mo-track-hint">
+                    {extractArticleNumbers(trackInput).length} ID
+                    {extractArticleNumbers(trackInput).length === 1 ? "" : "s"}{" "}
+                    detected
+                  </span>
+                  <button
+                    type="button"
+                    className="mo-track-add"
+                    disabled={extractArticleNumbers(trackInput).length === 0}
+                    onClick={() => addTrackingBatch()}
+                  >
+                    <Search size={15} /> Match orders
+                  </button>
+                </div>
+              </details>
             </div>
             {trackError && <div className="mo-track-error">{trackError}</div>}
             {trackSummary && (
@@ -15563,10 +15672,43 @@ export default function ManageOrdersPage() {
                                           })()}
                                         </span>
                                         <span className="mo-track-card-meta">
-                                          {r["Order ID"] || "—"}
+                                          {(() => {
+                                            const oid = r["Order ID"] || "";
+                                            const p10 = String(
+                                              r["Phone Number"] || "",
+                                            )
+                                              .replace(/\D/g, "")
+                                              .slice(-10);
+                                            const origin =
+                                              typeof window !== "undefined"
+                                                ? window.location.origin
+                                                : "https://www.thebookx.in";
+                                            const href =
+                                              oid && p10
+                                                ? `${origin}/profile/${p10}/orders/${encodeURIComponent(oid)}`
+                                                : "";
+                                            return href ? (
+                                              <a
+                                                className="mo-track-oid-link"
+                                                href={href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                              >
+                                                {oid}
+                                                <ExternalLink size={11} />
+                                              </a>
+                                            ) : (
+                                              <span>{oid || "—"}</span>
+                                            );
+                                          })()}
                                           {r.city ? ` · ${r.city}` : ""}
                                           {r.amount ? ` · ₹${r.amount}` : ""}
                                         </span>
+                                        {r["Email"] && (
+                                          <span className="mo-track-card-email">
+                                            <Mail size={11} /> {r["Email"]}
+                                          </span>
+                                        )}
                                       </div>
                                       <button
                                         type="button"
@@ -15578,11 +15720,101 @@ export default function ManageOrdersPage() {
                                         <X size={14} />
                                       </button>
                                     </div>
-                                    {r.booksList && (
+                                    {Array.isArray(r.parsedBooks) &&
+                                    r.parsedBooks.length > 0 ? (
+                                      <div className="mo-track-card-covers">
+                                        {r.parsedBooks
+                                          .slice(0, 6)
+                                          .map((b, bi) => {
+                                            const img = getBookImage(b.name);
+                                            return img ? (
+                                              // eslint-disable-next-line @next/next/no-img-element
+                                              <img
+                                                key={bi}
+                                                src={img}
+                                                alt={b.name}
+                                                title={b.name}
+                                                loading="lazy"
+                                                className="mo-track-cover"
+                                                onClick={() =>
+                                                  setViewerImg({
+                                                    src: img,
+                                                    name: b.name,
+                                                  })
+                                                }
+                                              />
+                                            ) : (
+                                              <span
+                                                key={bi}
+                                                className="mo-track-cover ph"
+                                                title={b.name}
+                                              >
+                                                <Package size={12} />
+                                              </span>
+                                            );
+                                          })}
+                                        {r.parsedBooks.length > 6 && (
+                                          <span className="mo-track-cover more">
+                                            +{r.parsedBooks.length - 6}
+                                          </span>
+                                        )}
+                                      </div>
+                                    ) : r.booksList ? (
                                       <div className="mo-track-card-books">
                                         {r.booksList}
                                       </div>
-                                    )}
+                                    ) : null}
+                                    {(() => {
+                                      const num = (k) => {
+                                        const v = parseFloat(
+                                          String(r[k] ?? "").replace(
+                                            /[^\d.]/g,
+                                            "",
+                                          ),
+                                        );
+                                        return Number.isFinite(v) ? v : 0;
+                                      };
+                                      const isCODr = /cash|cod/i.test(
+                                        r["Payment Type"] || "",
+                                      );
+                                      const advPaid = /^\s*yes/i.test(
+                                        String(r["Advance Paid"] || ""),
+                                      );
+                                      const advAmt = advPaid
+                                        ? num("Advance Amount") || 99
+                                        : 0;
+                                      const base =
+                                        num("COD Collectible") ||
+                                        Math.max(
+                                          0,
+                                          (num("Total Amount") ||
+                                            Number(r.amount) ||
+                                            0) - advAmt,
+                                        );
+                                      const atDoor = Math.round(base * 1.015);
+                                      if (!isCODr && !advPaid) {
+                                        return (
+                                          <div className="mo-track-paid-line online">
+                                            <Check size={12} /> Paid online —
+                                            nothing to collect
+                                          </div>
+                                        );
+                                      }
+                                      return (
+                                        <div className="mo-track-paid-line cod">
+                                          {advPaid && (
+                                            <span className="mo-track-paid-adv">
+                                              ₹{advAmt} advance paid
+                                            </span>
+                                          )}
+                                          <span className="mo-track-paid-due">
+                                            ₹{atDoor.toLocaleString()} to collect
+                                            at door
+                                            <i> (incl. 1.5%)</i>
+                                          </span>
+                                        </div>
+                                      );
+                                    })()}
                                     <button
                                       type="button"
                                       className="mo-track-tid-btn"
@@ -15592,6 +15824,9 @@ export default function ManageOrdersPage() {
                                       {key}
                                       <ExternalLink size={12} />
                                     </button>
+                                    <span className="mo-track-share-lbl">
+                                      <Send size={12} /> Share an update
+                                    </span>
                                     <div className="mo-track-card-row">
                                       <select
                                         className="bulk-wa-select mo-track-status"
@@ -15694,6 +15929,19 @@ export default function ManageOrdersPage() {
                                         </button>
                                       </div>
                                     </div>
+                                    {Array.isArray(r.parsedBooks) &&
+                                      r.parsedBooks.length > 0 && (
+                                        <div className="mo-track-refund-row">
+                                          <button
+                                            type="button"
+                                            className="mo-track-refund-btn"
+                                            onClick={() => openRefund(r)}
+                                          >
+                                            <Wallet size={15} /> Refund missing
+                                            books
+                                          </button>
+                                        </div>
+                                      )}
                                   </div>
                                 );
                               })}
@@ -21554,6 +21802,159 @@ export default function ManageOrdersPage() {
                 >
                   Cancel
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Refund missing books → credit to wallet (slide-up bill modal). */}
+      <AnimatePresence>
+        {refundOrder && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !refundBusy && setRefundOrder(null)}
+          >
+            <motion.div
+              className="bill-modal mo-refund-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.34, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex flex-col">
+                  <span className="flex flex-row gap-8 items-center">
+                    <Wallet size={18} /> Refund missing books
+                  </span>
+                  <span className="font-12 dark-50">
+                    {String(refundOrder["Customer Name"] || "").replace(
+                      /\(unconfirmed\)/i,
+                      "",
+                    )}{" "}
+                    · {refundOrder["Order ID"]}
+                  </span>
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => !refundBusy && setRefundOrder(null)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              <div className="address-form-content mo-refund-body">
+                <p className="mo-refund-sub">
+                  Tick the books that weren&apos;t available. The selected total
+                  is credited to the customer&apos;s TheBookX wallet, and a
+                  WhatsApp note opens so you can let them know.
+                </p>
+                {(refundOrder.parsedBooks || []).map((b, i) => {
+                  const img = getBookImage(b.name);
+                  const checked = !!refundChecks[i];
+                  const unit = Math.round(
+                    Number(b.total) || Number(b.price) || 0,
+                  );
+                  return (
+                    <div
+                      className={`mo-refund-row${checked ? " on" : ""}`}
+                      key={i}
+                      onClick={() =>
+                        setRefundChecks((p) => ({ ...p, [i]: !p[i] }))
+                      }
+                    >
+                      <div className="mo-refund-head">
+                        <span
+                          className={`mo-refund-check${checked ? " on" : ""}`}
+                          aria-pressed={checked}
+                        >
+                          {checked && <Check size={13} />}
+                        </span>
+                        {img ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={img}
+                            alt={b.name}
+                            className="mo-refund-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <span className="mo-refund-cover ph">
+                            <Package size={14} />
+                          </span>
+                        )}
+                        <div className="mo-refund-info">
+                          <span className="mo-refund-name">{b.name}</span>
+                          <span className="mo-refund-qty">
+                            Qty {b.quantity || 1} · ₹{unit.toLocaleString()}
+                          </span>
+                        </div>
+                        <span className="mo-refund-line-price">
+                          ₹{unit.toLocaleString()}
+                        </span>
+                      </div>
+                      {checked && (
+                        <div
+                          className="mo-refund-amt-wrap"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <label className="mo-refund-amt-lbl">
+                            Refund amount
+                          </label>
+                          <div className="mo-refund-amt">
+                            <span>₹</span>
+                            <input
+                              type="number"
+                              value={refundPrices[i] ?? ""}
+                              onChange={(e) =>
+                                setRefundPrices((p) => ({
+                                  ...p,
+                                  [i]: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                <div className="dashed-border my-12" />
+                <div className="mo-refund-total">
+                  <span>Refund to wallet</span>
+                  <b>₹{Math.round(refundTotal()).toLocaleString()}</b>
+                </div>
+                <div className="flex flex-row gap-12 mt-12">
+                  <button
+                    type="button"
+                    className="sec-mid-btn width100"
+                    onClick={() => !refundBusy && setRefundOrder(null)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="pri-big-btn width100 mo-refund-submit"
+                    disabled={refundBusy || Math.round(refundTotal()) <= 0}
+                    onClick={submitRefund}
+                  >
+                    {refundBusy ? (
+                      <>
+                        <RefreshCw size={15} className="cr-spin" /> Refunding…
+                      </>
+                    ) : (
+                      <>
+                        <Wallet size={16} /> Credit ₹
+                        {Math.round(refundTotal()).toLocaleString()}
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

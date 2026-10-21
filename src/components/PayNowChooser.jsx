@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   X,
@@ -116,9 +116,15 @@ export default function PayNowChooser({
       setTimeout(() => setUpiCopied(false), 1500);
     } catch {}
   };
-  const isMobile =
-    typeof navigator !== "undefined" &&
-    /android|iphone|ipad|ipod/i.test(navigator.userAgent || "");
+  // Show the "open UPI app" launcher only on narrow (<600px) screens.
+  const [isNarrow, setIsNarrow] = useState(false);
+  useEffect(() => {
+    const check = () =>
+      setIsNarrow(typeof window !== "undefined" && window.innerWidth < 600);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   const isAndroid =
     typeof navigator !== "undefined" &&
     /android/i.test(navigator.userAgent || "");
@@ -317,7 +323,7 @@ export default function PayNowChooser({
               </button>
             </div>
 
-            {isMobile && (
+            {isNarrow && (
               <div className="upiv3-open">
                 <span className="upiv3-open-lbl">Pay from your UPI app</span>
                 <div className="upiv3-open-apps">

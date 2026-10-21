@@ -72,6 +72,15 @@ export default function CodPayOnline({
   const [mode, setMode] = useState(""); // full | advance
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  // Show the "open UPI app" launcher only on narrow (<600px) screens.
+  const [isNarrow, setIsNarrow] = useState(false);
+  useEffect(() => {
+    const check = () =>
+      setIsNarrow(typeof window !== "undefined" && window.innerWidth < 600);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   // UPI QR flow (mirrors the checkout modal): 2s "generating" loader, then the
   // sharp QR + a live "verifying" countdown while we wait for the payment.
   const [qrUnlocked, setQrUnlocked] = useState(false);
@@ -167,11 +176,8 @@ export default function CodPayOnline({
       setTimeout(() => setCopied(false), 1500);
     } catch {}
   };
-  // Mobile UPI-app launcher: copy the UPI ID, then open ONLY the chosen app
-  // (no payee/amount in the link). The shopper pastes the ID and pays manually.
-  const isMobile =
-    typeof navigator !== "undefined" &&
-    /android|iphone|ipad|ipod/i.test(navigator.userAgent || "");
+  // UPI-app launcher shows on narrow (<600px) screens: copy the UPI ID, then
+  // open ONLY the chosen app (no payee/amount). The shopper pastes & pays.
   const isAndroid =
     typeof navigator !== "undefined" &&
     /android/i.test(navigator.userAgent || "");
@@ -552,7 +558,7 @@ export default function CodPayOnline({
 
                     {/* Mobile only: open a UPI app directly (no payee attached),
                         UPI ID is copied so the shopper can paste & pay. */}
-                    {isMobile ? (
+                    {isNarrow ? (
                       <div className="upiv3-open">
                         <span className="upiv3-open-lbl">
                           Pay from your UPI app

@@ -1075,43 +1075,53 @@ const SECTION_TABS = [
   { key: "track", label: "Track orders", short: "Track", Icon: Radar },
 ];
 
-// A full-screen shower of money emojis falling smoothly from the top. Remounted
-// (via a changing key) each time it's triggered, so the animation replays.
-function MoneyShower({ seed = 1 }) {
-  const EMOJIS = ["💰", "💵", "🤑", "💸", "🪙", "💴", "💶", "💷", "🎉", "🤑"];
-  // Deterministic pseudo-random (pure — avoids Math.random during render).
-  // The seed makes each overlapping shower land in different spots.
+// Ambient custom confetti — small coloured paper bits drifting down softly
+// behind the analytics header. Pure/deterministic (no Math.random in render),
+// loops forever, and is purely decorative (pointer-events: none).
+function ConfettiFall({ count = 42 }) {
+  const COLORS = [
+    "#fb8500",
+    "#ffb703",
+    "#22c55e",
+    "#3b82f6",
+    "#ef4444",
+    "#a855f7",
+    "#ec4899",
+    "#14b8a6",
+  ];
   const rand = (n, mul) => {
-    const x = Math.sin((n + seed * 1.37) * mul) * 10000;
+    const x = Math.sin(n * mul) * 10000;
     return x - Math.floor(x);
   };
-  const pieces = Array.from({ length: 34 }).map((_, i) => ({
+  const pieces = Array.from({ length: count }).map((_, i) => ({
     i,
     left: rand(i, 12.9898) * 100,
-    delay: rand(i, 7.233) * 0.55,
-    dur: 2.4 + rand(i, 3.111) * 1.8,
-    drift: (rand(i, 19.19) * 2 - 1) * 70,
-    rot: (rand(i, 4.57) * 2 - 1) * 160,
-    size: 18 + rand(i, 9.73) * 22,
-    e: EMOJIS[Math.floor(rand(i, 2.17) * EMOJIS.length)],
+    delay: rand(i, 7.233) * 6, // stagger starts across 6s
+    dur: 4 + rand(i, 3.111) * 4, // 4–8s fall
+    drift: (rand(i, 19.19) * 2 - 1) * 60,
+    rot: (rand(i, 4.57) * 2 - 1) * 540,
+    w: 5 + rand(i, 9.73) * 5,
+    h: 9 + rand(i, 5.3) * 8,
+    color: COLORS[Math.floor(rand(i, 2.17) * COLORS.length)],
+    round: rand(i, 1.3) > 0.7,
   }));
   return (
-    <div className="money-shower" aria-hidden="true">
+    <div className="confetti-fall" aria-hidden="true">
       {pieces.map((p) => (
         <span
           key={p.i}
-          className="money-piece"
+          className={`confetti-bit${p.round ? " round" : ""}`}
           style={{
             left: `${p.left}%`,
-            fontSize: `${p.size}px`,
+            width: `${p.w}px`,
+            height: `${p.h}px`,
+            background: p.color,
             "--delay": `${p.delay}s`,
             "--dur": `${p.dur}s`,
             "--drift": `${p.drift}px`,
             "--rot": `${p.rot}deg`,
           }}
-        >
-          {p.e}
-        </span>
+        />
       ))}
     </div>
   );
@@ -5125,29 +5135,12 @@ export default function ManageOrdersPage() {
     } catch {}
   }, []);
   // Money-emoji shower (triggered from the Revenue card + Analytics tab).
-  // Each trigger spawns an independent overlapping shower that removes itself
-  // after it finishes — a new trigger never resets one already falling.
-  const [showers, setShowers] = useState([]);
-  const showerIdRef = useRef(0);
-  const triggerMoneyShower = (haptic = false) => {
-    if (
-      haptic &&
-      typeof navigator !== "undefined" &&
-      typeof navigator.vibrate === "function"
-    ) {
-      navigator.vibrate([18, 40, 18]);
-    }
-    const id = ++showerIdRef.current;
-    setShowers((s) => [...s, id]);
-    setTimeout(() => setShowers((s) => s.filter((x) => x !== id)), 5200);
-  };
   const goToTab = (key) => {
     setActiveTab(key);
     try {
       localStorage.setItem("mo_active_tab", key);
     } catch {}
     setAccOpen((p) => ({ ...p, [key]: true }));
-    if (key === "analytics") triggerMoneyShower(false);
   };
   // Orders calendar now lives in a modal opened from the tab row.
   const [showCalModal, setShowCalModal] = useState(false);
@@ -11936,6 +11929,7 @@ export default function ManageOrdersPage() {
             onMouseLeave={onChartLeave}
             onPointerDown={onChartTap}
           >
+            <ConfettiFall />
             {chartTip &&
               typeof document !== "undefined" &&
               createPortal(
@@ -11963,17 +11957,7 @@ export default function ManageOrdersPage() {
                   </span>
                 </div>
               </div>
-              <div
-                className="an2-stat s-rev an2-stat-click"
-                role="button"
-                tabIndex={0}
-                title="💰"
-                onClick={() => triggerMoneyShower(true)}
-                onKeyDown={(e) =>
-                  (e.key === "Enter" || e.key === " ") &&
-                  triggerMoneyShower(true)
-                }
-              >
+              <div className="an2-stat s-rev">
                 <div className="an2-stat-ic">
                   <IndianRupee size={16} />
                 </div>
@@ -18826,18 +18810,6 @@ export default function ManageOrdersPage() {
             );
           })()}
       </AnimatePresence>
-
-      {/* Money-emoji showers (Revenue card / Analytics tab) — overlap, no reset */}
-      {typeof document !== "undefined" &&
-        showers.length > 0 &&
-        createPortal(
-          <>
-            {showers.map((id) => (
-              <MoneyShower key={id} seed={id} />
-            ))}
-          </>,
-          document.body,
-        )}
 
       {/* ===== Email status-template picker (Resend, per order) ===== */}
       <AnimatePresence>

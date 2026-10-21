@@ -31056,41 +31056,48 @@ img[data-loaded="true"] {
   cursor: not-allowed;
 }
 /* Money-emoji shower */
-.money-shower {
-  position: fixed;
-  inset: 0;
-  z-index: 2147483600;
+/* Ambient custom confetti behind the analytics header. */
+.confetti-fall {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 620px;
+  max-height: 72%;
+  z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  border-radius: inherit;
 }
-.money-piece {
+.confetti-bit {
   position: absolute;
-  top: -10%;
+  top: -28px;
+  border-radius: 2px;
   opacity: 0;
   will-change: transform, opacity;
-  animation: moneyFall var(--dur, 3s) cubic-bezier(0.33, 0.12, 0.3, 1)
-    var(--delay, 0s) forwards;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
+  animation: confettiDrop var(--dur, 6s) linear var(--delay, 0s) infinite;
 }
-@keyframes moneyFall {
+.confetti-bit.round {
+  border-radius: 50%;
+}
+@keyframes confettiDrop {
   0% {
-    transform: translate(0, -12vh) rotate(0deg) scale(0.8);
+    transform: translate(0, 0) rotate(0deg);
     opacity: 0;
   }
-  8% {
-    opacity: 1;
+  10% {
+    opacity: 0.85;
   }
-  88% {
-    opacity: 1;
+  90% {
+    opacity: 0.85;
   }
   100% {
-    transform: translate(var(--drift, 0), 114vh) rotate(var(--rot, 180deg))
-      scale(1);
+    transform: translate(var(--drift, 0), 640px) rotate(var(--rot, 360deg));
     opacity: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .money-shower {
+  .confetti-fall {
     display: none;
   }
 }
@@ -43647,6 +43654,12 @@ img[data-loaded="true"] {
   flex-direction: column;
   gap: 16px;
   padding: 4px 0 8px;
+  position: relative;
+}
+/* Keep the dashboard content above the ambient confetti layer. */
+.an2 > *:not(.confetti-fall) {
+  position: relative;
+  z-index: 1;
 }
 .an2-head {
   display: flex;

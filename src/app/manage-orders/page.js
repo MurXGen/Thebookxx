@@ -14546,9 +14546,38 @@ export default function ManageOrdersPage() {
                 </div>
               </div>
               <div className="um-list">
-                {filteredUsers.length === 0 && (
-                  <div className="an2-bp-empty">No customers found.</div>
-                )}
+                {filteredUsers.length === 0 &&
+                  (() => {
+                    const digits = String(userSearch || "").replace(/\D/g, "");
+                    const newNum =
+                      digits.length >= 10 ? digits.slice(-10) : null;
+                    return (
+                      <div className="um-empty">
+                        <div className="an2-bp-empty">No customers found.</div>
+                        {newNum ? (
+                          <button
+                            type="button"
+                            className="um-credit-new"
+                            onClick={() =>
+                              setWalletModal({
+                                phone: newNum,
+                                name: "New customer",
+                                wallet: 0,
+                                isNew: true,
+                              })
+                            }
+                          >
+                            <Wallet size={16} /> Credit wallet to +91 {newNum}
+                          </button>
+                        ) : (
+                          <span className="um-empty-hint">
+                            Type a full 10-digit number to credit a wallet to a
+                            new customer.
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
                 {filteredUsers.slice(0, userVisible).map((u) => (
                   <LazyMount key={u.phone} className="um-row" minHeight={168}>
                     <div className="um-row-top">

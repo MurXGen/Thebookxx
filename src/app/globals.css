@@ -1420,8 +1420,8 @@ label.sec-mid-btn {
 /* Full-width bar with breathing room on the sides (replaces the old 680px
    centered cap). The action FABs ride above it, right-aligned. */
 .cart-bar-full {
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 .cart-bar-full .cos-fab-row {
   margin-right: 2px;
@@ -25511,6 +25511,20 @@ img[data-loaded="true"] {
 .mo-tools-sep{ height:1px; background:#e6e8ec; margin:2px 0; border:none; }
 .mo-dark .mo-tools-sep{ background:rgba(255,255,255,.08); }
 .merge-total-row .green{ color:#15803d; }
+
+/* Users tab — credit a wallet to a new (non-existing) number from empty state. */
+.um-empty{ display:flex; flex-direction:column; align-items:center; gap:12px; padding:18px 12px; }
+.um-credit-new{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:11px 18px; border-radius:12px; border:none;
+  background:var(--tertiary,#fb8500); color:#fff;
+  font-size:13.5px; font-weight:800; cursor:pointer;
+  box-shadow:0 4px 14px rgba(251,133,0,.28);
+  transition:transform .12s ease, box-shadow .15s ease;
+}
+.um-credit-new:hover{ transform:translateY(-1px); box-shadow:0 6px 18px rgba(251,133,0,.34); }
+.um-credit-new:active{ transform:translateY(0); }
+.um-empty-hint{ font-size:12.5px; color:#9aa1ab; text-align:center; max-width:320px; line-height:1.45; }
 
 /* Edit/Add order modal — prefill chips + live bill breakdown. */
 .mo-chip-row{ display:flex; flex-wrap:wrap; gap:8px; }

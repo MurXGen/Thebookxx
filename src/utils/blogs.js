@@ -4,6 +4,177 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "sharad-purnima-2026-moonlit-night-books-to-read-india": {
+    "id": "blog-086",
+    "title": "Sharad Purnima 2026: 25 October Moonlit Night and 17 Books to Read in India",
+    "slug": "sharad-purnima-2026-moonlit-night-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-22",
+    "lastModified": "2026-10-22",
+    "excerpt": "Sharad Purnima falls on the night of 25 October 2026. Kheer, moonlight and 17 books to read in India, from ₹1 with free delivery and COD.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Sharad Purnima, also called Ashwin Purnima, Kojagari Purnima or Raas Purnima, is the full-moon night that closes the monsoon and opens the season of clear autumn skies. In 2026 the Purnima tithi begins on 25 October at about 11:55 AM IST and ends on 26 October at about 9:41 AM IST, so most households observe the moonlit night on the evening of Sunday, 25 October. Panchang timings vary by city, so check your local calendar for the exact moonrise and puja muhurat. This guide is for readers who like the idea of a slow, quiet, moonlit evening and want something worth reading during it."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts",
+        "content": "Festival: Sharad Purnima (Ashwin Purnima, Kojagari Purnima, Raas Purnima). Night to observe: 25 October 2026. Purnima tithi: 25 October, 11:55 AM IST to 26 October, 9:41 AM IST (check your local panchang). Traditions: kheer left in moonlight, Lakshmi puja and night-long jagran in Bengal and Odisha, Raas Leela celebrations in Braj."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What Sharad Purnima means"
+      },
+      {
+        "type": "paragraph",
+        "content": "In Braj and much of north India, Sharad Purnima is remembered as the night of Lord Krishna's Raas Leela. In West Bengal and Odisha it is Kojagari Lakshmi Puja, when families stay awake through the night, and the name itself is often explained as a question, 'who is awake?'. Across many homes the best-known ritual is simple: kheer made with milk, rice, dry fruits and saffron is covered with a thin cloth and left under the moonlight, then eaten as prasad the next morning. Whatever your own tradition, the night has a common spirit: stillness, light, gratitude and being awake to the moment."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why a full-moon night is a good night for reading"
+      },
+      {
+        "type": "paragraph",
+        "content": "There are very few evenings in the year when the whole family is encouraged to sit outside, slow down and stay up late without a screen. That is exactly what a good book needs. A night-time reading ritual is easy to build: switch off the main lights, keep a diya or a soft lamp beside you, pour something warm, and read for twenty or thirty minutes. If you are reading outdoors on a terrace or balcony, a small torch or a warm bulb is enough. Read aloud if children or grandparents are with you."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on Krishna, the Raas and the great epics"
+      },
+      {
+        "type": "paragraph",
+        "content": "If the Raas Leela is the reason your family celebrates, begin with the source of its wisdom. <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> is Krishna's own teaching on duty, action and a calm mind, and it reads well in small portions. For children, <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita for Children</a> retells the same ideas in simple language, which makes it a good bedtime companion after the kheer is ready."
+      },
+      {
+        "type": "paragraph",
+        "content": "For the larger world of stories, <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> by Devdutt Pattanaik follows the epic in which Krishna plays his central role, and <a href=\"/books/sita-an-illustrated-retelling-of-the-ramayana\" style=\"color:#fb8500;font-weight:600\">Sita: An Illustrated Retelling of the Ramayana</a> offers the other great epic through a woman's eyes. Readers who like their mythology as a thriller can try <a href=\"/books/the-secret-of-the-nagas\" style=\"color:#fb8500;font-weight:600\">The Secret of the Nagas</a>, the second book of the Shiva Trilogy, which is a fast-moving, moonlit-adventure kind of read."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for a spiritual, reflective night"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/autobiography-of-a-yogi\" style=\"color:#fb8500;font-weight:600\">Autobiography of a Yogi</a> is one of the most widely read spiritual memoirs of the twentieth century and suits a quiet full-moon evening. <a href=\"/books/the-power-of-now\" style=\"color:#fb8500;font-weight:600\">The Power of Now</a> is a short, practical book on living in the present moment, which is also the point of sitting under the moon with nothing else to do. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is a gentle look at finding purpose and daily joy, and <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> is a parable about following your own path, easy to finish in a single sitting."
+      },
+      {
+        "type": "blockquote",
+        "content": "A moonlit evening does not need a plan. It needs a lamp, a warm drink and one good book. — TheBookX Editorial"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books about the night, sleep and a quieter mind"
+      },
+      {
+        "type": "paragraph",
+        "content": "Staying up late for a festival is lovely, but good sleep matters the next day. <a href=\"/books/why-we-sleep\" style=\"color:#fb8500;font-weight:600\">Why We Sleep</a> explains what happens in the brain at night and why rest is not wasted time. If your mind refuses to settle even on a calm evening, <a href=\"/books/the-art-of-not-overthinking\" style=\"color:#fb8500;font-weight:600\">The Art of Not Overthinking</a> gives simple methods to quieten repeating thoughts."
+      },
+      {
+        "type": "paragraph",
+        "content": "For fiction that suits the mood, <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> imagines a library between life and death where every book is another life you could have lived, and <a href=\"/books/white-nights\" style=\"color:#fb8500;font-weight:600\">White Nights</a> by Dostoevsky is a short, tender story set over four nights, ideal for a single evening."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A book from our own shelf for a clear mind"
+      },
+      {
+        "type": "paragraph",
+        "content": "Festivals are a natural time to reset. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to thinking clearly, filtering noise and acting with intention, which makes it a good companion for a quiet night of reflection or a thoughtful gift to someone starting a new chapter. Pair it with <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> to turn those intentions into small daily routines."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Lakshmi, wealth and a good relationship with money"
+      },
+      {
+        "type": "paragraph",
+        "content": "Because Kojagari Lakshmi Puja is about prosperity, it is also a nice moment to read about money in a sensible way. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> and <a href=\"/books/the-richest-man-in-babylon\" style=\"color:#fb8500;font-weight:600\">The Richest Man in Babylon</a> are two of the most approachable books on saving, patience and good financial habits, and both make thoughtful gifts ahead of Diwali."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "A simple Sharad Purnima reading ritual",
+        "content": "Prepare the kheer, switch to soft light, and choose one short book. Read for twenty minutes before the family gathers, then read one page aloud for everyone. Keep a notebook beside you and write down a single line you want to remember."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A moonlit reading plan for the week"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Sharad Purnima night: read a few pages of the Gita or Autobiography of a Yogi under soft light.",
+          "The following evening: read one short, reflective book such as White Nights or The Alchemist.",
+          "The weekend: start a longer title such as Jaya, Sita or The Midnight Library.",
+          "Before Diwali: gift a book on money or clarity, such as The Psychology of Money or The Art of Clarity."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Every title above is available from TheBookX with books from ₹1, free delivery and Cash on Delivery across India. If you are buying for the festive season, you can add gift wrapping for just ₹25 at checkout, so a book is ready to hand over as soon as it arrives."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/sharad-purnima-2026-moonlit-night-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/sharad-purnima-2026-moonlit-night-books-to-read-india.jpeg",
+        "alt": "A young woman reading a book on a terrace under a full moon with a bowl of kheer and a lit diya beside her",
+        "caption": "A full-moon night is a good excuse to slow down and read.",
+        "category": "Festivals"
+      }
+    ],
+    "keywords": [
+      "Sharad Purnima 2026",
+      "Sharad Purnima 2026 date",
+      "Kojagari Purnima",
+      "Raas Purnima",
+      "Ashwin Purnima",
+      "kheer in moonlight",
+      "books to read in India",
+      "spiritual books",
+      "Krishna books",
+      "festival reading list",
+      "buy books online India"
+    ],
+    "categories": [
+      "Festivals",
+      "Reading Guides",
+      "Spirituality"
+    ],
+    "faqs": [
+      {
+        "question": "When is Sharad Purnima in 2026?",
+        "answer": "The Purnima tithi begins on 25 October 2026 at about 11:55 AM IST and ends on 26 October at about 9:41 AM IST, so the moonlit night is observed on 25 October. Timings vary by city, so check your local panchang."
+      },
+      {
+        "question": "Why is kheer kept under the moonlight on Sharad Purnima?",
+        "answer": "By tradition, kheer is covered and left under the full moon overnight and eaten as prasad the next morning. Many families believe the moonlight makes it special."
+      },
+      {
+        "question": "What are good books to read on Sharad Purnima?",
+        "answer": "The Bhagavad Gita, Autobiography of a Yogi, The Power of Now, The Alchemist, Jaya and The Art of Clarity suit a quiet, reflective full-moon night."
+      },
+      {
+        "question": "Where can I buy these books online in India?",
+        "answer": "TheBookX stocks them with books from ₹1, free delivery and Cash on Delivery across India, plus gift wrapping for ₹25."
+      }
+    ]
+  },
   "kirkus-prize-2026-winners-kin-tayari-jones-books-to-read-india": {
     "id": "blog-085",
     "title": "Kirkus Prize 2026 Winners: Kin, Catch the Devil and Anger Is Only a Shadow, Plus Books to Read in India",

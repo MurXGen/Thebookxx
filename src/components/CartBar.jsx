@@ -340,23 +340,25 @@ export default function CartBar({ tab = "books" }) {
 
   return (
     <div className={`cart-bar cart-bar-full${barHidden ? " cart-bar-hidden" : ""}`}>
-      {/* Three glassmorphic action buttons — Earn · Community · Share. */}
-      <div className="cos-fab-row">
-        <ReviewRewardModal variant="fab" />
-        <CommunityJoin variant="fab" />
-        <button
-          type="button"
-          className="cos-fab cos-fab-share"
-          onClick={shareSite}
-          aria-label="Share TheBookX"
-          title="Share TheBookX"
-        >
-          <span className="cos-fab-ic">
-            <Share2 size={21} />
-          </span>
-          <span className="cos-fab-label">Share</span>
-        </button>
-      </div>
+      {/* Earn · Community · Share FABs — hidden for now. */}
+      {false && (
+        <div className="cos-fab-row">
+          <ReviewRewardModal variant="fab" />
+          <CommunityJoin variant="fab" />
+          <button
+            type="button"
+            className="cos-fab cos-fab-share"
+            onClick={shareSite}
+            aria-label="Share TheBookX"
+            title="Share TheBookX"
+          >
+            <span className="cos-fab-ic">
+              <Share2 size={21} />
+            </span>
+            <span className="cos-fab-label">Share</span>
+          </button>
+        </div>
+      )}
       {/* Suggest strip ("Not sure what to read next?") — hidden for now.
       <button
         type="button"

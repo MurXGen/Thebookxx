@@ -38,6 +38,120 @@ function drawQrCode(ctx, text, x, y, size) {
   }
 }
 
+// Review page every label points to (customer scans → leaves a rating/review).
+export const REVIEW_URL = "https://thebookx.in/review";
+
+// Draw a single 5-point star outline (unfilled) centred at (cx, cy).
+function drawStarOutline(ctx, cx, cy, radius, color = "#f5a623", lineW = 2) {
+  const spikes = 5;
+  const inner = radius * 0.46;
+  ctx.save();
+  ctx.beginPath();
+  for (let i = 0; i < spikes * 2; i++) {
+    const r = i % 2 === 0 ? radius : inner;
+    const a = (Math.PI * i) / spikes - Math.PI / 2;
+    const px = cx + Math.cos(a) * r;
+    const py = cy + Math.sin(a) * r;
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineW;
+  ctx.lineJoin = "round";
+  ctx.stroke();
+  ctx.restore();
+}
+
+// The TheBookX wordmark drawn as a highlighted pill so the brand stands out on
+// every label. `dark` fills the pill with the accent (for dark headers), else a
+// soft tinted pill with an accent outline. Returns the pill width.
+function drawBrandMark(
+  c,
+  x,
+  topY,
+  { size = 30, accent = "#fb8500", ink = "#111111", dark = false } = {},
+) {
+  const ctx = c.ctx;
+  const label = "TheBookX";
+  ctx.save();
+  ctx.font = `bold ${size}px Poppins, sans-serif`;
+  const tw = ctx.measureText(label).width;
+  ctx.restore();
+  const padL = size * 0.95;
+  const padR = size * 0.5;
+  const boxH = size * 1.52;
+  const boxW = tw + padL + padR;
+  const rrr = (xx, yy, w, h, r) => {
+    ctx.beginPath();
+    ctx.moveTo(xx + r, yy);
+    ctx.arcTo(xx + w, yy, xx + w, yy + h, r);
+    ctx.arcTo(xx + w, yy + h, xx, yy + h, r);
+    ctx.arcTo(xx, yy + h, xx, yy, r);
+    ctx.arcTo(xx, yy, xx + w, yy, r);
+    ctx.closePath();
+  };
+  ctx.save();
+  ctx.fillStyle = dark ? accent : "#fff1e0";
+  rrr(x, topY, boxW, boxH, boxH * 0.26);
+  ctx.fill();
+  if (!dark) {
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 1.4;
+    rrr(x, topY, boxW, boxH, boxH * 0.26);
+    ctx.stroke();
+  }
+  ctx.restore();
+  // accent dot
+  const ds = size * 0.34;
+  ctx.save();
+  ctx.fillStyle = dark ? "#ffffff" : accent;
+  rrr(x + padL * 0.34, topY + boxH / 2 - ds / 2, ds, ds, 2);
+  ctx.fill();
+  ctx.restore();
+  c.text(label, x + padL, topY + boxH / 2 + size * 0.34, {
+    font: `bold ${size}px Poppins, sans-serif`,
+    color: dark ? "#ffffff" : ink,
+  });
+  return boxW;
+}
+
+// A compact "scan & review us" block — QR to the review page, a row of five
+// empty stars, and a prompt. Drawn on the right of the deliver-to address so it
+// reads as a gentle nudge. Returns the y-coordinate just below the block.
+function drawReviewQrBlock(c, qx, qTop, qSize, accent, ink) {
+  const ctx = c.ctx;
+  c.text("SCAN & REVIEW US", qx + qSize / 2, qTop, {
+    font: "bold 13px Poppins, sans-serif",
+    color: accent,
+    align: "center",
+  });
+  const qy = qTop + 14;
+  // Thin framed backing so the QR reads as a card.
+  ctx.save();
+  ctx.strokeStyle = "#e2e2e2";
+  ctx.lineWidth = 1.4;
+  ctx.strokeRect(qx - 6, qy - 6, qSize + 12, qSize + 12);
+  ctx.restore();
+  drawQrCode(ctx, REVIEW_URL, qx, qy, qSize);
+  // Five empty stars, centred under the QR.
+  const sr = 12;
+  const gap = 8;
+  const totalW = 5 * (sr * 2) + 4 * gap;
+  let sx = qx + (qSize - totalW) / 2 + sr;
+  const starY = qy + qSize + 24;
+  for (let i = 0; i < 5; i++) {
+    drawStarOutline(ctx, sx, starY, sr, "#f5a623", 2);
+    sx += sr * 2 + gap;
+  }
+  c.text("Tap a star — tell us how we did", qx + qSize / 2, starY + sr + 20, {
+    font: "bold 13px Poppins, sans-serif",
+    color: ink,
+    align: "center",
+  });
+  return starY + sr + 30;
+}
+
 export const SENDER = {
   name: "TheBookX",
   addressLines: [
@@ -1155,13 +1269,7 @@ function drawBigAddressLabel(c, startY, data) {
     });
     // Brand row (top), then headline + description centred in the band with
     // comfortable padding so nothing sits on the stripe's edge.
-    ctx.fillStyle = ACCENT;
-    rr(innerX, y + 24, 9, 9, 2);
-    ctx.fill();
-    c.text("TheBookX", innerX + 17, y + 34, {
-      font: "bold 22px Poppins, sans-serif",
-      color: INK,
-    });
+    drawBrandMark(c, innerX, y + 14, { size: 22, accent: ACCENT, ink: INK });
     c.text("A GIFT FOR YOU", rightX, y + 34, {
       font: "bold 14px Poppins, sans-serif",
       color: LBL,
@@ -1177,13 +1285,20 @@ function drawBigAddressLabel(c, startY, data) {
     });
     y += bandH;
   } else if (variant === "speed") {
-    const barH = 112;
+    const barH = 134;
     ctx.fillStyle = INK;
     roundTopRect(X, y, W, barH, RAD);
     ctx.fill();
+    // Brand (highlighted) across the top of the dark header.
+    drawBrandMark(c, innerX, y + 12, {
+      size: 19,
+      accent: ACCENT,
+      ink: "#ffffff",
+      dark: true,
+    });
     ctx.fillStyle = ACCENT;
     const lx = innerX;
-    const ly = y + 30;
+    const ly = y + 54;
     ctx.beginPath();
     ctx.moveTo(lx + 24, ly);
     ctx.lineTo(lx, ly + 38);
@@ -1193,29 +1308,23 @@ function drawBigAddressLabel(c, startY, data) {
     ctx.lineTo(lx + 20, ly + 28);
     ctx.closePath();
     ctx.fill();
-    c.text("PRIORITY EXPRESS", innerX + 60, y + 60, {
+    c.text("PRIORITY EXPRESS", innerX + 60, y + 84, {
       font: "bold 36px Poppins, sans-serif",
       color: "#ffffff",
     });
-    c.text("SPEED POST", rightX, y + 46, {
+    c.text("SPEED POST", rightX, y + 24, {
       font: "bold 15px Poppins, sans-serif",
       color: ACCENT,
       align: "right",
     });
-    c.text("DELIVER FIRST · TIME-CRITICAL", rightX, y + 74, {
+    c.text("DELIVER FIRST · TIME-CRITICAL", rightX, y + 92, {
       font: "bold 16px Poppins, sans-serif",
       color: "#ffffff",
       align: "right",
     });
     y += barH;
   } else {
-    ctx.fillStyle = ACCENT;
-    rr(innerX, y + 28, 9, 9, 2);
-    ctx.fill();
-    c.text("TheBookX", innerX + 17, y + 40, {
-      font: "bold 30px Poppins, sans-serif",
-      color: INK,
-    });
+    drawBrandMark(c, innerX, y + 10, { size: 30, accent: ACCENT, ink: INK });
     c.text("SHIPPING LABEL", rightX, y + 38, {
       font: "bold 16px Poppins, sans-serif",
       color: "#444444",
@@ -1254,6 +1363,12 @@ function drawBigAddressLabel(c, startY, data) {
     font: "bold 17px Poppins, sans-serif",
     color: LBL,
   });
+  // Review QR + empty stars pinned to the right of the address — on every label.
+  const qSize = 150;
+  const qx = rightX - qSize;
+  const qBottom = drawReviewQrBlock(c, qx, y + 6, qSize, ACCENT, INK);
+  // Keep the address text clear of the QR column.
+  const addrMaxW = innerW - (qSize + 44);
   const nameY = y + 46;
   c.text(data.customerName || "", innerX, nameY, {
     font: "bold 46px Poppins, sans-serif",
@@ -1275,7 +1390,7 @@ function drawBigAddressLabel(c, startY, data) {
   if (stateStr && !addrLc.includes(stateStr.toLowerCase()))
     addrParts.push(stateStr);
   const addressFull = addrParts.filter(Boolean).join(", ");
-  ay = c.wrap(addressFull, innerX, ay, innerW, 30, {
+  ay = c.wrap(addressFull, innerX, ay, addrMaxW, 30, {
     font: "23px Poppins, sans-serif",
     color: "#222222",
   });
@@ -1303,7 +1418,7 @@ function drawBigAddressLabel(c, startY, data) {
     ctx.save();
     ctx.strokeStyle = "#111111";
     ctx.lineWidth = 1.6;
-    rr(innerX, stY, innerW, stH, 8);
+    rr(innerX, stY, addrMaxW, stH, 8);
     ctx.stroke();
     ctx.restore();
     c.text(`📞  Call for delivery: ${phones}`, innerX + 16, stY + 30, {
@@ -1314,6 +1429,8 @@ function drawBigAddressLabel(c, startY, data) {
   } else {
     ay += 12;
   }
+  // Never let the payment block ride up over the QR/stars column.
+  ay = Math.max(ay, qBottom);
   ctx.fillStyle = ACCENT;
   ctx.fillRect(X, toTop, 5, ay - toTop);
   y = ay + 26;
@@ -1323,41 +1440,55 @@ function drawBigAddressLabel(c, startY, data) {
   // ===== Payment block (below the address) — a single, clear highlighted box
   // with the label and value neatly stacked, and a right-aligned helper note
   // vertically centred.
-  const boxH = 74;
+  const boxH = 84;
   const payPadX = 20;
+  // Inset the payment box to the content column so it isn't flush against the
+  // label's outer frame.
+  const payX = innerX;
+  const payW = innerW;
   const payTone = isCOD ? ACCENT : "#1d7a3a";
   const payBg = isCOD ? "#fff7ed" : "#eef8f0";
   ctx.save();
   ctx.fillStyle = payBg;
-  rr(X, y, W, boxH, 10);
+  rr(payX, y, payW, boxH, 10);
   ctx.fill();
   ctx.strokeStyle = payTone;
   ctx.lineWidth = 1.6;
-  rr(X, y, W, boxH, 10);
+  rr(payX, y, payW, boxH, 10);
   ctx.stroke();
   ctx.restore();
   if (isCOD) {
-    cap("COLLECT ON DELIVERY", X + payPadX, y + 28, "#9a5a12");
-    c.text(`₹ ${data.codAmount || 0} /-`, X + payPadX, y + 58, {
-      font: "bold 27px Poppins, sans-serif",
+    cap("COLLECT ON DELIVERY", payX + payPadX, y + 30, "#9a5a12");
+    c.text(`₹ ${data.codAmount || 0} /-`, payX + payPadX, y + 68, {
+      font: "bold 36px Poppins, sans-serif",
       color: "#c25e00",
     });
-    c.text("Pay cash / UPI to the delivery agent", X + W - payPadX, y + boxH / 2 + 6, {
-      font: "14px Poppins, sans-serif",
-      color: "#9a5a12",
-      align: "right",
-    });
+    c.text(
+      "Pay cash / UPI to the delivery agent",
+      payX + payW - payPadX,
+      y + boxH / 2 + 6,
+      {
+        font: "14px Poppins, sans-serif",
+        color: "#9a5a12",
+        align: "right",
+      },
+    );
   } else {
-    cap("PAYMENT", X + payPadX, y + 28, "#1d7a3a");
-    c.text("PAID · PREPAID", X + payPadX, y + 58, {
-      font: "bold 25px Poppins, sans-serif",
+    cap("PAYMENT", payX + payPadX, y + 30, "#1d7a3a");
+    c.text("PAID · PREPAID", payX + payPadX, y + 66, {
+      font: "bold 28px Poppins, sans-serif",
       color: "#1d7a3a",
     });
-    c.text("Nothing to collect on delivery", X + W - payPadX, y + boxH / 2 + 6, {
-      font: "14px Poppins, sans-serif",
-      color: "#1d7a3a",
-      align: "right",
-    });
+    c.text(
+      "Nothing to collect on delivery",
+      payX + payW - payPadX,
+      y + boxH / 2 + 6,
+      {
+        font: "14px Poppins, sans-serif",
+        color: "#1d7a3a",
+        align: "right",
+      },
+    );
   }
   y += boxH + 22;
 
@@ -1390,16 +1521,8 @@ function drawBigAddressLabel(c, startY, data) {
   });
   y += 20;
 
-  // Outer frame — lightest, rounded, dashed. Drawn last so it sits above the
-  // header band. Rounded corners match the header band's rounded top.
-  ctx.save();
-  ctx.strokeStyle = "#d9d9d9";
-  ctx.lineWidth = 1.4;
-  ctx.setLineDash([9, 7]);
-  rr(X, startY, W, y - startY, RAD);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.restore();
+  // No outer frame around each label — labels are separated by a cut line drawn
+  // between them on the page (see stackLabelCanvases).
 
   return y;
 }
@@ -1932,11 +2055,11 @@ const LABEL_GAP = 48; // vertical space between/around labels (2x px)
 // MAX_LABELS_PER_PAGE labels but drop to fewer when the labels are tall (a long
 // note grows the label) — kept within PAGE_HEIGHT_BUDGET so printed A4 pages
 // don't shrink the labels too much.
-const MAX_LABELS_PER_PAGE = 2;
+const MAX_LABELS_PER_PAGE = 3;
 // Label canvases are rendered at 2× scale, so this budget is in 2× pixels.
-// ~A4 portrait height at the label's 2× width (≈2360 × 1.414) so two standard
-// labels sit on one page, dropping to one only when a label is very tall.
-const PAGE_HEIGHT_BUDGET = 3340;
+// Sized so three standard labels fit on one page (dropping to two, then one,
+// only when labels are unusually tall).
+const PAGE_HEIGHT_BUDGET = 5200;
 
 // Pack pre-built label canvases into pages: up to 3 short labels, or 2 (even 1)
 // when they're tall. Greedy by cumulative height against the budget.
@@ -1973,9 +2096,23 @@ function stackLabelCanvases(labels) {
   ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, out.width, out.height);
   let y = LABEL_GAP;
-  labels.forEach((l) => {
+  labels.forEach((l, i) => {
     ctx.drawImage(l, (width - l.width) / 2, y);
     y += l.height + LABEL_GAP;
+    // Dashed cut line between labels (not after the last one).
+    if (i < labels.length - 1) {
+      const lineY = y - LABEL_GAP / 2;
+      ctx.save();
+      ctx.strokeStyle = "#9ca3af";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([14, 10]);
+      ctx.beginPath();
+      ctx.moveTo(40, lineY);
+      ctx.lineTo(width - 40, lineY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
   });
   return out;
 }

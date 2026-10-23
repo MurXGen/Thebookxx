@@ -25628,6 +25628,33 @@ img[data-loaded="true"] {
 .mo-tools-accordion svg{ flex:0 0 auto; color:#9aa1ab; transition:transform .2s ease; }
 .mo-dark .mo-tools-accordion{ color:#f3f4f6; }
 .mo-dark .mo-tools-accordion:hover{ background:rgba(255,255,255,.03); }
+/* Header row: label (toggles) on the left, the status dropdown + icon controls
+   and the chevron grouped on the right — all reachable without expanding. */
+.mo-tools-head{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:9px 12px;
+}
+.mo-tools-accordion-lbl{
+  width:auto; flex:0 0 auto; padding:5px 4px; white-space:nowrap;
+}
+.mo-tools-accordion-lbl:hover{ background:transparent; text-decoration:underline; text-underline-offset:3px; }
+.mo-ohead.mo-ohead-head{
+  margin:0; flex:1 1 auto; min-width:0;
+  justify-content:flex-end; flex-wrap:nowrap;
+}
+.mo-ohead-head .orders-header-right.mo-menu-wrap{ flex-wrap:nowrap; }
+.mo-ohead-head .mo-status-filter{ order:0; margin-right:0; }
+.mo-tools-chev{
+  flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center;
+  width:34px; height:34px; border:none; border-radius:8px;
+  background:none; color:#9aa1ab; cursor:pointer; transition:background .15s ease;
+}
+.mo-tools-chev:hover{ background:#f3f4f6; }
+.mo-dark .mo-tools-chev{ color:#cbd0d8; }
+.mo-dark .mo-tools-chev:hover{ background:rgba(255,255,255,.06); }
+@media (max-width:560px){
+  .mo-ohead.mo-ohead-head{ flex:1 1 100%; justify-content:flex-start; flex-wrap:wrap; }
+}
 
 /* Orders header (Frame 74/75): title + clean control chips, status in green. */
 .mo-ohead{
@@ -50995,7 +51022,7 @@ img[data-loaded="true"] {
 }
 /* Stage positioning — hub → travelling → your door, and back for returns. */
 .rs-st-processing .rs-vehicle {
-  left: 30%;
+  left: 22%;
 }
 .rs-st-transit .rs-vehicle {
   left: 50%;
@@ -51188,41 +51215,67 @@ img[data-loaded="true"] {
   color: #9ca3af;
 }
 /* Packing stage — warehouse workers + a "getting packed" cloud bubble. */
-.rs-worker {
-  position: absolute;
-  bottom: 15%;
-  width: 34px;
-  z-index: 3;
-}
 .rs-person-svg {
   width: 100%;
   height: auto;
   filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.25));
 }
-.rs-worker-1 {
-  left: 40%;
-  animation: rsWalk 2.6s ease-in-out infinite;
+/* Packing stage — a worker shuttles from the hub to the truck and back, on a
+   loop: emerges from the hub, walks to the truck to load, walks back, and
+   disappears inside — repeating until the status changes. */
+.rs-loader {
+  position: absolute;
+  left: 7%;
+  bottom: 15%;
+  width: 30px;
+  z-index: 2;
+  animation: rsLoad 4s ease-in-out infinite;
 }
-.rs-worker-2 {
-  left: 15%;
-  transform: scale(0.88);
-  animation: rsWalk 3.1s ease-in-out infinite 0.5s;
-}
-@keyframes rsWalk {
+@keyframes rsLoad {
+  /* inside the hub (hidden) */
   0% {
-    transform: translateX(-10px);
+    transform: translateX(0) scale(0.5);
+    opacity: 0;
   }
-  50% {
-    transform: translateX(6px) translateY(-1px);
+  /* steps out of the hub */
+  10% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
   }
+  /* walks to the parked truck */
+  36% {
+    transform: translateX(62px) scale(1);
+    opacity: 1;
+  }
+  /* disappears into the truck to load */
+  44% {
+    transform: translateX(62px) scale(0.55);
+    opacity: 0;
+  }
+  54% {
+    transform: translateX(62px) scale(0.55);
+    opacity: 0;
+  }
+  /* comes back out of the truck */
+  62% {
+    transform: translateX(62px) scale(1);
+    opacity: 1;
+  }
+  /* walks back to the hub */
+  90% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  /* back inside the hub (hidden) */
   100% {
-    transform: translateX(-10px);
+    transform: translateX(0) scale(0.5);
+    opacity: 0;
   }
 }
 .rs-cloud-msg {
   position: absolute;
-  top: 40px;
-  left: 26%;
+  left: 30%;
+  bottom: 42%;
   transform: translateX(-50%);
   padding: 6px 12px;
   background: #fff;
@@ -51230,6 +51283,7 @@ img[data-loaded="true"] {
   font-size: 11px;
   font-weight: 800;
   color: #b45309;
+  white-space: nowrap;
   box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.4);
   z-index: 5;
   animation: rsBob2 2.4s ease-in-out infinite;
@@ -51238,9 +51292,10 @@ img[data-loaded="true"] {
   content: "";
   position: absolute;
   bottom: -6px;
-  left: 20px;
+  left: 50%;
   width: 12px;
   height: 12px;
+  margin-left: -6px;
   background: #fff;
   border-radius: 2px;
   transform: rotate(45deg);
@@ -51257,11 +51312,22 @@ img[data-loaded="true"] {
 /* Out-for-delivery — khaki postman walking the parcel to your door. */
 .rs-postman {
   position: absolute;
-  left: 80%;
+  left: 78%;
   bottom: 15%;
   width: 40px;
   z-index: 4;
-  animation: rsWalk 2.2s ease-in-out infinite;
+  animation: rsPostWalk 2.2s ease-in-out infinite;
+}
+@keyframes rsPostWalk {
+  0% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(6px) translateY(-1px);
+  }
+  100% {
+    transform: translateX(-8px);
+  }
 }
 .rs-origin,
 .rs-dest {
@@ -51270,21 +51336,72 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   font-size: 10px;
   font-weight: 800;
   color: #374151;
   z-index: 2;
 }
 .rs-origin {
-  left: 12px;
+  left: 10px;
+  max-width: 120px;
+  text-align: center;
 }
 .rs-dest {
-  right: 12px;
+  right: 10px;
+}
+/* Hub building — drawn larger than the vehicle so it reads as the origin. */
+.rs-hub-svg {
+  width: 72px;
+  height: auto;
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.28));
+}
+/* Destination home + the person waiting at the door. */
+.rs-dest-scene {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+.rs-home-svg {
+  width: 58px;
+  height: auto;
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.28));
+}
+.rs-wait {
+  width: 22px;
+  margin-left: -2px;
+}
+.rs-wait-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.25));
+}
+.rs-wait-arm {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: rsWave 1.1s ease-in-out infinite;
+}
+@keyframes rsWave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-26deg);
+  }
 }
 .rs-end-ic {
   font-size: 22px;
   filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.25));
+}
+.rs-origin b,
+.rs-dest b {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #374151;
+  box-shadow: 0 2px 6px -3px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
 }
 .rs-caption {
   position: absolute;
@@ -51317,11 +51434,24 @@ img[data-loaded="true"] {
     width: 92px;
     height: 54px;
   }
-  .rs-worker {
-    width: 27px;
+  .rs-loader {
+    width: 25px;
   }
   .rs-postman {
     width: 31px;
+  }
+  .rs-hub-svg {
+    width: 56px;
+  }
+  .rs-home-svg {
+    width: 46px;
+  }
+  .rs-wait {
+    width: 18px;
+  }
+  .rs-origin {
+    max-width: 92px;
+    font-size: 9px;
   }
   .rs-caption {
     font-size: 11.5px;
@@ -52499,7 +52629,7 @@ img[data-loaded="true"] {
   border-top: 1px dashed var(--hairline, #e5e7eb);
   font-size: 13px;
   line-height: 1.5;
-  color: var(--gray-500, #4b5563);
+  color: #1f2937;
 }
 .od-profile-addr svg {
   flex: 0 0 auto;
@@ -52597,7 +52727,8 @@ img[data-loaded="true"] {
   padding-top: 10px;
   border-top: 1px dashed var(--hairline, #e5e7eb);
   font-size: 13px;
-  color: var(--gray-500, #4b5563);
+  line-height: 1.5;
+  color: #1f2937;
 }
 .od-email-row > svg {
   flex: 0 0 auto;
@@ -52612,6 +52743,29 @@ img[data-loaded="true"] {
   font-weight: 500;
   color: var(--gray-500, #9ca3af);
   font-style: italic;
+}
+.od-email-add {
+  margin: 0;
+  margin-right: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #1f2937;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.od-email-add:hover {
+  color: #000;
+}
+.od-sheet-hint {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--dark-50, #6b7280);
+  line-height: 1.5;
 }
 .od-email-edit {
   margin-left: auto;

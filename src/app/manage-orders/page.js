@@ -16108,38 +16108,27 @@ export default function ManageOrdersPage() {
                 <div className="flex flex-col gap-12">
             {filteredOrders.length > 0 && (
               <div className="mo-tools-box">
-                <button
-                  type="button"
-                  className={`mo-tools-accordion${toolsOpen ? " open" : ""}`}
-                  onClick={() =>
-                    setToolsOpen((v) => {
-                      // Opening the tools accordion also expands the inner
-                      // Overview so everything is visible in one tap.
-                      if (!v) setOverviewOpen(true);
-                      return !v;
-                    })
-                  }
-                  aria-expanded={toolsOpen}
-                >
-                  <span>{toolsOpen ? "Hide tools & overview" : "Tools & overview"}</span>
-                  {toolsOpen ? (
-                    <ChevronUp size={16} />
-                  ) : (
-                    <ChevronDown size={16} />
-                  )}
-                </button>
-                <AnimatePresence initial={false}>
-                {toolsOpen && (
-                  <motion.div
-                    className="mo-tools-reveal"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
-                    style={{ overflow: "hidden" }}
+                <div className="mo-tools-head">
+                  <button
+                    type="button"
+                    className={`mo-tools-accordion mo-tools-accordion-lbl${toolsOpen ? " open" : ""}`}
+                    onClick={() =>
+                      setToolsOpen((v) => {
+                        // Opening the tools accordion also expands the inner
+                        // Overview so everything is visible in one tap.
+                        if (!v) setOverviewOpen(true);
+                        return !v;
+                      })
+                    }
+                    aria-expanded={toolsOpen}
                   >
-                  <div className="mo-tools-reveal-inner">
-                  <div className="orders-list-header mo-ohead">
+                    <span>
+                      {toolsOpen ? "Hide tools & overview" : "Tools & overview"}
+                    </span>
+                  </button>
+                  {/* Controls live in the header so they're reachable without
+                      expanding the accordion. */}
+                  <div className="orders-list-header mo-ohead mo-ohead-head">
                     <div className="orders-header-right mo-menu-wrap">
                       {/* Unconfirmed count moved to the Overview card ("Review orders"). */}
                       {dismissedIds.length > 0 && (
@@ -16306,10 +16295,42 @@ export default function ManageOrdersPage() {
                       </AnimatePresence>
                     </div>
                   </div>
-
-                  {/* Overview — collapsible stats + quick links (Show all / Hide all) */}
-                  <div className="mo-tools-sep" />
-                  <div className={`mo-ov${overviewOpen ? " open" : ""}`}>
+                  <button
+                    type="button"
+                    className="mo-tools-chev"
+                    onClick={() =>
+                      setToolsOpen((v) => {
+                        if (!v) setOverviewOpen(true);
+                        return !v;
+                      })
+                    }
+                    aria-expanded={toolsOpen}
+                    aria-label={
+                      toolsOpen
+                        ? "Hide tools & overview"
+                        : "Show tools & overview"
+                    }
+                  >
+                    {toolsOpen ? (
+                      <ChevronUp size={18} />
+                    ) : (
+                      <ChevronDown size={18} />
+                    )}
+                  </button>
+                </div>
+                <AnimatePresence initial={false}>
+                  {toolsOpen && (
+                    <motion.div
+                      className="mo-tools-reveal"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      <div className="mo-tools-reveal-inner">
+                        {/* Overview — collapsible stats + quick links (Show all / Hide all) */}
+                        <div className={`mo-ov${overviewOpen ? " open" : ""}`}>
                     {!overviewOpen ? (
                       <div className="mo-ov-collapsed">
                         <span className="mo-ov-k">Overview</span>

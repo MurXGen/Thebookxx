@@ -381,6 +381,87 @@ function PostmanSVG() {
   );
 }
 
+// The TheBookX parcel hub — a professional multi-storey building (flat roof,
+// glass façade, a branded sign band and a glass entrance). Drawn larger than
+// the vehicle so it clearly reads as the origin.
+function HubSVG() {
+  // Glass window grid on the main tower.
+  const winCols = [16, 30, 44];
+  const winRows = [42, 58, 74];
+  return (
+    <svg className="rs-hub-svg" viewBox="0 0 94 102" aria-hidden="true">
+      {/* lower side wing */}
+      <rect x="58" y="44" width="30" height="54" fill="#e76f00" />
+      <rect x="56" y="40" width="34" height="6" rx="1.5" fill="#a9510a" />
+      <rect x="63" y="50" width="9" height="10" rx="1" fill="#bfe3ff" />
+      <rect x="74" y="50" width="9" height="10" rx="1" fill="#bfe3ff" />
+      <rect x="63" y="64" width="9" height="10" rx="1" fill="#bfe3ff" />
+      <rect x="74" y="64" width="9" height="10" rx="1" fill="#bfe3ff" />
+      {/* main tower */}
+      <rect x="10" y="22" width="52" height="76" fill="#fb8500" />
+      {/* flat-roof parapet */}
+      <rect x="7" y="16" width="58" height="7" rx="1.5" fill="#c25e00" />
+      <rect x="28" y="9" width="16" height="7" fill="#c25e00" />
+      {/* branded sign band */}
+      <rect x="14" y="26" width="44" height="12" rx="2" fill="#ffffff" />
+      <circle cx="21" cy="32" r="3" fill="#fb8500" />
+      <rect x="26" y="29" width="28" height="6" rx="1.5" fill="#ffd9a8" />
+      {/* glass window grid */}
+      {winRows.map((wy) =>
+        winCols.map((wx) => (
+          <rect
+            key={`${wx}-${wy}`}
+            x={wx}
+            y={wy}
+            width="10"
+            height="11"
+            rx="1"
+            fill="#bfe3ff"
+            stroke="#e76f00"
+            strokeWidth="0.6"
+          />
+        )),
+      )}
+      {/* glass entrance */}
+      <rect x="28" y="84" width="18" height="14" fill="#2f3a46" />
+      <path d="M37 84v14" stroke="#4b5a68" strokeWidth="1" />
+    </svg>
+  );
+}
+
+// The customer's home at the destination end.
+function HomeSVG() {
+  return (
+    <svg className="rs-home-svg" viewBox="0 0 70 80" aria-hidden="true">
+      <path d="M6 40 L35 14 L64 40 Z" fill="#c25e00" />
+      <rect x="12" y="40" width="46" height="36" fill="#f4a261" />
+      <rect x="29" y="54" width="14" height="22" rx="1.5" fill="#8f470b" />
+      <circle cx="40" cy="65" r="1.3" fill="#ffd9a8" />
+      <rect x="16" y="46" width="11" height="10" rx="1.5" fill="#cfe9ff" />
+      <rect x="43" y="46" width="11" height="10" rx="1.5" fill="#cfe9ff" />
+    </svg>
+  );
+}
+
+// A small figure at the door waiting to receive the parcel (gentle wave).
+function WaitingPersonSVG() {
+  return (
+    <svg className="rs-wait-svg" viewBox="0 0 30 54" aria-hidden="true">
+      <rect x="11" y="36" width="3.4" height="14" rx="1.6" fill="#374151" />
+      <rect x="15.6" y="36" width="3.4" height="14" rx="1.6" fill="#374151" />
+      <rect x="9" y="48" width="7" height="4" rx="1.6" fill="#1f2937" />
+      <rect x="15" y="48" width="7" height="4" rx="1.6" fill="#1f2937" />
+      <rect x="9" y="19" width="12" height="18" rx="4" fill="#2f9e52" />
+      {/* waving arm */}
+      <g className="rs-wait-arm">
+        <rect x="19" y="14" width="3.6" height="11" rx="1.8" fill="#2f9e52" />
+      </g>
+      <rect x="7.6" y="22" width="3.6" height="10" rx="1.8" fill="#2f9e52" />
+      <circle cx="15" cy="12" r="6.4" fill="#f1c27d" />
+    </svg>
+  );
+}
+
 // The parcel's cargo — a stack of cardboard boxes; one is open and holds the
 // actual book covers for this order, so the reader sees their own books riding
 // along. Rendered as an overlay that sits inside the vehicle's cargo bay.
@@ -425,6 +506,7 @@ function RouteScene({
   isTrain = false,
   stage = "transit",
   bookImgs = [],
+  bookCount = 0,
   progressPct = 0,
   etaText = "",
 }) {
@@ -486,8 +568,8 @@ function RouteScene({
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.35 }}
           >
-            <span className="rs-end-ic">🏬</span>
-            <b>Our hub</b>
+            <HubSVG />
+            <b>TheBookX Parcel Hub</b>
           </motion.div>
         )}
       </AnimatePresence>
@@ -500,7 +582,12 @@ function RouteScene({
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.35 }}
           >
-            <span className="rs-end-ic">🏠</span>
+            <div className="rs-dest-scene">
+              <HomeSVG />
+              <div className="rs-wait">
+                <WaitingPersonSVG />
+              </div>
+            </div>
             <b>You</b>
           </motion.div>
         )}
@@ -523,7 +610,9 @@ function RouteScene({
         )}
       </AnimatePresence>
 
-      {/* Processing — workers walk boxes out of the hub, with a "packing" cloud. */}
+      {/* Processing — a worker shuttles boxes from the hub to the truck on a
+          loop (carries out → loads → walks back → repeats), with a "packing"
+          cloud anchored above the truck. */}
       <AnimatePresence>
         {stage === "processing" && (
           <>
@@ -535,12 +624,9 @@ function RouteScene({
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.4 }}
             >
-              <span>Getting packed…</span>
+              <span>Packing your books…</span>
             </motion.div>
-            <div className="rs-worker rs-worker-1" key="w1">
-              <WorkerSVG />
-            </div>
-            <div className="rs-worker rs-worker-2" key="w2">
+            <div className="rs-loader" key="loader">
               <WorkerSVG />
             </div>
           </>
@@ -569,18 +655,22 @@ function RouteScene({
         transition={{ duration: 0.5, ease }}
       >
         {isTrain ? <TrainSVG /> : <TruckSVG />}
-        <RouteCargo covers={covers} isTrain={isTrain} />
+        <RouteCargo covers={covers} count={bookCount} isTrain={isTrain} />
       </motion.div>
 
-      <motion.div
-        className={`rs-caption${stage === "returned" ? " rs-cap-ret" : ""}${stage === "delivered" ? " rs-cap-done" : ""}`}
-        key={caption}
-        initial={{ opacity: 0, y: -6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        {caption}
-      </motion.div>
+      {/* The top caption is hidden while packing — the cloud over the truck
+          already narrates that stage, so we don't show two messages. */}
+      {stage !== "processing" && (
+        <motion.div
+          className={`rs-caption${stage === "returned" ? " rs-cap-ret" : ""}${stage === "delivered" ? " rs-cap-done" : ""}`}
+          key={caption}
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          {caption}
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -720,6 +810,10 @@ export default function OrderDetailPage() {
   const [showNoteSheet, setShowNoteSheet] = useState(false);
   const [showRateSheet, setShowRateSheet] = useState(false);
   const [showReferSheet, setShowReferSheet] = useState(false);
+  // Add-email slide-up sheet (shown when the order has no email on file).
+  const [showEmailSheet, setShowEmailSheet] = useState(false);
+  const [emailDraft, setEmailDraft] = useState("");
+  const [emailSaving, setEmailSaving] = useState(false);
 
   const mapRef = useRef(null);
   const mapObj = useRef(null);
@@ -922,10 +1016,10 @@ export default function OrderDetailPage() {
       // Faint grey "untravelled" base for the whole route, then a solid BLACK
       // "travelled" line that grows as the vehicle animates to the current point.
       L.polyline(path, {
-        color: "#cbd5e1",
-        weight: 4,
-        opacity: 0.45,
-        dashArray: "1 10",
+        color: "#94a3b8",
+        weight: 4.5,
+        opacity: 0.7,
+        dashArray: "7 9",
         lineCap: "round",
       }).addTo(map);
       const travelledLine = L.polyline([path[0]], {
@@ -1701,6 +1795,29 @@ export default function OrderDetailPage() {
   // ── Email (optional) — stored in the order's "Email" column ──
   const orderEmail = String(order["Email"] || "").trim();
 
+  // Add an email to an order that doesn't have one, so confirmations and
+  // updates can reach the customer.
+  const saveEmail = async () => {
+    const em = String(emailDraft || "").trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+      showToast("Please enter a valid email address.", "error");
+      return;
+    }
+    setEmailSaving(true);
+    try {
+      await updateOrderRow(orderId, { Email: em });
+      setOrder((o) => ({ ...o, Email: em }));
+      setShowEmailSheet(false);
+      setEmailDraft("");
+      showToast("Email added to your order.", "success");
+    } catch (e) {
+      console.error("Email save failed", e);
+      showToast("Couldn't save your email. Please try again.", "error");
+    } finally {
+      setEmailSaving(false);
+    }
+  };
+
   const orderNote = String(order["Order Comment"] || "").trim();
   const saveNote = async () => {
     const t = noteDraft.trim();
@@ -2066,9 +2183,16 @@ export default function OrderDetailPage() {
             {orderEmail ? (
               <span className="od-email-val">{orderEmail}</span>
             ) : (
-              <span className="od-email-val od-email-missing">
-                Email: unavailable
-              </span>
+              <button
+                type="button"
+                className="od-email-add"
+                onClick={() => {
+                  setEmailDraft("");
+                  setShowEmailSheet(true);
+                }}
+              >
+                Add an email
+              </button>
             )}
           </div>
         </section>
@@ -2179,14 +2303,14 @@ export default function OrderDetailPage() {
                 className={`od-map-tab${mapTab === "map" ? " on" : ""}`}
                 onClick={() => setMapTab("map")}
               >
-                <MapPin size={14} /> Map progress
+                <MapPin size={14} /> Live location
               </button>
               <button
                 type="button"
                 className={`od-map-tab${mapTab === "route" ? " on" : ""}`}
                 onClick={() => setMapTab("route")}
               >
-                <Navigation size={14} /> Route progress
+                <Navigation size={14} /> Delivery journey
               </button>
             </div>
             <div className="od-map-stage">
@@ -3246,6 +3370,67 @@ export default function OrderDetailPage() {
                   disabled={noteSaving}
                 >
                   {noteSaving ? "Saving…" : "Save note"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Add-email slide-up sheet — same drawer UI as the note/number sheets. */}
+      <AnimatePresence>
+        {showEmailSheet && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !emailSaving && setShowEmailSheet(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal od-sheet"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <Mail size={16} /> Add your email
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => !emailSaving && setShowEmailSheet(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+              <div className="od-sheet-body">
+                <p className="od-sheet-hint">
+                  We&apos;ll send your order confirmation, invoice and delivery
+                  updates here.
+                </p>
+                <input
+                  type="email"
+                  inputMode="email"
+                  className="od-note-input"
+                  placeholder="you@example.com"
+                  value={emailDraft}
+                  onChange={(e) => setEmailDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !emailSaving) saveEmail();
+                  }}
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  className="od-track-btn"
+                  onClick={saveEmail}
+                  disabled={emailSaving}
+                >
+                  {emailSaving ? "Saving…" : "Save email"}
                 </button>
               </div>
             </motion.div>

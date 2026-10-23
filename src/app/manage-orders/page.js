@@ -1075,10 +1075,11 @@ const SECTION_TABS = [
   { key: "track", label: "Track orders", short: "Track", Icon: Radar },
 ];
 
-// Ambient custom confetti — small coloured paper bits drifting down softly
-// behind the analytics header. Pure/deterministic (no Math.random in render),
-// loops forever, and is purely decorative (pointer-events: none).
-function ConfettiFall({ count = 42 }) {
+// Custom confetti — small coloured paper bits. `once` makes a single full-
+// screen celebratory shower (used by the Celebrate button); otherwise it loops.
+// Pure/deterministic (no Math.random in render) and GPU-animated, so repeated
+// bursts stay smooth. `seed` varies the layout between overlapping bursts.
+function ConfettiFall({ count = 42, once = false, seed = 0 }) {
   const COLORS = [
     "#fb8500",
     "#ffb703",
@@ -1090,15 +1091,15 @@ function ConfettiFall({ count = 42 }) {
     "#14b8a6",
   ];
   const rand = (n, mul) => {
-    const x = Math.sin(n * mul) * 10000;
+    const x = Math.sin((n + seed * 2.11) * mul) * 10000;
     return x - Math.floor(x);
   };
   const pieces = Array.from({ length: count }).map((_, i) => ({
     i,
     left: rand(i, 12.9898) * 100,
-    delay: rand(i, 7.233) * 6, // stagger starts across 6s
-    dur: 4 + rand(i, 3.111) * 4, // 4–8s fall
-    drift: (rand(i, 19.19) * 2 - 1) * 60,
+    delay: once ? rand(i, 7.233) * 0.7 : rand(i, 7.233) * 6,
+    dur: once ? 1.8 + rand(i, 3.111) * 1.6 : 4 + rand(i, 3.111) * 4,
+    drift: (rand(i, 19.19) * 2 - 1) * (once ? 90 : 60),
     rot: (rand(i, 4.57) * 2 - 1) * 540,
     w: 5 + rand(i, 9.73) * 5,
     h: 9 + rand(i, 5.3) * 8,
@@ -1106,7 +1107,10 @@ function ConfettiFall({ count = 42 }) {
     round: rand(i, 1.3) > 0.7,
   }));
   return (
-    <div className="confetti-fall" aria-hidden="true">
+    <div
+      className={`confetti-fall${once ? " once" : ""}`}
+      aria-hidden="true"
+    >
       {pieces.map((p) => (
         <span
           key={p.i}
@@ -4011,6 +4015,33 @@ export default function ManageOrdersPage() {
   const [compactCards, setCompactCards] = useState(false);
   // Tap-to-enlarge book cover (lightbox) — { src, name }.
   const [viewerImg, setViewerImg] = useState(null);
+  // "Orders by date" accordion in the Overview — collapsed by default, state
+  // remembered across sessions via localStorage.
+  const [byDateOpen, setByDateOpen] = useState(false);
+  useEffect(() => {
+    try {
+      setByDateOpen(localStorage.getItem("mo_ov_bydate_open") === "1");
+    } catch {}
+  }, []);
+  const toggleByDate = () =>
+    setByDateOpen((v) => {
+      const nv = !v;
+      try {
+        localStorage.setItem("mo_ov_bydate_open", nv ? "1" : "0");
+      } catch {}
+      return nv;
+    });
+  // Celebrate button → one-shot confetti bursts. Each burst self-removes after
+  // its animation; we cap concurrency so rapid taps never pile up / lag.
+  const [confBursts, setConfBursts] = useState([]);
+  const confIdRef = useRef(0);
+  const fireConfetti = () => {
+    const id = ++confIdRef.current;
+    setConfBursts((b) => [...b.slice(-3), id]);
+    setTimeout(() => {
+      setConfBursts((b) => b.filter((x) => x !== id));
+    }, 3400);
+  };
   // Overview card: collapsed shows counts + layout; "Show all" expands the list.
   const [overviewOpen, setOverviewOpen] = useState(false);
   // Tools accordion: collapsed shows only the search bar; expanding reveals the
@@ -8454,7 +8485,27 @@ export default function ManageOrdersPage() {
         ? ` Please keep ₹${collect.toLocaleString("en-IN")} ready for the delivery agent (cash or UPI).`
         : "";
 
+    const amtDue =
+      parseFloat(
+        String(order?.["Total Amount"] || order?.revenue || "").replace(
+          /[^\d.]/g,
+          "",
+        ),
+      ) || 0;
     return [
+      {
+        key: "confirm",
+        label: "✅ Confirm order",
+        status: "Action needed",
+        heading: "Your books are reserved — confirm to ship 📚",
+        subheading:
+          `Great news — we've set aside your copies${amtDue ? ` (₹${amtDue.toLocaleString("en-IN")})` : ""} and they're packed and ready to go. ` +
+          `There's just one step left: your order is still unconfirmed, so we haven't dispatched it yet. ` +
+          (isCOD
+            ? "Simply confirm and we'll ship it on Cash on Delivery — pay only when it reaches your door. Prefer to pay now instead? You can switch to online payment from your order page. "
+            : "Tap below to complete your quick payment and we'll dispatch today. Prefer Cash on Delivery? You can switch to COD from your order page. ") +
+          "Popular titles sell out fast and we can only hold reserved copies for a little while before they go back on the shelf — confirm now so you don't miss out on your reads! 🧡",
+      },
       {
         key: "packed",
         label: "📦 Packed",
@@ -12021,7 +12072,6 @@ export default function ManageOrdersPage() {
             onMouseLeave={onChartLeave}
             onPointerDown={onChartTap}
           >
-            <ConfettiFall />
             {chartTip &&
               typeof document !== "undefined" &&
               createPortal(
@@ -16402,64 +16452,100 @@ export default function ManageOrdersPage() {
                               </div>
                             </div>
 
-                            {orderStats.byDate.length > 0 && (
-                              <div className="mo-ov2-block">
-                                <div className="mo-ov2-block-head">
-                                  <Calendar size={14} />
-                                  <span>
-                                    Orders by date
-                                    <b> · {orderStats.byDate.length} day
-                                      {orderStats.byDate.length === 1 ? "" : "s"}</b>
-                                  </span>
-                                </div>
-                                <div className="mo-ov2-days">
-                                  {orderStats.byDate.map((day) => {
-                                    const dp = (n) =>
-                                      Math.round(
-                                        (n / Math.max(1, day.count)) * 100,
-                                      );
-                                    return (
-                                      <div
-                                        className="mo-ov2-day"
-                                        key={day.dateT}
-                                      >
-                                        <div className="mo-ov2-day-top">
-                                          <span className="mo-ov2-day-date">
-                                            {fmtD(day.date, true)}
-                                          </span>
-                                          <b>
-                                            {day.count} order
-                                            {day.count === 1 ? "" : "s"}
-                                          </b>
-                                        </div>
-                                        <div className="mo-ov2-seg sm">
-                                          <i
-                                            className="seg-cod"
-                                            style={{ width: `${dp(day.cod)}%` }}
-                                          />
-                                          <i
-                                            className="seg-upi"
-                                            style={{
-                                              width: `${dp(day.online)}%`,
-                                            }}
-                                          />
-                                        </div>
-                                        <div className="mo-ov2-day-legend">
-                                          <span>
-                                            <i className="dot-cod" /> COD{" "}
-                                            {day.cod}
-                                          </span>
-                                          <span>
-                                            <i className="dot-upi" /> Online{" "}
-                                            {day.online}
-                                          </span>
-                                        </div>
+                            {orderStats.byDate.length > 0 &&
+                              (() => {
+                                const maxDay = Math.max(
+                                  1,
+                                  ...orderStats.byDate.map((d) => d.count),
+                                );
+                                return (
+                                  <div className="mo-ov2-block">
+                                    <button
+                                      type="button"
+                                      className={`mo-ov2-acc${byDateOpen ? " open" : ""}`}
+                                      onClick={toggleByDate}
+                                      aria-expanded={byDateOpen}
+                                    >
+                                      <span className="mo-ov2-acc-l">
+                                        <Calendar size={14} />
+                                        Orders by date
+                                        <b>
+                                          {" "}
+                                          · {orderStats.byDate.length} day
+                                          {orderStats.byDate.length === 1
+                                            ? ""
+                                            : "s"}
+                                        </b>
+                                      </span>
+                                      <ChevronDown
+                                        size={16}
+                                        className="mo-ov2-acc-chev"
+                                      />
+                                    </button>
+                                    {byDateOpen && (
+                                      <div className="mo-ov2-days-scroll">
+                                        {orderStats.byDate
+                                          .slice()
+                                          .reverse()
+                                          .map((day) => {
+                                            const fillH = Math.round(
+                                              (day.count / maxDay) * 100,
+                                            );
+                                            const codH =
+                                              day.count > 0
+                                                ? (day.cod / day.count) * 100
+                                                : 0;
+                                            const onH =
+                                              day.count > 0
+                                                ? (day.online / day.count) * 100
+                                                : 0;
+                                            return (
+                                              <div
+                                                className="mo-ov2-daycol"
+                                                key={day.dateT}
+                                                title={`${day.count} orders · COD ${day.cod} · Online ${day.online}`}
+                                              >
+                                                <span className="mo-ov2-daycol-n">
+                                                  {day.count}
+                                                </span>
+                                                <div className="mo-ov2-tube">
+                                                  <div
+                                                    className="mo-ov2-tube-fill"
+                                                    style={{
+                                                      height: `${Math.max(6, fillH)}%`,
+                                                    }}
+                                                  >
+                                                    <i
+                                                      className="t-online"
+                                                      style={{
+                                                        height: `${onH}%`,
+                                                      }}
+                                                    />
+                                                    <i
+                                                      className="t-cod"
+                                                      style={{
+                                                        height: `${codH}%`,
+                                                      }}
+                                                    />
+                                                  </div>
+                                                </div>
+                                                <span className="mo-ov2-daycol-date">
+                                                  {fmtD(day.date)}
+                                                </span>
+                                                <span className="mo-ov2-daycol-split">
+                                                  <i className="dot-cod" />
+                                                  {day.cod}
+                                                  <i className="dot-upi" />
+                                                  {day.online}
+                                                </span>
+                                              </div>
+                                            );
+                                          })}
                                       </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            )}
+                                    )}
+                                  </div>
+                                );
+                              })()}
 
                             <button
                               type="button"
@@ -20467,6 +20553,28 @@ export default function ManageOrdersPage() {
                             <FaWhatsapp size={15} /> WhatsApp
                           </button>
 
+                          <button
+                            type="button"
+                            className="mo-unconf-email"
+                            disabled={
+                              !String(o["Email"] || "").trim() ||
+                              emailingOrder !== ""
+                            }
+                            title={
+                              String(o["Email"] || "").trim()
+                                ? `Email a confirm nudge to ${o["Email"]}`
+                                : "No email on this order"
+                            }
+                            onClick={() => {
+                              const tpl = emailStatusTemplates(o).find(
+                                (t) => t.key === "confirm",
+                              );
+                              if (tpl) sendStatusEmailTemplate(o, tpl);
+                            }}
+                          >
+                            <Mail size={15} /> Email
+                          </button>
+
                           <div className="mo-unconf-status">
                             <select
                               value={curStatus}
@@ -21836,6 +21944,28 @@ export default function ManageOrdersPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Celebrate button (mobile) — fires a smooth one-shot confetti shower. */}
+      {activeTab === "analytics" && (
+        <button
+          type="button"
+          className="mo-celebrate-btn"
+          onClick={fireConfetti}
+          aria-label="Celebrate"
+        >
+          <Gift size={16} /> Celebrate
+        </button>
+      )}
+      {typeof document !== "undefined" &&
+        confBursts.length > 0 &&
+        createPortal(
+          <>
+            {confBursts.map((id) => (
+              <ConfettiFall key={id} once seed={id} count={34} />
+            ))}
+          </>,
+          document.body,
+        )}
 
       {/* Refund missing books → credit to wallet (slide-up bill modal). */}
       <AnimatePresence>

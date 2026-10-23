@@ -4,6 +4,187 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "prix-pascal-ai-literary-prize-2026-human-written-books-to-read-india": {
+      "id": "blog-087",
+      "title": "Prix Pascal 2026: The First Literary Prize for AI-Co-Written Books and 16 Human-Voiced Books to Read in India",
+      "slug": "prix-pascal-ai-literary-prize-2026-human-written-books-to-read-india",
+      "author": "TheBookX Editorial",
+      "authorSlug": "murthy-thevar",
+      "publishDate": "2026-10-23",
+      "lastModified": "2026-10-23",
+      "excerpt": "A new French prize for AI-co-written fiction launched on 21 October 2026. Here is what it means for readers, and 16 books with unmistakably human voices.",
+      "content": [
+          {
+              "type": "paragraph",
+              "content": "On 21 October 2026, three French entrepreneurs announced the Prix Pascal, which its organisers describe as the first literary prize for books written with AI. Entries are unpublished French-language fiction co-written with an AI tool, and the prize is due to be awarded in mid-December. The news landed in the middle of an already heated argument about authorship, after a debut novel in Canada's French-language publishing world was found to have used AI. Whatever you think of the idea, it raises a question every reader now has to answer: what do we actually want from a book?"
+          },
+          {
+              "type": "callout",
+              "style": "info",
+              "title": "What was announced",
+              "content": "Name: Prix Pascal (Prix Pascal de Littérature IA). Founders: Philippe Rodriguez, Albin Serviant and Gilles Mentré. Call for entries: opened 21 October 2026. Eligibility: unpublished French-language fiction, open to anyone writing in French, with no publisher required. Rules: authors must declare their AI use, and all major language models are allowed. Reported deadline: 30 November. Winner: mid-December 2026. No jury or prize money had been announced at launch; Euronews reports that publication assistance is offered instead."
+          },
+          {
+              "type": "heading",
+              "level": 2,
+              "content": "Why the Prix Pascal Is in the News"
+          },
+          {
+              "type": "paragraph",
+              "content": "According to reports from AFP and Euronews, the prize arrives after a controversy over the debut novel <em>C'était ça ou mourir</em> by Thélyson Orélien, which won a FNAC prize in early September and was later removed from the Goncourt shortlist after accusations that AI had been used. His Canadian publisher, Boréal, said this week that it had confirmed AI was used in the writing process, while the author denies the allegations and says he used tools the way a writer might use them for translation. Other literary prizes are reportedly revising their rules to exclude AI-generated submissions, and initiatives to label human-written books are gaining ground."
+          },
+          {
+              "type": "paragraph",
+              "content": "The Prix Pascal's founders take the opposite approach. Instead of trying to detect AI with unreliable tools, they ask authors to declare it, and they say their prize is not a technology competition. Critics point out that the timing is awkward, since many writers are asking for regulation and safeguards. French law neither regulates nor prohibits using AI to write literature, so the debate is being settled by prizes, publishers and readers rather than by courts."
+          },
+          {
+              "type": "heading",
+              "level": 2,
+              "content": "The Honest Middle: AI Use Is a Spectrum"
+          },
+          {
+              "type": "paragraph",
+              "content": "The loudest takes treat this as a binary: a book is either human or machine. The reporting suggests it is messier. Is spell-check AI? Is asking a chatbot to explain a historical period for research the same as asking it to draft chapter three? Nobody has a settled answer yet, and the Prix Pascal controversy is useful precisely because it forces the question into the open. As a reader, you do not need to resolve it. You only need to decide what you personally value, and then read accordingly."
+          },
+          {
+              "type": "list",
+              "style": "unordered",
+              "items": [
+                  "<strong>Disclosure matters.</strong> Most readers are far more comfortable with AI assistance that is stated up front than with assistance that is hidden and later discovered.",
+                  "<strong>Voice is hard to fake over 300 pages.</strong> Sustained specificity, odd detail, a point of view that costs the author something, these are what long-form books are for.",
+                  "<strong>Detectors are not proof.</strong> Statistical tools produce false positives, especially on translated or non-native English prose, so a score alone should never be used to accuse a writer.",
+                  "<strong>Track record is a signal.</strong> A writer with years of work, interviews and earlier books has a visible history you can check. That is not a guarantee, but it helps."
+              ]
+          },
+          {
+              "type": "heading",
+              "level": 2,
+              "content": "Novels That Saw This Coming"
+          },
+          {
+              "type": "paragraph",
+              "content": "Fiction has been thinking about artificial minds for decades, and the best of it is more thoughtful than the headlines. <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> by Kazuo Ishiguro is narrated by an Artificial Friend watching the humans around her, and it quietly asks what we mean by love and attention. Ishiguro's earlier novel <a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a> approaches the question of what makes a life count from a different angle, and it stays with you long after the last page."
+          },
+          {
+              "type": "paragraph",
+              "content": "For the older warnings, <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> by George Orwell and <a href=\"/books/brave-new-world\" style=\"color:#fb8500;font-weight:600\">Brave New World</a> by Aldous Huxley remain the standard pair for thinking about technology, control and comfort. If you prefer your fiction gentler and more reflective, <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig and <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> by Haruki Murakami reward the kind of slow, personal attention that is hard to automate."
+          },
+          {
+              "type": "paragraph",
+              "content": "And if you want a reminder of what a distinct human voice sounds like on the page, <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy, the 1997 Booker Prize winner, is a book whose sentences could only have come from one writer."
+          },
+          {
+              "type": "heading",
+              "level": 2,
+              "content": "Non-Fiction for Thinking Clearly About Technology and Creativity"
+          },
+          {
+              "type": "paragraph",
+              "content": "If the news makes you want to understand the bigger picture, <a href=\"/books/the-second-machine-age\" style=\"color:#fb8500;font-weight:600\">The Second Machine Age</a> by Erik Brynjolfsson and Andrew McAfee looks at how digital technologies reshape work and the economy, and <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari zooms out to ask what makes humans distinctive in the first place. <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman is a good companion for anyone who wants to notice when a fluent, confident answer is not the same as a correct one."
+          },
+          {
+              "type": "paragraph",
+              "content": "For writers and creators working out how to use new tools without losing themselves, <a href=\"/books/steal-like-an-artist-10-things-nobody-told-you-about-being-creative\" style=\"color:#fb8500;font-weight:600\">Steal Like an Artist</a> and <a href=\"/books/show-your-work\" style=\"color:#fb8500;font-weight:600\">Show Your Work</a> by Austin Kleon are short, practical and encouraging about influence, process and sharing what you make. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport makes the case for protecting the focused attention that original thinking needs, and <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is still the simplest guide to building a daily writing or reading routine that sticks."
+          },
+          {
+              "type": "paragraph",
+              "content": "For a reader who wants meaning rather than output, <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl is a reminder of why human experience, not fluency, is what gives writing its weight."
+          },
+          {
+              "type": "heading",
+              "level": 2,
+              "content": "A Book About Clearing the Noise"
+          },
+          {
+              "type": "paragraph",
+              "content": "When so much text is cheap and plentiful, the scarce skill is knowing what you think. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to thinking, speaking and deciding clearly in a world of constant information, built around exercises you can use immediately. It sits well alongside this week's debate, because it is about the one thing no tool can do for you: deciding what you actually mean."
+          },
+          {
+              "type": "blockquote",
+              "content": "The question is not whether a machine can write a sentence. It is whether anyone had something they needed to say."
+          },
+          {
+              "type": "heading",
+              "level": 2,
+              "content": "How to Choose What to Read in an Age of Cheap Text"
+          },
+          {
+              "type": "list",
+              "style": "ordered",
+              "items": [
+                  "<strong>Start with the backlist.</strong> Books that have survived years of readers have already been tested in a way new releases have not.",
+                  "<strong>Read the acknowledgements and the author note.</strong> Real books usually carry the fingerprints of real editors, friends and arguments.",
+                  "<strong>Sample before you commit.</strong> Read a few pages aloud. Look for specific detail, surprise, and a distinctive rhythm.",
+                  "<strong>Value disclosure.</strong> If an author says how they used AI, that honesty is itself useful information.",
+                  "<strong>Buy what you will actually finish.</strong> The best defence against forgettable books is a short list of ones you care about."
+              ]
+          },
+          {
+              "type": "callout",
+              "style": "success",
+              "title": "Build a human-voiced shelf for less",
+              "content": "On TheBookX, books start from ₹1, delivery is free, and Cash on Delivery is available across India. Pick two or three titles from this list, from a Booker winner to a short practical guide, and read them side by side."
+          },
+          {
+              "type": "paragraph",
+              "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+          },
+          {
+              "type": "heading",
+              "level": 2,
+              "content": "The Bottom Line"
+          },
+          {
+              "type": "paragraph",
+              "content": "The Prix Pascal may turn out to be a provocation, a useful experiment, or both. What it has already done is make an invisible question visible: when you pick up a book, what are you hoping to find? For most readers the answer is a mind they can trust, a voice with something at stake, and a reason to keep turning pages. Those qualities are still easy to find if you know where to look, and a shelf of well-chosen books is the simplest way to keep them close."
+          }
+      ],
+      "coverImage": "/blogs/prix-pascal-ai-literary-prize-2026-human-written-books-to-read-india.jpeg",
+      "images": [
+          {
+              "url": "/blogs/prix-pascal-ai-literary-prize-2026-human-written-books-to-read-india.jpeg",
+              "alt": "A young woman reading a paperback novel on a sunlit sofa beside a cup of chai and a small stack of books",
+              "caption": "As AI-assisted writing enters the prize circuit, a well-chosen shelf of books with clear human voices is the simplest way to keep reading what you value",
+              "category": "Book News"
+          }
+      ],
+      "keywords": [
+          "prix pascal 2026",
+          "ai literary prize",
+          "ai written books prize",
+          "ai in publishing 2026",
+          "human written books to read",
+          "books about artificial intelligence",
+          "klara and the sun",
+          "backlist books india",
+          "buy books online india",
+          "TheBookX"
+      ],
+      "categories": [
+          "Book News",
+          "Reading Culture",
+          "Reading Lists"
+      ],
+      "faqs": [
+          {
+              "question": "What is the Prix Pascal?",
+              "answer": "The Prix Pascal (Prix Pascal de Littérature IA) is a new French-language literary prize for unpublished fiction co-written with AI, launched on 21 October 2026 by Philippe Rodriguez, Albin Serviant and Gilles Mentré. Authors must declare their AI use, and the winner is due to be announced in mid-December 2026."
+          },
+          {
+              "question": "Who can enter the Prix Pascal?",
+              "answer": "According to reports, it is open to anyone writing in French anywhere in the world, with no nationality or residence requirement and no need for a publisher. Entrants submit a manuscript along with details of the AI assistance used. A submission deadline of 30 November has been reported."
+          },
+          {
+              "question": "Why is the prize controversial?",
+              "answer": "It was announced during a heated debate over AI in publishing, after a debut novel that won a FNAC prize was accused of using AI and removed from the Goncourt shortlist. Critics say creators are asking for regulation and safeguards, while the founders say disclosure is a better approach than unreliable AI-detection tools."
+          },
+          {
+              "question": "Which books should I read to think about AI and creativity?",
+              "answer": "Good starting points are Klara and the Sun and Never Let Me Go by Kazuo Ishiguro, 1984 and Brave New World for older warnings, The Second Machine Age for the economics, and Steal Like an Artist and Show Your Work by Austin Kleon for creators. You can find all of them on TheBookX from ₹1 with free delivery and Cash on Delivery across India."
+          }
+      ]
+  },
+
   "sharad-purnima-2026-moonlit-night-books-to-read-india": {
     "id": "blog-086",
     "title": "Sharad Purnima 2026: 25 October Moonlit Night and 17 Books to Read in India",

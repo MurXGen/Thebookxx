@@ -6938,12 +6938,12 @@ export const books = [
   },
   {
     id: "bk-711",
-    name: "Dog Man: Complete Hardcover Set (Books 1–15)",
+    name: "Dog Man: Complete Hardcover Set (Books 1–13)",
     image: bookImages["dog-man-complete-set"],
     description:
-      "Buy the complete Dog Man hardcover set (Books 1–15) by Dav Pilkey online at the lowest price on TheBookX.in. All fifteen supa-epic graphic novels in premium hardcover — the perfect gift and the best value for every young reader. Save 10% versus buying the singles. Delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
+      "Buy the complete Dog Man hardcover set (Books 1–13) by Dav Pilkey online at the lowest price on TheBookX.in. All fifteen supa-epic graphic novels in premium hardcover — the perfect gift and the best value for every young reader. Save 10% versus buying the singles. Delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
-    pages: "15 books",
+    pages: "13 books",
     language: "English",
     size: "Hardcover box set",
     stock: 20,

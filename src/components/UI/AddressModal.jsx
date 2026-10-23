@@ -3811,7 +3811,7 @@ export default function AddressModal({
                     </p>
                   </div>
                   <a
-                    href="https://www.amazon.in/dp/B08DXJP4KG"
+                    href="https://www.amazon.in/gift-cards"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="paymeth-gift-buy"

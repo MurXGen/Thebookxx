@@ -236,6 +236,11 @@ function statusLabel(order) {
       title: "On hold",
       sub: "There is some issue in packaging this item",
     };
+  if (/return/.test(st))
+    return {
+      title: "Cancelled",
+      sub: "We tried to deliver this order but it couldn't be completed and came back to us — usually because of an incomplete address or an unreachable phone number. If you'd still like your books, reach out and we'll gladly help you reorder.",
+    };
   if (/cancel/.test(st))
     return { title: "Cancelled", sub: "This order was cancelled" };
   if (/unconfirmed|pending/.test(st)) {
@@ -245,6 +250,339 @@ function statusLabel(order) {
     };
   }
   return { title: "Order confirmed", sub: "We've received your order" };
+}
+
+// Side-view SVG vehicles for the animated Route scene (wheels spin via CSS).
+function TrainSVG() {
+  return (
+    <svg className="rs-veh-svg" viewBox="0 0 120 70" aria-hidden="true">
+      {/* open cargo wagon — low walls so the boxes inside show */}
+      <rect x="2" y="22" width="44" height="28" rx="4" fill="#b65c10" />
+      <rect x="5" y="26" width="38" height="22" rx="2" fill="#8f470b" />
+      <rect x="2" y="40" width="44" height="10" rx="2" fill="#c96a12" />
+      <path d="M2 44h44" stroke="#a9560c" strokeWidth="1.4" />
+      {/* locomotive body */}
+      <rect x="48" y="12" width="60" height="38" rx="7" fill="#e76f00" />
+      <rect x="52" y="18" width="30" height="16" rx="3" fill="#fff4e3" />
+      <rect x="88" y="16" width="16" height="10" rx="3" fill="#ffd9a8" />
+      {/* chimney + cab roof */}
+      <rect x="58" y="4" width="9" height="10" rx="2" fill="#7a3d00" />
+      <rect x="46" y="8" width="64" height="6" rx="3" fill="#c25e00" />
+      {/* coupler */}
+      <rect x="44" y="34" width="8" height="5" rx="2" fill="#7a3d00" />
+      {/* undercarriage */}
+      <rect x="2" y="49" width="106" height="6" rx="3" fill="#5a2e00" />
+      {/* wheels */}
+      <g className="rs-wheel">
+        <circle cx="16" cy="56" r="9" fill="#3a2500" />
+        <circle cx="16" cy="56" r="3.4" fill="#caa06a" />
+        <rect x="15" y="48" width="2" height="16" fill="#caa06a" />
+        <rect x="8" y="55" width="16" height="2" fill="#caa06a" />
+      </g>
+      <g className="rs-wheel">
+        <circle cx="62" cy="56" r="10" fill="#3a2500" />
+        <circle cx="62" cy="56" r="3.6" fill="#caa06a" />
+        <rect x="61" y="47" width="2" height="18" fill="#caa06a" />
+        <rect x="53" y="55" width="18" height="2" fill="#caa06a" />
+      </g>
+      <g className="rs-wheel">
+        <circle cx="92" cy="56" r="10" fill="#3a2500" />
+        <circle cx="92" cy="56" r="3.6" fill="#caa06a" />
+        <rect x="91" y="47" width="2" height="18" fill="#caa06a" />
+        <rect x="83" y="55" width="18" height="2" fill="#caa06a" />
+      </g>
+      {/* headlight */}
+      <circle cx="104" cy="40" r="3.4" fill="#fde68a" />
+    </svg>
+  );
+}
+
+function TruckSVG() {
+  return (
+    <svg className="rs-veh-svg" viewBox="0 0 120 70" aria-hidden="true">
+      {/* cab */}
+      <path d="M70 22h20l16 14v14H70z" fill="#e76f00" />
+      <path d="M74 26h14l10 9H74z" fill="#cfe9ff" />
+      <rect x="86" y="30" width="2" height="5" fill="#a9560c" />
+      {/* open cargo bed — low walls so the boxes inside are visible */}
+      <rect x="4" y="18" width="66" height="32" rx="3" fill="#b65c10" />
+      <rect x="7" y="22" width="60" height="26" rx="2" fill="#8f470b" />
+      {/* near (front) wall, lower so cargo peeks over it */}
+      <rect x="4" y="40" width="66" height="10" rx="2" fill="#c96a12" />
+      <path d="M4 44h66" stroke="#a9560c" strokeWidth="1.4" />
+      {/* bumper + chassis */}
+      <rect x="4" y="49" width="104" height="6" rx="3" fill="#5a2e00" />
+      <rect x="104" y="42" width="4" height="9" rx="2" fill="#7a3d00" />
+      {/* wheels */}
+      <g className="rs-wheel">
+        <circle cx="30" cy="56" r="10" fill="#2b2b2b" />
+        <circle cx="30" cy="56" r="3.6" fill="#b9b9b9" />
+        <rect x="29" y="47" width="2" height="18" fill="#b9b9b9" />
+        <rect x="21" y="55" width="18" height="2" fill="#b9b9b9" />
+      </g>
+      <g className="rs-wheel">
+        <circle cx="90" cy="56" r="10" fill="#2b2b2b" />
+        <circle cx="90" cy="56" r="3.6" fill="#b9b9b9" />
+        <rect x="89" y="47" width="2" height="18" fill="#b9b9b9" />
+        <rect x="81" y="55" width="18" height="2" fill="#b9b9b9" />
+      </g>
+      {/* headlight */}
+      <circle cx="105" cy="44" r="3" fill="#fde68a" />
+    </svg>
+  );
+}
+
+// A warehouse worker in a hi-vis vest walking a box to the truck (packing stage).
+function WorkerSVG() {
+  return (
+    <svg className="rs-person-svg" viewBox="0 0 48 70" aria-hidden="true">
+      <rect x="18" y="47" width="5" height="17" rx="2" fill="#374151" />
+      <rect x="25" y="47" width="5" height="17" rx="2" fill="#374151" />
+      <rect x="15" y="62" width="10" height="5" rx="2" fill="#1f2937" />
+      <rect x="25" y="62" width="10" height="5" rx="2" fill="#1f2937" />
+      <rect x="15" y="27" width="18" height="23" rx="5" fill="#2563eb" />
+      {/* hi-vis vest */}
+      <rect x="18" y="29" width="12" height="19" rx="3" fill="#facc15" />
+      <rect x="16" y="31" width="7" height="11" rx="3" fill="#2563eb" />
+      <rect x="25" y="31" width="7" height="11" rx="3" fill="#2563eb" />
+      {/* box carried in front */}
+      <rect x="12" y="35" width="24" height="17" rx="2" fill="#e0a564" />
+      <path d="M24 35v17M12 43.5h24" stroke="#a9743a" strokeWidth="1.6" />
+      <circle cx="24" cy="19" r="8" fill="#f1c27d" />
+      {/* hard hat */}
+      <path d="M15 17a9 9 0 0 1 18 0z" fill="#f59e0b" />
+      <rect x="13" y="16" width="22" height="3" rx="1.5" fill="#d97706" />
+    </svg>
+  );
+}
+
+// A postman in a khaki uniform cradling the parcel, about to hand it over.
+function PostmanSVG() {
+  return (
+    <svg className="rs-person-svg" viewBox="0 0 48 70" aria-hidden="true">
+      <rect x="18" y="47" width="5" height="17" rx="2" fill="#6b5b2e" />
+      <rect x="25" y="47" width="5" height="17" rx="2" fill="#6b5b2e" />
+      <rect x="15" y="62" width="10" height="5" rx="2" fill="#2b2b2b" />
+      <rect x="25" y="62" width="10" height="5" rx="2" fill="#2b2b2b" />
+      {/* khaki shirt */}
+      <rect x="15" y="27" width="18" height="23" rx="5" fill="#b89b4a" />
+      <path d="M24 27v16" stroke="#9c8238" strokeWidth="1.4" />
+      {/* arms */}
+      <rect x="10" y="31" width="7" height="13" rx="3" fill="#b89b4a" />
+      <rect x="31" y="31" width="7" height="13" rx="3" fill="#b89b4a" />
+      {/* parcel in hands */}
+      <rect x="9" y="38" width="30" height="15" rx="2" fill="#e0a564" />
+      <path d="M24 38v15M9 45.5h30" stroke="#a9743a" strokeWidth="1.6" />
+      <circle cx="24" cy="19" r="8" fill="#f1c27d" />
+      {/* khaki cap */}
+      <path d="M15 17a9 9 0 0 1 18 0z" fill="#8d7429" />
+      <rect x="12" y="16" width="24" height="3" rx="1.5" fill="#6f5b1f" />
+    </svg>
+  );
+}
+
+// The parcel's cargo — a stack of cardboard boxes; one is open and holds the
+// actual book covers for this order, so the reader sees their own books riding
+// along. Rendered as an overlay that sits inside the vehicle's cargo bay.
+function RouteCargo({ covers = [], count = 0, isTrain = false }) {
+  const lead = covers[0] || null;
+  const total = Math.max(count || 0, covers.length);
+  const extra = Math.max(0, total - 1);
+  return (
+    <div className={`rs-cargo ${isTrain ? "rs-cargo-train" : "rs-cargo-truck"}`}>
+      <span className="rs-box rs-box-a" />
+      <motion.div
+        className="rs-box rs-box-open"
+        initial={{ y: 4, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.25, duration: 0.4 }}
+      >
+        <div className="rs-box-flap rs-box-flap-l" />
+        <div className="rs-box-flap rs-box-flap-r" />
+        <div className="rs-box-books">
+          {lead ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={lead} alt="" className="rs-box-book" />
+          ) : (
+            <span className="rs-box-book rs-box-book-ph" />
+          )}
+        </div>
+        {extra > 0 && <span className="rs-box-more">+{extra}</span>}
+      </motion.div>
+      <span className="rs-box rs-box-b" />
+    </div>
+  );
+}
+
+// Animated 2D travel scene. The vehicle is positioned by delivery stage — parked
+// at the hub while packing, travelling (scenery scrolls) in transit, out near
+// your door for out-for-delivery, parked at your door when delivered, and back
+// at the hub when returned. Book covers ride in an open box inside the cargo;
+// packing workers and a khaki postman appear for their stages. Endpoints fade
+// in/out per stage, and once the vehicle has left the hub a small floating chip
+// shows the hub is now behind — like a map pin that has scrolled off-screen.
+function RouteScene({
+  isTrain = false,
+  stage = "transit",
+  bookImgs = [],
+  progressPct = 0,
+  etaText = "",
+}) {
+  const moving = stage === "transit";
+  const covers = (bookImgs || []).filter(Boolean).slice(0, 3);
+  // When to show each fixed endpoint marker.
+  const showHub = stage === "processing" || stage === "returned";
+  const showDest =
+    stage === "processing" || stage === "ofd" || stage === "delivered";
+  // Hub is behind us once we're on the road (transit / out-for-delivery).
+  const hubBehind = stage === "transit" || stage === "ofd";
+  const caption =
+    stage === "delivered"
+      ? "Delivered to your door 🎉"
+      : stage === "returned"
+        ? "Came back to our hub"
+        : stage === "processing"
+          ? "Packing your books…"
+          : stage === "ofd"
+            ? "Out for delivery — arriving today"
+            : etaText || `On the way · ${Math.round(progressPct)}%`;
+
+  const ease = [0.45, 0.02, 0.25, 1];
+
+  return (
+    <div className={`rs-scene rs-st-${stage}${moving ? " moving" : ""}`}>
+      <div className="rs-sky" />
+      <span className="rs-sun" />
+      <div className="rs-clouds">
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className="rs-scroll" aria-hidden="true">
+        {[0, 1].map((k) => (
+          <div className="rs-strip" key={k}>
+            <span className="rs-hill rs-h1" />
+            <span className="rs-hill rs-h2" />
+            <span className="rs-tree rs-t1" />
+            <span className="rs-flower rs-f1" />
+            <span className="rs-tree rs-t2" />
+            <span className="rs-bush rs-b1" />
+            <span className="rs-flower rs-f2" />
+            <span className="rs-tree rs-t3" />
+            <span className="rs-flower rs-f3" />
+          </div>
+        ))}
+      </div>
+      <div className="rs-ground" />
+      <div className={isTrain ? "rs-track" : "rs-road"} />
+
+      {/* Fixed endpoints — only shown for the stages where they're relevant. */}
+      <AnimatePresence>
+        {showHub && (
+          <motion.div
+            className="rs-origin"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.35 }}
+          >
+            <span className="rs-end-ic">🏬</span>
+            <b>Our hub</b>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showDest && (
+          <motion.div
+            className="rs-dest"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.35 }}
+          >
+            <span className="rs-end-ic">🏠</span>
+            <b>You</b>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Off-screen hub indicator — a floating chip that says the hub is behind. */}
+      <AnimatePresence>
+        {hubBehind && (
+          <motion.div
+            className="rs-behind"
+            initial={{ opacity: 0, x: -14 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -14 }}
+            transition={{ duration: 0.4, ease }}
+          >
+            <span className="rs-behind-ic">🏬</span>
+            <span className="rs-behind-tx">Left the hub</span>
+            <ArrowLeft size={12} className="rs-behind-ar" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Processing — workers walk boxes out of the hub, with a "packing" cloud. */}
+      <AnimatePresence>
+        {stage === "processing" && (
+          <>
+            <motion.div
+              className="rs-cloud-msg"
+              key="cloud"
+              initial={{ opacity: 0, y: 6, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.4 }}
+            >
+              <span>Getting packed…</span>
+            </motion.div>
+            <div className="rs-worker rs-worker-1" key="w1">
+              <WorkerSVG />
+            </div>
+            <div className="rs-worker rs-worker-2" key="w2">
+              <WorkerSVG />
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Out for delivery — a khaki postman carries the parcel toward your door. */}
+      <AnimatePresence>
+        {stage === "ofd" && (
+          <motion.div
+            className="rs-postman"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <PostmanSVG />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        className="rs-vehicle"
+        initial={{ opacity: 0, scale: 0.8, y: 6 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, ease }}
+      >
+        {isTrain ? <TrainSVG /> : <TruckSVG />}
+        <RouteCargo covers={covers} isTrain={isTrain} />
+      </motion.div>
+
+      <motion.div
+        className={`rs-caption${stage === "returned" ? " rs-cap-ret" : ""}${stage === "delivered" ? " rs-cap-done" : ""}`}
+        key={caption}
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        {caption}
+      </motion.div>
+    </div>
+  );
 }
 
 export default function OrderDetailPage() {
@@ -348,6 +686,7 @@ export default function OrderDetailPage() {
   const [trackCopied, setTrackCopied] = useState(false);
   const [itemsOpen, setItemsOpen] = useState(false);
   const [mapFull, setMapFull] = useState(false);
+  const [mapTab, setMapTab] = useState("map"); // map | route
   const [showSupport, setShowSupport] = useState(false);
   // Return / refund-for-books-back request.
   const [retOpen, setRetOpen] = useState(false);
@@ -547,13 +886,25 @@ export default function OrderDetailPage() {
       const A = [SENDER.lat, SENDER.lng];
       const B = [receiver.lat, receiver.lng];
       const pct = computeProgress(order);
+      const isReturned = /return/i.test(String(order["Order Status"] || ""));
 
-      // Choose the path: real route if available, else straight line.
-      const path = routeCoords && routeCoords.length > 1 ? routeCoords : [A, B];
+      // Real route if available, else a straight line. The outbound leg is what
+      // the vehicle travels; a returned parcel also makes the trip back, drawn
+      // as a separate line offset slightly so there's a visible gap between the
+      // "to you" and "came back" routes.
+      const path =
+        routeCoords && routeCoords.length > 1 ? routeCoords : [A, B];
+      const effPct = isReturned ? 1 : pct;
       const splitIdx = Math.max(
         0,
-        Math.min(path.length - 1, Math.round(pct * (path.length - 1))),
+        Math.min(path.length - 1, Math.round(effPct * (path.length - 1))),
       );
+      // Return leg = outbound reversed, nudged ~0.3° south so it sits parallel
+      // to the outbound line with a clear gap (not drawn on top of it).
+      const returnPath = path
+        .slice()
+        .reverse()
+        .map(([la, ln]) => [la - 0.3, ln]);
       // Inline lucide-style SVGs (white stroke) so map pins use icons, not emoji.
       const svg = (inner) =>
         `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
@@ -568,28 +919,34 @@ export default function OrderDetailPage() {
           iconSize: [size, size],
           iconAnchor: [size / 2, size / 2],
         });
-      // Soft orange "glow" underlay, a subtle dotted base, then the orange
+      // Faint grey "untravelled" base for the whole route, then a solid BLACK
       // "travelled" line that grows as the vehicle animates to the current point.
       L.polyline(path, {
-        color: "#fb8500",
-        weight: 11,
-        opacity: 0.12,
-        lineCap: "round",
-        lineJoin: "round",
-      }).addTo(map);
-      L.polyline(path, {
-        color: "#94a3b8",
-        weight: 3.5,
-        opacity: 0.7,
+        color: "#cbd5e1",
+        weight: 4,
+        opacity: 0.45,
         dashArray: "1 10",
         lineCap: "round",
       }).addTo(map);
       const travelledLine = L.polyline([path[0]], {
-        color: "#fb8500",
+        color: "#111827",
         weight: 5,
+        opacity: 0.92,
         lineCap: "round",
         lineJoin: "round",
       }).addTo(map);
+      // Returned parcels: draw the "came back" leg in black too, offset below the
+      // outbound line (visible gap) and dashed so the two routes read separately.
+      if (isReturned) {
+        L.polyline(returnPath, {
+          color: "#111827",
+          weight: 4,
+          opacity: 0.8,
+          dashArray: "3 8",
+          lineCap: "round",
+          lineJoin: "round",
+        }).addTo(map);
+      }
 
       const aM = L.marker(A, { icon: dot("#111827", ICON_BOOK) }).addTo(map);
       aM.bindTooltip("Dispatched from Mumbai", {
@@ -603,23 +960,24 @@ export default function OrderDetailPage() {
         offset: [0, -16],
         className: "od-pin-tip",
       });
-      // Vehicle travelling the route — ✈️ for express, 🚆 for standard — inside
-      // a white badge with a live pulse, plus a "your order is here" tooltip.
-      const vehicleEmoji = isExpressOrder(order) ? "✈️" : "🚆";
+      // Vehicle travelling the route — a train for Faster/express delivery, a
+      // truck for Standard. No flight (it never followed the roads). The emoji
+      // sits in a tilted white badge for a subtle 3D feel.
+      const vehicleEmoji = isExpressOrder(order) ? "🚆" : "🚚";
       const vehicle = L.marker(path[0], {
         icon: L.divIcon({
-          className: "od-vehicle",
+          className: "od-vehicle od-vehicle-3d",
           html: `<span class="od-veh-badge"><span class="od-veh-pulse"></span><span class="od-veh-emoji">${vehicleEmoji}</span></span>`,
-          iconSize: [42, 42],
-          iconAnchor: [21, 21],
+          iconSize: [46, 46],
+          iconAnchor: [23, 23],
         }),
         zIndexOffset: 1000,
       }).addTo(map);
       if (!delivered && !cancelled) {
-        vehicle.bindTooltip("Your order is here", {
+        vehicle.bindTooltip("📦 Your order is here", {
           permanent: true,
           direction: "top",
-          offset: [0, -20],
+          offset: [0, -30],
           className: "od-veh-tip",
         });
       }
@@ -685,6 +1043,18 @@ export default function OrderDetailPage() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  // Switching back to the Map tab un-hides the Leaflet container, which needs a
+  // size recalculation (it can't measure a display:none element).
+  useEffect(() => {
+    if (mapTab !== "map" || !mapObj.current) return;
+    const t = setTimeout(() => {
+      try {
+        mapObj.current.invalidateSize();
+      } catch {}
+    }, 60);
+    return () => clearTimeout(t);
+  }, [mapTab]);
 
   useEffect(
     () => () => {
@@ -1169,8 +1539,24 @@ export default function OrderDetailPage() {
   // delivered). Hidden while the order is still just confirmed/processing.
   const showOrderNote =
     shipped || inTransit || outForDelivery || delivered;
-  const cancelled = /cancel/i.test(order["Order Status"] || "");
+  const cancelled = /cancel|return/i.test(order["Order Status"] || "");
+  const isReturned = /return/i.test(order["Order Status"] || "");
   const onHold = /on\s*hold/i.test(order["Order Status"] || "");
+  // Which scene the animated Route tab shows, + the lead book cover (with a
+  // "+N" badge for the rest) to ride in the vehicle's cargo.
+  const routeStage = isReturned
+    ? "returned"
+    : delivered
+      ? "delivered"
+      : outForDelivery
+        ? "ofd"
+        : inTransit
+          ? "transit"
+          : "processing";
+  const routeBookImgs = books
+    .map((b) => findBook(b.name)?.image)
+    .filter(Boolean);
+  const routeBookCount = books.length;
   const shippingId = order["Shipping ID"] || "";
 
   // Address is editable before the parcel really moves: not delivered/cancelled/
@@ -1334,7 +1720,8 @@ export default function OrderDetailPage() {
   // ETA pill: the delivery-window range shows only once the parcel is moving
   // (in transit / out for delivery). Before that we show the current stage.
   const eta = (() => {
-    if (/cancel/i.test(order["Order Status"] || "")) return { done: "Cancelled" };
+    if (/cancel|return/i.test(order["Order Status"] || ""))
+      return { done: "Cancelled" };
     if (
       /unconfirmed|pending/i.test(order["Order Status"] || "") ||
       /\(unconfirmed\)/i.test(order["Customer Name"] || "")
@@ -1699,7 +2086,7 @@ export default function OrderDetailPage() {
               <span>
                 {trackDetail ? (
                   <>
-                    📍 Live India Post status
+                    📍 Live tracking status
                     {trackUpdatedTxt ? (
                       <span className="od-track-upd">
                         {" "}
@@ -1786,15 +2173,51 @@ export default function OrderDetailPage() {
       >
         {geoState === "ok" && receiver ? (
           <>
-            <div ref={mapRef} className="od-map" />
-            <button
-              type="button"
-              className="od-map-expand"
-              onClick={() => setMapFull((v) => !v)}
-              aria-label={mapFull ? "Exit full screen" : "Full screen map"}
-            >
-              {mapFull ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
-            </button>
+            <div className="od-map-tabs">
+              <button
+                type="button"
+                className={`od-map-tab${mapTab === "map" ? " on" : ""}`}
+                onClick={() => setMapTab("map")}
+              >
+                <MapPin size={14} /> Map progress
+              </button>
+              <button
+                type="button"
+                className={`od-map-tab${mapTab === "route" ? " on" : ""}`}
+                onClick={() => setMapTab("route")}
+              >
+                <Navigation size={14} /> Route progress
+              </button>
+            </div>
+            <div className="od-map-stage">
+              <div
+                ref={mapRef}
+                className="od-map"
+                style={{ display: mapTab === "map" ? "block" : "none" }}
+              />
+              {mapTab === "route" && (
+                <RouteScene
+                  isTrain={isFaster}
+                  stage={routeStage}
+                  bookImgs={routeBookImgs}
+                  bookCount={routeBookCount}
+                  progressPct={progressPct}
+                  etaText={
+                    inTransit ? `On the way · ${progressPct}%` : ""
+                  }
+                />
+              )}
+              {mapTab === "map" && (
+                <button
+                  type="button"
+                  className="od-map-expand"
+                  onClick={() => setMapFull((v) => !v)}
+                  aria-label={mapFull ? "Exit full screen" : "Full screen map"}
+                >
+                  {mapFull ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
+                </button>
+              )}
+            </div>
           </>
         ) : geoState === "loading" ? (
           <div className="od-map-locating">
@@ -1866,10 +2289,25 @@ export default function OrderDetailPage() {
 
           {shippingId &&
             (() => {
-              // Only real India Post consignment IDs (ordinary "C…" / speed
-              // post "E…") are copiable + link to tracking. Anything else is
-              // shown plainly, with no copy button and no India Post link.
+              // Only real consignment IDs (ordinary "C…" / speed-post "E…") are
+              // copiable + link to tracking. Anything else is shown plainly.
               const isPostId = /^[ce]/i.test(String(shippingId).trim());
+              // India Post has no public GET deep-link to a single consignment
+              // (that page 502s on direct load), so we open their site — which
+              // loads reliably — with the ID already on the clipboard to paste.
+              const TRACK_URL = "https://www.indiapost.gov.in/";
+              // Copy the ID; only flag "Copied" when the write genuinely
+              // succeeds (the Clipboard API resolves/rejects per permission).
+              const copyId = async () => {
+                try {
+                  await navigator.clipboard.writeText(String(shippingId));
+                  setTrkIdCopied(true);
+                  setTimeout(() => setTrkIdCopied(false), 2000);
+                  return true;
+                } catch {
+                  return false;
+                }
+              };
               return (
                 <div className="od-trk-id">
                   <div className="od-trk-id-l">
@@ -1881,25 +2319,25 @@ export default function OrderDetailPage() {
                       <button
                         type="button"
                         className="od-trk-copy"
-                        onClick={() => {
-                          try {
-                            navigator.clipboard.writeText(String(shippingId));
-                            setTrkIdCopied(true);
-                            setTimeout(() => setTrkIdCopied(false), 1500);
-                          } catch {}
-                        }}
+                        onClick={copyId}
                       >
                         {trkIdCopied ? <Check size={14} /> : <Copy size={14} />}
-                        {trkIdCopied ? "Copied" : "Copy"}
+                        {trkIdCopied ? "Copied!" : "Copy"}
                       </button>
-                      <a
+                      <button
+                        type="button"
                         className="od-trk-link"
-                        href="https://www.indiapost.gov.in"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        onClick={async () => {
+                          await copyId();
+                          window.open(
+                            TRACK_URL,
+                            "_blank",
+                            "noopener,noreferrer",
+                          );
+                        }}
                       >
-                        Track on India Post ↗
-                      </a>
+                        Track ↗
+                      </button>
                     </div>
                   )}
                 </div>

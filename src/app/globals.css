@@ -50714,6 +50714,628 @@ img[data-loaded="true"] {
   overflow: hidden;
   margin-bottom: 12px;
 }
+/* Map / Route tabs */
+.od-map-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 8px 8px 0;
+  background: #fff;
+}
+.od-map-tab {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border: none;
+  border-radius: 11px 11px 0 0;
+  background: #f4f5f7;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.od-map-tab.on {
+  background: #fff;
+  color: var(--tertiary, #fb8500);
+  box-shadow: inset 0 -2px 0 var(--tertiary, #fb8500);
+}
+.od-map-stage {
+  position: relative;
+  width: 100%;
+  height: 380px;
+}
+.od-map-stage .od-map {
+  height: 100%;
+}
+/* 3D-feel vehicle badge on the Leaflet map */
+.od-vehicle-3d .od-veh-badge {
+  transform: rotate(-4deg);
+}
+.od-veh-emoji {
+  font-size: 20px;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.35));
+}
+
+/* ===== Animated 2D Route scene ===== */
+.rs-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(#bfe8ff 0%, #e7f6ff 55%, #eafaf0 55%);
+}
+.rs-sky {
+  position: absolute;
+  inset: 0 0 45% 0;
+  background: linear-gradient(#aee1ff, #e9f7ff);
+}
+.rs-sun {
+  position: absolute;
+  top: 26px;
+  right: 44px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #fff2b8, #ffd34d);
+  box-shadow: 0 0 30px #ffd96b;
+}
+.rs-clouds i {
+  position: absolute;
+  top: var(--t, 40px);
+  left: -120px;
+  width: 60px;
+  height: 20px;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 18px 6px 0 -3px #fff, -16px 5px 0 -4px #fff;
+  opacity: 0.9;
+  animation: rsCloud 30s linear infinite;
+}
+.rs-clouds i:nth-child(1) {
+  --t: 34px;
+}
+.rs-clouds i:nth-child(2) {
+  --t: 66px;
+  animation-duration: 44s;
+  animation-delay: -10s;
+  transform: scale(0.8);
+}
+.rs-clouds i:nth-child(3) {
+  --t: 20px;
+  animation-duration: 38s;
+  animation-delay: -22s;
+  transform: scale(1.15);
+}
+@keyframes rsCloud {
+  to {
+    transform: translateX(130vw);
+  }
+}
+.rs-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 45%;
+  background: linear-gradient(#8fd98a, #68c06a);
+}
+.rs-scroll {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 38%;
+  height: 120px;
+  display: flex;
+}
+.rs-scene.moving .rs-scroll {
+  animation: rsScroll 7s linear infinite;
+}
+@keyframes rsScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.rs-strip {
+  position: relative;
+  flex: 0 0 50%;
+  height: 100%;
+}
+.rs-hill {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50% 50% 0 0;
+  opacity: 0.85;
+}
+.rs-h1 {
+  left: 6%;
+  width: 150px;
+  height: 70px;
+  background: #86d089;
+}
+.rs-h2 {
+  left: 55%;
+  width: 200px;
+  height: 92px;
+  background: #74c178;
+}
+.rs-tree {
+  position: absolute;
+  bottom: 6px;
+  width: 13px;
+  height: 32px;
+  background: #8a5a2b;
+  border-radius: 3px;
+}
+.rs-tree::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #5bbf63, #2f9a43);
+  box-shadow: 0 6px 10px -6px rgba(0, 0, 0, 0.3);
+}
+.rs-t1 {
+  left: 16%;
+}
+.rs-t2 {
+  left: 44%;
+  transform: scale(1.2);
+}
+.rs-t3 {
+  left: 78%;
+  transform: scale(0.9);
+}
+.rs-bush {
+  position: absolute;
+  bottom: 4px;
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  background: #4fae55;
+}
+.rs-b1 {
+  left: 62%;
+}
+.rs-flower {
+  position: absolute;
+  bottom: 4px;
+  width: 5px;
+  height: 14px;
+  background: #3f9e52;
+}
+.rs-flower::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fc, #ff5d8f);
+  box-shadow: inset 0 0 0 2px #fff;
+}
+.rs-f1 {
+  left: 28%;
+  --fc: #ff5d8f;
+}
+.rs-f2 {
+  left: 52%;
+  --fc: #ffd23f;
+}
+.rs-f3 {
+  left: 88%;
+  --fc: #8a5bff;
+}
+.rs-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16%;
+  height: 12px;
+  background:
+    repeating-linear-gradient(
+        90deg,
+        #8a5a2b 0 10px,
+        transparent 10px 24px
+      )
+      center / 100% 5px no-repeat,
+    linear-gradient(#b0b6bd, #9aa0a7);
+  border-top: 3px solid #c7ccd2;
+  border-bottom: 3px solid #7d8187;
+}
+.rs-road {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14%;
+  height: 26px;
+  background: #4b5159;
+}
+.rs-road::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(
+    90deg,
+    #ffd23f 0 22px,
+    transparent 22px 44px
+  );
+}
+.rs-scene.moving .rs-road::after {
+  animation: rsDash 1.1s linear infinite;
+}
+@keyframes rsDash {
+  to {
+    background-position: -44px 0;
+  }
+}
+.rs-vehicle {
+  position: absolute;
+  left: 50%;
+  bottom: 15%;
+  transform: translateX(-50%);
+  width: 120px;
+  z-index: 3;
+  transition: left 0.9s cubic-bezier(0.45, 0.02, 0.25, 1);
+}
+/* Stage positioning — hub → travelling → your door, and back for returns. */
+.rs-st-processing .rs-vehicle {
+  left: 30%;
+}
+.rs-st-transit .rs-vehicle {
+  left: 50%;
+}
+.rs-st-ofd .rs-vehicle {
+  left: 66%;
+}
+.rs-st-delivered .rs-vehicle {
+  left: 80%;
+}
+.rs-st-returned .rs-vehicle {
+  left: 22%;
+  transform: translateX(-50%) scaleX(-1);
+}
+.rs-scene.moving .rs-vehicle {
+  animation: rsBob 0.6s ease-in-out infinite;
+}
+@keyframes rsBob {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -2px);
+  }
+}
+.rs-veh-svg {
+  width: 120px;
+  height: 70px;
+  filter: drop-shadow(0 8px 6px rgba(0, 0, 0, 0.25));
+}
+.rs-scene.moving .rs-wheel {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rsSpin 0.5s linear infinite;
+}
+@keyframes rsSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Cardboard boxes riding in the open cargo bay — one is open and holds the
+   reader's own book covers. */
+.rs-cargo {
+  position: absolute;
+  display: flex;
+  gap: 3px;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 4;
+  pointer-events: none;
+}
+.rs-cargo-truck {
+  left: 8px;
+  top: 14px;
+  width: 58px;
+  height: 30px;
+}
+.rs-cargo-train {
+  left: 5px;
+  top: 20px;
+  width: 40px;
+  height: 26px;
+}
+.rs-box {
+  position: relative;
+  border-radius: 2px;
+  background: linear-gradient(#d9a566, #c58a46);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.25),
+    0 2px 3px rgba(0, 0, 0, 0.3);
+}
+.rs-box-a {
+  width: 24%;
+  height: 72%;
+}
+.rs-box-b {
+  width: 22%;
+  height: 58%;
+}
+.rs-box-a::after,
+.rs-box-b::after {
+  /* tape seam */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: rgba(130, 84, 36, 0.55);
+}
+/* The open box cradling the lead book cover (+ a "+N" badge for the rest). */
+.rs-box-open {
+  position: relative;
+  width: 30%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 2px;
+  background: linear-gradient(#caa066, #b98a4a);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+.rs-box-more {
+  position: absolute;
+  top: -7px;
+  right: -9px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #fb8500;
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 800;
+  line-height: 1;
+  border: 1.5px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  z-index: 5;
+}
+.rs-box-flap {
+  position: absolute;
+  top: -3px;
+  width: 52%;
+  height: 7px;
+  background: #b6833f;
+  border-radius: 2px 2px 0 0;
+}
+.rs-box-flap-l {
+  left: -2px;
+  transform: skewX(24deg);
+  transform-origin: bottom left;
+}
+.rs-box-flap-r {
+  right: -2px;
+  transform: skewX(-24deg);
+  transform-origin: bottom right;
+}
+.rs-box-books {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  top: 3px;
+  display: flex;
+  gap: 1px;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+.rs-box-book {
+  width: 10px;
+  max-width: 11px;
+  height: 100%;
+  max-height: 26px;
+  object-fit: cover;
+  border-radius: 1.5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  border: 0.5px solid rgba(255, 255, 255, 0.8);
+}
+.rs-box-book-ph {
+  background: linear-gradient(#fb8500, #e76f00);
+}
+/* "Left the hub" chip — the origin is now off-screen behind the vehicle. */
+.rs-behind {
+  position: absolute;
+  left: 10px;
+  bottom: 15%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px 4px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px -6px rgba(0, 0, 0, 0.45);
+  font-size: 10px;
+  font-weight: 800;
+  color: #374151;
+  z-index: 3;
+}
+.rs-behind-ic {
+  font-size: 14px;
+  line-height: 1;
+}
+.rs-behind-ar {
+  color: #9ca3af;
+}
+/* Packing stage — warehouse workers + a "getting packed" cloud bubble. */
+.rs-worker {
+  position: absolute;
+  bottom: 15%;
+  width: 34px;
+  z-index: 3;
+}
+.rs-person-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.25));
+}
+.rs-worker-1 {
+  left: 40%;
+  animation: rsWalk 2.6s ease-in-out infinite;
+}
+.rs-worker-2 {
+  left: 15%;
+  transform: scale(0.88);
+  animation: rsWalk 3.1s ease-in-out infinite 0.5s;
+}
+@keyframes rsWalk {
+  0% {
+    transform: translateX(-10px);
+  }
+  50% {
+    transform: translateX(6px) translateY(-1px);
+  }
+  100% {
+    transform: translateX(-10px);
+  }
+}
+.rs-cloud-msg {
+  position: absolute;
+  top: 40px;
+  left: 26%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  background: #fff;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #b45309;
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.4);
+  z-index: 5;
+  animation: rsBob2 2.4s ease-in-out infinite;
+}
+.rs-cloud-msg::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 20px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+@keyframes rsBob2 {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-3px);
+  }
+}
+/* Out-for-delivery — khaki postman walking the parcel to your door. */
+.rs-postman {
+  position: absolute;
+  left: 80%;
+  bottom: 15%;
+  width: 40px;
+  z-index: 4;
+  animation: rsWalk 2.2s ease-in-out infinite;
+}
+.rs-origin,
+.rs-dest {
+  position: absolute;
+  bottom: 15%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #374151;
+  z-index: 2;
+}
+.rs-origin {
+  left: 12px;
+}
+.rs-dest {
+  right: 12px;
+}
+.rs-end-ic {
+  font-size: 22px;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.25));
+}
+.rs-caption {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 7px 15px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #111827;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.4);
+  z-index: 6;
+  white-space: nowrap;
+}
+.rs-caption.rs-cap-ret {
+  color: #b91c1c;
+}
+.rs-caption.rs-cap-done {
+  color: #15803d;
+}
+/* Smaller vehicle + figures on phones so the scene isn't crowded. */
+@media (max-width: 600px) {
+  .rs-vehicle {
+    width: 92px;
+  }
+  .rs-veh-svg {
+    width: 92px;
+    height: 54px;
+  }
+  .rs-worker {
+    width: 27px;
+  }
+  .rs-postman {
+    width: 31px;
+  }
+  .rs-caption {
+    font-size: 11.5px;
+    padding: 6px 12px;
+  }
+  .rs-behind {
+    font-size: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rs-scene * {
+    animation: none !important;
+  }
+}
 /* Floating status card on the tracking map — full status + progress + action. */
 .od-map-eta {
   position: absolute;
@@ -50885,11 +51507,21 @@ img[data-loaded="true"] {
   background: #0a0a0a;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 4px 9px;
-  font-size: 11px;
-  font-weight: 700;
-  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.5);
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 11.5px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.6);
+}
+.od-veh-tip.leaflet-tooltip {
+  animation: odTipPop 0.3s ease-out;
+}
+@keyframes odTipPop {
+  from {
+    transform: translateY(4px) scale(0.92);
+    opacity: 0;
+  }
 }
 .od-veh-tip.leaflet-tooltip::before,
 .od-pin-tip.leaflet-tooltip::before {
@@ -51403,11 +52035,29 @@ img[data-loaded="true"] {
   cursor: pointer;
 }
 .od-trk-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  border-radius: 8px;
+  border: none;
+  background: var(--tertiary, #fb8500);
   font-size: 12px;
-  font-weight: 700;
-  color: var(--tertiary, #fb8500);
+  font-weight: 800;
+  color: #fff;
   text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 2px 8px -2px rgba(251, 133, 0, 0.55);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.od-trk-link:hover {
+  box-shadow: 0 4px 12px -2px rgba(251, 133, 0, 0.7);
+}
+.od-trk-link:active {
+  transform: translateY(1px);
 }
 .od-deliv-next {
   margin: 0;

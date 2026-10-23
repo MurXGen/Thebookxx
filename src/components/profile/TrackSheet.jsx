@@ -234,12 +234,13 @@ export default function TrackSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geo]);
 
-  const openIndiaPost = () => {
+  const openIndiaPost = async () => {
+    const TRACK_URL = "https://www.indiapost.gov.in/";
     try {
-      navigator.clipboard.writeText(trackOrder.shippingId || "");
+      await navigator.clipboard.writeText(trackOrder.shippingId || "");
       setTrackCopied && setTrackCopied(true);
     } catch {}
-    window.open("https://www.indiapost.gov.in", "_blank", "noopener,noreferrer");
+    window.open(TRACK_URL, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -344,8 +345,8 @@ export default function TrackSheet({
                           onClick={openIndiaPost}
                         >
                           {trackCopied
-                            ? "ID copied — paste on India Post ↗"
-                            : "Track on India Post ↗"}
+                            ? "ID copied — paste & track ↗"
+                            : "Track ↗"}
                         </button>
                       )}
                   </div>

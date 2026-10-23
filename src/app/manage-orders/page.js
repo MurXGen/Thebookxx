@@ -1190,7 +1190,7 @@ function moStatusColor(status) {
   const s = String(status || "").toLowerCase();
   if (/unconfirmed/.test(s)) return "#e11d48"; // rose — needs verification
   if (/on\s*hold/.test(s)) return "#d97706"; // amber — packaging issue
-  if (/cancel/.test(s)) return "#dc2626"; // red
+  if (/cancel|return/.test(s)) return "#dc2626"; // red (returned = cancelled)
   if (/delivered|money received/.test(s)) return "#16a34a"; // green
   if (/out for delivery/.test(s)) return "#4f46e5"; // indigo
   if (/in\s*transit/.test(s)) return "#0891b2"; // cyan
@@ -5838,7 +5838,7 @@ export default function ManageOrdersPage() {
           const oid = o["Order ID"];
           if (!oid || cancSeen.has(oid)) return;
           const cur = String(o["Order Status"] || "").trim();
-          if (/cancel/i.test(cur)) return;
+          if (/cancel|return/i.test(cur)) return;
           cancSeen.add(oid);
           cancels.push({
             order: o,
@@ -7375,7 +7375,7 @@ export default function ManageOrdersPage() {
       if (ph) custMap[ph] = (custMap[ph] || 0) + 1;
       const st = String(o["Order Status"] || "").toLowerCase();
       if (st.includes("delivered")) delivered += 1;
-      if (st.includes("cancel")) cancelled += 1;
+      if (st.includes("cancel") || st.includes("return")) cancelled += 1;
       if (String(o["Shipping ID"] || "").trim()) tracked += 1;
       const isCod = /cash|cod/i.test(String(o["Payment Type"] || ""));
       if (isCod) {
@@ -7501,7 +7501,7 @@ export default function ManageOrdersPage() {
       /delivered/i.test(String(o["Order Status"] || "")),
     ).length;
     const cancelled = anOrders.filter((o) =>
-      /cancel/i.test(String(o["Order Status"] || "")),
+      /cancel|return/i.test(String(o["Order Status"] || "")),
     ).length;
     const codN = anOrders.filter((o) =>
       /cash|cod/i.test(String(o["Payment Type"] || "")),
@@ -7754,7 +7754,7 @@ export default function ManageOrdersPage() {
       const s = String(o["Order Status"] || "").toLowerCase();
       const hasTrack = !!String(o["Shipping ID"] || "").trim();
       placed += 1;
-      if (/cancel/.test(s)) cancelled += 1;
+      if (/cancel|return/.test(s)) cancelled += 1; // returned = cancelled
       if (/return/.test(s)) returned += 1;
       const isDelivered = /delivered|money received/.test(s);
       if (isDelivered) delivered += 1;
@@ -7793,7 +7793,7 @@ export default function ManageOrdersPage() {
       bucket.n += 1;
       bucket.revenue += o.revenue || 0;
       if (/delivered|money received/.test(s)) bucket.delivered += 1;
-      if (/cancel/.test(s)) bucket.cancelled += 1;
+      if (/cancel|return/.test(s)) bucket.cancelled += 1;
     });
     const shape = (b, label, key) => ({
       key,
@@ -9845,9 +9845,15 @@ export default function ManageOrdersPage() {
     { key: "Money received", color: "#059669" },
     { key: "Cancelled", color: "#ef4444" },
   ];
+  // "Returned" orders are treated as Cancelled, so the Cancelled bucket matches
+  // both cancel and return statuses.
+  const matchStatusKey = (o, key) => {
+    const st = String(o["Order Status"] || "");
+    return key === "Cancelled" ? /cancel|return/i.test(st) : st === key;
+  };
   const statusCounts = STATUS_META.map((s) => ({
     ...s,
-    count: analyticsOrders.filter((o) => o["Order Status"] === s.key).length,
+    count: analyticsOrders.filter((o) => matchStatusKey(o, s.key)).length,
   }));
   const maxStatusCount = Math.max(1, ...statusCounts.map((s) => s.count));
 
@@ -9860,7 +9866,7 @@ export default function ManageOrdersPage() {
   // (Non-COD orders are treated as UPI / prepaid.)
   const statusBreakdown = STATUS_META.map((s) => {
     const rows = analyticsOrders.filter((o) => {
-      if (o["Order Status"] !== s.key) return false;
+      if (!matchStatusKey(o, s.key)) return false;
       // Cancelled card counts only shipped-then-cancelled (has a tracking ID).
       if (s.key === "Cancelled")
         return String(o["Shipping ID"] || o.shippingId || "").trim() !== "";
@@ -9895,7 +9901,7 @@ export default function ManageOrdersPage() {
   // ── Cancelled orders — auto loss from forfeited postage ──
   // Only cancelled orders that actually shipped (have a tracking / Shipping ID)
   // count here: an unshipped cancellation forfeits no postage.
-  const isCancelled = (o) => /cancel/i.test(String(o["Order Status"] || ""));
+  const isCancelled = (o) => /cancel|return/i.test(String(o["Order Status"] || ""));
   const hasShippingId = (o) =>
     String(o["Shipping ID"] || o.shippingId || "").trim() !== "";
   const cancelledOrders = anOrders.filter(
@@ -10078,7 +10084,7 @@ export default function ManageOrdersPage() {
   // tiers used on the bag page.
   const normMergePhone = (p) => String(p || "").replace(/\D/g, "").slice(-10);
   const isMergeableOrder = (o) =>
-    !/cancel|merged/i.test(String(o["Order Status"] || ""));
+    !/cancel|return|merged/i.test(String(o["Order Status"] || ""));
 
   const mergeGroups = (() => {
     const byPhone = {};

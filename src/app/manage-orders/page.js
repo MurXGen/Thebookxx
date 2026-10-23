@@ -66,6 +66,7 @@ import {
   MessageCircle,
   StickyNote,
   Send,
+  Share2,
   LayoutGrid,
   List,
   CheckSquare,
@@ -3494,6 +3495,10 @@ export default function ManageOrdersPage() {
   // on the Dispatch page for the label download.
   const [dispatchIds, setDispatchIds] = useState([]);
   const [dispatchSel, setDispatchSel] = useState([]);
+  // Share the dispatch queue as a link (encodes the queued order IDs).
+  const [dispShareOpen, setDispShareOpen] = useState(false);
+  const [dispPaste, setDispPaste] = useState("");
+  const [dispLinkCopied, setDispLinkCopied] = useState(false);
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_dispatch_ids");
@@ -3512,6 +3517,42 @@ export default function ManageOrdersPage() {
       dispatchIds.includes(oid)
         ? dispatchIds.filter((x) => x !== oid)
         : [...dispatchIds, oid],
+    );
+  };
+  // Build a shareable link that reopens the Dispatch queue with these orders.
+  const dispatchShareLink = () =>
+    typeof window !== "undefined"
+      ? `${window.location.origin}/manage-orders?dispatch=${encodeURIComponent(
+          dispatchIds.join(","),
+        )}`
+      : "";
+  const copyDispatchLink = async () => {
+    if (!dispatchIds.length) {
+      showToast("Queue is empty — add orders first.", "error");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(dispatchShareLink());
+      setDispLinkCopied(true);
+      setTimeout(() => setDispLinkCopied(false), 2500);
+      showToast("Share link copied.", "success");
+    } catch {
+      showToast("Couldn't copy the link.", "error");
+    }
+  };
+  const applyDispatchPaste = () => {
+    const ids = extractOrderIds(dispPaste);
+    if (!ids.length) {
+      showToast("No order IDs found in that link.", "error");
+      return;
+    }
+    persistDispatch(ids);
+    setBookSubTab("queue");
+    setDispShareOpen(false);
+    setDispPaste("");
+    showToast(
+      `${ids.length} order${ids.length === 1 ? "" : "s"} loaded into the queue.`,
+      "success",
     );
   };
   const [coversModalOpen, setCoversModalOpen] = useState(false); // covers picker
@@ -4140,6 +4181,89 @@ export default function ManageOrdersPage() {
   // Users + Track pages — sub-tabs for their stacked sections.
   const [userSubTab, setUserSubTab] = useState("customers");
   const [trackSubTab, setTrackSubTab] = useState("paste");
+  // Operator notes board (Track → Notes).
+  const [notesList, setNotesList] = useState([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [notesLoaded, setNotesLoaded] = useState(false);
+  const [noteTitle, setNoteTitle] = useState("");
+  const [noteBody, setNoteBody] = useState("");
+  const [noteCategory, setNoteCategory] = useState("General");
+  const [noteOrderId, setNoteOrderId] = useState("");
+  const [noteSaving, setNoteSaving] = useState(false);
+  const loadNotes = async () => {
+    setNotesLoading(true);
+    try {
+      const res = await fetch("/api/notes", { cache: "no-store" });
+      const json = await res.json();
+      setNotesList(Array.isArray(json.notes) ? json.notes : []);
+    } catch {
+      setNotesList([]);
+    } finally {
+      setNotesLoading(false);
+      setNotesLoaded(true);
+    }
+  };
+  useEffect(() => {
+    if (trackSubTab === "notes" && !notesLoaded) loadNotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trackSubTab]);
+  const addNote = async () => {
+    const title = noteTitle.trim();
+    const body = noteBody.trim();
+    if (!title && !body) {
+      showToast("Write a note first.", "error");
+      return;
+    }
+    setNoteSaving(true);
+    try {
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "create",
+          title,
+          note: body,
+          category: noteCategory,
+          orderId: noteOrderId.trim(),
+        }),
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || "failed");
+      setNoteTitle("");
+      setNoteBody("");
+      setNoteOrderId("");
+      setNoteCategory("General");
+      showToast("Note saved.", "success");
+      await loadNotes();
+    } catch {
+      showToast("Couldn't save the note. Please try again.", "error");
+    } finally {
+      setNoteSaving(false);
+    }
+  };
+  const copyNoteField = async (text, label) => {
+    const t = String(text || "").trim();
+    if (!t) return;
+    try {
+      await navigator.clipboard.writeText(t);
+      showToast(`${label} copied.`, "success");
+    } catch {
+      showToast("Couldn't copy.", "error");
+    }
+  };
+  const toggleNoteStatus = async (n) => {
+    const next = /done/i.test(n.status) ? "Open" : "Done";
+    setNotesList((list) =>
+      list.map((x) => (x.id === n.id ? { ...x, status: next } : x)),
+    );
+    try {
+      await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "status", id: n.id, status: next }),
+      });
+    } catch {}
+  };
   const [scanBusy, setScanBusy] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [scanIds, setScanIds] = useState([]); // array of strings
@@ -5155,6 +5279,25 @@ export default function ManageOrdersPage() {
         if (ids.length) {
           setBatchInput(ids.join("\n"));
           setActiveTab("batch");
+        }
+      }
+    } catch {}
+  }, []);
+  // Shared dispatch link (…/manage-orders?dispatch=ORD1,ORD2) → load those
+  // orders into the dispatch queue and open the Dispatch tab.
+  useEffect(() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get("dispatch");
+      if (p) {
+        const ids = extractOrderIds(decodeURIComponent(p));
+        if (ids.length) {
+          setDispatchIds(ids);
+          try {
+            localStorage.setItem("mo_dispatch_ids", JSON.stringify(ids));
+            localStorage.setItem("mo_active_tab", "book");
+          } catch {}
+          setActiveTab("book");
+          setBookSubTab("queue");
         }
       }
     } catch {}
@@ -10365,7 +10508,7 @@ export default function ManageOrdersPage() {
     );
   };
 
-  const renderOrderCard = (order, idx) => {
+  const renderOrderCard = (order, idx, selCtx = null) => {
                         const orderId = order["Order ID"];
                         const books = order.parsedBooks || [];
                         const pnl = order.pnl;
@@ -10488,14 +10631,21 @@ export default function ManageOrdersPage() {
                           codAmount: order.revenue,
                         };
 
-                        const isSelected =
-                          cardSelectMode && selectedIds.includes(orderId);
-                        const toggleCardSelect = () =>
-                          setSelectedIds((prev) =>
-                            prev.includes(orderId)
-                              ? prev.filter((x) => x !== orderId)
-                              : [...prev, orderId],
-                          );
+                        // Selection can be driven by the global card-select mode
+                        // (Orders tab) or by an injected context (Dispatch queue),
+                        // so the same card shows one inline checkbox in both.
+                        const selMode = selCtx ? selCtx.mode : cardSelectMode;
+                        const isSelected = selCtx
+                          ? selCtx.selected
+                          : cardSelectMode && selectedIds.includes(orderId);
+                        const toggleCardSelect = selCtx
+                          ? selCtx.toggle
+                          : () =>
+                              setSelectedIds((prev) =>
+                                prev.includes(orderId)
+                                  ? prev.filter((x) => x !== orderId)
+                                  : [...prev, orderId],
+                              );
 
                         return (
                           <motion.div
@@ -10515,7 +10665,7 @@ export default function ManageOrdersPage() {
                                   : "mo-card-online"
                             }${isPacked ? " packed" : ""}${
                               isExpanded ? " expanded" : ""
-                            }${cardSelectMode ? " selectable" : ""}${
+                            }${selMode ? " selectable" : ""}${
                               isSelected ? " selected" : ""
                             }${
                               pendingTracking[orderId]
@@ -10530,7 +10680,7 @@ export default function ManageOrdersPage() {
                                   : moStatusColor(order.status),
                             }}
                             onPointerDown={() => {
-                              if (cardSelectMode) return;
+                              if (selMode) return;
                               longPressRef.current = false;
                               clearTimeout(lpTimer.current);
                               lpTimer.current = setTimeout(() => {
@@ -10591,18 +10741,16 @@ export default function ManageOrdersPage() {
                             <div
                               className="mo2-head"
                               onClick={(e) => {
-                                if (cardSelectMode) {
+                                if (selMode) {
                                   e.stopPropagation();
                                   toggleCardSelect();
                                 } else {
                                   e.stopPropagation();
                                 }
                               }}
-                              style={
-                                cardSelectMode ? { cursor: "pointer" } : undefined
-                              }
+                              style={selMode ? { cursor: "pointer" } : undefined}
                             >
-                              {cardSelectMode && (
+                              {selMode && (
                                 <button
                                   type="button"
                                   className={`mo2-select-box${isSelected ? " on" : ""}`}
@@ -10635,27 +10783,50 @@ export default function ManageOrdersPage() {
                                 </button>
                               </div>
                               <div className="mo2-head-r">
-                                <div
-                                  className="mo2-status-wrap"
-                                  style={{ "--st-color": moStatusColor(order.status) }}
-                                >
-                                  <select
-                                    className={`mo2-status${pendingStatus[orderId] ? " dirty" : ""}`}
-                                    value={order.status || "Processing"}
-                                    title="Change status (queued — push to save)"
-                                    onChange={(e) => {
-                                      const val = e.target.value;
-                                      patchLocalOrder(orderId, { "Order Status": val, status: val });
-                                      setPendingStatus((prev) => ({ ...prev, [orderId]: val }));
-                                    }}
+                                <div className="mo2-statusrow">
+                                  <div
+                                    className="mo2-status-wrap"
+                                    style={{ "--st-color": moStatusColor(order.status) }}
                                   >
-                                    {TRACK_STATUS_OPTIONS.map((s) => (
-                                      <option key={s} value={s}>
-                                        {s}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  <ChevronDown size={14} className="mo2-status-chev" />
+                                    <select
+                                      className={`mo2-status${pendingStatus[orderId] ? " dirty" : ""}`}
+                                      value={order.status || "Processing"}
+                                      title="Change status (queued — push to save)"
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        patchLocalOrder(orderId, { "Order Status": val, status: val });
+                                        setPendingStatus((prev) => ({ ...prev, [orderId]: val }));
+                                      }}
+                                    >
+                                      {TRACK_STATUS_OPTIONS.map((s) => (
+                                        <option key={s} value={s}>
+                                          {s}
+                                        </option>
+                                      ))}
+                                    </select>
+                                    <ChevronDown size={14} className="mo2-status-chev" />
+                                  </div>
+                                  {orderDate &&
+                                    (() => {
+                                      const ms = Date.now() - orderDate.getTime();
+                                      if (ms < 0) return null;
+                                      const days = Math.floor(ms / 86400000);
+                                      const hours = Math.floor(ms / 3600000);
+                                      const label =
+                                        days >= 1
+                                          ? `${days}d ago`
+                                          : hours >= 1
+                                            ? `${hours}h ago`
+                                            : "new";
+                                      return (
+                                        <span
+                                          className={`mo2-age${days >= 3 ? " warn" : ""}`}
+                                          title="Time since the order was placed"
+                                        >
+                                          <Clock size={11} /> {label}
+                                        </span>
+                                      );
+                                    })()}
                                 </div>
                                 <span className="mo2-date">
                                   {orderDate
@@ -12321,11 +12492,30 @@ export default function ManageOrdersPage() {
                     ? "By day of week"
                     : "By date"
               }
-              right={<span className="an2-card-total">{overview.n}</span>}
+              right={
+                <span className="an2-total-wrap">
+                  <span className="an2-today-badge">Today</span>
+                  <span className="an2-card-total">{overview.n}</span>
+                </span>
+              }
             >
               {(() => {
                 const max = Math.max(1, ...ordersBar.map((b) => b.count));
+                const todayBar = ordersBar.find((b) => b.isToday);
+                const todayN = todayBar?.count || 0;
+                const todayRev = Math.round(todayBar?.revenue || 0);
                 return (
+                  <>
+                    <div className="an2-today-row">
+                      <span className="an2-today-k">Today</span>
+                      <span className="an2-today-v">
+                        <b>{todayN}</b> order{todayN === 1 ? "" : "s"}
+                      </span>
+                      <span className="an2-today-dot" />
+                      <span className="an2-today-v">
+                        <b>₹{todayRev.toLocaleString("en-IN")}</b> revenue
+                      </span>
+                    </div>
                   <div
                     className={`an2-bars${ordersBar.length > 16 ? " scroll" : ""}`}
                   >
@@ -12359,7 +12549,8 @@ export default function ManageOrdersPage() {
                         ) : null}
                       </div>
                     ))}
-                  </div>
+                    </div>
+                  </>
                 );
               })()}
             </An2Section>
@@ -12600,6 +12791,7 @@ export default function ManageOrdersPage() {
               sub={`Cost vs profit for each day${analyticsPeriod === "year" ? " of the chosen month" : ""}`}
               right={
                 <div className="an2-pnl-right">
+                  <span className="an2-today-badge">Today</span>
                   <div className="an2-legend">
                     <span className="an2-leg">
                       <i className="an2-dot d-cost" /> Cost
@@ -12644,7 +12836,24 @@ export default function ManageOrdersPage() {
                   ...pnlDays.map((d) => (d.profit < 0 ? -d.profit : 0)),
                 );
                 const hasLoss = pnlDays.some((d) => d.profit < 0);
+                const todayPnl = pnlDays.find((d) => d.isToday);
+                const tCost = Math.round(todayPnl?.cost || 0);
+                const tProfit = Math.round(todayPnl?.profit || 0);
                 return (
+                  <>
+                    <div className="an2-today-row">
+                      <span className="an2-today-k">Today</span>
+                      <span className="an2-today-v">
+                        Cost <b>₹{tCost.toLocaleString("en-IN")}</b>
+                      </span>
+                      <span className="an2-today-dot" />
+                      <span className="an2-today-v">
+                        {tProfit >= 0 ? "Profit" : "Loss"}{" "}
+                        <b className={tProfit >= 0 ? "pc-pos" : "pc-neg"}>
+                          ₹{Math.abs(tProfit).toLocaleString("en-IN")}
+                        </b>
+                      </span>
+                    </div>
                   <div
                     className={`an2-pnl${pnlDays.length > 14 ? " scroll" : ""}`}
                   >
@@ -12683,7 +12892,8 @@ export default function ManageOrdersPage() {
                         <span className="an2-pnl-xsub">{d.wd}</span>
                       </div>
                     ))}
-                  </div>
+                    </div>
+                  </>
                 );
               })()}
             </An2Section>
@@ -13491,65 +13701,8 @@ export default function ManageOrdersPage() {
                               </select>
                             </div>
                           </div>
-                          <div className="admin-field">
-                            <label className="admin-field-label">
-                              Order Status
-                            </label>
-                            <div className="admin-status-multi">
-                              {[
-                                {
-                                  value: "active",
-                                  label:
-                                    "Active (Processing + Getting Shipped + In Transit no ID + Confirmed)",
-                                },
-                                { value: "all", label: "All Statuses" },
-                                ...distinctStatuses.map((s) => ({
-                                  value: s,
-                                  label: s,
-                                })),
-                                {
-                                  value: "intransit-notrack",
-                                  label: "In Transit — without tracking ID",
-                                },
-                                {
-                                  value: "returns",
-                                  label: `Returns — pending refund${
-                                    pendingReturnsCount
-                                      ? ` (${pendingReturnsCount})`
-                                      : ""
-                                  }`,
-                                },
-                                {
-                                  value: "confirmed",
-                                  label: "Confirmed only",
-                                },
-                                {
-                                  value: "unconfirmed",
-                                  label: "Unconfirmed only",
-                                },
-                              ].map((opt) => {
-                                const sel = Array.isArray(statusFilter)
-                                  ? statusFilter
-                                  : [statusFilter];
-                                const checked = sel.includes(opt.value);
-                                return (
-                                  <label
-                                    key={opt.value}
-                                    className={`admin-status-opt${checked ? " checked" : ""}`}
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={checked}
-                                      onChange={() =>
-                                        toggleStatusFilter(opt.value)
-                                      }
-                                    />
-                                    <span>{opt.label}</span>
-                                  </label>
-                                );
-                              })}
-                            </div>
-                          </div>
+                          {/* Order Status filter moved to the Tools & overview
+                              header dropdown; not duplicated here. */}
                           <div className="admin-field">
                             <label className="admin-field-label">
                               Payment Type
@@ -13648,7 +13801,7 @@ export default function ManageOrdersPage() {
                 : dOrders;
               const dl = (mono) => {
                 if (!scope.length) {
-                  showToast("No orders in the dispatch queue.", "error");
+                  showToast("Select orders first.", "error");
                   return;
                 }
                 downloadDecoratedAddressLabelsPDF(
@@ -13659,38 +13812,111 @@ export default function ManageOrdersPage() {
               };
               const allSel =
                 dOrders.length > 0 && dispatchSel.length === dOrders.length;
+              const selN = dispatchSel.length;
+              // India Post split for the current selection.
+              const ipPool = scope.filter(ipHasWeightSizes);
+              const speedN = ipPool.filter(
+                (o) => classifyOrderProduct(o) === "speed",
+              ).length;
+              const contractN = ipPool.length - speedN;
               return (
                 <div className="mo-dispatch">
                   <div className="mo-dispatch-head">
-                    <span className="mo-dispatch-title">
-                      <Send size={16} /> Dispatch queue
-                      <b>{dOrders.length}</b>
-                    </span>
-                    {dOrders.length > 0 && (
+                    <div className="mo-dispatch-head-top">
+                      <span className="mo-dispatch-title">
+                        <Send size={16} /> Dispatch queue
+                        <b>{dOrders.length}</b>
+                      </span>
                       <div className="mo-dispatch-head-r">
                         <button
                           type="button"
                           className="mo-dispatch-mini"
-                          onClick={() =>
-                            setDispatchSel(
-                              allSel
-                                ? []
-                                : dOrders.map((o) => o["Order ID"]),
-                            )
-                          }
+                          onClick={() => setDispShareOpen(true)}
                         >
-                          {allSel ? "Clear selection" : "Select all"}
+                          <Share2 size={14} /> Share
                         </button>
-                        <button
-                          type="button"
-                          className="mo-dispatch-mini danger"
-                          onClick={() => {
-                            persistDispatch([]);
-                            setDispatchSel([]);
-                          }}
-                        >
-                          Empty queue
-                        </button>
+                        {dOrders.length > 0 && (
+                          <button
+                            type="button"
+                            className="mo-dispatch-mini"
+                            onClick={() =>
+                              setDispatchSel(
+                                allSel ? [] : dOrders.map((o) => o["Order ID"]),
+                              )
+                            }
+                          >
+                            {allSel ? "Clear" : "Select all"}
+                          </button>
+                        )}
+                        {dOrders.length > 0 && (
+                          <button
+                            type="button"
+                            className="mo-dispatch-mini danger"
+                            onClick={() => {
+                              persistDispatch([]);
+                              setDispatchSel([]);
+                            }}
+                          >
+                            Empty queue
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {/* Selection toolbar — actions appear next to the header the
+                        moment one or more orders are selected. */}
+                    {selN > 0 && (
+                      <div className="mo-dispatch-selbar">
+                        <span className="mo-dispatch-selcount">
+                          {selN} selected
+                        </span>
+                        <div className="mo-dispatch-selactions">
+                          <button
+                            type="button"
+                            className="mo-dispatch-act"
+                            onClick={() => downloadCoversPNG("all", scope)}
+                          >
+                            📚 Covers
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-dispatch-act color"
+                            onClick={() => dl(false)}
+                          >
+                            🎨 Colored PDF
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-dispatch-act bw"
+                            onClick={() => dl(true)}
+                          >
+                            🖨️ B&amp;W PDF
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-dispatch-act"
+                            disabled={!speedN}
+                            onClick={() => openIpBulkForOrders("speed", scope)}
+                          >
+                            🚚 Speed ({speedN})
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-dispatch-act"
+                            disabled={!contractN}
+                            onClick={() =>
+                              openIpBulkForOrders("contractual", scope)
+                            }
+                          >
+                            📦 Contractual ({contractN})
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-dispatch-mini"
+                            onClick={() => setDispatchSel([])}
+                          >
+                            Clear
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -13709,8 +13935,12 @@ export default function ManageOrdersPage() {
                       <div className="admin-orders-grid mo-dispatch-grid">
                         {dOrders.map((order, idx) => {
                           const oid = order["Order ID"];
+                          const selected = dispatchSel.includes(oid);
                           return (
-                            <div className="mo-dispatch-card-wrap" key={oid}>
+                            <div
+                              className={`mo-dispatch-card-wrap${selected ? " sel" : ""}`}
+                              key={oid}
+                            >
                               <button
                                 type="button"
                                 className="mo-dispatch-card-x"
@@ -13722,91 +13952,107 @@ export default function ManageOrdersPage() {
                                   );
                                 }}
                               >
-                                <X size={15} />
+                                <X size={14} />
                               </button>
-                              {renderOrderCard(order, idx)}
+                              {renderOrderCard(order, idx, {
+                                mode: true,
+                                selected,
+                                toggle: () =>
+                                  setDispatchSel((p) =>
+                                    p.includes(oid)
+                                      ? p.filter((x) => x !== oid)
+                                      : [...p, oid],
+                                  ),
+                              })}
                             </div>
                           );
                         })}
                       </div>
-                      {(() => {
-                        const ipPool = scope.filter(ipHasWeightSizes);
-                        const ipReady = ipPool.length;
-                        const speedN = ipPool.filter(
-                          (o) => classifyOrderProduct(o) === "speed",
-                        ).length;
-                        const contractN = ipReady - speedN;
-                        return (
-                          <div className="mo-dispatch-ip">
-                            <span className="mo-dispatch-ip-lbl">
-                              India Post bulk (.xlsx) · {ipReady} with weight &amp;
-                              size
-                            </span>
-                            <div className="mo-dispatch-ip-btns">
-                              <button
-                                type="button"
-                                className="mo-dispatch-ip-btn speed"
-                                disabled={!speedN}
-                                onClick={() =>
-                                  openIpBulkForOrders("speed", scope)
-                                }
-                              >
-                                🚚 Speed ({speedN})
-                              </button>
-                              <button
-                                type="button"
-                                className="mo-dispatch-ip-btn contract"
-                                disabled={!contractN}
-                                onClick={() =>
-                                  openIpBulkForOrders("contractual", scope)
-                                }
-                              >
-                                📦 Contractual ({contractN})
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })()}
-                      <div className="mo-dispatch-foot">
-                        <span className="mo-dispatch-count">
-                          {scope.length} label{scope.length === 1 ? "" : "s"} to
-                          print {dispatchSel.length ? "(selected)" : "(all)"}
-                        </span>
-                        <div className="mo-dispatch-dl">
-                          <button
-                            type="button"
-                            className="mo-dispatch-btn covers"
-                            onClick={() => {
-                              if (!scope.length) {
-                                showToast(
-                                  "No orders in the dispatch queue.",
-                                  "error",
-                                );
-                                return;
-                              }
-                              downloadCoversPNG("all", scope);
-                            }}
-                          >
-                            📚 Download covers
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-dispatch-btn color"
-                            onClick={() => dl(false)}
-                          >
-                            🎨 Colored labels PDF
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-dispatch-btn bw"
-                            onClick={() => dl(true)}
-                          >
-                            🖨️ B&amp;W labels PDF
-                          </button>
-                        </div>
-                      </div>
+                      {selN === 0 && (
+                        <p className="mo-dispatch-hint">
+                          Select orders (tap a card’s checkbox, or{" "}
+                          <b>Select all</b>) — label &amp; India Post actions
+                          appear in the header above.
+                        </p>
+                      )}
                     </>
                   )}
+
+                  {/* Share the queue as a link. */}
+                  <AnimatePresence>
+                    {dispShareOpen && (
+                      <motion.div
+                        className="bill-modal-overlay mo-share-overlay"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setDispShareOpen(false)}
+                        style={{ maxWidth: "980px", margin: "0 auto" }}
+                      >
+                        <motion.div
+                          className="bill-modal mo-share-modal"
+                          initial={{ y: "100%" }}
+                          animate={{ y: 0 }}
+                          exit={{ y: "100%" }}
+                          transition={{ duration: 0.3, ease: "easeOut" }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="bill-header">
+                            <span className="weight-600 font-16 flex items-center gap-8">
+                              <Share2 size={16} /> Share dispatch queue
+                            </span>
+                            <span
+                              className="cursor-pointer"
+                              onClick={() => setDispShareOpen(false)}
+                            >
+                              <X size={16} />
+                            </span>
+                          </div>
+                          <div className="mo-share-body">
+                            <p className="mo-share-hint">
+                              Generate a link to the {dispatchIds.length} orders
+                              in this queue, or paste a link to load someone
+                              else’s queue here.
+                            </p>
+                            <button
+                              type="button"
+                              className="mo-dispatch-act color mo-share-gen"
+                              onClick={copyDispatchLink}
+                              disabled={!dispatchIds.length}
+                            >
+                              {dispLinkCopied ? (
+                                <>
+                                  <Check size={15} /> Link copied!
+                                </>
+                              ) : (
+                                <>
+                                  <Share2 size={15} /> Generate &amp; copy link
+                                </>
+                              )}
+                            </button>
+                            <div className="mo-share-or">
+                              <span>or paste a link</span>
+                            </div>
+                            <input
+                              type="text"
+                              className="od-note-input"
+                              placeholder="Paste a dispatch link here…"
+                              value={dispPaste}
+                              onChange={(e) => setDispPaste(e.target.value)}
+                            />
+                            <button
+                              type="button"
+                              className="mo-dispatch-act mo-share-load"
+                              onClick={applyDispatchPaste}
+                              disabled={!dispPaste.trim()}
+                            >
+                              Load orders from link
+                            </button>
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })()}
@@ -14748,6 +14994,7 @@ export default function ManageOrdersPage() {
                 { k: "live", label: "Live status" },
                 { k: "paid", label: "Mark paid" },
                 { k: "deliv", label: "Mark delivered" },
+                { k: "notes", label: "Notes" },
               ].map((t) => (
                 <button key={t.k} type="button"
                   className={`mo-book-subtab${trackSubTab === t.k ? " on" : ""}`}
@@ -14756,6 +15003,152 @@ export default function ManageOrdersPage() {
                 </button>
               ))}
             </div>
+            {/* Operator notes board — add + list team notes (saved to the
+                "Notes" sheet tab). */}
+            {trackSubTab === "notes" && (
+              <div className="mo-notes">
+                <div className="mo-notes-form">
+                  <div className="input-group">
+                    <label>Note title</label>
+                    <input
+                      className="sec-mid-btn"
+                      placeholder="e.g. Reorder bubble wrap"
+                      value={noteTitle}
+                      onChange={(e) => setNoteTitle(e.target.value)}
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>Details</label>
+                    <textarea
+                      className="sec-mid-btn mo-note-ta"
+                      rows={4}
+                      placeholder="Write the details here…"
+                      value={noteBody}
+                      onChange={(e) => setNoteBody(e.target.value)}
+                    />
+                  </div>
+                  <div className="mo-notes-row">
+                    <div className="input-group mo-notes-cat">
+                      <label>Category</label>
+                      <select
+                        className="sec-mid-btn"
+                        value={noteCategory}
+                        onChange={(e) => setNoteCategory(e.target.value)}
+                      >
+                        {[
+                          "General",
+                          "Reminder",
+                          "Order",
+                          "Supplier",
+                          "Finance",
+                          "Follow-up",
+                        ].map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="input-group mo-notes-oidg">
+                      <label>Order ID (optional)</label>
+                      <input
+                        className="sec-mid-btn"
+                        placeholder="ORD…"
+                        value={noteOrderId}
+                        onChange={(e) => setNoteOrderId(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="pri-big-btn width100"
+                    onClick={addNote}
+                    disabled={noteSaving}
+                  >
+                    {noteSaving ? "Saving…" : "Add note"}
+                  </button>
+                </div>
+
+                <div className="mo-notes-list">
+                  {notesLoading ? (
+                    <p className="mo-notes-empty">Loading notes…</p>
+                  ) : notesList.length === 0 ? (
+                    <p className="mo-notes-empty">
+                      No notes yet. Fill the form above and tap <b>Add note</b> —
+                      it’s saved to the Notes sheet and shows here for the whole
+                      team.
+                    </p>
+                  ) : (
+                    notesList.map((n) => {
+                      const done = /done/i.test(n.status);
+                      return (
+                        <div
+                          key={n.id || n.timestamp + n.title}
+                          className={`mo-note-card${done ? " done" : ""}`}
+                        >
+                          <button
+                            type="button"
+                            className={`mo-note-check${done ? " on" : ""}`}
+                            title={done ? "Mark open" : "Mark done"}
+                            onClick={() => toggleNoteStatus(n)}
+                          >
+                            {done ? <Check size={13} strokeWidth={3} /> : null}
+                          </button>
+                          <div className="mo-note-body">
+                            <div className="mo-note-top">
+                              {n.title && (
+                                <span className="mo-note-title" title={n.title}>
+                                  {n.title}
+                                </span>
+                              )}
+                              {n.category && (
+                                <span className="mo-note-cat">{n.category}</span>
+                              )}
+                              {n.title && (
+                                <button
+                                  type="button"
+                                  className="mo-note-copy"
+                                  title="Copy title"
+                                  onClick={() =>
+                                    copyNoteField(n.title, "Title")
+                                  }
+                                >
+                                  <Copy size={13} />
+                                </button>
+                              )}
+                            </div>
+                            {n.note && (
+                              <div className="mo-note-textrow">
+                                <p className="mo-note-text">{n.note}</p>
+                                <button
+                                  type="button"
+                                  className="mo-note-copy"
+                                  title="Copy details"
+                                  onClick={() =>
+                                    copyNoteField(n.note, "Note")
+                                  }
+                                >
+                                  <Copy size={13} />
+                                </button>
+                              </div>
+                            )}
+                            <div className="mo-note-meta">
+                              {n.timestamp && <span>{n.timestamp}</span>}
+                              {n.orderId && (
+                                <span className="mo-note-oid">
+                                  · {n.orderId}
+                                </span>
+                              )}
+                              {n.author && <span>· {n.author}</span>}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
             {/* Tracking-ID export — all tracking IDs by status + date range */}
             {trackSubTab === "live" && (
               <div className="mo-tid">
@@ -16109,9 +16502,11 @@ export default function ManageOrdersPage() {
             {filteredOrders.length > 0 && (
               <div className="mo-tools-box">
                 <div className="mo-tools-head">
+                  {/* Full-width top row: label on the left, chevron on the
+                      right. Clicking anywhere on it toggles the accordion. */}
                   <button
                     type="button"
-                    className={`mo-tools-accordion mo-tools-accordion-lbl${toolsOpen ? " open" : ""}`}
+                    className={`mo-tools-accordion mo-tools-toprow${toolsOpen ? " open" : ""}`}
                     onClick={() =>
                       setToolsOpen((v) => {
                         // Opening the tools accordion also expands the inner
@@ -16125,6 +16520,11 @@ export default function ManageOrdersPage() {
                     <span>
                       {toolsOpen ? "Hide tools & overview" : "Tools & overview"}
                     </span>
+                    {toolsOpen ? (
+                      <ChevronUp size={18} />
+                    ) : (
+                      <ChevronDown size={18} />
+                    )}
                   </button>
                   {/* Controls live in the header so they're reachable without
                       expanding the accordion. */}
@@ -16295,28 +16695,6 @@ export default function ManageOrdersPage() {
                       </AnimatePresence>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    className="mo-tools-chev"
-                    onClick={() =>
-                      setToolsOpen((v) => {
-                        if (!v) setOverviewOpen(true);
-                        return !v;
-                      })
-                    }
-                    aria-expanded={toolsOpen}
-                    aria-label={
-                      toolsOpen
-                        ? "Hide tools & overview"
-                        : "Show tools & overview"
-                    }
-                  >
-                    {toolsOpen ? (
-                      <ChevronUp size={18} />
-                    ) : (
-                      <ChevronDown size={18} />
-                    )}
-                  </button>
                 </div>
                 <AnimatePresence initial={false}>
                   {toolsOpen && (

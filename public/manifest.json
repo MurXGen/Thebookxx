@@ -8,6 +8,10 @@
   "background_color": "#ffffff",
   "theme_color": "#fb8500",
   "orientation": "portrait",
+  "prefer_related_applications": false,
+  "related_applications": [
+    { "platform": "webapp", "url": "https://www.thebookx.in/manifest.json" }
+  ],
   "icons": [
     {
       "src": "/favicon.ico",

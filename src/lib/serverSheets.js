@@ -71,6 +71,13 @@ export const REFEREE_REWARD = Number(process.env.REFEREE_REWARD || 30);
 export const EXCHANGE_SHEET_NAME =
   process.env.EXCHANGE_SHEET_NAME || "Exchange Books";
 
+// ── Operator Notes ─────────────────────────────────────────────────────────
+// A free-form notes board for the team. Create a tab named "Notes" in the
+// orders spreadsheet with this header row (columns are matched by name):
+//   Note ID | Timestamp | Title | Note | Category | Related Order ID |
+//   Status | Author
+export const NOTES_SHEET_NAME = process.env.NOTES_SHEET_NAME || "Notes";
+
 // Our return pickup destination (printed as the "to" address on the request).
 export const RETURN_TO_ADDRESS =
   process.env.RETURN_TO_ADDRESS ||
@@ -591,6 +598,35 @@ export async function exchangeRowsForOrder(orderId) {
   return rows.filter(
     (r) => String(r["Order ID"] ?? r["Order Id"] ?? "").trim() === oid,
   );
+}
+
+// ── Operator Notes ─────────────────────────────────────────────────────────
+// Append one note row.
+export function notesAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "append",
+    sheet: NOTES_SHEET_NAME,
+    data,
+  });
+}
+// Update a note row matched on its Note ID (e.g. mark done / edit).
+export function notesUpdate(noteId, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: NOTES_SHEET_NAME,
+    matchColumn: "Note ID",
+    matchValue: String(noteId),
+    data,
+  });
+}
+// Read every note (small table; newest-first ordering is applied by the caller).
+export async function notesAllRows() {
+  try {
+    const table = await gvizQuery({ sheet: NOTES_SHEET_NAME });
+    return tableToObjects(table);
+  } catch {
+    return [];
+  }
 }
 
 // Read Pro Plan rows for one phone (scoped server-side via gviz `where`).

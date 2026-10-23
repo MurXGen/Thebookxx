@@ -66,6 +66,10 @@ import { isGiftOrder } from "@/utils/giftOrder";
 import { showToast } from "@/context/ToastContext";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { books as ALL_BOOKS } from "@/utils/book";
+import {
+  orderEmailFromRow,
+  sendOrderConfirmationEmail,
+} from "@/utils/orderEmail";
 
 // TheBookX dispatch origin (Matunga, Mumbai).
 const SENDER = { lat: 19.0272, lng: 72.8562, label: "TheBookX · Matunga, Mumbai" };
@@ -1809,7 +1813,15 @@ export default function OrderDetailPage() {
       setOrder((o) => ({ ...o, Email: em }));
       setShowEmailSheet(false);
       setEmailDraft("");
-      showToast("Email added to your order.", "success");
+      showToast("Email added — confirmation on the way.", "success");
+      // Send the order confirmation to the newly-added address so the customer
+      // immediately gets their order details and invoice by email.
+      try {
+        const emailOrder = orderEmailFromRow({ ...order, Email: em }, books);
+        sendOrderConfirmationEmail({ to: em, order: emailOrder });
+      } catch (mailErr) {
+        console.error("Confirmation email failed", mailErr);
+      }
     } catch (e) {
       console.error("Email save failed", e);
       showToast("Couldn't save your email. Please try again.", "error");

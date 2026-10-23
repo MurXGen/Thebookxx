@@ -40,6 +40,15 @@ export default function PwaInstallPromo({ variant = "bar" }) {
     window.addEventListener("bip-ready", onReady);
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
+
+    // If the PWA is already installed on this device — even while viewing in a
+    // normal browser tab (not standalone) — don't show the promo at all.
+    try {
+      navigator.getInstalledRelatedApps?.().then((apps) => {
+        if (Array.isArray(apps) && apps.length > 0) setInstalled(true);
+      });
+    } catch (_) {}
+
     return () => {
       window.removeEventListener("bip-ready", onReady);
       window.removeEventListener("beforeinstallprompt", onPrompt);

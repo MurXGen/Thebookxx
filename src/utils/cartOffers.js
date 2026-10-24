@@ -135,13 +135,14 @@ export const getDeliveryCharge = (
     }
   }
 
-  // Express = standard + 50% of standard. When standard delivery is FREE
-  // (the ₹199–499 band), faster still has a real cost, so base it on the
-  // normal standard rate for that cart instead of 0 — otherwise faster shows
-  // +₹0. Base: ₹100 for ₹1-book carts, ₹69 otherwise.
+  // Faster / Express = flat priority fee by order value (independent of the
+  // standard charge): ₹49 below ₹499, ₹99 up to ₹1000, ₹149 up to ₹2000,
+  // ₹199 above ₹2000.
   if (isFasterDelivery) {
-    const base = standard > 0 ? standard : hasOneRupeeItem ? 100 : 69;
-    return round(base * 1.5);
+    if (amt >= 2000) return 199;
+    if (amt >= 1000) return 149;
+    if (amt >= 499) return 99;
+    return 49;
   }
   return standard;
 };
@@ -180,20 +181,23 @@ export const getDeliveryDescription = (
   hasOneRupeeItem = false,
 ) => {
   const amt = Number(orderAmount) || 0;
-  const fast = isFasterDelivery
-    ? " Express adds 50% for 2–5 day priority handling."
-    : "";
+  // Faster = priority dispatch, delivered in 1–5 days. Standard = 4–9 days.
+  if (isFasterDelivery) {
+    return "Priority dispatch — delivered within 1–5 days.";
+  }
+
+  const eta = " Delivered within 4–9 days.";
 
   if (hasOneRupeeItem) {
     if (amt < 399)
-      return "₹100 delivery — free on orders above ₹399." + fast;
-    if (amt <= 499) return "Free delivery on this order." + fast;
-    return "Handling & care fee — 20% of the order (max ₹159)." + fast;
+      return "₹100 delivery — free on orders above ₹399." + eta;
+    if (amt <= 499) return "Free delivery on this order." + eta;
+    return "Handling & care fee — 20% of the order (max ₹159)." + eta;
   }
 
-  if (amt < 199) return "₹69 delivery — free on orders above ₹199." + fast;
-  if (amt <= 499) return "Free delivery on this order." + fast;
-  return "Handling & care fee — 20% of the order value." + fast;
+  if (amt < 199) return "₹69 delivery — free on orders above ₹199." + eta;
+  if (amt <= 499) return "Free delivery on this order." + eta;
+  return "Handling & care fee — 20% of the order value." + eta;
 };
 
 // Get original charge before discount

@@ -10729,11 +10729,8 @@ export default function ManageOrdersPage() {
                                   className="mo-card-faster"
                                   aria-hidden="true"
                                 >
-                                  <span className="mcf-streak mcf-s0" />
-                                  <span className="mcf-streak mcf-s1" />
-                                  <span className="mcf-streak mcf-s2" />
-                                  <span className="mcf-streak mcf-s3" />
-                                  <span className="mcf-streak mcf-s4" />
+                                  <span className="mcf-glow" />
+                                  <span className="mcf-shine" />
                                 </span>
                               );
                             })()}

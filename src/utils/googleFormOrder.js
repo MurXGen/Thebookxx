@@ -1,6 +1,7 @@
 // utils/googleFormOrder.js
 
 import { encodeAddonsField } from "./addonsField";
+import { getDeliveryCharge } from "./cartOffers";
 
 const GOOGLE_FORM_ORDER_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSc3dUHr_S01ODuvQpok_8n0tG0ezfUPD5NLK0M_tyms25I-eQ/formResponse";
@@ -80,11 +81,11 @@ const FORM_FIELD_IDS = {
   wallet: "entry.1030338596",
 };
 
-// Helper function to get delivery charge (you may need to import or define this)
+// Fallback delivery-charge estimate (used only when the real customer-shown
+// charge wasn't passed). Faster uses the shared flat tiers so it never drifts
+// from checkout: ₹49 / ₹99 / ₹149 / ₹199.
 const getDeliveryChargeValue = (totalDiscounted, isFasterDelivery) => {
-  // This should match your existing delivery charge logic
-  // For now, returning a default - you can replace with your actual function
-  if (isFasterDelivery) return 119;
+  if (isFasterDelivery) return getDeliveryCharge(totalDiscounted, true);
   if (totalDiscounted < 399) return 100;
   if (totalDiscounted < 599) return 0;
   if (totalDiscounted < 799) return 49;

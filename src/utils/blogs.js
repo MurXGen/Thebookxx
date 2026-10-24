@@ -4,6 +4,164 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "united-nations-day-2026-books-on-peace-diplomacy-and-global-understanding": {
+  "id": "blog-088",
+  "title": "United Nations Day 2026: 13 Books on Peace, Diplomacy and Global Understanding to Read in India",
+  "slug": "united-nations-day-2026-books-on-peace-diplomacy-and-global-understanding",
+  "author": "TheBookX Editorial",
+  "authorSlug": "murthy-thevar",
+  "publishDate": "2026-10-24",
+  "lastModified": "2026-10-24",
+  "excerpt": "United Nations Day falls on 24 October. Here is why it matters and 13 books on peace, rights and a connected world, from ₹1 with free delivery across India.",
+  "content": [
+    {
+      "type": "paragraph",
+      "content": "Every year on 24 October, the world marks United Nations Day, the anniversary of the UN Charter coming into force in 1945. In 2026 it is the 81st anniversary, and the date lands on a Saturday, which makes it an easy excuse to pick up a book instead of scrolling headlines. The UN's own 2026 calendar shows the 81st session of the General Assembly opening on 8 September and the COP31 climate conference scheduled for 9 to 20 November in Antalya, so global cooperation is very much in the news."
+    },
+    {
+      "type": "callout",
+      "style": "info",
+      "title": "UN Day at a glance",
+      "content": "Date: 24 October every year. Marks: the entry into force of the UN Charter in 1945. 2026: the 81st anniversary. Why it matters to readers: the UN touches education, health, climate and human rights, the same subjects that fill the best non-fiction shelves. India was among the original signatories of the Charter in 1945."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "content": "Why read about the UN and global affairs at all"
+    },
+    {
+      "type": "paragraph",
+      "content": "Most of us meet the United Nations only through short news clips. Books give the slower, human version: the child who refused to be silenced, the economist who shows that the world is improving faster than we think, the novelist who makes a faraway war feel personal. Reading across borders is the most affordable form of diplomacy there is, and it is a habit that pays off in exams, interviews and everyday conversations."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "content": "Peace and human rights: voices that changed the conversation"
+    },
+    {
+      "type": "paragraph",
+      "content": "<a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a> is the memoir of Malala Yousafzai, who campaigned for girls' education in Pakistan and later became the youngest Nobel Peace Prize laureate. It is a natural fit for UN Day, since education is a core UN goal. Pair it with <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a>, Anne Frank's wartime diary, which remains one of the clearest windows into what conflict does to ordinary families."
+    },
+    {
+      "type": "paragraph",
+      "content": "<a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl asks how people keep their dignity in the worst circumstances, while <a href=\"/books/as-long-as-the-lemon-trees-grow\" style=\"color:#fb8500;font-weight:600\">As Long as the Lemon Trees Grow</a> follows a young medical student in war-torn Syria and puts the refugee experience on a personal scale."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "content": "Understanding the world: economics, data and politics"
+    },
+    {
+      "type": "paragraph",
+      "content": "<a href=\"/books/factfulness\" style=\"color:#fb8500;font-weight:600\">Factfulness</a> by Hans Rosling is the best antidote to doom-scrolling. It teaches you to check instinctive assumptions about poverty, health and population against real data. <a href=\"/books/why-nations-fail\" style=\"color:#fb8500;font-weight:600\">Why Nations Fail</a> by Daron Acemoglu and James Robinson asks why some countries prosper while others stagnate; Acemoglu and Robinson shared the 2024 Nobel Memorial Prize in Economic Sciences with Simon Johnson for related work."
+    },
+    {
+      "type": "paragraph",
+      "content": "<a href=\"/books/the-world-is-flat\" style=\"color:#fb8500;font-weight:600\">The World Is Flat</a> by Thomas Friedman explains globalisation and its effect on jobs, a useful background read for any student of international affairs. For a leader's-eye view of diplomacy and decision making, <a href=\"/books/a-promised-land\" style=\"color:#fb8500;font-weight:600\">A Promised Land</a> by Barack Obama covers the early part of his presidency."
+    },
+    {
+      "type": "callout",
+      "style": "success",
+      "title": "Shop smart",
+      "content": "Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India. Build a small global-affairs shelf for the price of a coffee."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "content": "Novels that cross borders"
+    },
+    {
+      "type": "paragraph",
+      "content": "<a href=\"/books/a-thousand-splendid-suns\" style=\"color:#fb8500;font-weight:600\">A Thousand Splendid Suns</a> by Khaled Hosseini follows two Afghan women across decades of conflict and is as much about friendship as politics. <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> and <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> by George Orwell remain the classic warnings about power and propaganda, and they read differently every time the news cycle shifts."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "content": "Closer to home: a vision for India and clear thinking"
+    },
+    {
+      "type": "paragraph",
+      "content": "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam shows how a boy from Rameswaram became a scientist and President, and why science and peace were never opposites for him. Global conversations also need clear speakers, which is why <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar belongs on this list: it is a practical guide to thinking and speaking simply, a skill every debate, group discussion and diplomat depends on."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "content": "A simple UN Day reading plan"
+    },
+    {
+      "type": "list",
+      "style": "ordered",
+      "items": [
+        "Start with one short, human story: I Am Malala or The Diary of a Young Girl.",
+        "Add one data-driven book: Factfulness, to reset how you read global news.",
+        "Pick one novel from another country: A Thousand Splendid Suns or As Long as the Lemon Trees Grow.",
+        "Finish with a thinking-skills book such as The Art of Clarity, so you can explain what you learned in your own words."
+      ]
+    },
+    {
+      "type": "blockquote",
+      "content": "Reading is the cheapest way to cross a border without a passport."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "content": "Frequently overlooked: read to discuss, not just to know"
+    },
+    {
+      "type": "paragraph",
+      "content": "Share one idea from each book with a friend or in a study group. Students preparing for civil services, MUN debates or college interviews will find that a few well-read examples make arguments more convincing than a page of memorised facts."
+    },
+    {
+      "type": "paragraph",
+      "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+    }
+  ],
+  "coverImage": "/blogs/united-nations-day-2026-books-on-peace-diplomacy-and-global-understanding.jpeg",
+  "images": [
+    {
+      "url": "/blogs/united-nations-day-2026-books-on-peace-diplomacy-and-global-understanding.jpeg",
+      "alt": "A young woman reading a book by a sunny window with a cup of tea and a small globe on the table",
+      "caption": "United Nations Day on 24 October is a good day to read across borders.",
+      "category": "Book News"
+    }
+  ],
+  "keywords": [
+    "united nations day 2026",
+    "un day 24 october",
+    "books on peace",
+    "books on human rights",
+    "global affairs books india",
+    "international relations books",
+    "i am malala",
+    "factfulness",
+    "the art of clarity",
+    "buy books online india",
+    "TheBookX"
+  ],
+  "categories": [
+    "Book News",
+    "Reading Lists",
+    "Awareness Days"
+  ],
+  "faqs": [
+    {
+      "question": "When is United Nations Day and what does it mark?",
+      "answer": "United Nations Day is observed every year on 24 October. It marks the anniversary of the UN Charter coming into force in 1945. In 2026 it is the 81st anniversary."
+    },
+    {
+      "question": "Which books should I read on United Nations Day?",
+      "answer": "Good starting points are I Am Malala, The Diary of a Young Girl, Factfulness, Why Nations Fail and A Thousand Splendid Suns, plus The Art of Clarity by Murthy Thevar for clear thinking and communication."
+    },
+    {
+      "question": "Are these books suitable for students preparing for civil services or MUN?",
+      "answer": "Yes. Factfulness, Why Nations Fail, The World Is Flat and A Promised Land give useful background on economics and politics, while the memoirs and novels add human examples that strengthen essays and debates."
+    },
+    {
+      "question": "Can I get these books at a low price in India?",
+      "answer": "TheBookX has books from ₹1, with free delivery and Cash on Delivery across India."
+    }
+  ]
+},
   "prix-pascal-ai-literary-prize-2026-human-written-books-to-read-india": {
       "id": "blog-087",
       "title": "Prix Pascal 2026: The First Literary Prize for AI-Co-Written Books and 16 Human-Voiced Books to Read in India",

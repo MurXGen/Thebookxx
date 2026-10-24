@@ -632,6 +632,9 @@ export const COST_BY_ID = {
   "bk-688": 90, // Ibne Batuta Ka Joota
   "bk-689": 90, // Chaurasi
   "bk-690": 100, // Think Faster, Talk Smarter
+  "bk-694": 200,
+  "bk-695": 100,
+  "bk-711": 2450, // Think Faster, Talk Smarter
 };
 
 export const getBookCost = (id) => COST_BY_ID[id] || 0;

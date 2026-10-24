@@ -55,6 +55,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
+import {
+  readPending,
+  addPending,
+  updatePending,
+  removePending,
+  clearPending,
+  PENDING_EVENT,
+} from "@/utils/pendingCheckouts";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { FcDocument } from "react-icons/fc";
@@ -93,6 +101,15 @@ function BagContent() {
   const [showQrCheckout, setShowQrCheckout] = useState(false);
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  // Pending checkouts — carts the shopper started but didn't finish paying.
+  const [pending, setPending] = useState([]);
+  const pendingIdRef = useRef(null);
+  useEffect(() => {
+    const load = () => setPending(readPending());
+    load();
+    window.addEventListener(PENDING_EVENT, load);
+    return () => window.removeEventListener(PENDING_EVENT, load);
+  }, []);
   // Mirror the add-on choices made inside the Address modal so the shared
   // Bill modal shows the same delivery + gift-wrap charges.
   const [billFaster, setBillFaster] = useState(false);
@@ -1037,6 +1054,46 @@ ${itemsBlock}${qrLines}
     }
   };
 
+  // Snapshot the cart as a pending checkout the moment the address step opens
+  // (unless we're resuming an existing pending entry).
+  useEffect(() => {
+    if (!showAddressModal) return;
+    if (pendingIdRef.current) return;
+    if (!cart.length) return;
+    const id = `p${Date.now()}`;
+    pendingIdRef.current = id;
+    let details = null;
+    try {
+      details = JSON.parse(localStorage.getItem("checkoutAddress") || "null");
+    } catch {}
+    addPending({
+      id,
+      createdAt: Date.now(),
+      cart: cart.map((i) => ({ id: i.id, qty: i.qty || 1 })),
+      details,
+      total: Math.round(Number(totalDiscounted) || 0),
+      count: cartBooks.length,
+      title: cartBooks[0]?.name || "",
+      cover: cartBooks[0]?.image || "",
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAddressModal]);
+
+  // Reopen a pending checkout: restore its cart + saved details, then open the
+  // address step bound to that same entry (so finishing clears it).
+  const resumePending = (entry) => {
+    clearCart();
+    (entry.cart || []).forEach((it) => {
+      for (let k = 0; k < (it.qty || 1); k++) addToCart(it.id);
+    });
+    try {
+      if (entry.details)
+        localStorage.setItem("checkoutAddress", JSON.stringify(entry.details));
+    } catch {}
+    pendingIdRef.current = entry.id;
+    setTimeout(() => setShowAddressModal(true), 60);
+  };
+
   const handleSkipNudge = () => {
     setHasAcceptedShipping(true);
     setShowFreeShippingNudge(false);
@@ -1316,6 +1373,71 @@ ${itemsBlock}${qrLines}
             </div>
           </div>
 
+          {/* Pending checkouts — carts started but not paid for. Tap to resume. */}
+          {pending.length > 0 && (
+            <div className="pending-orders">
+              <div className="pending-orders-head">
+                <span className="pending-orders-title">
+                  Pending checkouts <b>{pending.length}</b>
+                </span>
+                <button
+                  type="button"
+                  className="pending-clear-all"
+                  onClick={() => {
+                    clearPending();
+                    showToast("Pending checkouts cleared", "info");
+                  }}
+                >
+                  Clear all
+                </button>
+              </div>
+              <div className="pending-list">
+                {pending.map((e) => (
+                  <div className="pending-card" key={e.id}>
+                    {e.cover ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img className="pending-cover" src={e.cover} alt="" />
+                    ) : (
+                      <span className="pending-cover pending-cover-ph" />
+                    )}
+                    <button
+                      type="button"
+                      className="pending-body"
+                      onClick={() => resumePending(e)}
+                    >
+                      <span className="pending-name">
+                        {e.title || "Your order"}
+                        {e.count > 1 ? ` + ${e.count - 1} more` : ""}
+                      </span>
+                      <span className="pending-meta">
+                        {e.count} book{e.count === 1 ? "" : "s"} · ₹{e.total} ·{" "}
+                        {new Date(e.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                        })}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="pending-continue"
+                      onClick={() => resumePending(e)}
+                    >
+                      Continue
+                    </button>
+                    <button
+                      type="button"
+                      className="pending-clear"
+                      aria-label="Remove pending checkout"
+                      onClick={() => removePending(e.id)}
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Wishlist — horizontal strip below the added books */}
           <WishlistStrip />
 
@@ -1576,8 +1698,28 @@ ${itemsBlock}${qrLines}
 
       <AddressModal
         open={showAddressModal}
-        onClose={() => setShowAddressModal(false)}
-        onOrderPlaced={(ctx) => setSuccessCtx(ctx)}
+        onClose={() => {
+          setShowAddressModal(false);
+          // Keep the pending entry, refreshed with whatever was typed.
+          if (pendingIdRef.current) {
+            let details = null;
+            try {
+              details = JSON.parse(
+                localStorage.getItem("checkoutAddress") || "null",
+              );
+            } catch {}
+            updatePending(pendingIdRef.current, { details });
+            pendingIdRef.current = null;
+          }
+        }}
+        onOrderPlaced={(ctx) => {
+          // Order placed → clear its pending entry.
+          if (pendingIdRef.current) {
+            removePending(pendingIdRef.current);
+            pendingIdRef.current = null;
+          }
+          setSuccessCtx(ctx);
+        }}
         proActive={proActive}
         finalPayable={finalPayable}
         totalDiscounted={totalDiscounted}

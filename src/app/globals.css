@@ -31283,6 +31283,129 @@ img[data-loaded="true"] {
   outline-offset: 2px;
   border-radius: 16px;
 }
+/* ── Pending checkouts on the bag page ── */
+.pending-orders {
+  margin: 18px 0 4px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(251, 133, 0, 0.25);
+  background: rgba(251, 133, 0, 0.05);
+}
+.pending-orders-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.pending-orders-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--foreground, #111827);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.pending-orders-title b {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.pending-clear-all {
+  border: none;
+  background: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #b91c1c;
+  cursor: pointer;
+}
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pending-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 11px;
+  border-radius: 13px;
+  background: #fff;
+  border: 1px solid var(--hairline, #ececec);
+  box-shadow: 0 2px 8px -5px rgba(0, 0, 0, 0.18);
+}
+.pending-cover {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 54px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #f1f3f5;
+}
+.pending-cover-ph {
+  display: inline-block;
+}
+.pending-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+}
+.pending-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground, #111827);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.pending-meta {
+  font-size: 12px;
+  color: var(--dark-50, #6b7280);
+}
+.pending-continue {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 9px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.pending-clear {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+}
+.pending-clear:hover {
+  color: #b91c1c;
+  border-color: #b91c1c;
+}
+
 /* ── Operator notes board (Track → Notes) ── */
 .mo-notes {
   display: flex;
@@ -42073,7 +42196,16 @@ img[data-loaded="true"] {
   border-radius: 16px;
   padding: 14px;
   margin: 0;
-  box-shadow: var(--shadow-xs, 0 1px 2px rgba(10, 10, 10, 0.05));
+  box-shadow:
+    0 6px 18px -8px rgba(10, 10, 10, 0.16),
+    0 1px 3px rgba(10, 10, 10, 0.06);
+}
+/* Give every step-2 section the same lifted, clearly-visible card shadow. */
+.pay-sel .pay-sel-coins,
+.pay-sel .resell-row {
+  box-shadow:
+    0 6px 18px -8px rgba(10, 10, 10, 0.16),
+    0 1px 3px rgba(10, 10, 10, 0.06);
 }
 .pay-sel .ps-total {
   display: flex;
@@ -46441,6 +46573,28 @@ img[data-loaded="true"] {
   color: var(--tertiary, #fb8500);
   background: rgba(251, 133, 0, 0.12);
 }
+/* Back-to-previous-step arrow in the Step 2/2 header. */
+.ps-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-right: 2px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 10px;
+  background: var(--surface-2, #f7f7f8);
+  color: var(--foreground, #1c1814);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+.ps-back-btn:hover {
+  border-color: var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
+}
+.ps-back-btn:active {
+  transform: scale(0.94);
+}
 /* "Pay in two parts" split card */
 .pay-method-splittop {
   display: flex;
@@ -50042,45 +50196,57 @@ img[data-loaded="true"] {
   border-radius: inherit;
   pointer-events: none;
 }
-.mcf-streak {
+/* Soft warm wash at the top of the card — a calm "priority" tint. */
+.mcf-glow {
   position: absolute;
-  height: 3px;
-  width: 42%;
-  border-radius: 3px;
+  inset: 0 0 auto 0;
+  height: 56%;
+  background: linear-gradient(
+    180deg,
+    rgba(251, 133, 0, 0.1) 0%,
+    rgba(255, 183, 3, 0.05) 40%,
+    transparent 100%
+  );
+}
+/* A single clean diagonal light sweep that glides across every few seconds. */
+.mcf-shine {
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 45%;
+  height: 180%;
+  transform: rotate(18deg);
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(251, 133, 0, 0.32),
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 213, 128, 0.35),
     transparent
   );
-  transform: skewX(-20deg);
-  animation: mcfZoom linear infinite;
+  filter: blur(2px);
+  animation: mcfShine 4.2s ease-in-out infinite;
 }
-@keyframes mcfZoom {
+@keyframes mcfShine {
   0% {
-    transform: translateX(-70%) skewX(-20deg);
+    left: -60%;
     opacity: 0;
   }
-  20% {
+  12% {
     opacity: 1;
   }
-  80% {
+  45% {
     opacity: 1;
   }
+  60%,
   100% {
-    transform: translateX(270%) skewX(-20deg);
+    left: 130%;
     opacity: 0;
   }
 }
-.mcf-s0 { top: 14%; animation-duration: 2.6s; animation-delay: 0s; }
-.mcf-s1 { top: 33%; animation-duration: 3.1s; animation-delay: 0.5s; }
-.mcf-s2 { top: 52%; animation-duration: 2.8s; animation-delay: 1s; }
-.mcf-s3 { top: 70%; animation-duration: 3.3s; animation-delay: 0.3s; }
-.mcf-s4 { top: 86%; animation-duration: 2.9s; animation-delay: 1.3s; }
 @media (prefers-reduced-motion: reduce) {
-  .mcf-streak {
+  .mcf-shine {
     animation: none;
-    opacity: 0.4;
+    opacity: 0;
   }
 }
 

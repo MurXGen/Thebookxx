@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { createPortal } from "react-dom";
 import { useEffect, useState, useRef } from "react";
 import { useStore } from "@/context/StoreContext";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -182,34 +181,15 @@ export default function AddressModal({
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
   const [address, setAddress] = useState("");
-  // Optional current-location pin (Google Maps link) — an alternative to
-  // typing the full address. Appended to the address that goes to the sheet.
-  const [locationLink, setLocationLink] = useState("");
-  // Location-pin consent flow: we ask (via a slide-up sheet) whether the shopper
-  // is currently at this delivery address before triggering the browser's
-  // geolocation prompt. "No" hides the pin option for the rest of the session.
-  const [pinAskOpen, setPinAskOpen] = useState(false);
-  const [pinAsked, setPinAsked] = useState(false);
-  const [pinDismissed, setPinDismissed] = useState(false);
-  const [locating, setLocating] = useState(false);
-  const [locError, setLocError] = useState("");
-  // True only after the shopper actually edits the address themselves — so
-  // auto-filled (localStorage / past-order) addresses don't trigger a location
-  // permission prompt on blur.
-  const addressEditedRef = useRef(false);
-
-  // Apply a saved/prefilled address: pull any "Pinned location: <url>" out into
-  // the pin state and keep the rest as the visible address (no re-prompt).
+  // Apply a saved/prefilled address: strip any legacy "Pinned location: <url>"
+  // token left in older saved/past-order addresses, keep the rest as visible.
   const applySavedAddress = (raw, overwrite) => {
     const s = String(raw || "");
-    const m = s.match(/(?:[,\s·]*)Pinned location:\s*(https?:\/\/\S+)/i);
-    const link = m ? m[1] : "";
     const clean = s
       .replace(/(?:[,\s·]*)Pinned location:\s*https?:\/\/\S+/i, "")
       .replace(/(\s*,\s*){2,}/g, ", ")
       .replace(/^[\s,·]+|[\s,·]+$/g, "")
       .trim();
-    if (link) setLocationLink((prev) => (overwrite ? link : prev || link));
     if (clean) setAddress((prev) => (overwrite ? clean : prev || clean));
   };
   // Structured address parts — combined into one address string on submit so
@@ -230,6 +210,9 @@ export default function AddressModal({
   const [pincodeError, setPincodeError] = useState("");
   const [showContactFields, setShowContactFields] = useState(false);
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
+  // Delivery-speed step shown after "Choose payment method" (replaces the inline
+  // speed card in the address step).
+  const [showSpeedModal, setShowSpeedModal] = useState(false);
   // Full-page payment selection sheet (UPI / COD / WhatsApp + coins toggle).
   const [showPaySelect, setShowPaySelect] = useState(false);
   // Address review + confirm sheet — shown after "Choose payment method".
@@ -1023,7 +1006,10 @@ export default function AddressModal({
 
   // "Pay by UPI app" tapped on the QR screen → reveal the app picker AND start
   // the verifying countdown (the behaviour we used to run automatically).
+  // Prefill from the saved draft — on mount and each time the modal (re)opens,
+  // so resuming a pending checkout restores the shopper's entered details.
   useEffect(() => {
+    if (!open) return;
     const saved = JSON.parse(localStorage.getItem("checkoutAddress") || "null");
     if (saved) {
       setName(saved.name || "");
@@ -1036,7 +1022,8 @@ export default function AddressModal({
       setState(saved.state || "");
       setFasterDelivery(saved.fasterDelivery || false);
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   useEffect(() => {
     if (showContactFields) {
@@ -1989,76 +1976,14 @@ export default function AddressModal({
   };
 
   // Combine the structured parts into one deliverable address string.
-  const fullAddress = [
-    flatNo,
-    building,
-    landmark,
-    address,
-    locationLink ? `Pinned location: ${locationLink}` : "",
-  ]
+  const fullAddress = [flatNo, building, landmark, address]
     .map((s) => (s || "").trim())
     .filter(Boolean)
     .join(", ");
 
-  // Capture the shopper's current GPS position as a Google Maps pin link. We
-  // only STORE the pin (added to the address that goes to the sheet) — the
-  // customer still types their full address themselves.
-  const useCurrentLocation = () => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setLocError("Location isn't supported on this device — please type your address.");
-      return;
-    }
-    setLocating(true);
-    setLocError("");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setLocationLink(
-          `https://maps.google.com/?q=${latitude.toFixed(6)},${longitude.toFixed(6)}`,
-        );
-        setLocating(false);
-      },
-      (err) => {
-        setLocating(false);
-        setLocError(
-          err && err.code === 1
-            ? "Location permission denied — allow it or type your address."
-            : "Couldn't get your location — try again or type your address.",
-        );
-      },
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 },
-    );
-  };
-
-  // When the shopper finishes the full address (blur) we (a) strip repeated
-  // pincode/city tokens and (b) prompt once to pin their current location so
-  // the delivery partner gets a map reference. Re-pins if they clear + edit.
+  // On blur, strip repeated pincode/city tokens from the typed address.
   const handleAddressBlur = () => {
     dedupeAddress();
-    // Ask (once) whether they're at this address before requesting geolocation.
-    if (
-      addressEditedRef.current &&
-      address.trim() &&
-      !locationLink &&
-      !locating &&
-      !pinAsked &&
-      !pinDismissed
-    ) {
-      setPinAsked(true);
-      setPinAskOpen(true);
-    }
-  };
-
-  // Shopper confirmed they're at this address → request the browser location.
-  const confirmPinHere = () => {
-    setPinAskOpen(false);
-    setPinDismissed(false);
-    useCurrentLocation();
-  };
-  // Shopper is ordering for somewhere else → hide the pin option this session.
-  const declinePinHere = () => {
-    setPinAskOpen(false);
-    setPinDismissed(true);
   };
 
   // On blur, strip words from the address that are already captured in the
@@ -2213,118 +2138,19 @@ export default function AddressModal({
                     Full address — House no, Street, Landmark{" "}
                     <span className="red">*</span>
                   </label>
-                  {locationLink ? (
-                    <span className="addr-pin-done">
-                      <MapPin size={13} /> Location pinned
-                      <Check size={12} strokeWidth={3} />
-                      <button
-                        type="button"
-                        className="addr-pin-mini"
-                        onClick={useCurrentLocation}
-                        disabled={locating}
-                      >
-                        Re-pin
-                      </button>
-                      <button
-                        type="button"
-                        className="addr-pin-mini danger"
-                        onClick={() => setLocationLink("")}
-                      >
-                        Remove
-                      </button>
-                    </span>
-                  ) : pinDismissed ? null : (
-                    <button
-                      type="button"
-                      className="addr-pin-btn"
-                      onClick={() => setPinAskOpen(true)}
-                      disabled={locating}
-                    >
-                      <MapPin size={13} />
-                      {locating ? "Locating…" : "Pin my location"}
-                    </button>
-                  )}
                 </div>
                 <textarea
                   className="sec-mid-btn textarea"
                   placeholder="e.g. 12/A, Green Residency, 2nd floor, MG Road, near City Mall"
                   value={address}
-                  onChange={(e) => {
-                    addressEditedRef.current = true;
-                    setAddress(e.target.value);
-                  }}
+                  onChange={(e) => setAddress(e.target.value)}
                   onBlur={handleAddressBlur}
                   rows={3}
                 />
-                {locError && <span className="loc-pick-err">{locError}</span>}
               </div>
               )}
               </div>
               {/* /af-card — location + address */}
-
-              {/* Slide-up consent sheet: ask before requesting geolocation.
-                  Portaled to <body> so the parent sheet's transform doesn't
-                  trap the fixed positioning. */}
-              {typeof document !== "undefined" &&
-                createPortal(
-                  <AnimatePresence>
-                    {pinAskOpen && (
-                      <>
-                        <motion.div
-                          className="pinask-backdrop"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          onClick={declinePinHere}
-                        />
-                        <motion.div
-                          className="pinask-sheet"
-                          initial={{ y: "110%" }}
-                          animate={{ y: 0 }}
-                          exit={{ y: "110%" }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 380,
-                            damping: 34,
-                          }}
-                          role="dialog"
-                          aria-label="Confirm your current location"
-                        >
-                          <span className="pinask-grip" />
-                          <div className="pinask-ico">
-                            <MapPin size={22} />
-                          </div>
-                          <h4 className="pinask-title">
-                            Are you at this address right now?
-                          </h4>
-                          <p className="pinask-sub">
-                            Share your live location and we&apos;ll pin it for
-                            the delivery partner — faster, more accurate
-                            delivery.
-                          </p>
-                          <div className="pinask-actions">
-                            <button
-                              type="button"
-                              className="pinask-btn pinask-no"
-                              onClick={declinePinHere}
-                            >
-                              No, it&apos;s for elsewhere
-                            </button>
-                            <button
-                              type="button"
-                              className="pinask-btn pinask-yes"
-                              onClick={confirmPinHere}
-                            >
-                              <MapPin size={16} /> Yes, I&apos;m here
-                            </button>
-                          </div>
-                        </motion.div>
-                      </>
-                    )}
-                  </AnimatePresence>,
-                  document.body,
-                )}
 
               <AnimatePresence>
                 {pincodeReady && (
@@ -2416,64 +2242,8 @@ export default function AddressModal({
                 )}
               </AnimatePresence>
 
-              {/* Delivery speed — revealed once the phone number is complete.
-                  Moved here from the Choose-payment step. */}
-              <AnimatePresence>
-                {contactReady && (
-                  <motion.div
-                    className="af-card af-deliv-card"
-                    initial={{ opacity: 0, height: 0, y: -12 }}
-                    animate={{ opacity: 1, height: "auto", y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -12 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <span className="deliv-addon-head">Delivery speed</span>
-                    <div className="pa-list">
-                      <button
-                        type="button"
-                        className={`pa-row${!fasterDelivery ? " on" : ""}`}
-                        onClick={() => setFasterDelivery(false)}
-                      >
-                        <span className="pa-row-ic">
-                          <Truck size={18} />
-                        </span>
-                        <span className="pa-row-main">
-                          <span className="pa-row-name">Standard delivery</span>
-                          <span className="pa-row-sub">4–9 days</span>
-                        </span>
-                        <span className="pa-row-price free">FREE</span>
-                        <span
-                          className={`pa-radio${!fasterDelivery ? " on" : ""}`}
-                        >
-                          {!fasterDelivery && <Check size={12} strokeWidth={3} />}
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        className={`pa-row${fasterDelivery ? " on" : ""}`}
-                        onClick={() => setFasterDelivery(true)}
-                      >
-                        <span className="pa-row-ic paid">
-                          <span className="pa-ripple" aria-hidden="true" />
-                          <Zap size={18} />
-                        </span>
-                        <span className="pa-row-main">
-                          <span className="pa-row-name">Faster delivery</span>
-                          <span className="pa-row-sub">1–5 days</span>
-                        </span>
-                        <span className="pa-row-price">
-                          +₹{fasterDeliveryCharge}
-                        </span>
-                        <span
-                          className={`pa-radio${fasterDelivery ? " on" : ""}`}
-                        >
-                          {fasterDelivery && <Check size={12} strokeWidth={3} />}
-                        </span>
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* Delivery speed moved to its own step, shown when the shopper
+                  taps "Choose payment method" (see showSpeedModal). */}
             </div>
 
             {/* Alternate-number slide-up modal */}
@@ -2613,16 +2383,12 @@ export default function AddressModal({
                       return;
                     }
                     setPaySel("UPI"); // online payment selected by default
-                    // --- "Review your details" sheet DISABLED for a smoother,
-                    //     block-free checkout. Re-enable later by restoring
-                    //     openAddrConfirm() and removing the direct
-                    //     setShowPaySelect(true) call below. ---
-                    // openAddrConfirm();
-                    setShowPaySelect(true);
+                    // Pick delivery speed first (its own step), then payment.
+                    setShowSpeedModal(true);
                   }}
                 >
                   <span className="flex flex-row items-center justify-center gap-6">
-                    Choose payment method
+                    Submit
                     <ArrowRight size={18} strokeWidth={2.5} />
                   </span>
                 </LoadingButton>
@@ -2817,6 +2583,14 @@ export default function AddressModal({
             >
               <div className="bill-header">
                 <span className="flex items-center gap-8">
+                  <button
+                    type="button"
+                    className="ps-back-btn"
+                    onClick={() => setShowPaySelect(false)}
+                    aria-label="Back to delivery details"
+                  >
+                    <ArrowLeft size={18} />
+                  </button>
                   <span className="weight-600 font-16">
                     Choose payment method
                   </span>
@@ -2824,7 +2598,10 @@ export default function AddressModal({
                 </span>
                 <span
                   className="cursor-pointer"
-                  onClick={() => setShowPaySelect(false)}
+                  onClick={() => {
+                    setShowPaySelect(false);
+                    onClose();
+                  }}
                 >
                   <X size={16} />
                 </span>
@@ -3129,22 +2906,16 @@ export default function AddressModal({
                     type="button"
                     disabled={fasterDelivery}
                     onClick={() => !fasterDelivery && setPaySel("COD")}
-                    className={`pay-method${paySel === "COD" ? " selected" : ""}${
+                    className={`pay-method pm2${paySel === "COD" ? " selected" : ""}${
                       fasterDelivery ? " pay-method-disabled" : ""
                     }`}
                   >
-                    <span className="pay-method-head">
-                      <span className="pay-method-amt">
-                        <span className="pay-method-price">
-                          ₹{codTotalWithFee}
-                        </span>
-                      </span>
-                      <span className="pay-method-div" aria-hidden="true" />
-                      <span className="pay-method-body">
-                        <span className="pay-method-ic pay-ic-cod">
+                    <span className="pm2-main">
+                      <span className="pm2-titlerow">
+                        <span className="pm2-upi pay-ic-cod">
                           <svg
-                            width="22"
-                            height="22"
+                            width="18"
+                            height="18"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="#0a8f0c"
@@ -3156,34 +2927,31 @@ export default function AddressModal({
                             <circle cx="12" cy="12" r="2.5" />
                           </svg>
                         </span>
-                        <span className="pay-method-labels">
-                          <span className="pay-method-name">
-                            Cash on Delivery
-                          </span>
-                          {fasterDelivery ? (
-                            <span className="pay-method-desc">
-                              Not available with Faster delivery
-                            </span>
-                          ) : proActive ? (
-                            <span className="pay-method-desc pay-perk">
-                              No COD fee · Member
-                            </span>
-                          ) : (
-                            <span className="pay-method-desc pay-method-cod-fee">
-                              Includes <strong>+₹{codFeeAmount}</strong> handling
-                              fee
-                            </span>
-                          )}
-                        </span>
+                        <span className="pm2-title">Cash on Delivery</span>
                       </span>
-                      <span
-                        className={`pay-method-radio${paySel === "COD" ? " on" : ""}`}
-                        aria-hidden="true"
-                      >
-                        {paySel === "COD" && (
-                          <Check size={13} strokeWidth={3} />
+                      <span className="pay-perks">
+                        {fasterDelivery ? (
+                          <span className="pay-method-desc">
+                            Not available with Faster delivery
+                          </span>
+                        ) : proActive ? (
+                          <span className="pay-perk">No COD fee · Member</span>
+                        ) : (
+                          <span className="pay-method-desc pay-method-cod-fee">
+                            Includes <strong>+₹{codFeeAmount}</strong> handling
+                            fee
+                          </span>
                         )}
                       </span>
+                    </span>
+                    <span className="pm2-pricecol">
+                      <span className="pm2-price">₹{codTotalWithFee}</span>
+                    </span>
+                    <span
+                      className={`pay-method-radio${paySel === "COD" ? " on" : ""}`}
+                      aria-hidden="true"
+                    >
+                      {paySel === "COD" && <Check size={13} strokeWidth={3} />}
                     </span>
                   </button>
                 </div>
@@ -3255,6 +3023,101 @@ export default function AddressModal({
                     </span>
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========== Delivery-speed step (after "Choose payment method") ====== */}
+      <AnimatePresence>
+        {showSpeedModal && (
+          <motion.div
+            className="bill-modal-overlay"
+            style={{ zIndex: 2147483002, maxWidth: "980px", margin: "0 auto" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowSpeedModal(false)}
+          >
+            <motion.div
+              className="bill-modal addr-modal"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              <div className="bill-header">
+                <span className="flex items-center gap-8">
+                  <span className="weight-600 font-16">Delivery speed</span>
+                  <span className="ps-step-badge">Step 2/2</span>
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowSpeedModal(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+              <div className="address-form-content flex flex-col gap-12">
+                <div className="pa-list">
+                  <button
+                    type="button"
+                    className={`pa-row${!fasterDelivery ? " on" : ""}`}
+                    onClick={() => setFasterDelivery(false)}
+                  >
+                    <span className="pa-row-ic">
+                      <Truck size={18} />
+                    </span>
+                    <span className="pa-row-main">
+                      <span className="pa-row-name">Standard delivery</span>
+                      <span className="pa-row-sub">
+                        4–9 days · Total ₹{Math.round(getTotalWithDelivery(false))}
+                      </span>
+                    </span>
+                    <span className="pa-row-price free">
+                      {standardDeliveryCharge > 0
+                        ? `₹${standardDeliveryCharge}`
+                        : "FREE"}
+                    </span>
+                    <span className={`pa-radio${!fasterDelivery ? " on" : ""}`}>
+                      {!fasterDelivery && <Check size={12} strokeWidth={3} />}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`pa-row${fasterDelivery ? " on" : ""}`}
+                    onClick={() => setFasterDelivery(true)}
+                  >
+                    <span className="pa-row-ic paid">
+                      <span className="pa-ripple" aria-hidden="true" />
+                      <Zap size={18} />
+                    </span>
+                    <span className="pa-row-main">
+                      <span className="pa-row-name">Faster delivery</span>
+                      <span className="pa-row-sub">
+                        1–5 days · Total ₹{Math.round(getTotalWithDelivery(true))}
+                      </span>
+                    </span>
+                    <span className="pa-row-price">+₹{fasterDeliveryCharge}</span>
+                    <span className={`pa-radio${fasterDelivery ? " on" : ""}`}>
+                      {fasterDelivery && <Check size={12} strokeWidth={3} />}
+                    </span>
+                  </button>
+                </div>
+                <LoadingButton
+                  className="pri-big-btn width100"
+                  onClick={() => {
+                    setShowSpeedModal(false);
+                    setShowPaySelect(true);
+                  }}
+                >
+                  <span className="flex flex-row items-center justify-center gap-6">
+                    Choose payment method
+                    <ArrowRight size={18} strokeWidth={2.5} />
+                  </span>
+                </LoadingButton>
               </div>
             </motion.div>
           </motion.div>

@@ -2,15 +2,25 @@
 
 import { useState } from "react";
 
-// Deterministic black-OR-white cover palette derived from the title, so a book
-// without an image always gets the same monochrome designed cover.
+// Clean light "designed cover" palette for books with no image. The cover is
+// always white/cream (never black) with a deterministic muted accent hue derived
+// from the title, so each book gets a distinct but tasteful, premium-looking
+// placeholder that stays consistent across renders.
 export function coverFallbackVars(name) {
   const s = String(name || "");
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360;
-  return h % 2 === 0
-    ? { "--cf-bg": "#0a0a0a", "--cf-fg": "#ffffff", "--cf-bd": "#0a0a0a" }
-    : { "--cf-bg": "#ffffff", "--cf-fg": "#111111", "--cf-bd": "#e5e7eb" };
+  const accent = `hsl(${h}, 48%, 44%)`;
+  const accentSoft = `hsl(${h}, 46%, 92%)`;
+  const tint = `hsl(${h}, 42%, 97.5%)`;
+  return {
+    "--cf-bg": "#ffffff",
+    "--cf-fg": "#20242b",
+    "--cf-bd": "#e8eaef",
+    "--cf-accent": accent,
+    "--cf-accent-soft": accentSoft,
+    "--cf-tint": tint,
+  };
 }
 
 // Renders a book cover image, falling back to a designed "cover" (title +

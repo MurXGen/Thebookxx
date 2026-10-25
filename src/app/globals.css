@@ -1019,68 +1019,90 @@ button:hover {
   max-width: 100%;
   max-height: 100%;
   aspect-ratio: 2 / 3;
-  border-radius: 6px;
-  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.45);
-  background: var(--cf-bg, #0a0a0a);
-  color: var(--cf-fg, #ffffff);
-  border: 1px solid var(--cf-bd, transparent);
+  border-radius: 8px;
+  box-shadow:
+    0 10px 24px -14px rgba(20, 24, 31, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  background:
+    linear-gradient(158deg, #ffffff 0%, var(--cf-tint, #f7f8fa) 100%);
+  color: var(--cf-fg, #20242b);
+  border: 1px solid var(--cf-bd, #e8eaef);
   display: flex !important;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 16px 14px;
+  gap: 9px;
+  padding: 20px 15px 16px;
   text-align: center;
   line-height: 1.25 !important;
   overflow: hidden;
   position: relative;
 }
 .book-cover-fallback::before {
-  /* subtle spine highlight on the left edge (adapts to black/white cover) */
+  /* accent spine running down the left edge */
   content: "";
   position: absolute;
-  left: 6px;
-  top: 6px;
-  bottom: 6px;
-  width: 2px;
-  border-radius: 2px;
-  background: currentColor;
-  opacity: 0.18;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--cf-accent, #334155);
+  opacity: 0.85;
+}
+.book-cover-fallback::after {
+  /* faint inner keyline for a framed, premium feel */
+  content: "";
+  position: absolute;
+  inset: 6px 6px 6px 8px;
+  border: 1px solid var(--cf-accent-soft, rgba(0, 0, 0, 0.06));
+  border-radius: 5px;
+  pointer-events: none;
 }
 .bcf-brand {
   font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  opacity: 0.72;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--cf-accent, #334155);
+  opacity: 0.95;
   text-transform: uppercase;
+  position: relative;
+  z-index: 1;
 }
 .bcf-rule {
   width: 26px;
   height: 2px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--cf-accent, #334155);
+  opacity: 0.55;
+  position: relative;
+  z-index: 1;
 }
 .bcf-title {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 15px;
   font-weight: 700;
-  line-height: 1.22;
+  line-height: 1.24;
+  color: var(--cf-fg, #20242b);
   display: -webkit-box;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  position: relative;
+  z-index: 1;
 }
 .bcf-author {
   margin-top: 2px;
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  opacity: 0.85;
+  color: var(--cf-fg, #20242b);
+  opacity: 0.68;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 /* Context sizing — match the real cover (height 150px, 2:3 → ~100px wide). */
 .book-image-wrapper .book-cover-fallback {
@@ -35272,9 +35294,13 @@ img[data-loaded="true"] {
   gap: 3px;
 }
 .mo-cover .book-cover-fallback::before {
-  left: 3px;
-  top: 4px;
-  bottom: 4px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
+.mo-cover .book-cover-fallback::after {
+  display: none; /* skip the inner keyline on the tiny order thumbnail */
 }
 .mo-cover .bcf-brand {
   font-size: 5px;

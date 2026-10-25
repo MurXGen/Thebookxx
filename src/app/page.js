@@ -21,8 +21,11 @@ import BundleDeals from "@/components/BundleDeals";
 import CategoryBrowse from "@/components/CategoryBrowse";
 import BookRail from "@/components/BookRail";
 import { books as ALL_BOOKS } from "@/utils/book";
-import { Sparkles, TrendingUp, Award, Tag, Baby } from "lucide-react";
-import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
+import { Sparkles, TrendingUp, Award, Tag, Baby, BookOpen } from "lucide-react";
+import {
+  BooksSkeleton,
+  BookRailSkeleton,
+} from "@/components/UI/BookCardSkeleton";
 
 // Book lists for the homepage rails (real BookCard UI, like All Books).
 const RAIL_ONE_RUPEE = ALL_BOOKS.filter(
@@ -35,6 +38,10 @@ const RAIL_TRENDING = ALL_BOOKS.filter(
 const RAIL_BESTSELLERS = ALL_BOOKS.filter(
   (b) =>
     b.catalogue?.includes("bestseller") && b.image && b.discountedPrice !== 1,
+);
+const RAIL_FICTION = ALL_BOOKS.filter(
+  (b) =>
+    b.catalogue?.includes("fiction") && b.image && b.discountedPrice !== 1,
 );
 const RAIL_NEW_ARRIVALS = [...ALL_BOOKS]
   .slice(-50)
@@ -68,6 +75,7 @@ const NewlyAddedBooks = lazy(() => import("@/components/NewlyAddedBooks"));
 // eslint-disable-next-line no-unused-vars
 const TrendingBooks = lazy(() => import("@/components/TrendingBooks"));
 const UrgencyOffer = lazy(() => import("@/components/UrgencyOffer"));
+// eslint-disable-next-line no-unused-vars
 const IntroVideo = lazy(() => import("@/components/IntroVideo"));
 const UnlockModal = lazy(() => import("@/components/UnlockModal"));
 const InstallPWA = lazy(() => import("@/components/InstallPWA"));
@@ -98,8 +106,10 @@ const SmoothAppear = ({ children, delay = 0, className = "" }) => (
   </motion.div>
 );
 
-// Intersection Observer wrapper for scroll-triggered loading
-const LazySection = ({ children, threshold = 0.1 }) => {
+// Intersection Observer wrapper for scroll-triggered loading.
+// `fallback` is shown before the section scrolls into view, so the heading is
+// present immediately and the books lazy-load behind a skeleton (no blank pop).
+const LazySection = ({ children, threshold = 0.1, fallback = null }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [ref, setRef] = useState(null);
 
@@ -120,8 +130,29 @@ const LazySection = ({ children, threshold = 0.1 }) => {
     return () => observer.disconnect();
   }, [ref, threshold]);
 
-  return <div ref={setRef}>{isVisible && children}</div>;
+  return <div ref={setRef}>{isVisible ? children : fallback}</div>;
 };
+
+// Homepage book rail that shows its real heading immediately and skeleton-loads
+// the books until it scrolls into view.
+const RailBlock = (props) => (
+  <LazySection
+    threshold={0.05}
+    fallback={
+      <BookRailSkeleton
+        id={props.id}
+        icon={props.icon}
+        badge={props.badge}
+        title={props.title}
+        subtitle={props.subtitle}
+      />
+    }
+  >
+    <SmoothAppear delay={0.1}>
+      <BookRail {...props} />
+    </SmoothAppear>
+  </LazySection>
+);
 
 export default function HomePage() {
   const [isClient, setIsClient] = useState(false);
@@ -156,7 +187,8 @@ export default function HomePage() {
           thebookx.in?orderID=… (no scratch card). */}
       <InvoiceParamModal />
 
-      <IntroVideo />
+      {/* Intro splash video temporarily disabled. */}
+      {/* <IntroVideo /> */}
 
       <Navbar />
 
@@ -230,71 +262,60 @@ export default function HomePage() {
 
       {/* BookCard rails (same UI as All Books) — above Recently viewed:
           ₹1 store, Trending, Bestsellers, New arrivals. */}
-      <LazySection threshold={0.05}>
-        <SmoothAppear delay={0.1}>
-          <BookRail
-            id="rail-rupee"
-            icon={Tag}
-            badge="JUST ₹1"
-            title="Bestselling books from just ₹1"
-            subtitle="Hand-picked reads at an unbeatable price — one ₹1 book per order."
-            pill="Lowest price"
-            books={RAIL_ONE_RUPEE}
-          />
-        </SmoothAppear>
-      </LazySection>
+      <RailBlock
+        id="rail-rupee"
+        icon={Tag}
+        badge="JUST ₹1"
+        title="Bestselling books from just ₹1"
+        subtitle="Hand-picked reads at an unbeatable price — one ₹1 book per order."
+        pill="Lowest price"
+        books={RAIL_ONE_RUPEE}
+      />
 
-      <LazySection threshold={0.05}>
-        <SmoothAppear delay={0.1}>
-          <BookRail
-            id="rail-trending"
-            icon={TrendingUp}
-            badge="TRENDING NOW"
-            title="What everyone's reading"
-            subtitle="Loved by readers this week — grab yours before they're gone."
-            books={RAIL_TRENDING}
-          />
-        </SmoothAppear>
-      </LazySection>
+      <RailBlock
+        id="rail-trending"
+        icon={TrendingUp}
+        badge="TRENDING NOW"
+        title="What everyone's reading"
+        subtitle="Loved by readers this week — grab yours before they're gone."
+        books={RAIL_TRENDING}
+      />
 
-      <LazySection threshold={0.05}>
-        <SmoothAppear delay={0.1}>
-          <BookRail
-            id="rail-bestsellers"
-            icon={Award}
-            badge="BESTSELLERS"
-            title="Our most-loved books"
-            subtitle="Top picks readers keep coming back for."
-            books={RAIL_BESTSELLERS}
-          />
-        </SmoothAppear>
-      </LazySection>
+      <RailBlock
+        id="rail-fiction"
+        icon={BookOpen}
+        badge="FICTION"
+        title="Get lost in a story"
+        subtitle="Novels, thrillers & page-turners our readers can't put down."
+        books={RAIL_FICTION}
+      />
 
-      <LazySection threshold={0.05}>
-        <SmoothAppear delay={0.1}>
-          <BookRail
-            id="rail-new"
-            icon={Sparkles}
-            badge="NEW ARRIVALS"
-            title="Fresh off the shelf"
-            subtitle="Just added — be the first to grab them."
-            books={RAIL_NEW_ARRIVALS}
-          />
-        </SmoothAppear>
-      </LazySection>
+      <RailBlock
+        id="rail-bestsellers"
+        icon={Award}
+        badge="BESTSELLERS"
+        title="Our most-loved books"
+        subtitle="Top picks readers keep coming back for."
+        books={RAIL_BESTSELLERS}
+      />
 
-      <LazySection threshold={0.05}>
-        <SmoothAppear delay={0.1}>
-          <BookRail
-            id="rail-children"
-            icon={Baby}
-            badge="FOR KIDS"
-            title="Children's corner"
-            subtitle="Fun, colourful reads kids will love — comics, graphic novels & more."
-            books={RAIL_CHILDREN}
-          />
-        </SmoothAppear>
-      </LazySection>
+      <RailBlock
+        id="rail-new"
+        icon={Sparkles}
+        badge="NEW ARRIVALS"
+        title="Fresh off the shelf"
+        subtitle="Just added — be the first to grab them."
+        books={RAIL_NEW_ARRIVALS}
+      />
+
+      <RailBlock
+        id="rail-children"
+        icon={Baby}
+        badge="FOR KIDS"
+        title="Children's corner"
+        subtitle="Fun, colourful reads kids will love — comics, graphic novels & more."
+        books={RAIL_CHILDREN}
+      />
 
       <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.8} />}>

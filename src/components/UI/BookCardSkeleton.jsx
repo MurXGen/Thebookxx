@@ -34,3 +34,36 @@ export function BooksSkeleton({ count = 6, title = true }) {
     </section>
   );
 }
+
+// A BookRail-shaped skeleton: the REAL heading / badge / subtitle shown
+// immediately (so the section is present & readable), with the books area
+// replaced by a rail of skeleton cards until the real rail mounts.
+export function BookRailSkeleton({
+  id,
+  icon: Icon,
+  badge,
+  title,
+  subtitle,
+  count = 6,
+}) {
+  return (
+    <section className="book-rail section-1200">
+      <div className="book-rail-head">
+        <div className="book-rail-head-left">
+          {badge && (
+            <span className="book-rail-badge">
+              {Icon && <Icon size={13} />} {badge}
+            </span>
+          )}
+          {title && <h2 className="book-rail-title">{title}</h2>}
+          {subtitle && <p className="book-rail-sub">{subtitle}</p>}
+        </div>
+      </div>
+      <div className="bcs-rail" aria-hidden="true">
+        {Array.from({ length: count }).map((_, i) => (
+          <BookCardSkeleton key={i} />
+        ))}
+      </div>
+    </section>
+  );
+}

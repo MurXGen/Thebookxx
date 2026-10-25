@@ -78,6 +78,9 @@ export const EXCHANGE_SHEET_NAME =
 //   Status | Author
 export const NOTES_SHEET_NAME = process.env.NOTES_SHEET_NAME || "Notes";
 
+export const ABANDONED_CART_SHEET_NAME =
+  process.env.ABANDONED_CART_SHEET_NAME || "Abandoned Cart";
+
 // Our return pickup destination (printed as the "to" address on the request).
 export const RETURN_TO_ADDRESS =
   process.env.RETURN_TO_ADDRESS ||
@@ -626,6 +629,57 @@ export async function notesAllRows() {
     return tableToObjects(table);
   } catch {
     return [];
+  }
+}
+
+// ── Abandoned cart tracking ────────────────────────────────────────────────
+// One row per shopper/device (keyed by "Cart Key"). We UPSERT: update the
+// existing row when the key already exists, otherwise append a fresh row.
+// Append a new abandoned-cart row.
+export function cartAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "append",
+    sheet: ABANDONED_CART_SHEET_NAME,
+    data,
+  });
+}
+// Update the row matched on its Cart Key (only the provided fields change).
+export function cartUpdate(cartKey, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: ABANDONED_CART_SHEET_NAME,
+    matchColumn: "Cart Key",
+    matchValue: String(cartKey),
+    data,
+  });
+}
+// Does an abandoned-cart row already exist for this Cart Key? (scoped gviz read)
+export async function cartRowExists(cartKey) {
+  const key = String(cartKey || "").trim();
+  if (!key) return false;
+  try {
+    const meta = await gvizQuery({
+      sheet: ABANDONED_CART_SHEET_NAME,
+      tq: "select * limit 0",
+    });
+    const keyCol = findColumn(meta, "Cart Key");
+    let where = "";
+    if (keyCol) {
+      const safe = key.replace(/'/g, "");
+      where =
+        keyCol.type === "number"
+          ? `where ${keyCol.id} = ${safe}`
+          : `where ${keyCol.id} = '${safe}'`;
+    }
+    const table = await gvizQuery({
+      sheet: ABANDONED_CART_SHEET_NAME,
+      tq: `select * ${where}`.trim(),
+    });
+    const rows = tableToObjects(table);
+    if (keyCol) return rows.length > 0;
+    return rows.some((r) => String(r["Cart Key"] ?? "").trim() === key);
+  } catch {
+    return false;
   }
 }
 

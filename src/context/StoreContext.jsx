@@ -177,6 +177,106 @@ export function StoreProvider({ children }) {
     }
   }, [cart]);
 
+  // ── Abandoned-cart tracking ────────────────────────────────────────────────
+  // Upsert ONE row per shopper/device (keyed by phone when logged in, else a
+  // persistent device id) whenever the cart changes. Debounced so rapid +/−
+  // taps collapse into a single write.
+  const cartSyncTimer = useRef(null);
+  const cartSyncedOnce = useRef(false);
+
+  const getDeviceId = () => {
+    if (typeof window === "undefined") return "";
+    try {
+      let id = localStorage.getItem("tbx_device_id");
+      if (!id) {
+        id =
+          "dev_" +
+          Math.random().toString(36).slice(2, 10) +
+          Date.now().toString(36);
+        localStorage.setItem("tbx_device_id", id);
+      }
+      return id;
+    } catch {
+      return "";
+    }
+  };
+
+  const getCartIdentity = () => {
+    if (typeof window === "undefined") return { key: "", phone: "", name: "" };
+    let phone = "";
+    let name = "";
+    try {
+      phone = String(localStorage.getItem("track_orders_phone") || "")
+        .replace(/\D/g, "")
+        .slice(-10);
+      name = String(localStorage.getItem("track_orders_name") || "").trim();
+    } catch {}
+    const deviceId = getDeviceId();
+    return { key: phone || deviceId, phone, name, deviceId };
+  };
+
+  const sendCartSnapshot = () => {
+    if (typeof window === "undefined") return;
+    const { key, phone, name, deviceId } = getCartIdentity();
+    if (!key) return;
+    const lines = cart.map((ci) => {
+      const b = books.find((x) => x.id === ci.id);
+      const nm = b?.name || ci.id;
+      const q = ci.qty || 1;
+      return q > 1 ? `${nm} x${q}` : nm;
+    });
+    const itemCount = cart.reduce((s, ci) => s + (ci.qty || 1), 0);
+    const payload = {
+      cartKey: key,
+      name,
+      phone,
+      deviceId,
+      books: lines.join(", "),
+      itemCount,
+      cartValue: cartTotal,
+      source: `${window.location.pathname || ""}`,
+    };
+    try {
+      fetch("/api/abandoned-cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
+  };
+
+  // Mark the shopper's cart row as Converted once an order is placed.
+  const markCartConverted = (orderId, phone) => {
+    if (typeof window === "undefined") return;
+    const ident = getCartIdentity();
+    const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+    const key = digits || ident.key;
+    if (!key) return;
+    try {
+      fetch("/api/abandoned-cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "convert", cartKey: key, orderId }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // Only track once there's something in the bag; after that, keep syncing
+    // (including emptying) so the sheet reflects the live cart.
+    if (cart.length === 0 && !cartSyncedOnce.current) return;
+    cartSyncedOnce.current = true;
+    if (cartSyncTimer.current) clearTimeout(cartSyncTimer.current);
+    cartSyncTimer.current = setTimeout(sendCartSnapshot, 2500);
+    return () => {
+      if (cartSyncTimer.current) clearTimeout(cartSyncTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart, cartTotal]);
+
   // Persist wishlist
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -283,6 +383,7 @@ export function StoreProvider({ children }) {
         canAddOneRupeeBook,
         getOneRupeeBlockReason,
         getCartTotal,
+        markCartConverted,
         // QuickReads cart
         qrCart,
         addQuickRead,

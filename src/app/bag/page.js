@@ -88,6 +88,7 @@ function BagContent() {
     isInQrCart,
     removeQuickRead,
     clearQrCart,
+    markCartConverted,
   } = useStore();
   // QuickReads rail lazy-load (reveal more as the rail scrolls).
   const qrScrollRef = useRef(null);
@@ -1718,6 +1719,11 @@ ${itemsBlock}${qrLines}
             removePending(pendingIdRef.current);
             pendingIdRef.current = null;
           }
+          // Mark their abandoned-cart row as Converted.
+          try {
+            markCartConverted &&
+              markCartConverted(ctx?.orderId, ctx?.phone);
+          } catch {}
           setSuccessCtx(ctx);
         }}
         proActive={proActive}

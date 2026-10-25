@@ -202,7 +202,8 @@ export function StoreProvider({ children }) {
   };
 
   const getCartIdentity = () => {
-    if (typeof window === "undefined") return { key: "", phone: "", name: "" };
+    if (typeof window === "undefined")
+      return { key: "", phone: "", name: "", deviceId: "" };
     let phone = "";
     let name = "";
     try {
@@ -212,7 +213,10 @@ export function StoreProvider({ children }) {
       name = String(localStorage.getItem("track_orders_name") || "").trim();
     } catch {}
     const deviceId = getDeviceId();
-    return { key: phone || deviceId, phone, name, deviceId };
+    // Key by the DEVICE id (stable) so that when the shopper logs in or enters
+    // their name/number later, we update that same row instead of creating a new
+    // one. Phone & name are carried as columns.
+    return { key: deviceId, phone, name, deviceId };
   };
 
   const sendCartSnapshot = () => {
@@ -249,15 +253,46 @@ export function StoreProvider({ children }) {
   // Mark the shopper's cart row as Converted once an order is placed.
   const markCartConverted = (orderId, phone) => {
     if (typeof window === "undefined") return;
-    const ident = getCartIdentity();
+    const { key, deviceId } = getCartIdentity();
+    const cartKey = key || deviceId;
+    if (!cartKey) return;
     const digits = String(phone || "").replace(/\D/g, "").slice(-10);
-    const key = digits || ident.key;
-    if (!key) return;
     try {
       fetch("/api/abandoned-cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "convert", cartKey: key, orderId }),
+        body: JSON.stringify({
+          action: "convert",
+          cartKey,
+          orderId,
+          phone: digits,
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
+  };
+
+  // Push the shopper's name/number onto their existing cart row once they become
+  // known (login, scratch-card modal, checkout) — without touching the books.
+  const lastIdentSig = useRef("");
+  const maybeSyncIdentity = () => {
+    if (typeof window === "undefined") return;
+    const { deviceId, phone, name } = getCartIdentity();
+    if (!deviceId) return;
+    if (!phone && !name) return;
+    const sig = `${phone}|${name}`;
+    if (sig === lastIdentSig.current) return;
+    lastIdentSig.current = sig;
+    try {
+      fetch("/api/abandoned-cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "identity",
+          cartKey: deviceId,
+          phone,
+          name,
+        }),
         keepalive: true,
       }).catch(() => {});
     } catch {}
@@ -276,6 +311,23 @@ export function StoreProvider({ children }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart, cartTotal]);
+
+  // Watch for the shopper becoming identified (phone/name saved by any modal in
+  // this tab) and update their cart row. Same-tab localStorage writes don't fire
+  // a storage event, so we poll lightly + check on focus/visibility.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const iv = setInterval(maybeSyncIdentity, 5000);
+    const onFocus = () => maybeSyncIdentity();
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+    return () => {
+      clearInterval(iv);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Persist wishlist
   useEffect(() => {

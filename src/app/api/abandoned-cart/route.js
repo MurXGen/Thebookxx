@@ -20,11 +20,22 @@ import {
 } from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
+// Format in IST (Asia/Kolkata) so the sheet matches India time, regardless of
+// the server's own timezone (Vercel runs in UTC).
 const fmtTs = (d) => {
-  const p = (n) => String(n).padStart(2, "0");
-  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(
-    d.getHours(),
-  )}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(d);
+  const g = (t) => parts.find((p) => p.type === t)?.value || "";
+  const hh = g("hour") === "24" ? "00" : g("hour");
+  return `${g("day")}/${g("month")}/${g("year")} ${hh}:${g("minute")}:${g("second")}`;
 };
 
 const only10 = (v) => String(v || "").replace(/\D/g, "").slice(-10);
@@ -50,6 +61,21 @@ export async function POST(request) {
     );
 
   try {
+    // Fill in Name / Phone on an existing row when the shopper logs in or
+    // enters their details later (login modal, scratch-card modal, checkout).
+    // Only touches the identity columns — never the Books snapshot.
+    if (action === "identity") {
+      const exists = await cartRowExists(cartKey);
+      if (!exists) return Response.json({ success: true, skipped: true });
+      const upd = { "Last Updated": fmtTs(new Date()) };
+      const nm = String(body.name || "").trim();
+      const ph = only10(body.phone);
+      if (nm) upd["Name"] = nm;
+      if (ph) upd["Phone"] = ph;
+      await cartUpdate(cartKey, upd);
+      return Response.json({ success: true, identity: true });
+    }
+
     // Mark a cart as converted once the shopper places an order.
     if (action === "convert") {
       await cartUpdate(cartKey, {

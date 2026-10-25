@@ -10701,117 +10701,98 @@ textarea.sec-mid-btn,
    Toast — uses root design tokens
    ============================================ */
 
+/* ── Glassmorphic, framer-motion toasts (top-center floating cards) ──────── */
 .toast-container {
   position: fixed;
-  top: 0;
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
   left: 0;
   right: 0;
-  transform: none;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  align-items: center;
+  gap: 10px;
   z-index: 2147483000;
   width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 0;
+  padding: 0 14px;
   pointer-events: none; /* let clicks pass through gaps between toasts */
 }
 
-/* Full-width banner toast pinned to the very top, edge to edge */
+/* Floating glass card */
 .toast {
   position: relative;
-  left: auto;
-  transform: none;
-  overflow: hidden;
-  display: block;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  background: var(--background);
-  border: none;
-  border-radius: 0;
-  backdrop-filter: none;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-  border-bottom: 1px solid var(--dark-10);
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: auto;
+  min-width: 288px;
+  max-width: 420px;
+  padding: 13px 14px;
+  border-radius: 15px;
+  background: rgba(23, 24, 28, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 16px 40px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: #fff;
   font-family: poppins, system-ui, sans-serif;
   pointer-events: auto; /* re-enable clicks on the toast itself */
 }
-/* Centered, readable inner row */
-.toast-inner {
-  display: flex;
+
+/* Icon badge (tinted by type) */
+.toast-badge {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: inline-flex;
   align-items: center;
-  gap: var(--px-10);
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 13px 18px 15px;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
-/* Countdown progress bar */
-.toast-progress {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 3px;
-  width: 100%;
-  transform-origin: left center;
-  background: var(--primary, #2563eb);
-  animation-name: toastProgress;
-  animation-timing-function: linear;
-  animation-fill-mode: forwards;
+.toast-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-top: 1px;
 }
-@keyframes toastProgress {
-  from {
-    transform: scaleX(1);
-  }
-  to {
-    transform: scaleX(0);
-  }
+.toast-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #fff;
 }
-@media (prefers-reduced-motion: reduce) {
-  .toast-progress {
-    animation: none;
-    opacity: 0.4;
-  }
-}
-
-.toast-message {
-  flex: 1;
-  color: var(--foreground);
-  font-weight: 600;
-  line-height: 1.4;
+.toast-sub {
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.64);
   word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-
-.toast-icon {
-  flex-shrink: 0;
-}
-
-/* ----- Stronger, clearly-visible tinted banners per type ----- */
-.toast-success {
-  background: #ecfdf5;
-  border-bottom: 3px solid var(--success, #22c55e);
-}
-.toast-error {
-  background: #fef2f2;
-  border-bottom: 3px solid var(--danger, #ef4444);
-}
-.toast-warning {
-  background: #fff7ec;
-  border-bottom: 3px solid var(--tertiary, #fb8500);
-}
-.toast-info {
-  background: #eff6ff;
-  border-bottom: 3px solid var(--primary, #2563eb);
+/* When there's no title, the message is the primary line */
+.toast-sub.solo {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
 }
 
 .toast-close {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   background: transparent;
   border: none;
-  color: var(--dark-50);
+  color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
-  padding: var(--px-4);
-  border-radius: 6px;
+  padding: 3px;
+  margin: -2px -2px 0 2px;
+  border-radius: 7px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -10819,46 +10800,34 @@ textarea.sec-mid-btn,
     background 0.15s ease,
     color 0.15s ease;
 }
-
 .toast-close:hover {
-  background: var(--dark-10);
-  color: var(--foreground);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
 }
 
-/* ----- Variants (icon + progress-bar accent per type) ----- */
-
-.toast-success .toast-icon {
-  color: var(--success);
+/* Per-type icon-badge accents */
+.toast-success .toast-badge {
+  background: rgba(34, 197, 94, 0.22);
+  color: #4ade80;
 }
-.toast-success .toast-progress {
-  background: var(--success, #22c55e);
+.toast-error .toast-badge {
+  background: rgba(239, 68, 68, 0.22);
+  color: #f87171;
 }
-
-.toast-error .toast-icon {
-  color: var(--danger);
+.toast-warning .toast-badge {
+  background: rgba(251, 146, 60, 0.22);
+  color: #fdba74;
 }
-.toast-error .toast-progress {
-  background: var(--danger, #ef4444);
-}
-
-.toast-warning .toast-icon {
-  color: var(--tertiary);
-}
-.toast-warning .toast-progress {
-  background: var(--tertiary, #fb8500);
+.toast-info .toast-badge {
+  background: rgba(96, 165, 250, 0.22);
+  color: #93c5fd;
 }
 
-.toast-info .toast-icon {
-  color: var(--primary);
-}
-.toast-info .toast-progress {
-  background: var(--primary, #2563eb);
-}
-
-/* Mobile tweaks — stays edge-to-edge, just a touch tighter */
 @media (max-width: 480px) {
-  .toast-inner {
-    padding: 11px 14px 13px;
+  .toast {
+    min-width: 0;
+    width: 100%;
+    max-width: 480px;
   }
 }
 
@@ -59231,4 +59200,60 @@ img[data-loaded="true"] {
   .mo-carts-list {
     grid-template-columns: 1fr;
   }
+}
+
+/* Bill modal — Handling & Care info icon + tooltip */
+.bill-handling-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.bill-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.bill-info-btn:hover {
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.1);
+}
+.bill-info-tip {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #4b5563;
+  background: #fff7ec;
+  border: 1px solid rgba(251, 133, 0, 0.25);
+  border-radius: 10px;
+  padding: 8px 10px;
+  max-width: 300px;
+}
+
+/* Admin → Abandoned carts: engagement click chips */
+.mo-cart-eng {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mo-cart-eng-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #6d28d9;
+  background: #f5f3ff;
+  border: 1px solid #ede9fe;
+  border-radius: 999px;
+  padding: 2px 8px;
 }

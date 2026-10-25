@@ -7,10 +7,17 @@ export default function HorizontalScroll({
   title,
   children,
   itemWidth = 160, // approx width of card
+  onReachEnd, // called once each time the user scrolls near the right end
 }) {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  // Keep the latest callback without re-binding the scroll listener.
+  const onReachEndRef = useRef(onReachEnd);
+  useEffect(() => {
+    onReachEndRef.current = onReachEnd;
+  }, [onReachEnd]);
+  const nearEndRef = useRef(false);
 
   const updateScrollState = () => {
     const el = scrollRef.current;
@@ -18,6 +25,15 @@ export default function HorizontalScroll({
 
     setCanScrollLeft(el.scrollLeft > 0);
     setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 5);
+
+    // Lazy-load trigger: fire once when entering the last ~500px of the rail.
+    const near = el.scrollLeft + el.clientWidth >= el.scrollWidth - 500;
+    if (near && !nearEndRef.current) {
+      nearEndRef.current = true;
+      onReachEndRef.current && onReachEndRef.current();
+    } else if (!near && nearEndRef.current) {
+      nearEndRef.current = false;
+    }
   };
 
   useEffect(() => {
@@ -26,7 +42,7 @@ export default function HorizontalScroll({
 
     if (!el) return;
 
-    el.addEventListener("scroll", updateScrollState);
+    el.addEventListener("scroll", updateScrollState, { passive: true });
     return () => el.removeEventListener("scroll", updateScrollState);
   }, []);
 

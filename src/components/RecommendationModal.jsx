@@ -19,6 +19,7 @@ import LoadingButton from "./UI/LoadingButton";
 import BookCard from "./BookCard";
 import { FaWhatsapp } from "react-icons/fa";
 import { useStore } from "@/context/StoreContext";
+import { trackCartEvent } from "@/utils/cartEvents";
 
 // Get all unique categories from books with their frequency
 const getAllCategoriesWithFrequency = () => {
@@ -227,6 +228,12 @@ export default function RecommendationModal({
   const router = useRouter();
 
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+
+  // Record "Suggest me" engagement on the shopper's abandoned-cart row whenever
+  // this modal opens (covers every suggest-me trigger across the site).
+  useEffect(() => {
+    if (isOpen) trackCartEvent("suggest");
+  }, [isOpen]);
 
   useEffect(() => {
     if (externalIsOpen === undefined && typeof window !== "undefined") {

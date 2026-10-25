@@ -78,6 +78,9 @@ export async function GET(request) {
         lastUpdated: String(r["Last Updated"] ?? "").trim(),
         status: String(r["Status"] ?? "Active").trim() || "Active",
         orderId: String(r["Order ID"] ?? "").trim(),
+        suggestClicks: Number(r["Suggest Me Clicks"] ?? 0) || 0,
+        viewBillClicks: Number(r["View Bill Clicks"] ?? 0) || 0,
+        handlingInfoClicks: Number(r["Handling Info Clicks"] ?? 0) || 0,
       }))
       .filter((c) => c.cartKey)
       .sort((a, b) => toMs(b.lastUpdated) - toMs(a.lastUpdated));
@@ -108,6 +111,49 @@ export async function POST(request) {
     );
 
   try {
+    // Engagement events — increment a per-device click counter (Suggest me,
+    // View bill, Handling & Care info). Creates a row if none exists yet so the
+    // signal is never lost.
+    if (action === "event") {
+      const COL_BY_EVENT = {
+        suggest: "Suggest Me Clicks",
+        viewbill: "View Bill Clicks",
+        handlinginfo: "Handling Info Clicks",
+      };
+      const col = COL_BY_EVENT[String(body.event || "").toLowerCase()];
+      if (!col)
+        return Response.json(
+          { success: false, error: "unknown event" },
+          { status: 400 },
+        );
+      const now = fmtTs(new Date());
+      const rows = await cartAllRows();
+      const row = rows.find(
+        (r) => String(r["Cart Key"] ?? "").trim() === cartKey,
+      );
+      if (row) {
+        const cur = Number(row[col] || 0) || 0;
+        await cartUpdate(cartKey, { [col]: cur + 1, "Last Updated": now });
+      } else {
+        await cartAppend({
+          "Cart Key": cartKey,
+          Name: "",
+          Phone: only10(body.phone),
+          "Device ID": String(body.deviceId || cartKey).trim(),
+          Books: "",
+          "Item Count": 0,
+          "Cart Value": 0,
+          Source: String(body.source || "").trim(),
+          "First Added": now,
+          "Last Updated": now,
+          Status: "Active",
+          "Order ID": "",
+          [col]: 1,
+        });
+      }
+      return Response.json({ success: true, event: true });
+    }
+
     // Fill in Name / Phone on an existing row when the shopper logs in or
     // enters their details later (login modal, scratch-card modal, checkout).
     // Only touches the identity columns — never the Books snapshot.

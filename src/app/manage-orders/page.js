@@ -15194,6 +15194,28 @@ export default function ManageOrdersPage() {
                                   )}
                                 </div>
 
+                                {(c.suggestClicks > 0 ||
+                                  c.viewBillClicks > 0 ||
+                                  c.handlingInfoClicks > 0) && (
+                                  <div className="mo-cart-eng">
+                                    {c.suggestClicks > 0 && (
+                                      <span className="mo-cart-eng-chip">
+                                        ✨ Suggest ×{c.suggestClicks}
+                                      </span>
+                                    )}
+                                    {c.viewBillClicks > 0 && (
+                                      <span className="mo-cart-eng-chip">
+                                        🧾 Bill ×{c.viewBillClicks}
+                                      </span>
+                                    )}
+                                    {c.handlingInfoClicks > 0 && (
+                                      <span className="mo-cart-eng-chip">
+                                        ℹ️ Handling ×{c.handlingInfoClicks}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+
                                 <div className="mo-cart-foot">
                                   <span className="mo-cart-time">
                                     <Clock size={11} /> {c.lastUpdated || "—"}

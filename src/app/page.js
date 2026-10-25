@@ -28,6 +28,8 @@ import {
 } from "@/components/UI/BookCardSkeleton";
 
 // Book lists for the homepage rails (real BookCard UI, like All Books).
+// The rails lazy-load: BookRail renders ~20 cards and appends more as the user
+// scrolls, so passing the full filtered list here is cheap (only ~20 mount).
 const RAIL_ONE_RUPEE = ALL_BOOKS.filter(
   (b) => b.discountedPrice === 1 && b.image,
 );

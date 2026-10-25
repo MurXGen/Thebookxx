@@ -16,6 +16,8 @@ import {
   AlertTriangle,
   Info,
   X,
+  ShoppingBag,
+  Heart,
 } from "lucide-react";
 
 const ToastContext = createContext(null);
@@ -51,38 +53,51 @@ const ICON_BY_TYPE = {
   warning: AlertTriangle,
   info: Info,
 };
+// Named icon overrides (pass via options.icon), e.g. for cart / wishlist toasts.
+const ICON_BY_NAME = {
+  cart: ShoppingBag,
+  bag: ShoppingBag,
+  wishlist: Heart,
+  heart: Heart,
+  success: CheckCircle2,
+  error: AlertCircle,
+  warning: AlertTriangle,
+  info: Info,
+};
 
 function Toast({ toast, onDismiss }) {
-  const Icon = ICON_BY_TYPE[toast.type] || Info;
-  const duration = toast.duration > 0 ? toast.duration : 3500;
+  const Icon =
+    (toast.icon && ICON_BY_NAME[toast.icon]) ||
+    ICON_BY_TYPE[toast.type] ||
+    Info;
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: -28, filter: "blur(6px)" }}
-      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      exit={{ opacity: 0, y: -18, filter: "blur(10px)" }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      initial={{ opacity: 0, y: -24, scale: 0.96, filter: "blur(6px)" }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      exit={{ opacity: 0, y: -16, scale: 0.97, filter: "blur(8px)" }}
+      transition={{ type: "spring", stiffness: 420, damping: 32 }}
       className={`toast toast-${toast.type}`}
       role={toast.type === "error" ? "alert" : "status"}
       aria-live={toast.type === "error" ? "assertive" : "polite"}
     >
-      <div className="toast-inner">
-        <Icon size={18} className="toast-icon" />
-        <span className="toast-message font-14">{toast.message}</span>
-        <button
-          type="button"
-          aria-label="Dismiss"
-          className="toast-close"
-          onClick={() => onDismiss(toast.id)}
-        >
-          <X size={15} />
-        </button>
+      <span className="toast-badge">
+        <Icon size={16} />
+      </span>
+      <div className="toast-text">
+        {toast.title && <span className="toast-title">{toast.title}</span>}
+        <span className={`toast-sub${toast.title ? "" : " solo"}`}>
+          {toast.message}
+        </span>
       </div>
-      {/* 3-second countdown progress bar */}
-      <span
-        className="toast-progress"
-        style={{ animationDuration: `${duration}ms` }}
-      />
+      <button
+        type="button"
+        aria-label="Dismiss"
+        className="toast-close"
+        onClick={() => onDismiss(toast.id)}
+      >
+        <X size={15} />
+      </button>
     </motion.div>
   );
 }
@@ -130,7 +145,17 @@ export function ToastProvider({ children }) {
         }
       } catch {}
 
-      setToasts((curr) => [...curr, { id, message, type, duration }]);
+      setToasts((curr) => [
+        ...curr,
+        {
+          id,
+          message,
+          type,
+          duration,
+          title: options.title || "",
+          icon: options.icon || "",
+        },
+      ]);
 
       if (duration > 0) {
         const timer = setTimeout(() => dismissToast(id), duration);

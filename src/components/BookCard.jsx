@@ -7,7 +7,7 @@ import { Book, Minus, Plus, Share2, ShoppingCart, Bell, Heart } from "lucide-rea
 import Image from "next/image";
 import { coverFallbackVars } from "@/components/BookCoverImg";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { memo, useState, useEffect, useRef } from "react";
 import { flyToCart } from "@/lib/flyToCart";
 import CartConfetti from "./UI/Confetti";
 import LoadingButton from "./UI/LoadingButton";
@@ -54,7 +54,7 @@ const addToRecentlyViewed = (bookId) => {
   }
 };
 
-export default function BookCard({ book }) {
+function BookCard({ book }) {
   const [confetti, setConfetti] = useState(false);
   const { cart, wishlist, addToCart, decreaseQty, toggleWishlist, cartTotal } =
     useStore();
@@ -119,8 +119,12 @@ export default function BookCard({ book }) {
       return;
     }
 
-    flyToCart(coverRef.current, { imageSrc: book.image });
+    // flyToCart(coverRef.current, { imageSrc: book.image }); // flying-cover animation disabled
     addToCart(book.id);
+    showToast(book.name, "success", {
+      title: "Added to your bag",
+      icon: "cart",
+    });
     trackAddToCart({ book, qty: 1 });
 
     if (isOneRupee) {
@@ -149,8 +153,12 @@ export default function BookCard({ book }) {
       showToast("Maximum book allotted reached for Rs.1", "info");
       return;
     }
-    flyToCart(coverRef.current, { imageSrc: book.image });
+    // flyToCart(coverRef.current, { imageSrc: book.image }); // flying-cover animation disabled
     addToCart(book.id);
+    showToast(book.name, "success", {
+      title: "Added to your bag",
+      icon: "cart",
+    });
     trackAddToCart({ book, qty: 1 });
   };
 
@@ -449,3 +457,8 @@ export default function BookCard({ book }) {
     </>
   );
 }
+
+// Memoised so appending more cards (lazy-load) or a parent re-render does not
+// re-render unchanged cards. (Cart-context changes still update cards that read
+// the cart, which is expected.)
+export default memo(BookCard);

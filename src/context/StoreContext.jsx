@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
   useRef,
 } from "react";
@@ -47,7 +48,6 @@ export function StoreProvider({ children }) {
 
   const [oneRupeeOffer, setOneRupeeOffer] = useState(null);
   const [isOneRupeeEnabled, setIsOneRupeeEnabled] = useState(false);
-  const [cartTotal, setCartTotal] = useState(0);
 
   // Register any persisted custom products into the catalogue so a cart that
   // contains one still resolves after a reload, then nudge a recompute.
@@ -89,11 +89,11 @@ export function StoreProvider({ children }) {
     }, 0);
   };
 
-  // Update cart total whenever cart changes
-  useEffect(() => {
-    const total = calculateCartTotal(cart);
-    setCartTotal(total);
-  }, [cart]);
+  // Derive the cart total during render (memoised) instead of via an effect +
+  // setState. The old effect caused a SECOND full re-render of every cart
+  // consumer on each add-to-cart (setCart → render, then setCartTotal → render
+  // again), which is what made adding feel laggy.
+  const cartTotal = useMemo(() => calculateCartTotal(cart), [cart]);
 
   // Load one rupee offer data on mount
   useEffect(() => {
@@ -240,14 +240,22 @@ export function StoreProvider({ children }) {
       cartValue: cartTotal,
       source: `${window.location.pathname || ""}`,
     };
-    try {
-      fetch("/api/abandoned-cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        keepalive: true,
-      }).catch(() => {});
-    } catch {}
+    // Run the write in idle time so it never competes with the add-to-cart tap.
+    const fire = () => {
+      try {
+        fetch("/api/abandoned-cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).catch(() => {});
+      } catch {}
+    };
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(fire, { timeout: 2000 });
+    } else {
+      fire();
+    }
   };
 
   // Mark the shopper's cart row as Converted once an order is placed.
@@ -317,7 +325,7 @@ export function StoreProvider({ children }) {
   // a storage event, so we poll lightly + check on focus/visibility.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const iv = setInterval(maybeSyncIdentity, 5000);
+    const iv = setInterval(maybeSyncIdentity, 15000);
     const onFocus = () => maybeSyncIdentity();
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onFocus);

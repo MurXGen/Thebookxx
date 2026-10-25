@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
+import { Info } from "lucide-react";
 import { useTrackView } from "@/lib/trackingHooks";
 import { EVENTS } from "@/lib/trackingEvents";
+import { trackCartEvent } from "@/utils/cartEvents";
 
 export default function BillModal({
   open,
@@ -47,6 +49,8 @@ export default function BillModal({
 
   const hasTrackedClose = useRef(false);
   const finalPayable = totalDiscounted - offerDiscount - (walletApplied || 0);
+  // Handling & Care explainer tooltip.
+  const [showHandlingInfo, setShowHandlingInfo] = useState(false);
 
   useEffect(() => {
     if (
@@ -58,6 +62,8 @@ export default function BillModal({
     }
     if (open) {
       hasTrackedClose.current = false;
+      // Record "View bill" engagement on the shopper's abandoned-cart row.
+      trackCartEvent("viewbill");
     }
   }, [open]);
 
@@ -147,10 +153,31 @@ export default function BillModal({
                     </div>
                   ) : (
                     <span className="flex flex-col gap-4">
-                      <span> Handling &amp; Care</span>
+                      <span className="bill-handling-head">
+                        Handling &amp; Care
+                        <button
+                          type="button"
+                          className="bill-info-btn"
+                          aria-label="What is Handling & Care?"
+                          onClick={() => {
+                            setShowHandlingInfo((v) => !v);
+                            trackCartEvent("handlinginfo");
+                          }}
+                        >
+                          <Info size={13} />
+                        </button>
+                      </span>
                       <span className="font-10 dark-50">
                         packing, support &amp; secure shipping
                       </span>
+                      {showHandlingInfo && (
+                        <span className="bill-info-tip">
+                          A small charge that covers protective packing, careful
+                          handling and secure doorstep delivery of your books —
+                          so they reach you in perfect condition. It also helps
+                          us keep our support team available for you.
+                        </span>
+                      )}
                     </span>
                   )}
                 </span>

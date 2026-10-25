@@ -555,11 +555,14 @@ export default function BookDetailsModal({ book }) {
       showToast("This book is currently out of stock", "warning");
       return;
     }
-    flyToCart(heroRef.current, { imageSrc: book.image });
+    // flyToCart(heroRef.current, { imageSrc: book.image }); // flying-cover animation disabled
     addToCart(book.id);
     setConfetti(true);
     setTimeout(() => setConfetti(false), 1300);
-    showToast(`Added "${book.name}" to cart`, "success");
+    showToast(book.name, "success", {
+      title: "Added to your bag",
+      icon: "cart",
+    });
   };
 
   const handleReview = () => {

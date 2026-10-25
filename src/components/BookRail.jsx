@@ -37,6 +37,9 @@ export default function BookRail({
 }) {
   const [sort, setSort] = useState("featured");
   const [priceK, setPriceK] = useState("all");
+  // Progressive loading — render a batch at a time, grow as the user scrolls.
+  const PAGE = 20;
+  const [visibleCount, setVisibleCount] = useState(PAGE);
 
   const shown = useMemo(() => {
     const max = (PRICE_OPTS.find((p) => p.k === priceK) || {}).max ?? Infinity;
@@ -50,6 +53,10 @@ export default function BookRail({
     else if (sort === "save") list = [...list].sort((a, b) => save(b) - save(a));
     return list;
   }, [books, sort, priceK]);
+
+  const visible = shown.slice(0, visibleCount);
+  const loadMore = () =>
+    setVisibleCount((c) => Math.min(shown.length, c + PAGE));
 
   if (!books.length) return null;
 
@@ -103,8 +110,8 @@ export default function BookRail({
       {shown.length === 0 ? (
         <p className="book-rail-empty">No books match this filter.</p>
       ) : (
-        <HorizontalScroll title="">
-          {shown.map((b) => (
+        <HorizontalScroll title="" onReachEnd={loadMore}>
+          {visible.map((b) => (
             <BookCard key={b.id} book={b} />
           ))}
         </HorizontalScroll>

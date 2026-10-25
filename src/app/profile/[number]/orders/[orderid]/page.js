@@ -780,9 +780,11 @@ export default function OrderDetailPage() {
   // Live India Post tracking — latest scan event + its geocoded location.
   const [liveEvent, setLiveEvent] = useState(null); // { lastEvent, deliveryLocation, delivered }
   const [liveLatLng, setLiveLatLng] = useState(null); // { lat, lng, label }
-  // Pull the latest India Post scan for this order's article number, then
+  const [liveLoading, setLiveLoading] = useState(false);
+  const [liveTried, setLiveTried] = useState(false); // a fetch has completed
+  // Fetch the latest India Post scan for this order's article number, then
   // geocode that office so the map can show where the parcel actually is.
-  useEffect(() => {
+  const fetchLiveStatus = async () => {
     const sid = String(order?.["Shipping ID"] || "")
       .trim()
       .toUpperCase();
@@ -791,15 +793,14 @@ export default function OrderDetailPage() {
       setLiveLatLng(null);
       return;
     }
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch(
-          `/api/india-post/track?id=${encodeURIComponent(sid)}`,
-        );
-        const json = await res.json();
-        const art = json?.ok ? json.article : null;
-        if (cancelled || !art?.lastEvent) return;
+    setLiveLoading(true);
+    try {
+      const res = await fetch(
+        `/api/india-post/track?id=${encodeURIComponent(sid)}`,
+      );
+      const json = await res.json();
+      const art = json?.ok ? json.article : null;
+      if (art?.lastEvent) {
         setLiveEvent(art);
         const office = art.lastEvent.office || art.deliveryLocation || "";
         if (office) {
@@ -808,7 +809,7 @@ export default function OrderDetailPage() {
               `/api/geocode?q=${encodeURIComponent(office + ", India")}`,
             );
             const gj = await g.json();
-            if (!cancelled && gj?.result?.lat) {
+            if (gj?.result?.lat) {
               setLiveLatLng({
                 lat: gj.result.lat,
                 lng: gj.result.lng,
@@ -817,11 +818,16 @@ export default function OrderDetailPage() {
             }
           } catch {}
         }
-      } catch {}
-    })();
-    return () => {
-      cancelled = true;
-    };
+      }
+    } catch {
+    } finally {
+      setLiveLoading(false);
+      setLiveTried(true);
+    }
+  };
+  // Auto-fetch once when the order (and its shipping id) is available.
+  useEffect(() => {
+    fetchLiveStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order?.["Shipping ID"]]);
   const [trackCopied, setTrackCopied] = useState(false);
@@ -2341,6 +2347,27 @@ export default function OrderDetailPage() {
               </span>
             </div>
           )}
+          {!cancelled &&
+            !delivered &&
+            /^[A-Z]{2}\d{9}IN$/.test(
+              String(order?.["Shipping ID"] || "").trim().toUpperCase(),
+            ) && (
+              <button
+                type="button"
+                className="od-fetch-status"
+                onClick={fetchLiveStatus}
+                disabled={liveLoading}
+              >
+                <RotateCcw size={13} className={liveLoading ? "od-spin" : ""} />
+                {liveLoading
+                  ? "Checking live status…"
+                  : liveEvent
+                    ? "Refresh live status"
+                    : liveTried
+                      ? "No update yet — tap to retry"
+                      : "Fetch current status"}
+              </button>
+            )}
           {!cancelled && (
             <div className="od-map-eta-bar" aria-hidden="true">
               <span style={{ width: `${progressPct}%` }} />

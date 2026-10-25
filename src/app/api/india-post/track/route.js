@@ -32,19 +32,31 @@ function extractToken(json) {
 async function getToken(BASE) {
   const now = Date.now();
   if (_tok.value && now < _tok.exp) return _tok.value;
-  const res = await fetch(`${BASE}/v1/access/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({
-      username: process.env.INDIA_POST_USERNAME,
-      password: process.env.INDIA_POST_PASSWORD,
-    }),
-    cache: "no-store",
+  // Body — send both casings of the username key; harmless if one is ignored.
+  const body = JSON.stringify({
+    username: process.env.INDIA_POST_USERNAME,
+    userName: process.env.INDIA_POST_USERNAME,
+    password: process.env.INDIA_POST_PASSWORD,
   });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(`auth ${res.status}`);
+  // The API docs show lowercase `/v1/access/login`; the portal shows capital
+  // `/v1/access/Login`. Try lowercase first, fall back to capital.
+  let json = {};
+  let ok = false;
+  for (const path of ["/v1/access/login", "/v1/access/Login"]) {
+    const res = await fetch(`${BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body,
+      cache: "no-store",
+    });
+    json = await res.json().catch(() => ({}));
+    if (res.ok && extractToken(json)) {
+      ok = true;
+      break;
+    }
+  }
+  if (!ok) throw new Error("auth failed");
   const token = extractToken(json);
-  if (!token) throw new Error("no token in login response");
   const ttl = Number(json?.data?.expires_in || json?.expires_in || 900);
   _tok = { value: token, exp: now + Math.max(60, ttl - 60) * 1000 };
   return token;
@@ -84,7 +96,8 @@ async function trackIds(ids) {
   if (!BASE || !process.env.INDIA_POST_USERNAME || !process.env.INDIA_POST_PASSWORD) {
     return { ok: false, status: 501, error: "India Post API not configured." };
   }
-  const clean = [...new Set(ids.map((s) => String(s || "").trim().toUpperCase()).filter(Boolean))].slice(0, 500);
+  // TNT02 (bulk tracking) accepts up to 50 article IDs per request.
+  const clean = [...new Set(ids.map((s) => String(s || "").trim().toUpperCase()).filter(Boolean))].slice(0, 50);
   if (!clean.length) return { ok: false, status: 400, error: "No article IDs." };
 
   let token;

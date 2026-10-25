@@ -4,6 +4,185 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "diwali-cleaning-2026-declutter-home-and-mind-books-to-read-india": {
+    "id": "blog-089",
+    "title": "Diwali Cleaning 2026: Declutter Your Home and Mind With 12 Books to Read Before 8 November",
+    "slug": "diwali-cleaning-2026-declutter-home-and-mind-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-25",
+    "lastModified": "2026-10-25",
+    "excerpt": "Diwali is on 8 November 2026. Before the safai begins, here are 12 books to declutter your home, habits and mind, from ₹1 with free delivery across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Every Indian household knows the sound of Diwali safai: furniture dragged to the middle of the room, old newspapers tied in bundles, and a quiet argument over whether that broken lamp can really be thrown away. This year the festival is close. Dhanteras falls on Friday, 6 November, and Naraka Chaturdashi and the main Lakshmi Puja share Sunday, 8 November, with Govardhan Puja on 10 November and Bhai Dooj on 11 November. That leaves roughly two weeks, and today, Sunday 25 October, is a very good day to start."
+      },
+      {
+        "type": "paragraph",
+        "content": "The tradition rests on a simple idea: you invite Lakshmi into a home that is ready for her. Clean floors, bright doorways and a tidy puja corner are the visible part. The less visible part is the mental clutter we carry into the festival: unfinished tasks, tangled money worries, a phone full of notifications. This guide pairs the practical cleaning plan with books that help you clear the mind as well as the cupboard."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Diwali 2026 dates at a glance",
+        "content": "Dhanteras: Friday, 6 November. Naraka Chaturdashi and Lakshmi Puja: Sunday, 8 November. Govardhan Puja: Tuesday, 10 November. Bhai Dooj: Wednesday, 11 November. Exact muhurat timings vary by city, so check your local panchang."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A two-week Diwali declutter plan that actually works"
+      },
+      {
+        "type": "paragraph",
+        "content": "Most people begin cleaning too late and try to do everything in one exhausting weekend. Spreading it across two weeks, one zone per day, is calmer and leaves time for shopping, rangoli and sweets. A simple order that works for most homes:"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "This weekend (25 to 26 October): pick one drawer, one shelf and one wardrobe. Sort into keep, donate and discard. Do not open a second area until the first is finished.",
+          "Week of 26 October: kitchen cabinets, expired pantry items and the balcony. These are the zones that collect the most hidden clutter.",
+          "Week of 2 November: puja room, entrance and windows. Do these last so they stay fresh for Dhanteras on 6 November.",
+          "Digital cleanup: unsubscribe from ten email lists, delete duplicate photos and clear your phone storage. It takes an hour and feels surprisingly good."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Treat the project as a habit rather than a heroic effort. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is built around exactly this idea: tiny, repeatable actions beat occasional bursts of motivation. Ten minutes of sorting every evening will clear more than a frantic Sunday ever does."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books to declutter your mind before the festival"
+      },
+      {
+        "type": "paragraph",
+        "content": "Physical clutter is usually a symptom. The same urge that keeps ten unused containers in the kitchen keeps ten unfinished worries in the head. These books tackle the mental side."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical guide to thinking, speaking and deciding without the fog. It works well as a Diwali companion because it treats clarity as a daily practice: separate what matters from what only feels urgent, then act on one thing at a time. If you read only one book from this list, make it the one that matches the season of clearing out."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-art-of-not-overthinking\" style=\"color:#fb8500;font-weight:600\">The Art of Not Overthinking</a> suits anyone who lies awake rehearsing the festival to-do list. <a href=\"/books/don-t-sweat-the-small-stuff\" style=\"color:#fb8500;font-weight:600\">Don't Sweat the Small Stuff</a> offers short, digestible chapters, ideal when the house is in chaos and you have only five minutes. <a href=\"/books/the-power-of-now\" style=\"color:#fb8500;font-weight:600\">The Power of Now</a> by Eckhart Tolle is a gentle reminder to enjoy the lamp in front of you rather than the checklist behind it."
+      },
+      {
+        "type": "blockquote",
+        "content": "A clean home helps, but a clear head decides how the festival actually feels."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for the focused and the purposeful"
+      },
+      {
+        "type": "paragraph",
+        "content": "Diwali is also the traditional start of the new financial year for many business families, which makes it a natural moment to reset goals. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport makes the case for protecting long, uninterrupted hours, a useful rule once the festive guests have left. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> explores the Japanese idea of a reason for being, and pairs nicely with a quiet evening by the diyas. <a href=\"/books/the-monk-who-sold-his-ferrari\" style=\"color:#fb8500;font-weight:600\">The Monk Who Sold His Ferrari</a> is a fable about trading a cluttered, hurried life for a deliberate one, which is the spirit of safai in story form."
+      },
+      {
+        "type": "paragraph",
+        "content": "Introverts planning a peaceful festival, rather than a packed one, may enjoy <a href=\"/books/quiet\" style=\"color:#fb8500;font-weight:600\">Quiet</a> by Susan Cain, a thoughtful look at the strengths of people who recharge alone."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Money, Lakshmi and a fresh start"
+      },
+      {
+        "type": "paragraph",
+        "content": "Lakshmi Puja is, at heart, a prayer for prosperity, and prosperity starts with understanding money rather than simply hoping for it. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel argues that behaviour matters more than intelligence. <a href=\"/books/the-richest-man-in-babylon\" style=\"color:#fb8500;font-weight:600\">The Richest Man in Babylon</a> packs timeless lessons on saving into short parables, and <a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> remains a popular first step for readers new to personal finance. Pick one and read it before Dhanteras, and your gold-buying decision may look a little different."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories and scripture for the festival evenings"
+      },
+      {
+        "type": "paragraph",
+        "content": "Once the cleaning is done, the evenings are for stories. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho is a short novel about following your own path that can be finished in a weekend, while <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> speaks directly to duty, detachment and acting without anxiety, themes that fit a festival built around the victory of light over darkness."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Offer for Diwali readers",
+        "content": "Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India. Gift wrapping is available at +₹25 per book if you want to give any of these this Diwali."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to read during the busiest fortnight of the year"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Read ten pages while the chai brews or the rangoli colours are being sorted. Small windows add up faster than you expect.",
+          "Keep one book in the puja room, one by the bed and one in your bag, so a spare moment never goes to the phone.",
+          "Choose a short book first. Finishing something in the middle of festival chaos builds momentum.",
+          "Gift one of these books to the person who helps with the cleaning. It is a more lasting thank-you than another box of sweets."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Order early. Courier networks across India slow down in the days before Dhanteras, and books ordered this week will comfortably arrive before 6 November. Start with <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a>, add one money book and one story, and your festival reading list is done."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Diwali has always been about clearing space for light. This year, clear a little of the mind along with the shelves, and let a good book be the first thing you place back in the room."
+      }
+    ],
+    "coverImage": "/blogs/diwali-cleaning-2026-declutter-home-and-mind-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/diwali-cleaning-2026-declutter-home-and-mind-books-to-read-india.jpeg",
+        "alt": "A cheerful young woman in a cotton kurta sorting books on a wooden shelf in a sunlit Indian living room with brass diyas and marigolds nearby, getting ready for Diwali",
+        "caption": "Diwali safai is a good moment to clear the shelves and the mind together",
+        "category": "Festivals & Gifting"
+      }
+    ],
+    "keywords": [
+      "diwali cleaning 2026",
+      "diwali safai books",
+      "declutter home and mind",
+      "diwali 2026 date",
+      "books to read before diwali",
+      "dhanteras 2026",
+      "minimalism books india",
+      "self help books india",
+      "the art of clarity",
+      "buy books online india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Festivals & Gifting",
+      "Self Help",
+      "Lifestyle"
+    ],
+    "faqs": [
+      {
+        "question": "When is Diwali 2026?",
+        "answer": "Diwali 2026 is a five-day festival from Friday, 6 November (Dhanteras) to Wednesday, 11 November (Bhai Dooj). Naraka Chaturdashi and the main Lakshmi Puja fall on Sunday, 8 November. Exact muhurat timings vary by city."
+      },
+      {
+        "question": "When should I start Diwali cleaning in 2026?",
+        "answer": "Start by the last week of October. Spreading the work across two weeks, one zone per day, is less tiring than a single weekend, and leaves the puja room and entrance for the final days before Dhanteras on 6 November."
+      },
+      {
+        "question": "Which books help declutter the mind?",
+        "answer": "The Art of Clarity, The Art of Not Overthinking, The Power of Now and Don't Sweat the Small Stuff are short, practical reads for a cluttered mind. Atomic Habits and Deep Work help turn the clean-up into a lasting routine."
+      },
+      {
+        "question": "Does TheBookX deliver across India with Cash on Delivery?",
+        "answer": "Yes. Books start from ₹1, delivery is free across India and Cash on Delivery is available. Gift wrapping is offered at an extra ₹25 per book."
+      }
+    ]
+  },
   "united-nations-day-2026-books-on-peace-diplomacy-and-global-understanding": {
   "id": "blog-088",
   "title": "United Nations Day 2026: 13 Books on Peace, Diplomacy and Global Understanding to Read in India",

@@ -635,6 +635,36 @@ export const COST_BY_ID = {
   "bk-694": 200,
   "bk-695": 100,
   "bk-711": 2450, // Think Faster, Talk Smarter
+  // ── Box sets & singles (Oct 2026) ──
+  "bk-713": 280, // The Housemaid Series (3-book set)
+  "bk-714": 100, // The Girl in the Glass Case
+  "bk-715": 120, // Not Quite Dead Yet
+  "bk-716": 700, // Sudha Murty Collection (12-book set)
+  "bk-717": 900, // Diary of a Wimpy Kid (15-book set)
+  "bk-718": 70, // Geronimo Stilton #1 — Lost Treasure of the Emerald Eye
+  "bk-723": 70, // Geronimo Stilton #2 — The Curse of the Cheese Pyramid
+  "bk-724": 70, // Geronimo Stilton #3 — Cat and Mouse in a Haunted House
+  "bk-725": 70, // Geronimo Stilton #4 — I'm Too Fond of My Fur!
+  "bk-726": 70, // Geronimo Stilton #5 — Four Mice Deep in the Jungle
+  "bk-727": 70, // Geronimo Stilton #6 — Paws Off, Cheddarface!
+  "bk-728": 70, // Geronimo Stilton #7 — Red Pizzas for a Blue Count
+  "bk-729": 70, // Geronimo Stilton #8 — Attack of the Bandit Cats
+  "bk-730": 70, // Geronimo Stilton #9 — A Fabumouse Vacation for Geronimo
+  "bk-731": 70, // Geronimo Stilton #10 — All Because of a Cup of Coffee
+  "bk-732": 70, // Geronimo Stilton #11 — It's Halloween, You 'Fraidy Mouse!
+  "bk-733": 70, // Geronimo Stilton #12 — Merry Christmas, Geronimo!
+  "bk-734": 70, // Geronimo Stilton #13 — The Phantom of the Subway
+  "bk-735": 70, // Geronimo Stilton #14 — The Temple of the Ruby of Fire
+  "bk-736": 70, // Geronimo Stilton #15 — The Mona Mousa Code
+  "bk-737": 70, // Geronimo Stilton #16 — A Cheese-Colored Camper
+  "bk-738": 70, // Geronimo Stilton #17 — Watch Your Whiskers, Stilton!
+  "bk-739": 70, // Geronimo Stilton #18 — Shipwreck on the Pirate Islands
+  "bk-740": 70, // Geronimo Stilton #19 — My Name Is Stilton, Geronimo Stilton
+  "bk-741": 70, // Geronimo Stilton #20 — Surf's Up, Geronimo!
+  "bk-719": 1400, // Geronimo Stilton Collection (20-book set) — 20 × 70
+  "bk-720": 1500, // The Adventures of Tintin (collector's box set)
+  "bk-721": 700, // Solo Leveling Box Set (vol 1–10)
+  "bk-722": 1699, // Demon Slayer Complete Box Set (vol 1–23)
 };
 
 export const getBookCost = (id) => COST_BY_ID[id] || 0;

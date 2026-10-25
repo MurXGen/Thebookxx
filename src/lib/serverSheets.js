@@ -653,6 +653,16 @@ export function cartUpdate(cartKey, data) {
     data,
   });
 }
+// Read every abandoned-cart row (small table; the caller sorts/filters).
+export async function cartAllRows() {
+  try {
+    const table = await gvizQuery({ sheet: ABANDONED_CART_SHEET_NAME });
+    return tableToObjects(table);
+  } catch {
+    return [];
+  }
+}
+
 // Does an abandoned-cart row already exist for this Cart Key? (scoped gviz read)
 export async function cartRowExists(cartKey) {
   const key = String(cartKey || "").trim();

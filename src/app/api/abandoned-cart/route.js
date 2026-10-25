@@ -17,6 +17,7 @@ import {
   cartAppend,
   cartUpdate,
   cartRowExists,
+  cartAllRows,
 } from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
@@ -39,6 +40,52 @@ const fmtTs = (d) => {
 };
 
 const only10 = (v) => String(v || "").replace(/\D/g, "").slice(-10);
+
+// Admin list — every tracked cart, newest activity first.
+export async function GET(request) {
+  const ip = clientIp(request);
+  const rl = rateLimit(`abcart-get:${ip}`, { limit: 40, windowMs: 60000 });
+  if (!rl.allowed) return tooMany(rl.retryAfter);
+
+  try {
+    const rows = await cartAllRows();
+    const toMs = (s) => {
+      // Sheet stores "DD/MM/YYYY HH:mm:ss" (IST) — parse for sorting.
+      const m = String(s || "").match(
+        /(\d{2})\/(\d{2})\/(\d{4})[ ,]+(\d{1,2}):(\d{2})(?::(\d{2}))?/,
+      );
+      if (!m) return 0;
+      return new Date(
+        +m[3],
+        +m[2] - 1,
+        +m[1],
+        +m[4],
+        +m[5],
+        +(m[6] || 0),
+      ).getTime();
+    };
+    const carts = rows
+      .map((r) => ({
+        cartKey: String(r["Cart Key"] ?? "").trim(),
+        name: String(r["Name"] ?? "").trim(),
+        phone: only10(r["Phone"]),
+        deviceId: String(r["Device ID"] ?? "").trim(),
+        books: String(r["Books"] ?? "").trim(),
+        itemCount: Number(r["Item Count"] ?? 0) || 0,
+        cartValue: Number(r["Cart Value"] ?? 0) || 0,
+        source: String(r["Source"] ?? "").trim(),
+        firstAdded: String(r["First Added"] ?? "").trim(),
+        lastUpdated: String(r["Last Updated"] ?? "").trim(),
+        status: String(r["Status"] ?? "Active").trim() || "Active",
+        orderId: String(r["Order ID"] ?? "").trim(),
+      }))
+      .filter((c) => c.cartKey)
+      .sort((a, b) => toMs(b.lastUpdated) - toMs(a.lastUpdated));
+    return Response.json({ carts });
+  } catch {
+    return Response.json({ carts: [] }, { status: 200 });
+  }
+}
 
 export async function POST(request) {
   const ip = clientIp(request);

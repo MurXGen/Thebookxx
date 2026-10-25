@@ -4205,8 +4205,49 @@ export default function ManageOrdersPage() {
   };
   useEffect(() => {
     if (trackSubTab === "notes" && !notesLoaded) loadNotes();
+    if (trackSubTab === "carts" && !cartsLoaded) loadCarts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trackSubTab]);
+  // Abandoned carts board (Track → Abandoned carts).
+  const [cartsList, setCartsList] = useState([]);
+  const [cartsLoading, setCartsLoading] = useState(false);
+  const [cartsLoaded, setCartsLoaded] = useState(false);
+  const [cartsFilter, setCartsFilter] = useState("all"); // all | active | converted
+  const loadCarts = async () => {
+    setCartsLoading(true);
+    try {
+      const res = await fetch("/api/abandoned-cart", { cache: "no-store" });
+      const json = await res.json();
+      setCartsList(Array.isArray(json.carts) ? json.carts : []);
+    } catch {
+      setCartsList([]);
+    } finally {
+      setCartsLoading(false);
+      setCartsLoaded(true);
+    }
+  };
+  // Open WhatsApp with a friendly nudge pre-filled for this cart's shopper.
+  const whatsappCart = (c) => {
+    const phone = String(c?.phone || "").replace(/\D/g, "").slice(-10);
+    if (phone.length !== 10) {
+      showToast("No phone number for this cart yet.", "error");
+      return;
+    }
+    const first = (c?.name || "").trim().split(/\s+/)[0] || "there";
+    const books = (c?.books || "").trim();
+    const booksLine = books ? `\n\nYour picks:\n• ${books.split(", ").join("\n• ")}` : "";
+    const msg =
+      `Hi ${first}! 👋 This is TheBookX.\n\n` +
+      `We noticed you left some lovely books in your bag` +
+      `${booksLine}\n\n` +
+      `Still interested? We'd love to help you complete your order — reply here if you have any questions or need a hand. 📚\n\n` +
+      `Shop now: https://thebookx.in`;
+    window.open(
+      `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
   const addNote = async () => {
     const title = noteTitle.trim();
     const body = noteBody.trim();
@@ -14987,6 +15028,7 @@ export default function ManageOrdersPage() {
             <div className="mo-book-subtabs" role="tablist">
               {[
                 { k: "paste", label: "Paste & match" },
+                { k: "carts", label: "Abandoned carts" },
                 { k: "copy", label: "Copy IDs" },
                 { k: "live", label: "Live status" },
                 { k: "paid", label: "Mark paid" },
@@ -15000,6 +15042,191 @@ export default function ManageOrdersPage() {
                 </button>
               ))}
             </div>
+            {/* Abandoned carts board — live view of shoppers' bags (saved to the
+                "Abandoned Cart" sheet tab) with a one-tap WhatsApp nudge. */}
+            {trackSubTab === "carts" && (
+              <div className="mo-carts">
+                {(() => {
+                  const list = cartsList.filter((c) =>
+                    cartsFilter === "all"
+                      ? true
+                      : cartsFilter === "converted"
+                        ? c.status === "Converted"
+                        : c.status !== "Converted",
+                  );
+                  const activeList = cartsList.filter(
+                    (c) => c.status !== "Converted" && c.itemCount > 0,
+                  );
+                  const activeValue = activeList.reduce(
+                    (s, c) => s + (c.cartValue || 0),
+                    0,
+                  );
+                  const convertedN = cartsList.filter(
+                    (c) => c.status === "Converted",
+                  ).length;
+                  return (
+                    <>
+                      <div className="mo-carts-stat-row">
+                        <div className="mo-carts-stat">
+                          <span className="mo-carts-stat-n">
+                            {activeList.length}
+                          </span>
+                          <span className="mo-carts-stat-l">Live carts</span>
+                        </div>
+                        <div className="mo-carts-stat">
+                          <span className="mo-carts-stat-n">
+                            ₹{activeValue.toLocaleString("en-IN")}
+                          </span>
+                          <span className="mo-carts-stat-l">At risk</span>
+                        </div>
+                        <div className="mo-carts-stat">
+                          <span className="mo-carts-stat-n">{convertedN}</span>
+                          <span className="mo-carts-stat-l">Converted</span>
+                        </div>
+                      </div>
+
+                      <div className="mo-carts-toolbar">
+                        <div className="mo-carts-filters">
+                          {[
+                            { k: "all", label: "All" },
+                            { k: "active", label: "Active" },
+                            { k: "converted", label: "Converted" },
+                          ].map((f) => (
+                            <button
+                              key={f.k}
+                              type="button"
+                              className={`mo-carts-chip${cartsFilter === f.k ? " on" : ""}`}
+                              onClick={() => setCartsFilter(f.k)}
+                            >
+                              {f.label}
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          className="mo-carts-refresh"
+                          onClick={loadCarts}
+                          disabled={cartsLoading}
+                        >
+                          <RefreshCw
+                            size={14}
+                            className={cartsLoading ? "mo-spin" : ""}
+                          />
+                          {cartsLoading ? "Loading…" : "Refresh"}
+                        </button>
+                      </div>
+
+                      {cartsLoading && !cartsList.length ? (
+                        <div className="mo-carts-empty">Loading carts…</div>
+                      ) : !list.length ? (
+                        <div className="mo-carts-empty">
+                          <ShoppingBag size={28} />
+                          <p>No carts to show here yet.</p>
+                        </div>
+                      ) : (
+                        <div className="mo-carts-list">
+                          {list.map((c) => {
+                            const converted = c.status === "Converted";
+                            const initial = (c.name || "G")
+                              .trim()
+                              .charAt(0)
+                              .toUpperCase();
+                            return (
+                              <div
+                                key={c.cartKey}
+                                className={`mo-cart-card${converted ? " converted" : ""}`}
+                              >
+                                <div className="mo-cart-top">
+                                  <div className="mo-cart-who">
+                                    <span className="mo-cart-avatar">
+                                      {initial}
+                                    </span>
+                                    <div className="mo-cart-id">
+                                      <span className="mo-cart-name">
+                                        {c.name || "Guest shopper"}
+                                      </span>
+                                      <span className="mo-cart-phone">
+                                        {c.phone ? (
+                                          <>
+                                            <Phone size={11} /> +91 {c.phone}
+                                          </>
+                                        ) : (
+                                          <span className="mo-cart-nophone">
+                                            No number yet
+                                          </span>
+                                        )}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <span
+                                    className={`mo-cart-badge${converted ? " done" : ""}`}
+                                  >
+                                    {converted ? (
+                                      <>
+                                        <Check size={11} /> Converted
+                                      </>
+                                    ) : (
+                                      "Active"
+                                    )}
+                                  </span>
+                                </div>
+
+                                <div className="mo-cart-books">
+                                  <ShoppingBag size={13} />
+                                  <span>{c.books || "— empty —"}</span>
+                                </div>
+
+                                <div className="mo-cart-meta">
+                                  <span className="mo-cart-mchip">
+                                    {c.itemCount} item
+                                    {c.itemCount === 1 ? "" : "s"}
+                                  </span>
+                                  <span className="mo-cart-mchip strong">
+                                    <IndianRupee size={11} />
+                                    {Number(c.cartValue || 0).toLocaleString(
+                                      "en-IN",
+                                    )}
+                                  </span>
+                                  {c.source && (
+                                    <span className="mo-cart-mchip ghost">
+                                      {c.source}
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="mo-cart-foot">
+                                  <span className="mo-cart-time">
+                                    <Clock size={11} /> {c.lastUpdated || "—"}
+                                    {converted && c.orderId
+                                      ? ` · ${c.orderId}`
+                                      : ""}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="mo-cart-wa"
+                                    onClick={() => whatsappCart(c)}
+                                    disabled={!c.phone}
+                                    title={
+                                      c.phone
+                                        ? "Nudge on WhatsApp"
+                                        : "No number yet"
+                                    }
+                                  >
+                                    <MessageCircle size={14} />
+                                    {converted ? "Message" : "Nudge on WhatsApp"}
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+
             {/* Operator notes board — add + list team notes (saved to the
                 "Notes" sheet tab). */}
             {trackSubTab === "notes" && (

@@ -777,6 +777,53 @@ export default function OrderDetailPage() {
   const [geoState, setGeoState] = useState("idle"); // idle|loading|ok|missing
   const [routeCoords, setRouteCoords] = useState(null);
   const [showTrack, setShowTrack] = useState(false);
+  // Live India Post tracking — latest scan event + its geocoded location.
+  const [liveEvent, setLiveEvent] = useState(null); // { lastEvent, deliveryLocation, delivered }
+  const [liveLatLng, setLiveLatLng] = useState(null); // { lat, lng, label }
+  // Pull the latest India Post scan for this order's article number, then
+  // geocode that office so the map can show where the parcel actually is.
+  useEffect(() => {
+    const sid = String(order?.["Shipping ID"] || "")
+      .trim()
+      .toUpperCase();
+    if (!/^[A-Z]{2}\d{9}IN$/.test(sid)) {
+      setLiveEvent(null);
+      setLiveLatLng(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/india-post/track?id=${encodeURIComponent(sid)}`,
+        );
+        const json = await res.json();
+        const art = json?.ok ? json.article : null;
+        if (cancelled || !art?.lastEvent) return;
+        setLiveEvent(art);
+        const office = art.lastEvent.office || art.deliveryLocation || "";
+        if (office) {
+          try {
+            const g = await fetch(
+              `/api/geocode?q=${encodeURIComponent(office + ", India")}`,
+            );
+            const gj = await g.json();
+            if (!cancelled && gj?.result?.lat) {
+              setLiveLatLng({
+                lat: gj.result.lat,
+                lng: gj.result.lng,
+                label: office,
+              });
+            }
+          } catch {}
+        }
+      } catch {}
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order?.["Shipping ID"]]);
   const [trackCopied, setTrackCopied] = useState(false);
   const [itemsOpen, setItemsOpen] = useState(false);
   const [mapFull, setMapFull] = useState(false);
@@ -1080,10 +1127,22 @@ export default function OrderDetailPage() {
         });
       }
 
+      // If India Post reported a real latest scan location, drop the vehicle
+      // exactly there (and label it with the event) instead of the estimate.
+      const liveP = liveLatLng ? [liveLatLng.lat, liveLatLng.lng] : null;
+      if (liveP && !delivered && !cancelled) {
+        vehicle.setLatLng(liveP);
+        try {
+          vehicle.setTooltipContent(
+            `📦 ${liveEvent?.lastEvent?.event || "Your order is here"}`,
+          );
+        } catch {}
+      }
+
       // Zoom to fit the route, then re-centre on the parcel's CURRENT position
       // and lift it up so it sits in the visible upper area (not hidden behind
       // the bottom status overlay).
-      const curPoint = path[splitIdx];
+      const curPoint = liveP || path[splitIdx];
       const OVERLAY_LIFT = 96; // px to push the current point above the card
       const focusCurrent = () => {
         try {
@@ -1108,26 +1167,36 @@ export default function OrderDetailPage() {
 
       // Smoothly animate the vehicle + orange trail from source to the current
       // point (easeOutCubic), a slow ~2.4s glide once the map is ready.
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      const targetIdx = splitIdx;
-      const duration = 2400;
-      const ease = (t) => 1 - Math.pow(1 - t, 3);
-      const startAt = performance.now() + 350; // small settle delay
-      const step = (now) => {
-        if (disposed) return;
-        const t = Math.max(0, Math.min(1, (now - startAt) / duration));
-        const idx = Math.max(0, Math.round(ease(t) * targetIdx));
-        travelledLine.setLatLngs(path.slice(0, idx + 1));
-        vehicle.setLatLng(path[idx]);
-        if (t < 1) animRef.current = requestAnimationFrame(step);
-      };
-      animRef.current = requestAnimationFrame(step);
+      // Skip the travel animation when we've pinned the real live location —
+      // the vehicle already sits at the actual scan point.
+      if (!liveP) {
+        if (animRef.current) cancelAnimationFrame(animRef.current);
+        const targetIdx = splitIdx;
+        const duration = 2400;
+        const ease = (t) => 1 - Math.pow(1 - t, 3);
+        const startAt = performance.now() + 350; // small settle delay
+        const step = (now) => {
+          if (disposed) return;
+          const t = Math.max(0, Math.min(1, (now - startAt) / duration));
+          const idx = Math.max(0, Math.round(ease(t) * targetIdx));
+          travelledLine.setLatLngs(path.slice(0, idx + 1));
+          vehicle.setLatLng(path[idx]);
+          if (t < 1) animRef.current = requestAnimationFrame(step);
+        };
+        animRef.current = requestAnimationFrame(step);
+      } else {
+        // Draw the travelled line straight to the live point.
+        try {
+          travelledLine.setLatLngs([path[0], liveP]);
+        } catch {}
+      }
     })();
     return () => {
       disposed = true;
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [receiver, order, routeCoords]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [receiver, order, routeCoords, liveLatLng]);
 
   // Keep the map filling its container on window resize.
   useEffect(() => {
@@ -2249,6 +2318,29 @@ export default function OrderDetailPage() {
               {psBadge}
             </span>
           </div>
+          {liveEvent?.lastEvent?.event && !cancelled && (
+            <div className="od-last-scan">
+              <MapPin size={14} />
+              <span className="od-last-scan-txt">
+                <b>{liveEvent.lastEvent.event}</b>
+                {liveEvent.lastEvent.office
+                  ? ` · ${liveEvent.lastEvent.office}`
+                  : ""}
+                {liveEvent.lastEvent.date ? (
+                  <span className="od-last-scan-time">
+                    {" "}
+                    ·{" "}
+                    {new Date(liveEvent.lastEvent.date).toLocaleString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                ) : null}
+              </span>
+            </div>
+          )}
           {!cancelled && (
             <div className="od-map-eta-bar" aria-hidden="true">
               <span style={{ width: `${progressPct}%` }} />

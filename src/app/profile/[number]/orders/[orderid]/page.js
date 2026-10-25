@@ -826,10 +826,11 @@ export default function OrderDetailPage() {
     }
   };
   // Auto-fetch once when the order (and its shipping id) is available.
-  useEffect(() => {
-    fetchLiveStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order?.["Shipping ID"]]);
+  // Temporarily disabled — live India Post tracking fetch is turned off for now.
+  // useEffect(() => {
+  //   fetchLiveStatus();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [order?.["Shipping ID"]]);
   const [trackCopied, setTrackCopied] = useState(false);
   const [itemsOpen, setItemsOpen] = useState(false);
   const [mapFull, setMapFull] = useState(false);
@@ -2347,27 +2348,7 @@ export default function OrderDetailPage() {
               </span>
             </div>
           )}
-          {!cancelled &&
-            !delivered &&
-            /^[A-Z]{2}\d{9}IN$/.test(
-              String(order?.["Shipping ID"] || "").trim().toUpperCase(),
-            ) && (
-              <button
-                type="button"
-                className="od-fetch-status"
-                onClick={fetchLiveStatus}
-                disabled={liveLoading}
-              >
-                <RotateCcw size={13} className={liveLoading ? "od-spin" : ""} />
-                {liveLoading
-                  ? "Checking live status…"
-                  : liveEvent
-                    ? "Refresh live status"
-                    : liveTried
-                      ? "No update yet — tap to retry"
-                      : "Fetch current status"}
-              </button>
-            )}
+          {/* Live tracking fetch button temporarily removed. */}
           {!cancelled && (
             <div className="od-map-eta-bar" aria-hidden="true">
               <span style={{ width: `${progressPct}%` }} />

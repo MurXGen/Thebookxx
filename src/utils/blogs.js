@@ -4,6 +4,187 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "world-savings-day-2026-31-october-money-books-to-read-india": {
+    "id": "blog-090",
+    "title": "World Savings Day 2026 (31 October): 16 Money and Mindset Books to Read Before Dhanteras",
+    "slug": "world-savings-day-2026-31-october-money-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-26",
+    "lastModified": "2026-10-26",
+    "excerpt": "World Savings Day is 31 October, a week before Dhanteras. Sixteen money and habit books plus a one-week savings plan, from ₹1 with free delivery across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "World Savings Day falls on 31 October, this Saturday. It was proposed on the closing day of the first International Savings Bank Congress, held in Milan in 1924 and attended by representatives of 29 countries, by the Italian professor Filippo Ravizza. A century later the idea is still simple: the habit of setting a little aside, regularly, matters more than the size of any single amount. In India the date lands in an unusually good week, because Dhanteras, the traditional day for buying something lasting, is on Friday, 6 November, with Lakshmi Puja on Sunday, 8 November."
+      },
+      {
+        "type": "paragraph",
+        "content": "That makes the next ten days a natural moment to look at your own money habits before the festival spending begins. This guide pairs the day's theme with books that change how you think about saving, investing and spending, plus a practical one-week plan you can finish before Dhanteras."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Dates to remember",
+        "content": "World Savings Day: Saturday, 31 October. Dhanteras: Friday, 6 November. Naraka Chaturdashi and Lakshmi Puja: Sunday, 8 November. Exact puja timings vary by city, so confirm with your local panchang."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why a savings day still matters in the age of UPI"
+      },
+      {
+        "type": "paragraph",
+        "content": "Paying has never been easier. A tap on a phone settles a bill in seconds, and that convenience quietly removes the small pause in which people once asked whether they really needed something. Festival season amplifies it: sale banners, no-cost EMI offers and gifting lists all push spending up at exactly the moment household budgets are stretched. Saving is not about denying yourself a good Diwali. It is about deciding the number in advance, so the festival does not decide it for you."
+      },
+      {
+        "type": "paragraph",
+        "content": "Most personal-finance advice fails not because the maths is hard but because behaviour is. That is why the books below lean toward habits, mindset and clear thinking rather than formulas alone."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Start with mindset: five books that change how you see money"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is the best first read for most people. It is a set of short essays on how emotion, luck and patience shape financial outcomes, and it can be finished in a few evenings. <a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> by Robert Kiyosaki is a plain-language introduction to the difference between assets and liabilities, a good gift for a first-job graduate even if you do not agree with every opinion in it."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-richest-man-in-babylon\" style=\"color:#fb8500;font-weight:600\">The Richest Man in Babylon</a> by George S. Clason teaches durable rules through parables, including the idea of paying yourself first, which is the heart of any savings habit. <a href=\"/books/think-and-grow-rich\" style=\"color:#fb8500;font-weight:600\">Think and Grow Rich</a> by Napoleon Hill is a classic on goals and persistence, best read as motivation rather than as a financial manual. <a href=\"/books/the-art-of-spending-money\" style=\"color:#fb8500;font-weight:600\">The Art of Spending Money</a> by Morgan Housel completes the set by asking the question savers often forget: what is the money for?"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "When you are ready to invest"
+      },
+      {
+        "type": "paragraph",
+        "content": "Saving is the foundation, and investing is what you build on it once an emergency fund exists. <a href=\"/books/the-intelligent-investor\" style=\"color:#fb8500;font-weight:600\">The Intelligent Investor</a> by Benjamin Graham is the long-standing text on temperament and margin of safety, demanding but rewarding. <a href=\"/books/coffee-can-investing\" style=\"color:#fb8500;font-weight:600\">Coffee Can Investing</a> by Saurabh Mukherjea and others makes the case for patient, long-term ownership of quality businesses, with a focus on Indian markets. <a href=\"/books/the-almanack-of-naval-ravikant\" style=\"color:#fb8500;font-weight:600\">The Almanack of Naval Ravikant</a> gathers Naval's thinking on wealth, judgement and happiness in an easy, quotable format."
+      },
+      {
+        "type": "paragraph",
+        "content": "A caution worth stating plainly: books explain principles, not what is right for your situation. For decisions about specific products or amounts, speak to a qualified, registered financial adviser. TheBookX is a bookstore, not a financial advisor."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Habits and clarity: where saving actually succeeds"
+      },
+      {
+        "type": "paragraph",
+        "content": "Knowing you should save and actually doing it are different things. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is the most practical guide to making a behaviour automatic: start tiny, attach it to something you already do, and let the system do the work. For money this can be as small as an auto-transfer on salary day. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport supports the other half of financial health, which is earning power built through focused, valuable skill."
+      },
+      {
+        "type": "paragraph",
+        "content": "Clear thinking also protects your money from impulse. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is written for people who feel overloaded by choices and noise, and the same discipline of separating what matters from what merely feels urgent applies directly to a festival shopping list."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories of building something from little"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/shoe-dog\" style=\"color:#fb8500;font-weight:600\">Shoe Dog</a> by Phil Knight is the memoir of Nike's early, cash-starved years and a candid account of how thin margins and tight cash flow shape a business, which is useful context for anyone who runs a small shop or startup. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A. P. J. Abdul Kalam shows what a modest start and relentless discipline can lead to. For fiction that touches the same themes, <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho is a short parable about treasure that is closer than it seems, and <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig is a gentle novel about regret and the choices that shape a life."
+      },
+      {
+        "type": "blockquote",
+        "content": "Saving is not a sacrifice you make for a distant future. It is a message you leave for yourself that says, I thought about you."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A one-week savings plan before Dhanteras"
+      },
+      {
+        "type": "paragraph",
+        "content": "You do not need a spreadsheet to start. Over the next seven days, a simple sequence is enough:"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "<strong>Saturday, 31 October:</strong> write down what you spent last month on food, travel, subscriptions and shopping. Round numbers are fine.",
+          "<strong>Sunday, 1 November:</strong> cancel or pause any subscription you have not used in thirty days.",
+          "<strong>Monday, 2 November:</strong> set an automatic transfer to a separate savings account on salary day, even if the amount is small.",
+          "<strong>Tuesday, 3 November:</strong> fix a Diwali budget for gifts, clothes, sweets and travel, and write the total on a note you will see.",
+          "<strong>Wednesday, 4 November:</strong> check that you have an emergency fund of a few months of expenses before putting money into market-linked products.",
+          "<strong>Thursday, 5 November:</strong> make your gift list and decide one useful, lasting gift per person instead of many small impulse items.",
+          "<strong>Friday, 6 November, Dhanteras:</strong> buy one thing that lasts, whether a coin, a book or a course, and note the date you did it."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "A Dhanteras idea that costs very little",
+        "content": "Many families buy a small piece of metal on Dhanteras. A book is a quieter, cheaper way to invest in the same spirit: it keeps its value in what it teaches. Books start from ₹1 at TheBookX, with free delivery and Cash on Delivery across India. Gift wrapping is available at +₹25 per book."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting a money book this Diwali"
+      },
+      {
+        "type": "paragraph",
+        "content": "A money book is a safe and thoughtful gift for a nephew starting his first job, a colleague, or a parent who has always managed the household purse. Pair it with a handwritten line on the first page. If you order now there is time to check each copy and add gift wrapping before Dhanteras. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is a calm companion for anyone who wants work and money to feel meaningful rather than merely larger."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "World Savings Day began as a modest proposal in a conference hall in Milan. The best way to honour it is equally modest: pick one book, set one small automatic habit, and let the next ten years do the rest."
+      }
+    ],
+    "coverImage": "/blogs/world-savings-day-2026-31-october-money-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-savings-day-2026-31-october-money-books-to-read-india.jpeg",
+        "alt": "A young woman smiling as she reads a book at a sunlit wooden table beside a brass diya, a small clay piggy bank and a cup of tea",
+        "caption": "A small, steady saving habit beats a big one-off effort, especially before festival spending begins",
+        "category": "Money & Finance"
+      }
+    ],
+    "keywords": [
+      "world savings day 2026",
+      "world thrift day 31 october",
+      "best money books india",
+      "personal finance books india",
+      "dhanteras 2026 books",
+      "how to save money india",
+      "books to gift diwali 2026",
+      "psychology of money",
+      "rich dad poor dad",
+      "buy books online india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Money & Finance",
+      "Festivals & Gifting",
+      "Self Improvement"
+    ],
+    "faqs": [
+      {
+        "question": "When is World Savings Day 2026?",
+        "answer": "World Savings Day is observed every year on 31 October, so in 2026 it falls on Saturday, 31 October. It dates from 1924, when the first International Savings Bank Congress in Milan, with representatives from 29 countries, adopted the idea proposed by Italian professor Filippo Ravizza. Some countries mark the day as World Thrift Day."
+      },
+      {
+        "question": "Which book should a beginner read first to start saving money?",
+        "answer": "The Psychology of Money by Morgan Housel is a good first read because it is short, written in plain language and focuses on behaviour rather than jargon. Pair it with Atomic Habits to turn the ideas into an automatic routine. Both are available at TheBookX, with books starting from ₹1."
+      },
+      {
+        "question": "Is Dhanteras a good time to start a savings habit?",
+        "answer": "Dhanteras, on Friday, 6 November 2026, is traditionally associated with wealth and buying something lasting, so many families treat it as a fresh start for money decisions. You can begin with one small automatic transfer. For decisions about specific investments, consult a registered financial adviser."
+      },
+      {
+        "question": "Can I order money books as Diwali gifts with Cash on Delivery?",
+        "answer": "Yes. TheBookX offers free delivery and Cash on Delivery across India, books start from ₹1, and gift wrapping is available for +₹25 per book. Place separate orders to send gifts directly to relatives in different cities, and order early to allow for the festival-season courier rush."
+      }
+    ]
+  },
   "diwali-cleaning-2026-declutter-home-and-mind-books-to-read-india": {
     "id": "blog-089",
     "title": "Diwali Cleaning 2026: Declutter Your Home and Mind With 12 Books to Read Before 8 November",

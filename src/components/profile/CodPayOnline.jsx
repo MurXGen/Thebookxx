@@ -19,6 +19,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
+import UpiAppLaunchRow from "@/components/UI/UpiAppLaunchRow";
 
 const UPI_ID = "7977960242-1@okbizaxis";
 // VPA copied when launching a UPI app on mobile (paste-and-pay flow).
@@ -556,51 +557,14 @@ export default function CodPayOnline({
                       </div>
                     </motion.div>
 
-                    {/* Mobile only: open a UPI app directly (no payee attached),
-                        UPI ID is copied so the shopper can paste & pay. */}
-                    {isNarrow ? (
-                      <div className="upiv3-open">
-                        <span className="upiv3-open-lbl">
-                          Pay from your UPI app
-                        </span>
-                        <div className="upiv3-open-apps">
-                          {UPI_APPS.map((a) => (
-                            <button
-                              key={a.key}
-                              type="button"
-                              className={`upiv3-open-app ${a.cls}`}
-                              onClick={() => openUpiApp(a)}
-                            >
-                              {a.label}
-                            </button>
-                          ))}
-                        </div>
-                        <span className="upiv3-open-hint">
-                          {copied ? (
-                            <>
-                              <Check size={12} /> UPI ID{" "}
-                              <b>{APP_PAY_UPI}</b> has been copied — paste it,
-                              enter ₹{payAmount} and pay.
-                            </>
-                          ) : (
-                            <>
-                              <Copy size={12} /> We&apos;ll open the app and copy
-                              UPI ID <b>{APP_PAY_UPI}</b> — paste it, enter ₹
-                              {payAmount} and pay.
-                            </>
-                          )}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="upiv3-apps" aria-hidden="true">
-                        <span className="upiv3-apps-lbl">Works with</span>
-                        <span className="upiv3-app-chip gpay">GPay</span>
-                        <span className="upiv3-app-chip phonepe">PhonePe</span>
-                        <span className="upiv3-app-chip paytm">Paytm</span>
-                        <span className="upiv3-app-chip bhim">BHIM</span>
-                        <span className="upiv3-apps-more">+ all UPI</span>
-                      </div>
-                    )}
+                    <div className="upiv3-apps" aria-hidden="true">
+                      <span className="upiv3-apps-lbl">Works with</span>
+                      <span className="upiv3-app-chip gpay">GPay</span>
+                      <span className="upiv3-app-chip phonepe">PhonePe</span>
+                      <span className="upiv3-app-chip paytm">Paytm</span>
+                      <span className="upiv3-app-chip bhim">BHIM</span>
+                      <span className="upiv3-apps-more">+ all UPI</span>
+                    </div>
 
                     {/* Trust footer */}
                     <div className="upiv3-trust">
@@ -664,6 +628,14 @@ export default function CodPayOnline({
                         I&apos;ve paid
                       </button>
                     </div>
+
+                    {qrUnlocked && (
+                      <UpiAppLaunchRow
+                        upiId={UPI_ID}
+                        amount={payAmount}
+                        advance={mode === "advance"}
+                      />
+                    )}
                   </div>
                 </>
               )}

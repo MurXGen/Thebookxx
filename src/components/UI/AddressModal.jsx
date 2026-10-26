@@ -60,6 +60,7 @@ import ScratchRewardSheet from "./ScratchRewardSheet";
 import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
 import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
+import UpiAppLaunchRow from "./UpiAppLaunchRow";
 
 const PINCODE_DATA_KEY = "user_pincode";
 
@@ -215,6 +216,9 @@ export default function AddressModal({
   const [showSpeedModal, setShowSpeedModal] = useState(false);
   // Full-page payment selection sheet (UPI / COD / WhatsApp + coins toggle).
   const [showPaySelect, setShowPaySelect] = useState(false);
+  // Which UPI app the shopper picked (Paytm / PhonePe / Google Pay / Other) —
+  // used to show an "Open <app> app" button on the QR screen.
+  const [chosenUpiApp, setChosenUpiApp] = useState("");
   // Address review + confirm sheet — shown after "Choose payment method".
   // A 3-second review lock keeps the confirm button disabled so the shopper
   // actually checks their details before continuing.
@@ -1609,6 +1613,7 @@ export default function AddressModal({
   // with that app as the source, then show the existing UPI QR modal.
   const chooseUpiApp = (app) => {
     const ref = ensureCheckoutOid();
+    setChosenUpiApp(app);
     setUpiOrderRef(ref);
     setUpiPhase("await");
     setQrUnlocked(false);
@@ -3963,6 +3968,7 @@ export default function AddressModal({
             upiPhase={upiPhase}
             verifyCountdown={verifyCountdown}
             reassured={upiReassured}
+            chosenApp={chosenUpiApp}
             onVerifyStatus={handleVerifyStatus}
             upiId={UPI_ID}
             onRevealQR={handleUPIPaymentClick}
@@ -5187,6 +5193,7 @@ function UPIPaymentModal({
   upiPhase = "await",
   verifyCountdown = 30,
   reassured = false,
+  chosenApp = "",
   onVerifyStatus,
   upiId,
   onRevealQR,
@@ -5472,13 +5479,22 @@ function UPIPaymentModal({
             )}
           </div>
 
+          {qrUnlocked && (
+            <UpiAppLaunchRow
+              upiId={upiId}
+              amount={totalToPay}
+              chosenApp={chosenApp}
+              advance={advanceMode}
+            />
+          )}
+
           {onSwitchToCOD && (
             <button
               type="button"
               className="upiv3-cod-link"
               onClick={onSwitchToCOD}
             >
-              Can't pay online? Continue with Cash on Delivery
+              Can&apos;t pay online? Continue with Cash on Delivery
             </button>
           )}
         </div>

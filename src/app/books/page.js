@@ -7,6 +7,7 @@ import { ArrowLeft, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { books } from "@/utils/book";
 import CartBar from "@/components/CartBar";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import SearchOverlay from "@/components/SearchOverlay";
 import CatalogueCard from "@/components/UI/CatalogueCard";
 import { getCatalogueData, getBooksByCategory } from "@/utils/catalogueUtils";
@@ -126,6 +127,7 @@ export default function BooksPage() {
       </div>
 
       <CartBar />
+      <MobileBottomNav />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );

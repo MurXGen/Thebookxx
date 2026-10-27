@@ -27,6 +27,14 @@ export const UPI_APPS = [
   },
 ];
 
+// Copy the UPI ID to the clipboard (no app launch).
+export function copyUpiId(upiId) {
+  if (typeof navigator === "undefined") return;
+  try {
+    navigator.clipboard?.writeText(String(upiId || ""));
+  } catch {}
+}
+
 // Map a human label ("Paytm" / "PhonePe" / "Google Pay" / "GPay") to its meta.
 export function upiAppByName(name) {
   const n = String(name || "").toLowerCase();

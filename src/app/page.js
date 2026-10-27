@@ -4,6 +4,7 @@ import { lazy, Suspense, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AllBooks from "@/components/AllBooks";
 import CartBar from "@/components/CartBar";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import Navbar from "@/components/Navbar";
 import PincodeModal from "@/components/UI/PincodeModal";
 import CountdownTimer from "@/components/UI/CountDownTimer";
@@ -344,6 +345,9 @@ export default function HomePage() {
       <AllBooks />
 
       <CartBar tab="books" />
+
+      {/* Mobile-only bottom navigation (home page) */}
+      <MobileBottomNav />
 
       {/* PWA Install - Lazy Load */}
       <LazySection threshold={0.1}>

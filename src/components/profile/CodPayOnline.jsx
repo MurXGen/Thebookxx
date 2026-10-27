@@ -634,6 +634,7 @@ export default function CodPayOnline({
                         upiId={UPI_ID}
                         amount={payAmount}
                         advance={mode === "advance"}
+                        onWhatsApp={markPaid}
                       />
                     )}
                   </div>

@@ -9,6 +9,7 @@ import RecommendationModal from "@/components/RecommendationModal";
 import { fetchProStatus, cachedProStatus } from "@/utils/proPlan";
 import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import OrderSuccessCard from "@/components/UI/OrderSuccessCard";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
@@ -1844,6 +1845,7 @@ export default function BagPage() {
   return (
     <Suspense fallback={null}>
       <BagContent />
+      <MobileBottomNav />
     </Suspense>
   );
 }

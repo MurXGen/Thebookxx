@@ -1439,6 +1439,115 @@ label.sec-mid-btn {
   transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
+/* ===== Mobile bottom navigation (storefront, phones only) ===== */
+.tbx-bottomnav {
+  --bn-h: 58px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 120;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  height: calc(var(--bn-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #ffffff;
+  border-top: 1px solid var(--hairline, #ececec);
+  box-shadow: 0 -4px 20px -12px rgba(0, 0, 0, 0.25);
+}
+.tbx-bn-item {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  background: none;
+  padding: 6px 0 4px;
+  color: #374151;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease;
+}
+/* Thin separator between menu items. */
+.tbx-bn-item + .tbx-bn-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 48%;
+  width: 1px;
+  background: var(--hairline, #e5e7eb);
+}
+.tbx-bn-item:active {
+  transform: translateY(0.5px);
+}
+.tbx-bn-item.active {
+  color: var(--tertiary, #fb8500);
+}
+.tbx-bn-ic {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+}
+.tbx-bn-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+.tbx-bn-item.active .tbx-bn-label {
+  font-weight: 600;
+}
+.tbx-bn-badge {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(45%);
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  border: 2px solid #fff;
+  box-sizing: content-box;
+}
+/* Make room for the fixed nav: lift the checkout bars above it and pad content. */
+body.has-bottom-nav .cart-bar,
+body.has-bottom-nav .fixed-bill-bar {
+  bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+}
+body.has-bottom-nav {
+  padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+}
+/* Tablets and up: no mobile nav, no offsets. */
+@media (min-width: 768px) {
+  .tbx-bottomnav {
+    display: none;
+  }
+  body.has-bottom-nav .cart-bar,
+  body.has-bottom-nav .fixed-bill-bar {
+    bottom: 0;
+  }
+  body.has-bottom-nav {
+    padding-bottom: 0;
+  }
+}
+
 /* Full-width bar with breathing room on the sides (replaces the old 680px
    centered cap). The action FABs ride above it, right-aligned. */
 .cart-bar-full {
@@ -59349,3 +59458,348 @@ img[data-loaded="true"] {
   border-color: #cbd5e1;
   background: #f8fafc;
 }
+
+/* ── UPI app pay hand-off modal (Bill-modal UI) ─────────────────────────── */
+.upm-overlay {
+  z-index: 2147483100 !important;
+}
+.upm-sheet {
+  width: 100%;
+}
+.upm-body {
+  padding: 14px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  text-align: center;
+}
+.upm-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+.upm-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #4b5563;
+  margin: 0;
+}
+.upm-text b {
+  color: #111827;
+}
+
+/* Saving splash + flying-QR animation */
+.upm-saving {
+  padding-top: 26px;
+  padding-bottom: 30px;
+}
+.upm-save-scene {
+  position: relative;
+  width: 150px;
+  height: 120px;
+  margin-bottom: 4px;
+}
+.upm-fly-qr {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 54px;
+  height: 54px;
+  margin-left: -27px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fb8500, #ff9e2c);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px -6px rgba(251, 133, 0, 0.6);
+  animation: upmFly 1.7s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+@keyframes upmFly {
+  0% { transform: translateY(-6px) scale(1); opacity: 0; }
+  18% { opacity: 1; }
+  70% { transform: translateY(46px) scale(0.42); opacity: 1; }
+  82% { transform: translateY(52px) scale(0.3); opacity: 0; }
+  100% { opacity: 0; }
+}
+.upm-device {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 72px;
+  height: 72px;
+  margin-left: -36px;
+  border-radius: 18px;
+  background: #0e1013;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.5);
+}
+.upm-device-check {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0);
+  animation: upmCheckPop 0.4s 1.3s both;
+}
+@keyframes upmCheckPop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Highlights */
+.upm-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.upm-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #dcfce7;
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: left;
+}
+.upm-check-ic {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #dcfce7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 2×2 steps grid */
+.upm-steps-lbl {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+}
+.upm-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  width: 100%;
+}
+.upm-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 10px;
+  border: 1px solid #e8e9ee;
+  border-radius: 14px;
+  background: #fafafb;
+  text-align: center;
+}
+.upm-step-n {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #111827;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.upm-step-icon {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+}
+.upm-step-tx {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1.35;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+/* Black & white animated step icons */
+.upm-step.s1 .upm-step-icon svg {
+  animation: upmTap 1.8s ease-in-out infinite;
+}
+@keyframes upmTap {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.upm-step.s3 .upm-step-icon svg {
+  animation: upmBob 1.6s ease-in-out infinite;
+}
+@keyframes upmBob {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.14); }
+}
+.upm-step.s4 .upm-step-icon svg {
+  animation: upmBeat 1.8s ease-in-out infinite;
+}
+@keyframes upmBeat {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.78; }
+}
+/* Step 2 — running scanner (black & white) */
+.upm-scan {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: inline-block;
+}
+.upm-scan-c {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #111827;
+}
+.upm-scan-c.tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 3px; }
+.upm-scan-c.tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 3px; }
+.upm-scan-c.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 3px; }
+.upm-scan-c.br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 3px; }
+.upm-scan-line {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+  background: #111827;
+  border-radius: 2px;
+  top: 5px;
+  box-shadow: 0 0 6px rgba(17, 24, 39, 0.4);
+  animation: upmScan 1.5s ease-in-out infinite;
+}
+@keyframes upmScan {
+  0%, 100% { top: 5px; opacity: 0.4; }
+  50% { top: 26px; opacity: 1; }
+}
+
+/* CTA — app theme primary button */
+.upm-cta {
+  width: 100%;
+  font-size: 15px !important;
+  padding: 14px 16px !important;
+  border-radius: 13px !important;
+  margin-top: 2px;
+}
+.upm-ghost {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  color: #374151;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.upm-cancel {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* Verifying */
+.upm-verifying {
+  padding-top: 22px;
+}
+.upm-verify-graphic {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.upm-radar {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(37, 99, 235, 0.35);
+  animation: upmPulse 1.8s ease-out infinite;
+}
+.upm-radar.two {
+  animation-delay: 0.9s;
+}
+@keyframes upmPulse {
+  0% { transform: scale(0.65); opacity: 0.9; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+.upm-verify-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #22c55e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.5);
+}
+.upm-timer {
+  font-size: 30px;
+  font-weight: 800;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.upm-wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 13px;
+  background: #25d366;
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -8px rgba(37, 211, 102, 0.6);
+}
+.upm-slow {
+  font-size: 12px;
+  color: #b45309;
+  background: #fff7ed;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin: 0;
+}
+

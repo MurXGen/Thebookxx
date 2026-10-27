@@ -5485,6 +5485,7 @@ function UPIPaymentModal({
               amount={totalToPay}
               chosenApp={chosenApp}
               advance={advanceMode}
+              onWhatsApp={onWhatsAppFallback}
             />
           )}
 

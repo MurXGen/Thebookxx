@@ -12,16 +12,23 @@ const EASE = [0.22, 1, 0.36, 1]; // smooth ease-out-expo-ish
 export default function SplashScreen() {
   const [show, setShow] = useState(true);
 
+  // Hide after ~3.5s (quick blur-in, hold, quick blur-out).
   useEffect(() => {
+    const t = setTimeout(() => setShow(false), 3100);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Lock body scroll ONLY while the splash is visible. This effect's cleanup
+  // runs the moment `show` flips to false — the splash lives in the root layout
+  // and never unmounts, so relying on unmount would leave scroll locked forever.
+  useEffect(() => {
+    if (!show) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    // Quick blur-in, hold ~3.5s total, then quick blur-out (~0.4s exit).
-    const t = setTimeout(() => setShow(false), 3100);
     return () => {
-      clearTimeout(t);
       document.body.style.overflow = prev;
     };
-  }, []);
+  }, [show]);
 
   return (
     <AnimatePresence>

@@ -15,6 +15,33 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [orderCount, setOrderCount] = useState(0);
+  const [hidden, setHidden] = useState(false);
+
+  // Slide the bottom nav DOWN when scrolling down, reveal it when scrolling up —
+  // mirrors the navbar's hide-on-scroll behaviour.
+  useEffect(() => {
+    let last = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const delta = y - last;
+        if (y < 80) {
+          setHidden(false); // always show near the top
+        } else if (delta > 6) {
+          setHidden(true); // scrolling down → hide
+        } else if (delta < -6) {
+          setHidden(false); // scrolling up → show
+        }
+        last = y;
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Order count comes from the cached profile snapshot (saved phone). Read it on
   // mount and whenever the tab regains focus, so it reflects new orders.
@@ -68,7 +95,10 @@ export default function MobileBottomNav() {
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
   return (
-    <nav className="tbx-bottomnav" aria-label="Primary">
+    <nav
+      className={`tbx-bottomnav${hidden ? " tbx-bn-hidden" : ""}`}
+      aria-label="Primary"
+    >
       {tabs.map(({ key, label, Icon, href, badge }) => {
         const active = isActive(href);
         return (

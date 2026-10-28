@@ -1455,6 +1455,16 @@ label.sec-mid-btn {
   background: #ffffff;
   border-top: 1px solid var(--hairline, #ececec);
   box-shadow: 0 -4px 20px -12px rgba(0, 0, 0, 0.25);
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease;
+  will-change: transform;
+}
+/* Slide the bottom nav down out of view when scrolling down */
+.tbx-bottomnav.tbx-bn-hidden {
+  transform: translateY(calc(100% + env(safe-area-inset-bottom, 0px) + 4px));
+  opacity: 0;
+  pointer-events: none;
 }
 .tbx-bn-item {
   position: relative;
@@ -37376,16 +37386,18 @@ img[data-loaded="true"] {
 }
 
 /* Full-width search bar under the navbar row */
-.nav-searchbar-wrap {
-  padding: 0 16px 10px;
-}
-.nav-searchbar {
-  width: 100%;
+/* Flexible inline search pill in the navbar (replaces the full-width bar) */
+.nav-search-inline {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 420px;
+  margin: 0 12px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 12px;
+  gap: 9px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 11px;
   border: 1.5px solid var(--dark-20, #d1d5db);
   background: #fff;
   color: var(--dark-50, #6b7280);
@@ -37397,21 +37409,28 @@ img[data-loaded="true"] {
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
-.nav-searchbar:hover,
-.nav-searchbar:focus-visible {
+.nav-search-inline:hover,
+.nav-search-inline:focus-visible {
   border-color: var(--tertiary, #fb8500);
   box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.12);
 }
-.nav-searchbar svg {
+.nav-search-inline svg {
   flex: 0 0 auto;
   color: var(--tertiary, #fb8500);
 }
-.nav-searchbar-ph {
+.nav-search-inline-ph {
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+@media (max-width: 420px) {
+  .nav-search-inline {
+    margin: 0 8px;
+    height: 38px;
+    padding: 0 11px;
+  }
 }
 
 .nav-trust-stripe {
@@ -59889,4 +59908,132 @@ img[data-loaded="true"] {
     filter: none !important;
     transform: none !important;
   }
+}
+
+/* ── Diwali hero decorations (marigold garland + petals + fireworks) ─────── */
+/* Marigold garland (toran) across the top of the hero */
+.hero-toran {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 34px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0 6px;
+  z-index: 1;
+  pointer-events: none;
+}
+.toran-f {
+  position: relative;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  transform-origin: top center;
+  animation: toranSway 3.2s ease-in-out infinite;
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.18);
+}
+.toran-f::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 1.5px;
+  height: 10px;
+  background: #3f7d20;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+.toran-f.o {
+  background: radial-gradient(circle at 50% 38%, #ffd27a 0%, #fb8500 62%, #c75400 100%);
+}
+.toran-f.y {
+  background: radial-gradient(circle at 50% 38%, #fff3b0 0%, #ffb703 60%, #e08900 100%);
+}
+@keyframes toranSway {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+/* Marigold petals drifting down */
+.hero-petals {
+  z-index: 0;
+}
+.hero-petal {
+  position: absolute;
+  top: -24px;
+  border-radius: 68% 68% 70% 0;
+  opacity: 0;
+  will-change: transform, opacity;
+  box-shadow: inset 0 -3px 4px rgba(120, 50, 0, 0.18);
+  animation-name: petalFall;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes petalFall {
+  0% { transform: translateY(-24px) translateX(0) rotate(0deg); opacity: 0; }
+  8% { opacity: 0.95; }
+  50% { transform: translateY(430px) translateX(var(--pt-x, 30px)) rotate(200deg); opacity: 0.9; }
+  90% { opacity: 0.85; }
+  100% { transform: translateY(880px) translateX(0) rotate(400deg); opacity: 0; }
+}
+
+/* Fireworks bursting in the hero sky */
+.hero-fireworks {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-fw {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+}
+.hero-fw::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: var(--fw, #ffd23f);
+  box-shadow: 0 0 14px 4px var(--fw, #ffd23f);
+  opacity: 0;
+  animation: fwFlash 4.6s ease-out infinite;
+  animation-delay: inherit;
+}
+.fw-spark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fw, #ffd23f);
+  box-shadow: 0 0 6px var(--fw, #ffd23f);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: fwBurst 4.6s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+}
+@keyframes fwBurst {
+  0% { transform: rotate(var(--a)) translateY(0) scale(0.3); opacity: 0; }
+  6% { opacity: 1; }
+  34% { transform: rotate(var(--a)) translateY(-52px) scale(1); opacity: 1; }
+  60% { transform: rotate(var(--a)) translateY(-68px) scale(0.4); opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes fwFlash {
+  0% { opacity: 0; transform: scale(0.2); }
+  5% { opacity: 1; transform: scale(1); }
+  16% { opacity: 0; transform: scale(1.6); }
+  100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-petal,
+  .fw-spark,
+  .hero-fw::before,
+  .toran-f {
+    animation: none !important;
+  }
+  .hero-petal { opacity: 0.6; }
 }

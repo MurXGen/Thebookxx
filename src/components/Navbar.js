@@ -189,19 +189,24 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* RIGHT — search, WhatsApp, profile, cart */}
+          {/* MIDDLE — flexible inline search (opens the overlay on tap) */}
+          <button
+            type="button"
+            className="nav-search-inline"
+            onClick={() => {
+              trackEvent("search_opened", { source: "navbar_inline" });
+              setSearchOpen(true);
+            }}
+            aria-label="Search books"
+          >
+            <Search size={18} />
+            <span className="nav-search-inline-ph">
+              Search books, authors…
+            </span>
+          </button>
+
+          {/* RIGHT — WhatsApp, profile, cart */}
           <div className="nav-right">
-            <button
-              type="button"
-              className="nav-ic"
-              onClick={() => {
-                trackEvent("search_opened", { source: "navbar" });
-                setSearchOpen(true);
-              }}
-              aria-label="Search books"
-            >
-              <Search size={24} />
-            </button>
             <a
               href="https://wa.me/917710892108"
               target="_blank"
@@ -233,24 +238,6 @@ export default function Navbar() {
             </Link>
           </div>
         </nav>
-
-        {/* Full-width search bar — opens the search overlay on tap */}
-        <div className="section-1200 nav-searchbar-wrap">
-          <button
-            type="button"
-            className="nav-searchbar"
-            onClick={() => {
-              trackEvent("search_opened", { source: "navbar_bar" });
-              setSearchOpen(true);
-            }}
-            aria-label="Search books"
-          >
-            <Search size={18} />
-            <span className="nav-searchbar-ph">
-              Search books, authors, genres…
-            </span>
-          </button>
-        </div>
 
         {/* Rotating trust promo — black one-line stripe stuck below the navbar */}
         <div className="nav-trust-stripe">

@@ -141,31 +141,43 @@ export default function HomeHero() {
     setTimeout(() => setBursts((b) => b.filter((z) => z.id !== id)), 750);
   };
 
-  // Festive confetti raining across the whole hero. Deterministic values keep
+  // Diwali marigold petals drifting down the hero. Deterministic values keep
   // SSR and client markup identical (no hydration mismatch).
-  const confetti = useMemo(() => {
-    const COLORS = [
-      "#fb8500",
-      "#ffb703",
-      "#ffd23f",
-      "#c0223b",
-      "#ff8c42",
-      "#4ade80",
-      "#60a5fa",
-      "#f472b6",
-      "#ffffff",
-    ];
-    return Array.from({ length: 30 }).map((_, i) => ({
+  const petals = useMemo(() => {
+    const COLORS = ["#fb8500", "#ffb703", "#ffd23f", "#ff8c42", "#e85d04", "#f48c06"];
+    return Array.from({ length: 22 }).map((_, i) => ({
       i,
       left: (i * 97) % 100,
-      delay: ((i * 53) % 60) / 10, // 0–6s
-      dur: 4.5 + (((i * 71) % 45) / 10), // 4.5–9s
-      size: 6 + (i % 4) * 2, // 6–12px
+      delay: ((i * 53) % 70) / 10, // 0–7s
+      dur: 6 + (((i * 71) % 55) / 10), // 6–11.5s
+      size: 9 + (i % 4) * 3, // 9–18px
       color: COLORS[i % COLORS.length],
-      rot: (i * 61) % 360,
-      round: i % 3 === 0, // some circles, some rectangles
+      sway: 24 + ((i * 37) % 40), // horizontal sway px
     }));
   }, []);
+
+  // Marigold garland (toran) flowers strung across the top of the hero.
+  const toran = useMemo(
+    () =>
+      Array.from({ length: 22 }).map((_, i) => ({
+        i,
+        orange: i % 2 === 0,
+        size: 16 + (i % 3) * 3,
+        drop: (i % 4) * 4, // slight hang variation
+      })),
+    [],
+  );
+
+  // A few auto-firing Diwali fireworks across the hero sky.
+  const fireworks = useMemo(
+    () => [
+      { i: 0, left: 16, top: 14, hue: "#ffd23f", delay: 0 },
+      { i: 1, left: 72, top: 10, hue: "#fb8500", delay: 1.4 },
+      { i: 2, left: 46, top: 22, hue: "#f472b6", delay: 2.8 },
+      { i: 3, left: 88, top: 26, hue: "#60a5fa", delay: 3.9 },
+    ],
+    [],
+  );
 
   const stats = [
     { icon: Star, label: "4.4 rating" },
@@ -266,20 +278,60 @@ export default function HomeHero() {
           </li>
         </ul>
       </div>
-      {/* Festive confetti raining down the whole hero (behind the content) */}
-      <div className="hero-confetti" aria-hidden="true">
-        {confetti.map((c) => (
+      {/* Diwali marigold garland (toran) strung across the top */}
+      <div className="hero-toran" aria-hidden="true">
+        {toran.map((f) => (
+          <span
+            key={f.i}
+            className={`toran-f${f.orange ? " o" : " y"}`}
+            style={{
+              width: f.size,
+              height: f.size,
+              marginTop: f.drop,
+              animationDelay: `${(f.i % 6) * 0.2}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Diwali fireworks bursting in the hero sky */}
+      <div className="hero-fireworks" aria-hidden="true">
+        {fireworks.map((fw) => (
+          <span
+            key={fw.i}
+            className="hero-fw"
+            style={{
+              left: `${fw.left}%`,
+              top: `${fw.top}%`,
+              "--fw": fw.hue,
+              animationDelay: `${fw.delay}s`,
+            }}
+          >
+            {Array.from({ length: 12 }).map((_, k) => (
+              <span
+                key={k}
+                className="fw-spark"
+                style={{ "--a": `${k * 30}deg`, animationDelay: `${fw.delay}s` }}
+              />
+            ))}
+          </span>
+        ))}
+      </div>
+
+      {/* Marigold petals drifting down the hero (behind the content) */}
+      <div className="hero-confetti hero-petals" aria-hidden="true">
+        {petals.map((c) => (
           <span
             key={c.i}
-            className={`hero-cf${c.round ? " round" : ""}`}
+            className="hero-petal"
             style={{
               left: `${c.left}%`,
               width: c.size,
-              height: c.round ? c.size : c.size + 4,
+              height: c.size + 3,
               background: c.color,
               animationDelay: `${c.delay}s`,
               animationDuration: `${c.dur}s`,
-              "--cf-rot": `${c.rot}deg`,
+              "--pt-x": `${c.sway}px`,
             }}
           />
         ))}

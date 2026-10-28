@@ -168,6 +168,21 @@ export default function HomeHero() {
     [],
   );
 
+  // Door-style hanging marigold garlands (bandhanwar) at the top corners.
+  // Each strand is a column of flower/leaf beads of a given length.
+  const bandhanwar = useMemo(() => {
+    const strand = (len) =>
+      Array.from({ length: len }).map((_, k) => ({
+        k,
+        leaf: k % 2 === 1,
+        orange: k % 4 < 2,
+      }));
+    return {
+      left: [strand(7), strand(5)],
+      right: [strand(5), strand(7)],
+    };
+  }, []);
+
   // A few auto-firing Diwali fireworks across the hero sky.
   const fireworks = useMemo(
     () => [
@@ -294,6 +309,25 @@ export default function HomeHero() {
         ))}
       </div>
 
+      {/* Door-style hanging marigold garlands (bandhanwar) at top corners */}
+      <div className="hero-bandhanwar" aria-hidden="true">
+        {["left", "right"].map((side) => (
+          <div key={side} className={`bw-cluster ${side}`}>
+            {bandhanwar[side].map((strand, s) => (
+              <span key={s} className="bw-strand" style={{ animationDelay: `${s * 0.3}s` }}>
+                {strand.map((b) => (
+                  <span
+                    key={b.k}
+                    className={`bw-bead${b.leaf ? " leaf" : b.orange ? " o" : " y"}`}
+                  />
+                ))}
+                <span className="bw-tip" />
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+
       {/* Diwali fireworks bursting in the hero sky */}
       <div className="hero-fireworks" aria-hidden="true">
         {fireworks.map((fw) => (
@@ -384,35 +418,22 @@ export default function HomeHero() {
 
       <div className="hero-top">
         <div className="home-hero-inner">
-          {/* Festive Q4 season card — tap to shower confetti */}
+          {/* Festive sale — flat lay below the marigold garland (tap to shower) */}
           <button
             type="button"
-            className="hero-festive"
+            className="hero-festive-flat"
             onClick={fireShower}
-            aria-label="Festive sale — up to 50% off. Tap for confetti."
+            aria-label="Festive sale — up to 50% off. Tap for a surprise."
           >
-            <span className="hero-festive-glow" aria-hidden="true" />
-            {/* Ambient confetti inside the card */}
-            <span className="hero-festive-confetti" aria-hidden="true">
-              {Array.from({ length: 14 }).map((_, i) => (
-                <span key={i} className={`hfc hfc-${i}`} />
-              ))}
+            <span className="hff-kicker">
+              <span aria-hidden="true">🪔</span>
+              Festive Season Sale is live
+              <span aria-hidden="true">🪔</span>
             </span>
-            <span className="hero-festive-diya" aria-hidden="true">
-              🪔
+            <span className="hff-amt">
+              Up to <b>50% OFF</b> on every order
             </span>
-            <span className="hero-festive-txt">
-              <span className="hero-festive-kicker">
-                ✦ Festive Season Sale is live ✦
-              </span>
-              <span className="hero-festive-amt">
-                Up to <b>50% OFF</b> on every order
-              </span>
-              <span className="hero-festive-hint">Tap for a surprise 🎉</span>
-            </span>
-            <span className="hero-festive-diya" aria-hidden="true">
-              🎉
-            </span>
+            <span className="hff-hint">Tap for a surprise 🎉</span>
           </button>
 
           {/* Offers marquee — auto-scrolls; tap any chip to see all reward tiers */}

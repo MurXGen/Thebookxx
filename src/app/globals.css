@@ -1436,8 +1436,10 @@ label.sec-mid-btn {
   margin-left: auto;
   margin-right: auto;
   z-index: 100;
-  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
+  transition:
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    bottom 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, bottom;
 }
 /* ===== Mobile bottom navigation (storefront, phones only) ===== */
 .tbx-bottomnav {
@@ -1540,6 +1542,14 @@ label.sec-mid-btn {
 body.has-bottom-nav .cart-bar,
 body.has-bottom-nav .fixed-bill-bar {
   bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+}
+/* Nav slid away → drop the floating bars to the screen bottom (no blank gap). */
+body.has-bottom-nav.bottom-nav-hidden .cart-bar,
+body.has-bottom-nav.bottom-nav-hidden .fixed-bill-bar {
+  bottom: env(safe-area-inset-bottom, 0px);
+}
+.fixed-bill-bar {
+  transition: bottom 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 body.has-bottom-nav {
   padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px));
@@ -60036,4 +60046,124 @@ img[data-loaded="true"] {
     animation: none !important;
   }
   .hero-petal { opacity: 0.6; }
+}
+
+/* ── Hero balloons + door-style hanging garland (bandhanwar) ─────────────── */
+/* Door garland (bandhanwar) — hanging strands at the top corners */
+.hero-bandhanwar {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.bw-cluster {
+  position: absolute;
+  top: 0;
+  display: flex;
+  gap: 6px;
+}
+.bw-cluster.left {
+  left: 10px;
+}
+.bw-cluster.right {
+  right: 10px;
+}
+.bw-strand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transform-origin: top center;
+  animation: bwSway 3.4s ease-in-out infinite;
+}
+.bw-bead {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.18);
+}
+.bw-bead.o {
+  background: radial-gradient(circle at 50% 38%, #ffd27a, #fb8500 65%, #c75400);
+}
+.bw-bead.y {
+  background: radial-gradient(circle at 50% 38%, #fff3b0, #ffb703 62%, #e08900);
+}
+.bw-bead.leaf {
+  width: 9px;
+  height: 14px;
+  border-radius: 60% 60% 60% 0;
+  transform: rotate(-30deg);
+  background: linear-gradient(160deg, #4caf50, #2f7d32);
+  box-shadow: none;
+}
+/* little dangling tip (a single small flower) */
+.bw-tip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #ffe08a, #e63946 70%);
+  margin-top: 2px;
+}
+@keyframes bwSway {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-balloon,
+  .bw-strand {
+    animation: none !important;
+  }
+}
+
+/* ── Festive sale — flat lay (replaces the 50% OFF card) ─────────────────── */
+.hero-festive-flat {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  max-width: 100%;
+  margin: 4px 0 14px;
+  padding: 2px 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}
+.hff-kicker {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 7px;
+  max-width: 100%;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c2410c;
+}
+.hff-amt {
+  max-width: 100%;
+  font-size: clamp(16px, 5.2vw, 20px);
+  font-weight: 800;
+  color: #1b1b1d;
+  line-height: 1.18;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.hff-amt b {
+  color: #fb8500;
+  white-space: nowrap;
+}
+.hff-hint {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a8f98;
 }

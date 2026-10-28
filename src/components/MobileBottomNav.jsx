@@ -79,6 +79,13 @@ export default function MobileBottomNav() {
     return () => document.body.classList.remove("has-bottom-nav");
   }, []);
 
+  // When the nav slides away, drop the floating bars down to the screen bottom
+  // (no blank gap) — the CSS handles the smooth slide.
+  useEffect(() => {
+    document.body.classList.toggle("bottom-nav-hidden", hidden);
+    return () => document.body.classList.remove("bottom-nav-hidden");
+  }, [hidden]);
+
   const tabs = [
     { key: "home", label: "Home", Icon: Home, href: "/" },
     { key: "categories", label: "Categories", Icon: LayoutGrid, href: "/books" },

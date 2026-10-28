@@ -4,6 +4,153 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "karnataka-rajyotsava-2026-kannada-literature-books-to-read-india": {
+    "id": "blog-092",
+    "title": "Karnataka Rajyotsava 2026: 15 Books by Kannada Storytellers and Malgudi Classics to Read on 1 November",
+    "slug": "karnataka-rajyotsava-2026-kannada-literature-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-28",
+    "lastModified": "2026-10-28",
+    "excerpt": "Karnataka Rajyotsava falls on 1 November 2026. Read Sudha Murty, R. K. Narayan and more, with books from ₹1, free delivery and Cash on Delivery across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Karnataka Rajyotsava is observed every year on 1 November, and in 2026 it falls on a Sunday. It marks the day in 1956 when Kannada-speaking regions from the old Mysore state, the Bombay and Madras presidencies and the Hyderabad princely state were brought together under the States Reorganisation Act. The state was first called Mysore and took the name Karnataka on 1 November 1973. Red and yellow flags go up across the state, the state anthem is sung, and the government announces its Rajyotsava Awards. For readers, it is also a good excuse to pick up the writing that Karnataka has given India."
+      },
+      {
+        "type": "paragraph",
+        "content": "Kannada literature has an unusually strong record. Eight Kannada writers have won the Jnanpith Award, among them Kuvempu, Shivarama Karanth, U. R. Ananthamurthy, Girish Karnad and Chandrashekhar Kambar, and in 2025 Banu Mushtaq's short story collection Heart Lamp, translated by Deepa Bhasthi, became the first Kannada book to win the International Booker Prize. Below is a reading list built around Karnataka, from Kannada-born storytellers available on TheBookX to fiction set in the world R. K. Narayan imagined."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Karnataka Rajyotsava 2026 at a glance",
+        "content": "Date: Sunday, 1 November 2026. Commemorates the 1956 unification of Kannada-speaking regions and, from 1973, the state's name, Karnataka. Ways to mark it: wear red and yellow, read a Kannada author, or gift a book to someone who has never read one."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Sudha Murty: Karnataka's most-read storyteller"
+      },
+      {
+        "type": "paragraph",
+        "content": "No author carries Karnataka to as many Indian homes as Sudha Murty. She was born in Shiggaon, writes in both Kannada and English, and was awarded the Padma Shri in 2006 and the Padma Bhushan in 2023. Her prose is plain, warm and observant, which is why her books work for a ten-year-old and a grandparent alike."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you want a first book, start with <a href=\"/books/wise-and-otherwise-a-salute-to-life\" style=\"color:#fb8500;font-weight:600\">Wise and Otherwise</a>, a collection of short true encounters from her years of social work, or <a href=\"/books/three-thousand-stitches\" style=\"color:#fb8500;font-weight:600\">Three Thousand Stitches</a>, which gathers ordinary lives that taught her something. For novels, <a href=\"/books/dollar-bahu\" style=\"color:#fb8500;font-weight:600\">Dollar Bahu</a> looks at family, money and migration, <a href=\"/books/mahashweta\" style=\"color:#fb8500;font-weight:600\">Mahashweta</a> is a quiet, moving story of a young woman facing an unfair judgement, and <a href=\"/books/gently-falls-the-bakula\" style=\"color:#fb8500;font-weight:600\">Gently Falls the Bakula</a> is a marriage story that rewards a slow read."
+      },
+      {
+        "type": "paragraph",
+        "content": "For younger readers, <a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> and <a href=\"/books/the-day-i-stopped-drinking-milk\" style=\"color:#fb8500;font-weight:600\">The Day I Stopped Drinking Milk</a> are short, funny and kind, and <a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> is made for bedtime. Families who want the full shelf can look at the <a href=\"/books/sudha-murty-collection-12-book-set\" style=\"color:#fb8500;font-weight:600\">Sudha Murty 12-book collection</a>."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "R. K. Narayan and the town of Malgudi"
+      },
+      {
+        "type": "paragraph",
+        "content": "R. K. Narayan lived much of his life in Mysore, and although Malgudi is an invented town, the gentle, observant world of its streets, schools and railway station has long been read as South Indian small-town life at its most recognisable. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is the easiest way in: short stories you can finish in a sitting, ideal for anyone who thinks Indian classics are heavy going. When you are ready for a full novel, <a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> follows a tour guide whose life changes direction in ways he never planned."
+      },
+      {
+        "type": "blockquote",
+        "content": "A language survives when people keep reading it, and keep handing the books to the next reader."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Reading Karnataka beyond the bookshelf"
+      },
+      {
+        "type": "paragraph",
+        "content": "Karnataka is also the state of Bengaluru, India's technology capital, where focus and clear thinking are daily problems. If you are marking the day with a Bengaluru-style reading goal, three non-fiction picks stand out. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> turns small daily actions into lasting change, and <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> offers a calmer, Japanese-inspired answer to the question of purpose. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to thinking and speaking plainly, which is useful in a stand-up meeting and at a family dinner."
+      },
+      {
+        "type": "paragraph",
+        "content": "For fiction beyond the state, <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> remains a bestselling reminder that the journey is the point, and it pairs well with Narayan's quieter style if you like to alternate."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to mark Karnataka Rajyotsava with a book"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Read one short story aloud with family, such as one from Malgudi Days, and talk about the place it describes.",
+          "Gift a Sudha Murty title to a child or grandparent who reads in English or enjoys translated stories.",
+          "Pick one Kannada writer you have not read and look for an English translation. Banu Mushtaq's Heart Lamp and the works of Girish Karnad and U. R. Ananthamurthy are strong starting points, though not all are in our catalogue.",
+          "Set a seven-day challenge from 1 November: ten minutes of reading a day."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Offers on TheBookX",
+        "content": "Books from ₹1, free delivery and Cash on Delivery across India. Gift wrapping is available for +₹25, which makes a Sudha Murty or Malgudi Days set an easy last-minute gift."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Frequently asked questions"
+      },
+      {
+        "type": "paragraph",
+        "content": "Answers to the most common questions about Karnataka Rajyotsava and Kannada reading are below, and the same questions are marked up for search engines."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/karnataka-rajyotsava-2026-kannada-literature-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/karnataka-rajyotsava-2026-kannada-literature-books-to-read-india.jpeg",
+        "alt": "A cheerful young woman in a red and yellow dupatta reading a book on a sunlit balcony for Karnataka Rajyotsava",
+        "caption": "Karnataka Rajyotsava, 1 November: a good day to read Karnataka's storytellers.",
+        "category": "Awareness Days"
+      }
+    ],
+    "keywords": [
+      "Karnataka Rajyotsava 2026",
+      "Kannada Rajyotsava books",
+      "Kannada literature books",
+      "Sudha Murty books",
+      "R. K. Narayan Malgudi Days",
+      "books to read on Karnataka Rajyotsava",
+      "Kannada Jnanpith winners",
+      "Banu Mushtaq Heart Lamp",
+      "best books by Karnataka authors",
+      "buy books online India"
+    ],
+    "categories": [
+      "Awareness Days",
+      "Fiction",
+      "Book Recommendations"
+    ],
+    "faqs": [
+      {
+        "question": "When is Karnataka Rajyotsava in 2026?",
+        "answer": "Karnataka Rajyotsava is observed on 1 November every year, which is a Sunday in 2026. It marks 1 November 1956, when Kannada-speaking regions were united under the States Reorganisation Act, and 1 November 1973, when Mysore state was renamed Karnataka."
+      },
+      {
+        "question": "Which Kannada authors should I read first?",
+        "answer": "For easy English reading, start with Sudha Murty, who writes in Kannada and English. Among Jnanpith-winning Kannada writers, Girish Karnad, U. R. Ananthamurthy and Shivarama Karanth are well-known names, and Banu Mushtaq's Heart Lamp won the 2025 International Booker Prize in translation."
+      },
+      {
+        "question": "What is a good short book to read on Karnataka Rajyotsava?",
+        "answer": "Malgudi Days by R. K. Narayan is a collection of short stories you can read in a few evenings. Sudha Murty's Wise and Otherwise is another easy, true-to-life option."
+      },
+      {
+        "question": "Can I order these books online with delivery across India?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India, and gift wrapping is available for +₹25."
+      }
+    ]
+  },
   "vigilance-awareness-week-2026-probity-for-prosperity-books-on-integrity-india": {
     "id": "blog-091",
     "title": "Vigilance Awareness Week 2026: 17 Books on Integrity, Power and Honest Living (Probity for Prosperity)",

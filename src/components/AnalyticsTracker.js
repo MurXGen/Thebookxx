@@ -1,11 +1,75 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 const GA_ID = "G-VZX7GSTR9Z";
 const LAST_VISIT_KEY = "tbx_last_visit";
 const VISIT_COUNT_KEY = "tbx_visit_count";
+
+// Classify a referrer URL into a { source, medium } for attribution when the
+// visit arrives WITHOUT utm_* params (e.g. a Google-search click). Returns null
+// for internal navigations (handled by the caller) or unparseable referrers.
+function classifyReferrer(ref) {
+  let host = "";
+  try {
+    host = new URL(ref).hostname.toLowerCase().replace(/^www\./, "");
+  } catch {
+    return null;
+  }
+  if (!host) return null;
+
+  // Search engines → organic
+  if (/(^|\.)google\./.test(host)) return { source: "google", medium: "organic" };
+  if (host.includes("bing.")) return { source: "bing", medium: "organic" };
+  if (host.includes("duckduckgo")) return { source: "duckduckgo", medium: "organic" };
+  if (host.includes("search.yahoo") || host === "yahoo.com")
+    return { source: "yahoo", medium: "organic" };
+  if (host.includes("ecosia")) return { source: "ecosia", medium: "organic" };
+  if (host.includes("yandex.")) return { source: "yandex", medium: "organic" };
+  if (host.includes("baidu.")) return { source: "baidu", medium: "organic" };
+  if (host.includes("brave.")) return { source: "brave", medium: "organic" };
+
+  // AI assistants
+  const ai = [
+    "chatgpt.com",
+    "chat.openai.com",
+    "openai.com",
+    "perplexity.ai",
+    "gemini.google",
+    "bard.google",
+    "copilot.microsoft",
+    "claude.ai",
+  ];
+  if (ai.some((s) => host.includes(s))) return { source: host, medium: "ai" };
+
+  // Social
+  const social = [
+    "facebook.com",
+    "instagram.com",
+    "l.instagram.com",
+    "t.co",
+    "twitter.com",
+    "x.com",
+    "linkedin.com",
+    "lnkd.in",
+    "reddit.com",
+    "pinterest.",
+    "youtube.com",
+    "youtu.be",
+    "whatsapp.com",
+    "wa.me",
+    "t.me",
+    "telegram",
+    "snapchat",
+    "threads.net",
+    "quora.com",
+  ];
+  if (social.some((s) => host.includes(s))) return { source: host, medium: "social" };
+
+  // Everything else → generic referral
+  return { source: host, medium: "referral" };
+}
 
 // Fire a GA event, retrying briefly if the GA library hasn't loaded yet so
 // early events aren't silently dropped.
@@ -24,7 +88,6 @@ function safeGtag(...args) {
 
 export default function AnalyticsTracker() {
   const pathname = usePathname();
-  const router = useRouter();
   const scrollFired = useRef({}); // milestones already sent for this page
   const sessionInit = useRef(false);
 
@@ -66,25 +129,64 @@ export default function AnalyticsTracker() {
     } catch {}
   }, []);
 
-  // ── UTM attribution (influencer / campaign tracking) ──
-  // On first load, read utm_* params, record the hit to the utm sheet tab once
-  // per browser session (per campaign), and remember it for later attribution.
+  // ── UTM + referrer attribution ──
+  // On first load: if the visit carries utm_* params, record those; otherwise
+  // derive the source from the referrer (Google → organic, social, AI, direct).
+  // Either way the visitor STAYS on their landing page — we only strip utm_*
+  // params from the URL bar.
   const utmInit = useRef(false);
   useEffect(() => {
     if (utmInit.current) return;
     utmInit.current = true;
     try {
       const sp = new URLSearchParams(window.location.search);
-      const utm = {
+      const explicit = {
         source: sp.get("utm_source") || "",
         medium: sp.get("utm_medium") || "",
         campaign: sp.get("utm_campaign") || "",
         content: sp.get("utm_content") || "",
         term: sp.get("utm_term") || "",
       };
-      if (!utm.source && !utm.campaign) return;
 
-      // Remember the first-touch UTM for this shopper (attribution later).
+      let utm = null;
+      let fromParams = false;
+
+      if (explicit.source || explicit.campaign) {
+        utm = explicit;
+        fromParams = true;
+      } else {
+        // No utm params → classify by referrer.
+        const ref = document.referrer || "";
+        let refHost = "";
+        try {
+          refHost = new URL(ref).hostname.toLowerCase();
+        } catch {}
+        const selfHost = window.location.hostname.toLowerCase();
+        const isInternal =
+          refHost &&
+          (refHost === selfHost ||
+            refHost.endsWith("thebookx.in") ||
+            refHost === "localhost");
+
+        if (!ref) {
+          utm = { source: "direct", medium: "none", campaign: "", content: "", term: "" };
+        } else if (!isInternal) {
+          const c = classifyReferrer(ref);
+          if (c)
+            utm = {
+              source: c.source,
+              medium: c.medium,
+              campaign: "",
+              content: "",
+              term: "",
+            };
+        }
+        // isInternal (reload / in-site nav) → leave utm null, record nothing.
+      }
+
+      if (!utm) return;
+
+      // Remember the first-touch attribution for this shopper.
       try {
         if (!localStorage.getItem("tbx_utm")) {
           localStorage.setItem(
@@ -94,28 +196,39 @@ export default function AnalyticsTracker() {
         }
       } catch {}
 
-      // Count once per session per campaign key (avoids inflating on reloads).
+      // Count once per session per source key (avoids inflating on reloads).
       const key = `${utm.source}|${utm.medium}|${utm.campaign}`.toLowerCase();
       const seenKey = `tbx_utm_seen_${key}`;
-      if (sessionStorage.getItem(seenKey)) return;
-      sessionStorage.setItem(seenKey, "1");
+      if (!sessionStorage.getItem(seenKey)) {
+        sessionStorage.setItem(seenKey, "1");
+        safeGtag("event", "utm_landing", {
+          source: utm.source,
+          medium: utm.medium,
+          campaign: utm.campaign,
+        });
+        fetch("/api/utm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(utm),
+          keepalive: true,
+        }).catch(() => {});
+      }
 
-      safeGtag("event", "utm_landing", {
-        source: utm.source,
-        medium: utm.medium,
-        campaign: utm.campaign,
-      });
-      // Register the hit in the utm sheet (keepalive so it survives the redirect).
-      fetch("/api/utm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(utm),
-        keepalive: true,
-      }).catch(() => {});
-      // Clean the URL → land them on the main site without the utm_* params.
-      router.replace("/");
+      // Strip the utm_* params from the URL bar but KEEP the landing page.
+      if (fromParams) {
+        try {
+          const url = new URL(window.location.href);
+          ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(
+            (k) => url.searchParams.delete(k),
+          );
+          window.history.replaceState(
+            {},
+            "",
+            url.pathname + (url.search || "") + (url.hash || ""),
+          );
+        } catch {}
+      }
     } catch {}
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Scroll-depth milestones (25 / 50 / 75 / 100 %) ──

@@ -5,6 +5,7 @@ import { StoreProvider } from "@/context/StoreContext";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { ToastProvider } from "@/context/ToastContext";
 import RegisterSW from "@/components/RegisterSW";
+import SplashScreen from "@/components/UI/SplashScreen";
 import GlobalHaptics from "@/components/UI/GlobalHaptics";
 import RainEffect from "@/components/UI/RainEffect";
 import { PLProvider } from "@/context/PLContext";
@@ -235,6 +236,7 @@ export default function RootLayout({ children }) {
         <ToastProvider>
           <StoreProvider>
             <PLProvider>
+              <SplashScreen />
               <RegisterSW />
               <GlobalHaptics />
               <AnalyticsTracker />

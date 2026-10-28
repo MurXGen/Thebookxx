@@ -4,6 +4,176 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "vigilance-awareness-week-2026-probity-for-prosperity-books-on-integrity-india": {
+    "id": "blog-091",
+    "title": "Vigilance Awareness Week 2026: 17 Books on Integrity, Power and Honest Living (Probity for Prosperity)",
+    "slug": "vigilance-awareness-week-2026-probity-for-prosperity-books-on-integrity-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-27",
+    "lastModified": "2026-10-27",
+    "excerpt": "Vigilance Awareness Week runs 26 Oct to 1 Nov 2026 on the theme Probity for Prosperity. 17 books on integrity and power, from ₹1 with free delivery.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Vigilance Awareness Week 2026 runs from 26 October to 1 November, and this year's theme set by the Central Vigilance Commission (CVC) is \"Probity for Prosperity\". The week is observed every year around 31 October, the birth anniversary of Sardar Vallabhbhai Patel, and the CVC's circular for 2026 asks organisations across the country to use it to promote integrity, transparency and accountability. Most of that work happens through pledges, talks and awareness drives. A quieter, longer-lasting way to take part is to read: honesty is easier to practise when you have thought hard about why it is difficult."
+      },
+      {
+        "type": "paragraph",
+        "content": "This guide pairs the week's theme with books from the TheBookX catalogue: stories of conscience, studies of power and institutions, and practical reads on character. Nothing here is a lecture. These are books that make you sit with a hard choice, which is where integrity is actually decided."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What \"probity for prosperity\" asks of ordinary readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "Probity simply means strong moral principles, honesty and decency in how you act, especially with money and authority. The theme links it to prosperity on purpose: families, firms and nations tend to do better where rules apply to everyone and promises hold. You do not need a public office to act on that. It shows up in how a student handles an exam, how a manager reports numbers, how a shopkeeper gives change and how a citizen deals with a small favour that quietly bends a rule."
+      },
+      {
+        "type": "paragraph",
+        "content": "A good reading list for the week therefore covers three levels: the individual conscience, the people in charge, and the systems that either reward or punish honesty."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories of conscience: fiction that tests your moral compass"
+      },
+      {
+        "type": "paragraph",
+        "content": "Start with <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a>, George Orwell's short fable about a revolution that slowly rewrites its own rules. It is under 150 pages and still the clearest picture of how power drifts away from the promises made to win it. Its darker companion, <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a>, shows what happens when the truth itself becomes negotiable. Read together they explain why transparency is not a bureaucratic nicety."
+      },
+      {
+        "type": "paragraph",
+        "content": "For a more human scale, <a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> follows lawyer Atticus Finch as he does the right thing in a town that does not want it done, and Dostoevsky's <a href=\"/books/crime-and-punishment\" style=\"color:#fb8500;font-weight:600\">Crime and Punishment</a> follows a man whose conscience will not let him enjoy a wrong he has argued himself into. Kafka's <a href=\"/books/the-trial\" style=\"color:#fb8500;font-weight:600\">The Trial</a> completes the set from the other side, showing what it feels like to be caught in a system with no clear rules and no one answerable."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "A simple way to read for the week",
+        "content": "Pick one book and one question: where, in this story, could the character have quietly looked away, and what did it cost them to do otherwise? Ten pages a day is enough to finish a short classic by Saturday."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Power, institutions and why honesty pays"
+      },
+      {
+        "type": "paragraph",
+        "content": "If you prefer facts to fables, <a href=\"/books/why-nations-fail\" style=\"color:#fb8500;font-weight:600\">Why Nations Fail</a> by Daron Acemoglu and James Robinson argues that countries prosper when their institutions are open and accountable, and stagnate when a narrow elite controls them. Acemoglu was one of the three economists awarded the 2024 Nobel Memorial Prize in Economic Sciences, so the argument arrives with weight behind it. <a href=\"/books/factfulness\" style=\"color:#fb8500;font-weight:600\">Factfulness</a> by Hans Rosling is a good companion: it trains you to check the data before reacting, which is a quiet form of honesty with yourself."
+      },
+      {
+        "type": "paragraph",
+        "content": "Closer to home, <a href=\"/books/nani-a-palkhivala-a-life\" style=\"color:#fb8500;font-weight:600\">Nani A. Palkhivala: A Life</a> profiles the celebrated jurist and constitutional lawyer, a useful reminder that public integrity in India has a long and admirable tradition. On the other side of the ledger, <a href=\"/books/bad-leadership\" style=\"color:#fb8500;font-weight:600\">Bad Leadership</a> looks at how leaders and organisations go wrong, which makes it a sharp read for anyone who manages people."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Character and everyday integrity"
+      },
+      {
+        "type": "paragraph",
+        "content": "Public probity starts with private habits. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl is the best-known account of keeping one's values intact under the harshest conditions imaginable. Marcus Aurelius's <a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> and <a href=\"/books/the-daily-stoic-366-meditations-on-wisdom-perseverance-and-the-art-of-living\" style=\"color:#fb8500;font-weight:600\">The Daily Stoic</a> offer a daily practice of asking whether an action fits the person you want to be, and Ryan Holiday's <a href=\"/books/ego-is-the-enemy\" style=\"color:#fb8500;font-weight:600\">Ego Is the Enemy</a> shows how pride and shortcuts quietly eat away at good work."
+      },
+      {
+        "type": "paragraph",
+        "content": "The <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">Bhagavad Gita</a> is the Indian text on duty without attachment to reward, and it fits the week naturally. For a modern example of a life built on service and simple living, <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> tells A. P. J. Abdul Kalam's story in his own voice. If you are building the habit of doing the right thing consistently, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear explains how small, repeated choices become character."
+      },
+      {
+        "type": "paragraph",
+        "content": "And if you want a short, practical book on thinking and speaking plainly, which is half of honest communication, try <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar. Saying exactly what you mean, without spin, is a skill, and it is one of the cheapest forms of integrity there is."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A five-day reading plan to end the week"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Tuesday to Wednesday: read Animal Farm, which is short enough to finish in two evenings.",
+          "Thursday: choose ten pages of Meditations or The Daily Stoic and write down one rule you want to follow.",
+          "Friday: read one chapter of Why Nations Fail or Factfulness and discuss it with a colleague or friend.",
+          "Saturday, 31 October: Sardar Patel's birth anniversary, a good day to read about public duty, whether from the Gita or a biography.",
+          "Sunday, 1 November: the last day of the week. Pick one honest habit to keep and note it down."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting the idea: books for students, colleagues and teams"
+      },
+      {
+        "type": "paragraph",
+        "content": "Awareness weeks often end with a certificate. A book lasts longer. A short classic makes a thoughtful gift for a student preparing for civil services or management exams, and a leadership or ethics title suits a team lead or new manager. Because Diwali is only days away, with Dhanteras on 6 November, this is also a good moment to pick up gifts early. Gift wrapping is available for +₹25."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Order from TheBookX",
+        "content": "Books from ₹1, free delivery and Cash on Delivery across India. Add gift wrapping for +₹25 when you check out."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Frequently asked questions"
+      },
+      {
+        "type": "paragraph",
+        "content": "The answers to the most common questions about the week and these books are below, and the same questions are marked up for search engines."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/vigilance-awareness-week-2026-probity-for-prosperity-books-on-integrity-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/vigilance-awareness-week-2026-probity-for-prosperity-books-on-integrity-india.jpeg",
+        "alt": "A young woman reading a book on integrity and ethics in a sunlit room during Vigilance Awareness Week",
+        "caption": "Vigilance Awareness Week 2026 (26 October to 1 November): reading about integrity is a quiet way to take part.",
+        "category": "Awareness Days"
+      }
+    ],
+    "keywords": [
+      "Vigilance Awareness Week 2026",
+      "Probity for Prosperity",
+      "books on integrity",
+      "books on ethics India",
+      "books on honesty",
+      "anti-corruption books",
+      "books on leadership and ethics",
+      "Sardar Patel birth anniversary books",
+      "best books on moral values",
+      "buy books online India"
+    ],
+    "categories": [
+      "Awareness Days",
+      "Non-Fiction",
+      "Book Recommendations"
+    ],
+    "faqs": [
+      {
+        "question": "When is Vigilance Awareness Week 2026 and what is the theme?",
+        "answer": "Vigilance Awareness Week 2026 runs from 26 October to 1 November 2026. The Central Vigilance Commission has set the theme as \"Probity for Prosperity\". It is observed each year in the week that includes 31 October, the birth anniversary of Sardar Vallabhbhai Patel."
+      },
+      {
+        "question": "Which books should I read to understand integrity and ethics?",
+        "answer": "Good starting points are Animal Farm, To Kill a Mockingbird, Crime and Punishment, Man's Search for Meaning and Meditations for individual conscience, and Why Nations Fail, Factfulness and Bad Leadership for institutions and leadership."
+      },
+      {
+        "question": "What is a good short book to read during the week?",
+        "answer": "Animal Farm by George Orwell is short enough to finish in two evenings and speaks directly to accountability and transparency. The Art of Clarity by Murthy Thevar is another quick read on speaking and thinking plainly."
+      },
+      {
+        "question": "Can I order these books online with delivery across India?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India, and gift wrapping is available for +₹25."
+      }
+    ]
+  },
   "world-savings-day-2026-31-october-money-books-to-read-india": {
     "id": "blog-090",
     "title": "World Savings Day 2026 (31 October): 16 Money and Mindset Books to Read Before Dhanteras",

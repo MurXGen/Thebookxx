@@ -26,7 +26,7 @@ export function orderEmailFromRow(row, items) {
     isCOD,
     paymentType: String(row["Payment Type"] || ""),
     deliveryType: String(row["Delivery Type"] || ""),
-    trackUrl: "https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx",
+    trackUrl: "https://www.indiapost.gov.in/",
     orderUrl:
       phone.length === 10
         ? `https://www.thebookx.in/profile/${phone}/orders/${encodeURIComponent(oid)}`

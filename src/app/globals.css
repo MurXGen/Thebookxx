@@ -59803,3 +59803,90 @@ img[data-loaded="true"] {
   margin: 0;
 }
 
+
+/* ── Launch splash (Paytm-style) ────────────────────────────────────────── */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483200;
+  background: #1b1b1d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  will-change: opacity;
+  -webkit-tap-highlight-color: transparent;
+}
+.splash-center {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  will-change: transform, filter, opacity;
+  transform: translateZ(0);
+}
+.splash-wordmark {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 46px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #fff;
+}
+.splash-tagline {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.72);
+}
+.splash-trust {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 36px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  will-change: transform, opacity;
+}
+.splash-trust-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+.splash-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  padding: 0 20px;
+}
+.splash-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+.splash-badge svg {
+  color: rgba(255, 255, 255, 0.72);
+}
+@media (max-width: 420px) {
+  .splash-wordmark {
+    font-size: 40px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash-center,
+  .splash-trust,
+  .splash-rule {
+    filter: none !important;
+    transform: none !important;
+  }
+}

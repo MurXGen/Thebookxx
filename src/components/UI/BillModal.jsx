@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Info } from "lucide-react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
-import { Info } from "lucide-react";
 import { useTrackView } from "@/lib/trackingHooks";
 import { EVENTS } from "@/lib/trackingEvents";
 import { trackCartEvent } from "@/utils/cartEvents";
@@ -49,7 +49,8 @@ export default function BillModal({
 
   const hasTrackedClose = useRef(false);
   const finalPayable = totalDiscounted - offerDiscount - (walletApplied || 0);
-  // Handling & Care explainer tooltip.
+  // Handling & Care applies on carts above ₹1000.
+  const isHandling = totalDiscounted > 1000;
   const [showHandlingInfo, setShowHandlingInfo] = useState(false);
 
   useEffect(() => {
@@ -144,14 +145,7 @@ export default function BillModal({
                       <span> Faster Delivery</span>
                       <span className="font-10 orange">(2-5 days)</span>
                     </span>
-                  ) : deliveryCharge === 100 ? (
-                    <div className="flex flex-col">
-                      <span> Standard Delivery</span>
-                      <span className="dark-50 font-10">
-                        Books more than ₹399: Free Delivery
-                      </span>
-                    </div>
-                  ) : (
+                  ) : isHandling ? (
                     <span className="flex flex-col gap-4">
                       <span className="bill-handling-head">
                         Handling &amp; Care
@@ -159,10 +153,7 @@ export default function BillModal({
                           type="button"
                           className="bill-info-btn"
                           aria-label="What is Handling & Care?"
-                          onClick={() => {
-                            setShowHandlingInfo((v) => !v);
-                            trackCartEvent("handlinginfo");
-                          }}
+                          onClick={() => setShowHandlingInfo((v) => !v)}
                         >
                           <Info size={13} />
                         </button>
@@ -179,6 +170,20 @@ export default function BillModal({
                         </span>
                       )}
                     </span>
+                  ) : deliveryCharge === 100 ? (
+                    <div className="flex flex-col">
+                      <span> Standard Delivery</span>
+                      <span className="dark-50 font-10">
+                        Books more than ₹399: Free Delivery
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col">
+                      <span> Standard Delivery</span>
+                      <span className="dark-50 font-10">
+                        Books above ₹199: Free Delivery
+                      </span>
+                    </div>
                   )}
                 </span>
 

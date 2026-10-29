@@ -4,6 +4,173 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "world-cities-day-2026-regenerating-the-city-books-on-home-and-urban-life-india": {
+    "id": "blog-093",
+    "title": "World Cities Day 2026: 12 Books on Home, City Life and Belonging to Read on 31 October",
+    "slug": "world-cities-day-2026-regenerating-the-city-books-on-home-and-urban-life-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-29",
+    "lastModified": "2026-10-29",
+    "excerpt": "World Cities Day on 31 October 2026 asks for adequate housing for all. Here are 12 books on home, city life and belonging, from ₹1 with free delivery in India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Every year on 31 October the United Nations marks World Cities Day, a reminder that more of humanity now lives in cities than anywhere else, and that the quality of urban life depends on very ordinary things: a safe roof, clean water, a short commute, a neighbourhood where people know each other. The observance was created by the UN General Assembly in 2013 and has been held every year since 2014, and it closes Urban October, a month-long campaign on urban issues led by UN-Habitat."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "World Cities Day 2026 at a glance",
+        "content": "Date: Saturday, 31 October 2026. Theme: Regenerating the City: Adequate Housing for All. The global observance is hosted by Fuzhou in China from 31 October to 2 November, and a World Cities Day Connect event is scheduled in Chennai on 31 October. The day supports Sustainable Development Goal 11, sustainable cities and communities."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why this year's theme matters to Indian readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "This year's theme turns attention from building brand-new cities to improving the ones that already exist: upgrading neighbourhoods, improving housing and making urban areas more resilient to climate stress. For anyone who has rented a flat in Bengaluru, shared a room in Mumbai or searched for a reasonable apartment in Delhi, that is not an abstract idea. Home is the first thing a city promises its residents, and the question of who gets one shapes everything else."
+      },
+      {
+        "type": "paragraph",
+        "content": "Books are a gentle way into this conversation. They do not replace policy or planning, but they build the empathy and the vocabulary that good decisions need. The twelve titles below look at home, design, habits, money and belonging, all lenses through which a city can be understood. Every one is in the TheBookX catalogue."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on how we live, decide and design"
+      },
+      {
+        "type": "paragraph",
+        "content": "A city is, in the end, millions of small design decisions. <a href=\"/books/the-design-of-everyday-things\" style=\"color:#fb8500;font-weight:600\">The Design of Everyday Things</a> by Don Norman is the classic guide to why some doors, switches and signs confuse us while others feel obvious. Read it once and you will notice good and bad design on every street, in every stairwell and at every ticket counter."
+      },
+      {
+        "type": "paragraph",
+        "content": "The institutions behind those decisions matter just as much. <a href=\"/books/why-nations-fail\" style=\"color:#fb8500;font-weight:600\">Why Nations Fail</a> by Daron Acemoglu and James A. Robinson asks why some societies grow prosperous while others stay stuck, and the answer lies in the rules and incentives that govern a place, an argument that applies to cities as much as countries. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari offers the long view, from the first settlements to the modern metropolis."
+      },
+      {
+        "type": "blockquote",
+        "content": "A city is not only buildings and roads. It is the sum of the choices its people are able to make."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for a small room in a big city"
+      },
+      {
+        "type": "paragraph",
+        "content": "Anyone who has moved to a city alone knows the mix of excitement and loneliness. <a href=\"/books/the-room-on-the-roof\" style=\"color:#fb8500;font-weight:600\">The Room on the Roof</a> by Ruskin Bond follows a young boy who breaks away from a strict guardian and finds friendship, freedom and a first sense of home in a small Indian town. It is short, tender and easy to finish in a weekend."
+      },
+      {
+        "type": "paragraph",
+        "content": "For readers who like a story with tension, <a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a> by Freida McFadden shows how a seemingly perfect home can hold very different truths, and <a href=\"/books/a-house-without-windows\" style=\"color:#fb8500;font-weight:600\">A House Without Windows</a> explores confinement and the courage it takes to claim your own space. Both are a reminder that a roof is the beginning of safety, not the whole of it."
+      },
+      {
+        "type": "paragraph",
+        "content": "Moving cities for work or study is also a leap of faith, and <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho remains the most popular novel about leaving the familiar behind to chase a dream. Keep it for the train ride to a new place."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books to keep your mind clear in a crowded city"
+      },
+      {
+        "type": "paragraph",
+        "content": "Urban life is loud: notifications, traffic, deadlines, a thousand small demands on attention. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical guide to thinking, speaking and deciding without the fog, which makes it a handy companion for a packed commute or a noisy flat. Its core idea is simple: separate what matters from what only feels urgent, then act on one thing at a time."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear shows how tiny daily actions compound, useful when your routine is squeezed between a long commute and a small kitchen. <a href=\"/books/the-art-of-not-overthinking\" style=\"color:#fb8500;font-weight:600\">The Art of Not Overthinking</a> helps when the city leaves you lying awake rehearsing tomorrow, and <a href=\"/books/the-daily-stoic-366-meditations-on-wisdom-perseverance-and-the-art-of-living\" style=\"color:#fb8500;font-weight:600\">The Daily Stoic</a> gives you one calm page to start each day."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on money, rent and building a home of your own"
+      },
+      {
+        "type": "paragraph",
+        "content": "Housing is the biggest financial question most families ever face. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel argues that behaviour matters more than intelligence when it comes to money, a good lens before signing a loan or a lease. <a href=\"/books/the-richest-man-in-babylon\" style=\"color:#fb8500;font-weight:600\">The Richest Man in Babylon</a> packs lessons on saving into short parables, and the oldest of them, pay yourself first, is still the most reliable route to a down payment."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Offer for city readers",
+        "content": "Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India, so a new read for the commute costs less than the chai."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple way to mark World Cities Day"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Walk one street in your own neighbourhood slowly and note three things that work well and three that do not. Observation is where regeneration begins.",
+          "Read one chapter of a book on design or society and discuss it with a flatmate or colleague over dinner.",
+          "Gift a book to someone who has just moved to your city. A good story is a small welcome that costs very little.",
+          "Support local libraries, reading corners and housing-awareness groups in your area, even if only by showing up once."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Where to start if you are short on time"
+      },
+      {
+        "type": "paragraph",
+        "content": "If you read only one book from this list, start with a short one that suits your mood: a story for comfort, a design or society book for curiosity, or a habits book for practical change. Finishing something quickly builds momentum, and the rest of the list will still be there next weekend."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/world-cities-day-2026-regenerating-the-city-books-on-home-and-urban-life-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-cities-day-2026-regenerating-the-city-books-on-home-and-urban-life-india.jpeg",
+        "alt": "A young woman reading a book by a sunlit apartment window with a city skyline softly blurred behind her",
+        "caption": "World Cities Day, 31 October 2026: reading is a quiet way to understand the places we live in.",
+        "category": "Awareness Days"
+      }
+    ],
+    "keywords": [
+      "World Cities Day 2026",
+      "World Cities Day books",
+      "books on city life",
+      "books about home and housing",
+      "Regenerating the City Adequate Housing for All",
+      "books to read 31 October",
+      "best books to read in India",
+      "The Art of Clarity"
+    ],
+    "categories": [
+      "Awareness Days",
+      "Non-Fiction",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "When is World Cities Day 2026 and what is the theme?",
+        "answer": "World Cities Day is observed on 31 October every year. In 2026 the theme is Regenerating the City: Adequate Housing for All, focused on upgrading existing neighbourhoods and building climate-resilient urban areas."
+      },
+      {
+        "question": "Who started World Cities Day?",
+        "answer": "The United Nations General Assembly established World Cities Day in 2013, and it has been observed every year since 2014. UN-Habitat leads the observance, which also closes the month-long Urban October campaign."
+      },
+      {
+        "question": "Which books should I read to understand cities and home?",
+        "answer": "Good starting points are The Design of Everyday Things, Why Nations Fail and Sapiens for the big picture, The Room on the Roof and The Alchemist for stories about leaving and belonging, and The Art of Clarity and Atomic Habits for coping with a busy urban routine."
+      },
+      {
+        "question": "Can I order these books with Cash on Delivery in India?",
+        "answer": "Yes. TheBookX offers books from ₹1 with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "karnataka-rajyotsava-2026-kannada-literature-books-to-read-india": {
     "id": "blog-092",
     "title": "Karnataka Rajyotsava 2026: 15 Books by Kannada Storytellers and Malgudi Classics to Read on 1 November",

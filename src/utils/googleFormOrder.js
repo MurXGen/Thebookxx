@@ -459,8 +459,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
   );
   const codFeeVal = n0(codHandlingFee);
   // Handling & Care fee — the delivery charge on carts that cross into the
-  // "Handling & Care" band (>₹499). Stored in its own column so it's tracked and
-  // shown distinctly from a plain/flat delivery charge.
+  // "Handling & Care" band (above ₹1000). Stored in its own column so it's
+  // tracked and shown distinctly from a plain/flat delivery charge.
   const handlingCareVal = /handling/i.test(String(deliveryLabel || ""))
     ? n0(deliveryCharge)
     : 0;

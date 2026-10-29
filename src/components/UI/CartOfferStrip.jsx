@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import CartConfetti from "@/components/UI/Confetti";
 import { getCartOffers } from "@/utils/cartOffers";
 import { motion, animate, AnimatePresence } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
@@ -15,8 +16,6 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   const isBagPage = pathname === "/bag";
   const isHomePage = pathname === "/";
-
-  if (discountedAmount === null || discountedAmount === undefined) return null;
 
   /* Merge cart with book data and check for ₹1 items */
   const cartItems = useMemo(() => {
@@ -80,15 +79,26 @@ export default function CartOfferStrip({ discountedAmount }) {
     return () => controls.stop();
   }, [discountedAmount, target]);
 
-  /* Confetti */
+  /* Confetti — fire ONLY when the shopper crosses into a NEW reward stage
+     (free delivery or a bigger discount), not on every render or on mount. */
   const [showConfetti, setShowConfetti] = useState(false);
+  const achievedTarget = appliedOffer?.target || 0;
+  const lastAchievedRef = useRef(null); // null until initialised
 
   useEffect(() => {
-    if (appliedOffer) {
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 1200);
+    // First run → remember the current stage without celebrating.
+    if (lastAchievedRef.current === null) {
+      lastAchievedRef.current = achievedTarget;
+      return;
     }
-  }, [appliedOffer]);
+    if (achievedTarget > lastAchievedRef.current) {
+      lastAchievedRef.current = achievedTarget;
+      setShowConfetti(true);
+      const t = setTimeout(() => setShowConfetti(false), 1500);
+      return () => clearTimeout(t);
+    }
+    lastAchievedRef.current = achievedTarget;
+  }, [achievedTarget]);
 
   /* Offer detail sheet */
   const [showOfferSheet, setShowOfferSheet] = useState(false);
@@ -101,7 +111,7 @@ export default function CartOfferStrip({ discountedAmount }) {
         <>
           <span className="highlight-reward">
             {" "}
-            You've unlocked every offer!
+            You&apos;ve unlocked every offer!
           </span>
         </>
       );
@@ -155,6 +165,9 @@ export default function CartOfferStrip({ discountedAmount }) {
   const offerDisplay = getOfferDisplay();
 
   /* The card content stays identical whether wrapped in Link or div */
+  // All hooks are above this line; now it's safe to bail out for an empty amount.
+  if (discountedAmount === null || discountedAmount === undefined) return null;
+
   const stripContent = (
     <>
       {/* LEFT */}
@@ -198,7 +211,7 @@ export default function CartOfferStrip({ discountedAmount }) {
         </div>
       </div>
 
-      {showConfetti && <div className="confetti" />}
+      <CartConfetti trigger={showConfetti} />
     </>
   );
 

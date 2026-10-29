@@ -12,9 +12,9 @@ const EASE = [0.22, 1, 0.36, 1]; // smooth ease-out-expo-ish
 export default function SplashScreen() {
   const [show, setShow] = useState(true);
 
-  // Hide after ~3.5s (quick blur-in, hold, quick blur-out).
+  // Hide after ~2s (quick blur-in, hold, quick blur-out ≈ 2s total).
   useEffect(() => {
-    const t = setTimeout(() => setShow(false), 3100);
+    const t = setTimeout(() => setShow(false), 1600);
     return () => clearTimeout(t);
   }, []);
 

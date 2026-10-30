@@ -1,16 +1,18 @@
 /* =========================================================================
    manage-orders-ui.css
    ------------------------------------------------------------------------
-   Glassmorphic + gradient design layer for /manage-orders ONLY.
+   Monochrome design layer for /manage-orders ONLY.
 
    Scoped entirely under `.my-orders-page.mo-glass`, so nothing in this file
    can leak into the storefront. Loaded from app/manage-orders/layout.js.
 
-   Palette follows the existing brand tokens:
-     --tertiary        #fb8500   (orange)
-     --tertiary-light  #ffb703   (gold)
-   mixed with white for a soft, soothing light theme, plus a matching
-   amber-on-charcoal dark theme under `.mo-dark`.
+   The console is black & white in Claude's palette — ivory #faf9f5 and ink
+   #141413 on the light theme, charcoal #1f1e1d / #262624 on the dark one.
+   Solid fills only, no gradients. Ink is the only accent; colour is reserved
+   for meaning — order status, success / danger, chart series.
+
+   Hard-coded colours in globals.css components are remapped onto these
+   tokens by manage-orders-mono.css (generated — see tools/gen-mo-mono.mjs).
    ========================================================================= */
 
 /* The storefront wraps every page in `.app-shell { max-width: 1200px }`.
@@ -21,46 +23,46 @@
 }
 
 .my-orders-page.mo-glass {
-  /* ---- Local design tokens (light) ----
-     White-dominant. Orange is an accent only: active state, focus ring,
-     key figures and chart fills — never large fields of colour. */
-  --g-orange: #f07800;
-  --g-gold: #ffb703;
-  --g-orange-soft: #ffa43d;
-  --g-ink: #17151300;
-  --g-ink: #191715;
-  --g-ink-2: #5c5751;
-  --g-ink-3: #938d86;
+  /* ---- Local design tokens (light) ---- */
+  --g-accent-rgb: 20 20 19;
+  --g-accent: rgb(var(--g-accent-rgb));
+  --g-accent-2: #3d3d3a;
+  --g-accent-soft: #5e5d59;
+  --g-on-accent: #faf9f5;
 
-  --g-canvas-1: #ffffff;
-  --g-canvas-2: #fdfcfa;
-  --g-canvas-3: #faf7f2;
+  --g-ink: #141413;
+  --g-ink-2: #5e5d59;
+  --g-ink-3: #8a8983;
 
-  /* Glass surfaces — three elevations, all essentially white */
-  --g-surface: rgba(255, 255, 255, 0.72);
-  --g-surface-2: rgba(255, 255, 255, 0.84);
-  --g-surface-3: rgba(255, 255, 255, 0.94);
+  --g-canvas-1: #faf9f5;
+  --g-canvas-2: #faf9f5;
+  --g-canvas-3: #faf9f5;
+
+  /* Surfaces — three elevations, all solid white / near-white */
+  --g-surface: #ffffff;
+  --g-surface-2: #ffffff;
+  --g-surface-3: #ffffff;
   --g-surface-solid: #ffffff;
+  --g-sunken: #f0eee6;
 
-  --g-hairline: rgba(226, 221, 214, 0.9);
-  --g-hairline-2: rgba(240, 120, 0, 0.28);
-  --g-edge: rgba(25, 23, 21, 0.07);
+  --g-hairline: #e8e6dc;
+  --g-hairline-2: #d6d3c8;
+  --g-edge: rgba(20, 20, 19, 0.06);
 
-  --g-blur: 20px;
-  --g-blur-lg: 34px;
+  --g-blur: 0px;
+  --g-blur-lg: 16px;
 
-  --g-shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05),
-    0 4px 12px -6px rgba(28, 25, 23, 0.06);
-  --g-shadow: 0 8px 24px -12px rgba(28, 25, 23, 0.16),
-    0 2px 6px rgba(28, 25, 23, 0.05);
-  --g-shadow-lg: 0 30px 70px -30px rgba(28, 25, 23, 0.28),
-    0 8px 24px -14px rgba(28, 25, 23, 0.12);
-  --g-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --g-shadow-sm: 0 1px 2px rgba(10, 10, 10, 0.04);
+  --g-shadow: 0 1px 2px rgba(10, 10, 10, 0.04),
+    0 4px 14px -6px rgba(10, 10, 10, 0.08);
+  --g-shadow-lg: 0 24px 60px -28px rgba(10, 10, 10, 0.25),
+    0 6px 18px -10px rgba(10, 10, 10, 0.1);
+  --g-inner: inset 0 0 0 0 transparent;
 
-  --g-r-sm: 12px;
-  --g-r: 18px;
-  --g-r-lg: 24px;
-  --g-r-xl: 30px;
+  --g-r-sm: 10px;
+  --g-r: 14px;
+  --g-r-lg: 18px;
+  --g-r-xl: 22px;
 
   /* ---- Spacing rhythm ----
      The page inherited four different card paddings (11/12, 14/16, 16/16/14,
@@ -77,130 +79,122 @@
 
   --g-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
+  /* ---- Global storefront tokens, re-pointed for this route ----
+     globals.css components read these, so remapping them here turns the
+     whole console monochrome without touching the storefront. */
+  --background: var(--g-canvas-1);
+  --foreground: var(--g-ink);
+  --primary: var(--g-ink);
+  --secondary: var(--g-ink);
+  --dark: var(--g-ink);
+  --text: var(--g-ink);
+  --muted: var(--g-ink-3);
+  --text-muted: var(--g-ink-3);
+  --dark-40: var(--g-ink-3);
+  --dark-50: var(--g-ink-3);
+  --dark-60: var(--g-ink-2);
+  --dark-70: var(--g-ink-2);
+  --gray-500: var(--g-ink-3);
+  --dark-20: rgb(var(--g-ink-rgb) / 0.16);
+  --dark-10: rgb(var(--g-ink-rgb) / 0.07);
+  --dark-05: rgb(var(--g-ink-rgb) / 0.05);
+  --dark-4: rgb(var(--g-ink-rgb) / 0.03);
+  --g-ink-rgb: 20 20 19;
+
+  --tertiary: var(--g-accent);
+  --tertiary-light: var(--g-accent-2);
+  --tertiary-10: rgb(var(--g-accent-rgb) / 0.06);
+  --tertiary-light-05: rgb(var(--g-accent-rgb) / 0.03);
+  --tertiary-light-10: rgb(var(--g-accent-rgb) / 0.06);
+  --tertiary-light-20: rgb(var(--g-accent-rgb) / 0.12);
+
+  --surface: var(--g-surface-solid);
+  --surface-2: var(--g-sunken);
+  --card-bg: var(--g-surface-solid);
+  --input-bg: var(--g-surface-solid);
+  --hairline: var(--g-hairline);
+  --hairline-2: var(--g-hairline-2);
+  --skeleton: var(--g-sunken);
+  --ring: 0 0 0 3px rgb(var(--g-accent-rgb) / 0.14);
+  --shadow-brand: var(--g-shadow);
+  --shadow-xs: var(--g-shadow-sm);
+
   position: relative;
   width: 100%;
   min-height: 100vh;
   min-height: 100dvh;
   color: var(--g-ink);
-  background: linear-gradient(
-    168deg,
-    var(--g-canvas-1) 0%,
-    var(--g-canvas-2) 55%,
-    var(--g-canvas-3) 100%
-  );
-  background-attachment: fixed;
+  background: var(--g-canvas-1);
   -webkit-font-smoothing: antialiased;
+  color-scheme: light;
 }
 
-/* ---- Dark theme tokens ---- */
+/* ---- Dark theme tokens ----
+   Claude-style soft charcoal, never #000: canvas #1f1e1d, cards #262624,
+   raised #30302e — depth reads through value alone, hairlines do the rest. */
 .my-orders-page.mo-glass.mo-dark {
-  --g-ink: #f5f1ec;
-  --g-ink-2: #c4bcb4;
-  --g-ink-3: #8f867e;
+  --g-accent-rgb: 250 249 245;
+  --g-accent-2: #e8e6dc;
+  --g-accent-soft: #b7b5a9;
+  --g-on-accent: #1f1e1d;
 
-  /* Subtle warm dark (Claude-like) — not pure black. */
-  --g-canvas-1: #262220;
-  --g-canvas-2: #211d1a;
-  --g-canvas-3: #1c1916;
+  --g-ink-rgb: 250 249 245;
+  --g-ink: #faf9f5;
+  --g-ink-2: #b7b5a9;
+  --g-ink-3: #85847d;
 
-  --g-surface: rgba(62, 55, 48, 0.5);
-  --g-surface-2: rgba(70, 62, 54, 0.62);
-  --g-surface-3: rgba(78, 69, 60, 0.78);
-  --g-surface-solid: #2b2724;
+  --g-canvas-1: #1f1e1d;
+  --g-canvas-2: #1f1e1d;
+  --g-canvas-3: #1f1e1d;
 
-  --g-hairline: rgba(255, 255, 255, 0.09);
-  --g-hairline-2: rgba(255, 183, 3, 0.18);
-  --g-edge: rgba(255, 255, 255, 0.07);
+  --g-surface: #262624;
+  --g-surface-2: #262624;
+  --g-surface-3: #2f2f2c;
+  --g-surface-solid: #262624;
+  --g-sunken: #30302e;
 
-  --g-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
-  --g-shadow: 0 12px 34px -14px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --g-hairline: #3a3a37;
+  --g-hairline-2: #4a4945;
+  --g-edge: rgba(255, 255, 255, 0.05);
+
+  --g-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --g-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
   --g-shadow-lg: 0 30px 80px -30px rgba(0, 0, 0, 0.85),
     0 10px 28px -14px rgba(0, 0, 0, 0.5);
-  --g-inner: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  --input-bg: #30302e;
 
   color: var(--g-ink);
-  background: radial-gradient(
-      1100px 620px at 12% -8%,
-      rgba(251, 133, 0, 0.14),
-      transparent 62%
-    ),
-    linear-gradient(168deg, var(--g-canvas-1), var(--g-canvas-2) 55%, var(--g-canvas-3));
+  background: var(--g-canvas-1);
+  color-scheme: dark;
 }
 
-/* =========================================================================
-   1. Ambient aurora background
-   ========================================================================= */
-
-.mo-glass .mo-aurora {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-  contain: strict;
+/* Paint the document behind the page too, so overscroll and short tabs
+   never flash the storefront's white body in the dark theme. */
+html:has(.my-orders-page.mo-glass),
+body:has(.my-orders-page.mo-glass) {
+  background: #faf9f5;
+}
+html:has(.my-orders-page.mo-glass.mo-dark),
+body:has(.my-orders-page.mo-glass.mo-dark) {
+  background: #1f1e1d;
 }
 
-.mo-glass .mo-aurora span {
-  position: absolute;
-  display: block;
-  border-radius: 50%;
-  filter: blur(110px);
-  /* Deliberately faint — a hint of warmth on white, not a colour wash. */
-  opacity: 0.2;
-  will-change: transform;
+/* Body-level host for portaled sheets: carries the tokens, adds no box. */
+.my-orders-page.mo-glass.mo-portal-host {
+  position: static;
+  min-height: 0;
+  width: auto;
+  background: none;
 }
 
-.mo-glass .mo-aurora span:nth-child(1) {
-  width: 46vw;
-  height: 46vw;
-  min-width: 340px;
-  min-height: 340px;
-  top: -14vw;
-  left: -10vw;
-  background: radial-gradient(circle, rgba(255, 183, 3, 0.5), transparent 68%);
-  animation: mo-drift-a 26s var(--g-ease) infinite alternate;
+/* Neutral selection + caret everywhere on the page */
+.my-orders-page.mo-glass ::selection {
+  background: rgb(var(--g-accent-rgb) / 0.18);
 }
-
-.mo-glass .mo-aurora span:nth-child(2) {
-  width: 40vw;
-  height: 40vw;
-  min-width: 300px;
-  min-height: 300px;
-  top: 18%;
-  right: -12vw;
-  background: radial-gradient(circle, rgba(251, 133, 0, 0.34), transparent 68%);
-  animation: mo-drift-b 32s var(--g-ease) infinite alternate;
-}
-
-.mo-glass .mo-aurora span:nth-child(3) {
-  width: 52vw;
-  height: 52vw;
-  min-width: 360px;
-  min-height: 360px;
-  bottom: -20vw;
-  left: 26%;
-  background: radial-gradient(circle, rgba(255, 214, 148, 0.42), transparent 70%);
-  animation: mo-drift-c 38s var(--g-ease) infinite alternate;
-}
-
-.mo-glass.mo-dark .mo-aurora span {
-  opacity: 0.3;
-}
-
-@keyframes mo-drift-a {
-  to {
-    transform: translate3d(8vw, 6vh, 0) scale(1.16);
-  }
-}
-@keyframes mo-drift-b {
-  to {
-    transform: translate3d(-7vw, 10vh, 0) scale(1.1);
-  }
-}
-@keyframes mo-drift-c {
-  to {
-    transform: translate3d(6vw, -8vh, 0) scale(1.2);
-  }
+.my-orders-page.mo-glass input,
+.my-orders-page.mo-glass textarea {
+  caret-color: var(--g-ink);
 }
 
 /* =========================================================================
@@ -229,10 +223,8 @@
   flex-direction: column;
   gap: 6px;
   padding: 18px 14px 16px;
-  background: rgba(255, 255, 255, 0.78);
-  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(150%);
-  backdrop-filter: blur(var(--g-blur-lg)) saturate(150%);
-  border-right: 1px solid var(--g-edge);
+  background: var(--g-surface-solid);
+  border-right: 1px solid var(--g-hairline);
   box-shadow: none;
   z-index: 40;
   transition: width 0.42s var(--g-ease), padding 0.42s var(--g-ease);
@@ -264,14 +256,14 @@
   place-items: center;
   border-radius: 13px;
   color: var(--g-ink-2);
-  background: #fff;
+  background: var(--g-surface-solid);
   border: 1px solid var(--g-hairline);
   box-shadow: var(--g-shadow-sm);
   transition: color 0.2s var(--g-ease), border-color 0.2s var(--g-ease);
 }
 
 .mo-glass .mo-rail-brand:hover .mo-rail-logo {
-  color: var(--g-orange);
+  color: var(--g-accent);
   border-color: var(--g-hairline-2);
 }
 
@@ -311,14 +303,14 @@
   flex-direction: column;
   gap: 4px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(251, 133, 0, 0.25) transparent;
+  scrollbar-color: rgb(var(--g-accent-rgb) / 0.25) transparent;
 }
 
 .mo-glass .mo-rail-scroll::-webkit-scrollbar {
   width: 5px;
 }
 .mo-glass .mo-rail-scroll::-webkit-scrollbar-thumb {
-  background: rgba(251, 133, 0, 0.22);
+  background: rgb(var(--g-accent-rgb) / 0.22);
   border-radius: 99px;
 }
 
@@ -346,9 +338,9 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 11px 13px;
+  padding: 10px 12px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 10px;
   background: transparent;
   color: var(--g-ink-2);
   font-size: 13.5px;
@@ -379,21 +371,15 @@
 
 .mo-glass .mo-nav-item:hover {
   color: var(--g-ink);
-  background: rgba(25, 23, 21, 0.045);
+  background: rgb(var(--g-ink-rgb) / 0.04);
 }
 
-/* Active = a clean white card with orange text. Readable in every state,
-   and it keeps the rail predominantly white. */
+/* Active = ink text on a filled neutral chip, plus the leading bar — three
+   cues, so it never reads as a hover state. */
 .mo-glass .mo-nav-item.active {
-  color: var(--g-orange);
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.06),
-    0 6px 16px -8px rgba(28, 25, 23, 0.16);
-}
-
-.mo-glass.mo-dark .mo-nav-item.active {
-  color: var(--g-gold);
-  background: rgba(255, 255, 255, 0.09);
+  color: var(--g-ink);
+  font-weight: 700;
+  background: rgb(var(--g-ink-rgb) / 0.07);
   box-shadow: none;
 }
 
@@ -408,7 +394,7 @@
   height: 22px;
   margin-top: -11px;
   border-radius: 0 3px 3px 0;
-  background: linear-gradient(180deg, var(--g-gold), var(--g-orange));
+  background: var(--g-accent);
 }
 
 .mo-glass .mo-nav-count {
@@ -423,23 +409,13 @@
   border-radius: 99px;
   font-size: 11px;
   font-weight: 700;
-  background: rgba(25, 23, 21, 0.06);
+  background: rgb(var(--g-ink-rgb) / 0.07);
   color: var(--g-ink-2);
 }
 
 .mo-glass .mo-nav-item.active .mo-nav-count {
-  background: rgba(240, 120, 0, 0.12);
-  color: var(--g-orange);
-}
-
-.mo-glass.mo-dark .mo-nav-count {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--g-ink-2);
-}
-
-.mo-glass.mo-dark .mo-nav-item.active .mo-nav-count {
-  background: rgba(255, 183, 3, 0.16);
-  color: var(--g-gold);
+  background: var(--g-accent);
+  color: var(--g-on-accent);
 }
 
 .mo-glass .mo-shell.is-collapsed .mo-nav-item {
@@ -485,7 +461,7 @@
   flex-direction: column;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid var(--g-edge);
+  border-top: 1px solid var(--g-hairline);
 }
 
 .mo-glass .mo-rail-collapse {
@@ -495,9 +471,9 @@
   gap: 8px;
   width: 100%;
   padding: 10px;
-  border: 1px solid var(--g-edge);
-  border-radius: 13px;
-  background: var(--g-surface);
+  border: 1px solid var(--g-hairline);
+  border-radius: 10px;
+  background: transparent;
   color: var(--g-ink-2);
   font-size: 12.5px;
   font-weight: 600;
@@ -507,9 +483,9 @@
 }
 
 .mo-glass .mo-rail-collapse:hover {
-  color: var(--g-orange);
+  color: var(--g-ink);
   border-color: var(--g-hairline-2);
-  background: rgba(251, 133, 0, 0.08);
+  background: rgb(var(--g-ink-rgb) / 0.04);
 }
 
 .mo-glass .mo-shell.is-collapsed .mo-rail-collapse span {
@@ -556,25 +532,23 @@
   margin-bottom: 12px;
   border-radius: var(--g-r-lg);
   /* Opaque so cards don't show THROUGH the sticky bar while scrolling. */
-  background: rgba(255, 255, 255, 0.98);
-  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
-  backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  background: var(--g-surface-solid);
   border: 1px solid var(--g-hairline);
   box-shadow: var(--g-shadow), var(--g-inner);
 }
 
 .mo-glass.mo-dark .mo-topbar,
 .mo-glass.mo-dark .mo-rail {
-  border-color: var(--g-edge);
+  border-color: var(--g-hairline);
 }
 .mo-glass.mo-dark .mo-topbar {
-  background: rgba(26, 22, 19, 0.98);
+  background: var(--g-surface-solid);
 }
 
 /* Dark: the rail and its chrome are hardcoded white in the light theme,
    so they need explicit overrides or the nav labels vanish. */
 .mo-glass.mo-dark .mo-rail {
-  background: rgba(26, 22, 19, 0.72);
+  background: var(--g-surface-solid);
 }
 
 .mo-glass.mo-dark .mo-rail-logo {
@@ -589,8 +563,8 @@
 }
 
 .mo-glass.mo-dark .mo-rail-collapse:hover {
-  background: rgba(255, 183, 3, 0.1);
-  color: var(--g-gold);
+  background: rgb(var(--g-accent-rgb) / 0.1);
+  color: var(--g-accent-2);
 }
 
 .mo-glass.mo-dark .mo-nav-item:hover {
@@ -598,7 +572,7 @@
 }
 
 .mo-glass.mo-dark .mo-bottomnav {
-  background: rgba(26, 22, 19, 0.86);
+  background: var(--g-surface-solid);
 }
 
 .mo-glass.mo-dark .mo-bottomnav .mo-nav-item.active,
@@ -669,8 +643,6 @@
   border-radius: 14px;
   border: 1px solid var(--g-hairline);
   background: var(--g-surface-3);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
   color: var(--g-ink-2);
   cursor: pointer;
   box-shadow: var(--g-shadow-sm), var(--g-inner);
@@ -681,10 +653,10 @@
 .mo-glass .mo-bell:hover,
 .mo-glass .mo-cal-icon-btn:hover,
 .mo-glass .mo-rail-burger:hover {
-  color: var(--g-orange);
+  color: var(--g-accent);
   border-color: var(--g-hairline-2);
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px -12px rgba(251, 133, 0, 0.5), var(--g-inner);
+  box-shadow: 0 12px 24px -12px rgb(var(--g-accent-rgb) / 0.5), var(--g-inner);
 }
 
 .mo-glass .mo-bell:active,
@@ -697,7 +669,7 @@
   position: absolute;
   inset: -3px;
   border-radius: 17px;
-  border: 2px solid rgba(251, 133, 0, 0.55);
+  border: 2px solid rgb(var(--g-accent-rgb) / 0.55);
   animation: mo-ping 1.9s var(--g-ease) infinite;
 }
 
@@ -725,22 +697,20 @@
   border-radius: 99px;
   font-size: 10.5px;
   font-weight: 700;
-  color: #fff;
-  background: linear-gradient(135deg, #ff6b35, var(--g-orange));
-  box-shadow: 0 4px 10px -3px rgba(251, 133, 0, 0.8);
+  color: var(--g-on-accent);
+  background: var(--g-accent);
+  box-shadow: 0 0 0 2px var(--g-surface-solid);
 }
 
 .mo-glass .mo-bell-badge.notes {
-  background: linear-gradient(135deg, #7c5cff, #5b8def);
-  box-shadow: 0 4px 10px -3px rgba(91, 141, 239, 0.8);
+  background: var(--g-ink-2);
+  box-shadow: 0 0 0 2px var(--g-surface-solid);
 }
 
 /* Kebab dropdown */
 .mo-glass .mo-menu {
   border-radius: var(--g-r);
   background: var(--g-surface-3);
-  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
-  backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
   border: 1px solid var(--g-hairline);
   box-shadow: var(--g-shadow-lg), var(--g-inner);
   padding: 6px;
@@ -754,8 +724,8 @@
 }
 
 .mo-glass .mo-menu-item:hover {
-  background: rgba(251, 133, 0, 0.1);
-  color: var(--g-orange);
+  background: rgb(var(--g-accent-rgb) / 0.1);
+  color: var(--g-accent);
 }
 
 /* Period nav in the topbar */
@@ -791,8 +761,8 @@
 }
 
 .mo-glass .an-nav-btn:hover:not(:disabled) {
-  background: rgba(251, 133, 0, 0.12);
-  color: var(--g-orange);
+  background: rgb(var(--g-accent-rgb) / 0.12);
+  color: var(--g-accent);
 }
 
 .mo-glass .an-nav-btn:disabled {
@@ -843,8 +813,6 @@
     padding: 7px;
     border-radius: 22px;
     background: var(--g-surface-3);
-    -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
-    backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
     border: 1px solid var(--g-hairline);
     box-shadow: var(--g-shadow-lg), var(--g-inner);
   }
@@ -875,7 +843,7 @@
     height: 3px;
     margin: 0;
     border-radius: 3px;
-    background: linear-gradient(90deg, var(--g-gold), var(--g-orange));
+    background: var(--g-accent);
   }
 
   .mo-glass .mo-bottomnav .mo-nav-count {
@@ -958,13 +926,10 @@
 .mo-glass .rr-metric,
 .mo-glass .aoc-section {
   background: var(--g-surface);
-  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(165%);
-  backdrop-filter: blur(var(--g-blur)) saturate(165%);
   border: 1px solid var(--g-hairline);
   border-radius: var(--g-r);
-  box-shadow: var(--g-shadow-sm), var(--g-inner);
-  transition: transform 0.3s var(--g-ease), box-shadow 0.3s var(--g-ease),
-    border-color 0.3s var(--g-ease);
+  box-shadow: var(--g-shadow-sm);
+  transition: box-shadow 0.2s var(--g-ease), border-color 0.2s var(--g-ease);
 }
 
 .mo-glass .an2-card,
@@ -979,51 +944,35 @@
 .mo-glass .admin-order-card:hover,
 .mo-glass .mo-card:hover {
   border-color: var(--g-hairline-2);
-  box-shadow: var(--g-shadow), var(--g-inner);
-  transform: translateY(-2px);
+  box-shadow: var(--g-shadow);
 }
 
-/* Stat tiles get a soft gradient wash + top light seam */
+/* Stat tiles: flat, one step above the card they sit in. */
 .mo-glass .an2-stat,
 .mo-glass .admin-stat,
 .mo-glass .an2-proj-tile,
 .mo-glass .rr-metric {
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.86);
+  background: var(--g-surface-solid);
+  background-image: none;
 }
 
 .mo-glass.mo-dark .an2-stat,
 .mo-glass.mo-dark .admin-stat,
 .mo-glass.mo-dark .an2-proj-tile,
 .mo-glass.mo-dark .rr-metric {
-  background: linear-gradient(
-    150deg,
-    rgba(60, 51, 43, 0.62),
-    rgba(38, 32, 27, 0.5)
-  );
+  background: var(--g-surface-3);
 }
 
 .mo-glass .an2-stat::after,
 .mo-glass .admin-stat::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 14%;
-  right: 14%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.95),
-    transparent
-  );
+  display: none;
 }
 
 .mo-glass .an2-stat:hover,
 .mo-glass .admin-stat:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--g-shadow), var(--g-inner);
+  border-color: var(--g-hairline-2);
 }
 
 .mo-glass .an2-stat-ic,
@@ -1033,9 +982,11 @@
   width: 34px;
   height: 34px;
   border-radius: 12px;
-  color: var(--g-orange);
-  background: rgba(240, 120, 0, 0.09);
-  border: 1px solid rgba(240, 120, 0, 0.14);
+  /* !important: globals tints each tile (.s-rev, .s-profit …) per metric;
+     the monochrome console keeps every icon chip neutral. */
+  color: var(--g-ink-2) !important;
+  background: var(--g-sunken) !important;
+  border: 1px solid var(--g-hairline);
 }
 
 .mo-glass .an2-stat-val,
@@ -1066,7 +1017,7 @@
 
 .mo-glass .acc-head:hover,
 .mo-glass .an2-acc-head:hover {
-  background: rgba(251, 133, 0, 0.055);
+  background: rgb(var(--g-accent-rgb) / 0.055);
 }
 
 .mo-glass .acc-title,
@@ -1091,9 +1042,9 @@
   border-radius: 99px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--g-orange);
-  background: rgba(251, 133, 0, 0.12);
-  border: 1px solid rgba(251, 133, 0, 0.16);
+  color: var(--g-accent);
+  background: rgb(var(--g-accent-rgb) / 0.12);
+  border: 1px solid rgb(var(--g-accent-rgb) / 0.16);
 }
 
 /* =========================================================================
@@ -1124,22 +1075,17 @@
    single rule is the source of truth, so COD / online / prepaid all look the
    same. Dark mode gets its own dark surface below. */
 .mo-glass .admin-order-card.mo-card {
-  background: #fff;
-  border: 1px solid var(--hairline, #e5e7eb);
+  background: var(--g-surface-solid);
+  border: 1px solid var(--g-hairline);
   border-radius: 14px;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.08),
-    0 6px 16px -8px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--g-shadow);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   padding: 0;
 }
 .mo-glass.mo-dark .admin-order-card.mo-card {
-  background: #14171d;
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.4),
-    0 6px 16px -8px rgba(0, 0, 0, 0.55);
+  background: var(--g-surface-2);
+  border-color: var(--g-hairline);
 }
 /* No left accent seam on the flat cards. */
 .mo-glass .admin-order-card.mo-card::before {
@@ -1148,7 +1094,7 @@
 
 .mo-glass .mo-cover {
   border-radius: 10px;
-  box-shadow: 0 6px 16px -8px rgba(80, 45, 5, 0.5);
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.5);
   transition: transform 0.3s var(--g-ease);
 }
 
@@ -1162,8 +1108,6 @@
 .mo-glass .um-badge {
   border-radius: 99px;
   font-weight: 600;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
 }
 
 .mo-glass .orders-count,
@@ -1182,16 +1126,14 @@
   padding: 4px 6px;
   border-radius: 14px;
   background: var(--g-surface-2);
-  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(170%);
-  backdrop-filter: blur(var(--g-blur)) saturate(170%);
   border: 1px solid var(--g-hairline);
   box-shadow: var(--g-shadow-sm), var(--g-inner);
   transition: border-color 0.24s var(--g-ease), box-shadow 0.24s var(--g-ease);
 }
 
 .mo-glass .admin-search-bar:focus-within {
-  border-color: rgba(251, 133, 0, 0.4);
-  box-shadow: 0 0 0 4px rgba(251, 133, 0, 0.12), var(--g-shadow-sm);
+  border-color: rgb(var(--g-accent-rgb) / 0.4);
+  box-shadow: 0 0 0 4px rgb(var(--g-accent-rgb) / 0.12), var(--g-shadow-sm);
 }
 
 .mo-glass .admin-search-input,
@@ -1234,8 +1176,8 @@
 .mo-glass .textarea:focus,
 .mo-glass textarea:focus {
   outline: none;
-  border-color: rgba(251, 133, 0, 0.45);
-  box-shadow: 0 0 0 4px rgba(251, 133, 0, 0.12);
+  border-color: rgb(var(--g-accent-rgb) / 0.45);
+  box-shadow: 0 0 0 4px rgb(var(--g-accent-rgb) / 0.12);
   background: var(--g-surface-3);
 }
 
@@ -1248,8 +1190,6 @@
 .mo-glass .admin-filter-btn {
   border-radius: 14px;
   background: var(--g-surface-2);
-  -webkit-backdrop-filter: blur(var(--g-blur));
-  backdrop-filter: blur(var(--g-blur));
   border: 1px solid var(--g-hairline);
   color: var(--g-ink-2);
   font-weight: 600;
@@ -1260,13 +1200,13 @@
 
 .mo-glass .admin-filter-btn:hover {
   transform: translateY(-1px);
-  color: var(--g-orange);
+  color: var(--g-accent);
   border-color: var(--g-hairline-2);
 }
 
 .mo-glass .admin-filter-count {
-  background: linear-gradient(135deg, var(--g-gold), var(--g-orange));
-  color: #fff;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
   border-radius: 99px;
   font-weight: 700;
 }
@@ -1286,23 +1226,23 @@
 .mo-glass .admin-status-opt:hover {
   transform: translateY(-1px);
   border-color: var(--g-hairline-2);
-  color: var(--g-orange);
+  color: var(--g-accent);
 }
 
 .mo-glass .admin-chip.active,
 .mo-glass .admin-status-opt.active,
 .mo-glass .admin-status-opt[aria-pressed="true"] {
-  color: var(--g-orange);
-  border-color: rgba(240, 120, 0, 0.32);
-  background: rgba(240, 120, 0, 0.08);
+  color: var(--g-accent);
+  border-color: rgb(var(--g-accent-rgb) / 0.32);
+  background: rgb(var(--g-accent-rgb) / 0.08);
   box-shadow: none;
 }
 
 .mo-glass.mo-dark .admin-chip.active,
 .mo-glass.mo-dark .admin-status-opt.active {
-  color: var(--g-gold);
-  border-color: rgba(255, 183, 3, 0.34);
-  background: rgba(255, 183, 3, 0.1);
+  color: var(--g-accent-2);
+  border-color: rgb(var(--g-accent-rgb) / 0.34);
+  background: rgb(var(--g-accent-rgb) / 0.1);
 }
 
 .mo-glass .admin-chips-clear,
@@ -1315,15 +1255,13 @@
 .mo-glass .admin-filter-panel {
   border-radius: var(--g-r-lg);
   background: var(--g-surface-3);
-  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
-  backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
   border: 1px solid var(--g-hairline);
   box-shadow: var(--g-shadow-lg), var(--g-inner);
 }
 
 .mo-glass .admin-filter-backdrop,
 .mo-glass .mo-menu-backdrop {
-  background: rgba(28, 25, 23, 0.14);
+  background: rgba(10, 10, 10, 0.14);
 }
 
 /* Segmented view toggles */
@@ -1345,14 +1283,14 @@
 }
 
 .mo-glass .mo-view-btn.active {
-  color: var(--g-orange);
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.07),
-    0 4px 10px -6px rgba(28, 25, 23, 0.16);
+  color: var(--g-accent);
+  background: var(--g-surface-solid);
+  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.07),
+    0 4px 10px -6px rgba(10, 10, 10, 0.16);
 }
 
 .mo-glass.mo-dark .mo-view-btn.active {
-  color: var(--g-gold);
+  color: var(--g-accent-2);
   background: rgba(255, 255, 255, 0.1);
   box-shadow: none;
 }
@@ -1373,17 +1311,15 @@
 }
 
 .mo-glass .pri-big-btn {
-  color: #fff;
+  color: var(--g-on-accent);
   border: 0;
-  background: linear-gradient(135deg, var(--g-gold), var(--g-orange));
-  box-shadow: 0 12px 26px -12px rgba(251, 133, 0, 0.85),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: var(--g-accent);
+  box-shadow: 0 12px 26px -12px rgb(var(--g-accent-rgb) / 0.85);
 }
 
 .mo-glass .pri-big-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 34px -14px rgba(251, 133, 0, 0.95),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 18px 34px -14px rgb(var(--g-accent-rgb) / 0.95);
 }
 
 .mo-glass .pri-big-btn:active {
@@ -1394,8 +1330,6 @@
 .mo-glass .mo-form-btn,
 .mo-glass .admin-orders-more-btn {
   background: var(--g-surface-2);
-  -webkit-backdrop-filter: blur(var(--g-blur));
-  backdrop-filter: blur(var(--g-blur));
   border: 1px solid var(--g-hairline);
   color: var(--g-ink-2);
   box-shadow: var(--g-shadow-sm), var(--g-inner);
@@ -1405,9 +1339,9 @@
 .mo-glass .mo-form-btn:hover,
 .mo-glass .admin-orders-more-btn:hover {
   transform: translateY(-2px);
-  color: var(--g-orange);
+  color: var(--g-accent);
   border-color: var(--g-hairline-2);
-  box-shadow: 0 12px 24px -12px rgba(251, 133, 0, 0.45), var(--g-inner);
+  box-shadow: 0 12px 24px -12px rgb(var(--g-accent-rgb) / 0.45), var(--g-inner);
 }
 
 /* =========================================================================
@@ -1416,17 +1350,13 @@
 
 .mo-glass .bill-modal-overlay,
 .mo-glass .mo-cal-modal-overlay {
-  background: rgba(28, 25, 23, 0.42);
-  -webkit-backdrop-filter: blur(10px) saturate(140%);
-  backdrop-filter: blur(10px) saturate(140%);
+  background: rgba(10, 10, 10, 0.42);
 }
 
 .mo-glass .bill-modal,
 .mo-glass .mo-cal-modal {
   border-radius: var(--g-r-xl);
   background: var(--g-surface-3);
-  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(185%);
-  backdrop-filter: blur(var(--g-blur-lg)) saturate(185%);
   border: 1px solid var(--g-hairline);
   box-shadow: var(--g-shadow-lg), var(--g-inner);
 }
@@ -1457,7 +1387,7 @@
 .mo-glass .an2-quad-track,
 .mo-glass .an2-proj-bar {
   border-radius: 8px;
-  background: rgba(25, 23, 21, 0.055);
+  background: rgb(var(--g-ink-rgb) / 0.055);
 }
 
 /* Tapped tooltips near the top of the screen flip below the touch point so
@@ -1489,8 +1419,6 @@
 .mo-glass .pc-tip-r {
   border-radius: 12px;
   background: var(--g-surface-3);
-  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(180%);
-  backdrop-filter: blur(var(--g-blur)) saturate(180%);
   border: 1px solid var(--g-hairline);
   box-shadow: var(--g-shadow), var(--g-inner);
   color: var(--g-ink);
@@ -1499,7 +1427,7 @@
 .mo-glass .an2-dot,
 .mo-glass .an2-status-dot,
 .mo-glass .aoc-dot {
-  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.1);
+  box-shadow: 0 0 0 3px rgb(var(--g-accent-rgb) / 0.1);
 }
 
 /* =========================================================================
@@ -1579,7 +1507,7 @@
   position: relative;
   overflow: hidden;
   border-radius: var(--g-r);
-  background: rgba(251, 133, 0, 0.07);
+  background: rgb(var(--g-accent-rgb) / 0.07);
 }
 
 .mo-glass .an2-skel-card::after,
@@ -1589,14 +1517,9 @@
   content: "";
   position: absolute;
   inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.6),
-    transparent
-  );
-  animation: mo-shimmer 1.5s infinite;
+  background: var(--g-surface-solid);
+  opacity: 0;
+  animation: mo-skel-pulse 1.4s ease-in-out infinite;
 }
 
 @keyframes mo-shimmer {
@@ -1610,7 +1533,7 @@
    ========================================================================= */
 
 .mo-glass ::selection {
-  background: rgba(251, 133, 0, 0.22);
+  background: rgb(var(--g-accent-rgb) / 0.22);
   color: var(--g-ink);
 }
 
@@ -1621,11 +1544,11 @@
 
 .mo-glass .mo-main ::-webkit-scrollbar-thumb {
   border-radius: 99px;
-  background: rgba(251, 133, 0, 0.24);
+  background: rgb(var(--g-accent-rgb) / 0.24);
 }
 
 .mo-glass .mo-main ::-webkit-scrollbar-thumb:hover {
-  background: rgba(251, 133, 0, 0.4);
+  background: rgb(var(--g-accent-rgb) / 0.4);
 }
 
 .mo-glass .mo-main ::-webkit-scrollbar-track {
@@ -1685,8 +1608,6 @@
 .mo-glass .ip-modal {
   border-radius: var(--g-r-xl);
   background: var(--g-surface-3);
-  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(185%);
-  backdrop-filter: blur(var(--g-blur-lg)) saturate(185%);
   border: 1px solid var(--g-hairline);
   box-shadow: var(--g-shadow-lg), var(--g-inner);
   scroll-behavior: smooth;
@@ -1701,14 +1622,12 @@
   align-items: flex-start;
   gap: var(--g-gap);
   padding: var(--g-pad);
-  background: rgba(255, 255, 255, 0.9);
-  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
-  backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  background: var(--g-surface-solid);
   border-bottom: 1px solid var(--g-edge);
 }
 
 .mo-glass.mo-dark .ip-modal-head {
-  background: rgba(26, 22, 19, 0.9);
+  background: var(--g-surface-solid);
 }
 
 .mo-glass .ip-modal-head-main {
@@ -1738,7 +1657,7 @@
   margin-top: 4px;
   height: 5px;
   border-radius: 99px;
-  background: rgba(25, 23, 21, 0.08);
+  background: rgb(var(--g-ink-rgb) / 0.08);
   overflow: hidden;
 }
 
@@ -1746,7 +1665,7 @@
   display: block;
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, var(--g-gold), var(--g-orange));
+  background: var(--g-accent);
 }
 
 .mo-glass .ip-modal-head-actions {
@@ -1763,7 +1682,7 @@
   padding: 9px 14px;
   border-radius: 12px;
   border: 1px solid var(--g-hairline);
-  background: #fff;
+  background: var(--g-surface-solid);
   color: var(--g-ink-2);
   font-size: 12.5px;
   font-weight: 600;
@@ -1776,7 +1695,7 @@
 
 .mo-glass .ip-export-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  color: var(--g-orange);
+  color: var(--g-accent);
   border-color: var(--g-hairline-2);
 }
 
@@ -1794,8 +1713,8 @@
   border-radius: 99px;
   font-size: 10.5px;
   font-weight: 700;
-  color: #fff;
-  background: linear-gradient(135deg, var(--g-gold), var(--g-orange));
+  color: var(--g-on-accent);
+  background: var(--g-accent);
 }
 
 .mo-glass.mo-dark .ip-export-btn {
@@ -1828,7 +1747,7 @@
   border-radius: 2px;
   background-image: repeating-linear-gradient(
     to bottom,
-    rgba(25, 23, 21, 0.22) 0 6px,
+    rgb(var(--g-ink-rgb) / 0.22) 0 6px,
     transparent 6px 12px
   );
 }
@@ -1839,7 +1758,7 @@
   inset: 0;
   transform-origin: top center;
   border-radius: 2px;
-  background: linear-gradient(180deg, var(--g-gold), var(--g-orange));
+  background: var(--g-accent);
 }
 
 .mo-glass.mo-dark .ip-rail-track {
@@ -1867,15 +1786,15 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  color: #fff;
-  background: linear-gradient(135deg, var(--g-gold), var(--g-orange));
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.95),
-    0 6px 14px -6px rgba(240, 120, 0, 0.8);
+  color: var(--g-on-accent);
+  background: var(--g-accent);
+  box-shadow: 0 0 0 4px var(--g-surface-solid),
+    0 6px 14px -6px rgb(var(--g-accent-rgb) / 0.8);
 }
 
 .mo-glass.mo-dark .ip-rail-truck-badge {
   color: #1a1410;
-  box-shadow: 0 0 0 4px rgba(26, 22, 19, 0.95),
+  box-shadow: 0 0 0 4px var(--g-surface-solid),
     0 6px 14px -6px rgba(0, 0, 0, 0.8);
 }
 
@@ -1894,7 +1813,7 @@
   position: relative;
   border-radius: var(--g-r);
   border: 1px solid var(--g-hairline);
-  background: rgba(255, 255, 255, 0.86);
+  background: var(--g-surface-solid);
   box-shadow: var(--g-shadow-sm);
   overflow: hidden;
   transition: border-color 0.25s var(--g-ease), opacity 0.25s var(--g-ease);
@@ -1933,7 +1852,7 @@
   font-size: 12px;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, #34d399, #16a34a);
+  background: #16a34a;
 }
 
 .mo-glass .ip-order-name {
@@ -1955,8 +1874,8 @@
   margin: var(--g-gap-sm) var(--g-pad) 0;
   padding: 10px 12px;
   border-radius: var(--g-r-sm);
-  background: rgba(255, 183, 3, 0.1);
-  border: 1px solid rgba(240, 120, 0, 0.22);
+  background: rgb(var(--g-accent-rgb) / 0.1);
+  border: 1px solid rgb(var(--g-accent-rgb) / 0.22);
 }
 
 .mo-glass .ip-comment-title {
@@ -1967,7 +1886,7 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--g-orange);
+  color: var(--g-accent);
 }
 
 .mo-glass .ip-comment-text {
@@ -2017,8 +1936,8 @@
 
 .mo-glass .ip-book-input:focus {
   outline: none;
-  border-color: rgba(240, 120, 0, 0.45);
-  box-shadow: 0 0 0 4px rgba(240, 120, 0, 0.12);
+  border-color: rgb(var(--g-accent-rgb) / 0.45);
+  box-shadow: 0 0 0 4px rgb(var(--g-accent-rgb) / 0.12);
 }
 
 .mo-glass .ip-book-save {
@@ -2032,7 +1951,7 @@
   font-weight: 700;
   color: #fff;
   cursor: pointer;
-  background: linear-gradient(135deg, #34d399, #16a34a);
+  background: #16a34a;
   box-shadow: 0 10px 22px -12px rgba(22, 163, 74, 0.9);
   transition: transform 0.2s var(--g-ease), box-shadow 0.2s var(--g-ease);
 }
@@ -2084,7 +2003,7 @@
 }
 
 .mo-glass .ip-book-track:hover {
-  color: var(--g-orange);
+  color: var(--g-accent);
   border-color: var(--g-hairline-2);
 }
 
@@ -2392,7 +2311,7 @@
    ========================================================================= */
 
 .mo-glass :focus-visible {
-  outline: 2px solid rgba(240, 120, 0, 0.55);
+  outline: 2px solid rgb(var(--g-accent-rgb) / 0.55);
   outline-offset: 2px;
 }
 
@@ -2406,10 +2325,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mo-glass .mo-aurora span {
-    animation: none !important;
-  }
-
   .mo-glass *,
   .mo-glass *::before,
   .mo-glass *::after {
@@ -2432,4 +2347,87 @@
       background: var(--g-surface-solid);
     }
   }
+}
+
+/* Skeletons pulse with a flat fill instead of a gradient sweep. */
+@keyframes mo-skel-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* =========================================================================
+   16. Monochrome refinements
+   ========================================================================= */
+
+/* Sub-tab strips (Dispatch / Users / Track): a segmented control — sunken
+   track, the active segment lifted onto the card surface in ink. */
+.mo-glass .mo-book-subtabs {
+  background: var(--g-sunken);
+  border: 1px solid var(--g-hairline);
+  border-radius: 12px;
+}
+.mo-glass .mo-book-subtab {
+  color: var(--g-ink-2);
+  border-radius: 9px;
+  transition: color 0.18s var(--g-ease), background 0.18s var(--g-ease);
+}
+.mo-glass .mo-book-subtab:hover {
+  color: var(--g-ink);
+}
+.mo-glass .mo-book-subtab.on {
+  color: var(--g-ink);
+  background: var(--g-surface-solid);
+  box-shadow: 0 0 0 1px var(--g-hairline), var(--g-shadow-sm);
+}
+
+/* Inputs and selects share one quiet field style. */
+.mo-glass input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.mo-glass select,
+.mo-glass textarea {
+  color: var(--g-ink);
+  border-color: var(--g-hairline);
+}
+.mo-glass.mo-dark select,
+.mo-glass.mo-dark textarea,
+.mo-glass.mo-dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+  background-color: var(--input-bg);
+}
+.mo-glass input::placeholder,
+.mo-glass textarea::placeholder {
+  color: var(--g-ink-3);
+}
+
+/* Gift-order confetti drifted over prices and buttons. The "Gift wrap"
+   badge already marks gift orders, so the console drops the animation. */
+.my-orders-page.mo-glass .mo-card-gift-confetti {
+  display: none;
+}
+
+/* Status pills on order cards sit on the card colour, not a white tint. */
+.mo-glass.mo-dark .mo2-status-wrap {
+  background: color-mix(in srgb, var(--st-color, #16a34a) 16%, var(--g-surface-2));
+  border-color: color-mix(in srgb, var(--st-color, #16a34a) 40%, var(--g-surface-2));
+}
+.mo-glass.mo-dark .mo2-status,
+.mo-glass.mo-dark .mo2-status-chev {
+  color: color-mix(in srgb, var(--st-color, #16a34a) 55%, #faf9f5);
+}
+.mo-glass.mo-dark .mo2-status option {
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+}
+
+/* One focus ring everywhere: ink, offset, never the old orange glow. */
+.mo-glass :is(button, a, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--g-accent);
+  outline-offset: 2px;
+}
+
+/* Abandoned-cart avatars: neutral initials chip instead of an amber blob. */
+.mo-glass .mo-cart-avatar,
+.mo-glass .mo-cart-card.converted .mo-cart-avatar {
+  background: var(--g-sunken);
+  color: var(--g-ink);
+  border: 1px solid var(--g-hairline);
 }

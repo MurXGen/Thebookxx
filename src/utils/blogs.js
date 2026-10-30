@@ -4,6 +4,157 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "novel-november-2026-write-a-novel-books-for-first-time-writers-india": {
+    "id": "blog-094",
+    "title": "Novel November 2026: 15 Books to Help You Write Your First Novel (After NaNoWriMo)",
+    "slug": "novel-november-2026-write-a-novel-books-for-first-time-writers-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-30",
+    "lastModified": "2026-10-30",
+    "excerpt": "November is the month to start that novel. Here are 15 books on craft, habits and focus to help you write daily, finish a draft and read like a writer.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Every November, thousands of people sit down and try to write a novel in thirty days. For about twenty-five years the best-known version of that challenge was National Novel Writing Month, or NaNoWriMo, where the goal was 50,000 words between 1 and 30 November. The non-profit behind it announced in 2025 that it was shutting down, but the idea did not go away. Writing groups, libraries and online communities now run their own versions, often under the name Novel November, and the calendar still points to the same simple question: what if this is the month you finally start?"
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "The maths of 50,000 words",
+        "content": "A 50,000-word draft over 30 days works out to roughly 1,667 words a day. You do not have to hit that number to benefit. Many writers set a smaller target such as 300 to 500 words a day, and still finish a rough draft in a few months."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why the first draft is the hard part"
+      },
+      {
+        "type": "paragraph",
+        "content": "Most unfinished novels do not fail because the idea was bad. They stall because the writer waits for the perfect sentence, rereads yesterday's pages instead of writing today's, or runs out of energy by week two. That is why the books below are a mix: some are about creativity itself, some about habits and focus, and some are novels worth reading slowly to see how the craft is done. All of them are in the TheBookX catalogue."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on creativity and showing up"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/steal-like-an-artist-10-things-nobody-told-you-about-being-creative\" style=\"color:#fb8500;font-weight:600\">Steal Like an Artist</a> by Austin Kleon is a short, friendly argument that nothing is made from nothing: every writer starts by collecting influences and remixing them. It is a good first read if you feel that your idea is not original enough. Kleon's <a href=\"/books/show-your-work\" style=\"color:#fb8500;font-weight:600\">Show Your Work</a> and <a href=\"/books/keep-going\" style=\"color:#fb8500;font-weight:600\">Keep Going</a> continue the thought, covering sharing early drafts and staying creative when the excitement fades."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar approaches writing from the thinking side. A scene or a chapter becomes much easier to write when you are clear about what it needs to say, and the book's methods for cutting confusion and overthinking translate well to planning a plot. Pair it with <a href=\"/books/the-art-of-not-overthinking\" style=\"color:#fb8500;font-weight:600\">The Art of Not Overthinking</a> if self-doubt is what usually stops you mid-draft."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on habits, focus and finishing"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear: build a tiny daily writing routine, such as writing right after your morning chai, and let it grow.",
+          "<a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport: a case for protecting long, undistracted stretches of time, which is exactly what a novel needs.",
+          "<a href=\"/books/make-time\" style=\"color:#fb8500;font-weight:600\">Make Time</a> by Jake Knapp and John Zeratsky: practical ways to carve out an hour for writing without rebuilding your whole life.",
+          "<a href=\"/books/eat-that-frog\" style=\"color:#fb8500;font-weight:600\">Eat That Frog</a> by Brian Tracy: do the hardest task first. For a writer, that usually means the writing itself."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "A simple 30-day plan",
+        "content": "Week 1: write a little every day and do not edit. Week 2: expect the slump and keep your streak with a small target. Week 3: skip ahead to the scene you are excited about. Week 4: finish the rough ending. Editing can wait until December."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels worth reading like a writer"
+      },
+      {
+        "type": "paragraph",
+        "content": "Reading widely is part of the job. When you read as a writer, notice how a chapter opens, where the author reveals information and what makes you turn the page. A few places to start:"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig: a high-concept premise carried by a simple, readable structure.",
+          "<a href=\"/books/normal-people\" style=\"color:#fb8500;font-weight:600\">Normal People</a> by Sally Rooney: a study in how much a spare style and close attention to two characters can achieve.",
+          "<a href=\"/books/lessons-in-chemistry\" style=\"color:#fb8500;font-weight:600\">Lessons in Chemistry</a> by Bonnie Garmus: voice and humour driving a plot.",
+          "<a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho: a fable that shows how a short, clean story can travel across languages."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "For the sentence-level work, a tool you will use in December rather than November is <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> by Mortimer J. Adler, which teaches active reading, and <a href=\"/books/word-power-made-easy\" style=\"color:#fb8500;font-weight:600\">Word Power Made Easy</a> by Norman Lewis, a long-standing vocabulary builder for writers who want more precise words."
+      },
+      {
+        "type": "blockquote",
+        "content": "A rough draft is allowed to be bad. A blank page cannot be edited."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Tips for writing in India"
+      },
+      {
+        "type": "paragraph",
+        "content": "Write in the language you think in. Many Indian writers draft in Hindi, Tamil, Bengali or Malayalam and translate later, or mix English with their mother tongue the way people actually speak. Find a writing partner, since a friend who texts you for your word count is the best deadline there is. And keep a notebook close for the ideas that arrive on a commute or at a family function."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you are ordering a few of these, remember that TheBookX has books from ₹1 with free delivery and Cash on Delivery across India, so a reading and writing stack for the month costs less than a single coffee-shop afternoon."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/novel-november-2026-write-a-novel-books-for-first-time-writers-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/novel-november-2026-write-a-novel-books-for-first-time-writers-india.jpeg",
+        "alt": "A young woman writing in a notebook at a wooden desk with a cup of tea and a stack of books beside her",
+        "caption": "Novel November: a small daily writing habit is how most first drafts get finished.",
+        "category": "Writing"
+      }
+    ],
+    "keywords": [
+      "Novel November 2026",
+      "NaNoWriMo alternatives",
+      "how to write a novel",
+      "books for first-time writers",
+      "writing habit books",
+      "best books on creativity",
+      "books to read in November",
+      "The Art of Clarity"
+    ],
+    "categories": [
+      "Writing",
+      "Non-Fiction",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "What is Novel November?",
+        "answer": "Novel November is the informal successor to NaNoWriMo, where writers aim to draft a novel during November, traditionally 50,000 words in 30 days. The original NaNoWriMo non-profit announced it was shutting down in 2025, and libraries and writing communities now host their own versions."
+      },
+      {
+        "question": "How many words a day do I need to write for a 50,000-word draft?",
+        "answer": "About 1,667 words a day over 30 days. If that is too much, a smaller daily target such as 300 to 500 words still produces a full rough draft in a few months."
+      },
+      {
+        "question": "Which books help most with writing the first draft?",
+        "answer": "Steal Like an Artist, Keep Going and The Art of Clarity help with mindset and thinking, while Atomic Habits, Deep Work and Make Time help you build the routine and protect your time."
+      },
+      {
+        "question": "Can I order these books with Cash on Delivery in India?",
+        "answer": "Yes. TheBookX offers books from ₹1 with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "world-cities-day-2026-regenerating-the-city-books-on-home-and-urban-life-india": {
     "id": "blog-093",
     "title": "World Cities Day 2026: 12 Books on Home, City Life and Belonging to Read on 31 October",

@@ -959,6 +959,14 @@ function An2Section({ title, sub, right, defaultOpen = true, children }) {
   );
 }
 
+// Sheets and modals are portaled out of the page so they sit fixed to the
+// screen. They render into a body-level host that carries the page theme
+// classes, so they share the console tokens (and dark mode) instead of
+// falling back to the storefront styles.
+const MO_PORTAL_ID = "mo-portal-host";
+const moPortalTarget = () =>
+  document.getElementById(MO_PORTAL_ID) || document.body;
+
 // Wallet adjust modal for the Users tab. Admin enters an amount, then Adds,
 // Deducts, or Sets the balance — written to the sheet by the parent.
 const WALLET_REASON_PRESETS = [
@@ -1062,7 +1070,7 @@ function WalletModal({ user, busy, onClose, onApply }) {
         </p>
       </div>
     </div>,
-    document.body,
+    moPortalTarget(),
   );
 }
 
@@ -3661,6 +3669,19 @@ export default function ManageOrdersPage() {
       } catch {}
       return next;
     });
+  // Themed host for portaled sheets — see moPortalTarget().
+  const [, setPortalReady] = useState(false); // re-render once the host exists
+  useEffect(() => {
+    let host = document.getElementById(MO_PORTAL_ID);
+    if (!host) {
+      host = document.createElement("div");
+      host.id = MO_PORTAL_ID;
+      document.body.appendChild(host);
+    }
+    host.className = `my-orders-page mo-glass mo-portal-host${darkMode ? " mo-dark" : ""}`;
+    setPortalReady(true);
+  }, [darkMode]);
+  useEffect(() => () => document.getElementById(MO_PORTAL_ID)?.remove(), []);
 
   // ── Left navigation rail: expanded by default, collapse state remembered.
   const [railCollapsed, setRailCollapsed] = useState(false);
@@ -12029,7 +12050,7 @@ export default function ManageOrdersPage() {
                                     </div>
                                   </motion.div>
                                 </div>,
-                                document.body,
+                                moPortalTarget(),
                               )}
                           </motion.div>
                         );
@@ -12043,13 +12064,6 @@ export default function ManageOrdersPage() {
         src="/sounds/new-order.mp3"
         preload="auto"
       />
-
-      {/* Ambient gradient wash behind the glass surfaces */}
-      <div className="mo-aurora" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
 
       <div className={`mo-shell${railCollapsed ? " is-collapsed" : ""}`}>
         {/* ===== Left navigation rail (desktop) ===== */}
@@ -12296,7 +12310,7 @@ export default function ManageOrdersPage() {
                 >
                   {chartTip.text}
                 </div>,
-                document.body,
+                moPortalTarget(),
               )}
 
             {/* Overview stats — one bordered section, grid cells split by lines. */}
@@ -18250,7 +18264,7 @@ export default function ManageOrdersPage() {
                   );
                 })()}
                 </AnimatePresence>,
-                document.body,
+                moPortalTarget(),
               )}
           </div>
         )}
@@ -18450,7 +18464,7 @@ export default function ManageOrdersPage() {
                 </motion.div>
               )}
             </AnimatePresence>,
-            document.body,
+            moPortalTarget(),
           )}
 
         {/* Replace-a-book — slide-up sheet (portaled, no blur). */}
@@ -18718,7 +18732,7 @@ export default function ManageOrdersPage() {
                   );
                 })()}
             </AnimatePresence>,
-            document.body,
+            moPortalTarget(),
           )}
 
         {/* Add-a-book — slide-up sheet (portaled, no blur). */}
@@ -19006,7 +19020,7 @@ export default function ManageOrdersPage() {
                   );
                 })()}
             </AnimatePresence>,
-            document.body,
+            moPortalTarget(),
           )}
 
         {/* Remove-a-book — slide-up sheet (portaled, no blur). */}
@@ -19213,7 +19227,7 @@ export default function ManageOrdersPage() {
                   );
                 })()}
             </AnimatePresence>,
-            document.body,
+            moPortalTarget(),
           )}
 
         {/* Notify customers about unavailable (un-picked) books — portaled. */}
@@ -19340,7 +19354,7 @@ export default function ManageOrdersPage() {
                 </motion.div>
               )}
             </AnimatePresence>,
-            document.body,
+            moPortalTarget(),
           )}
 
         {/* Mark return received & refund — centered modal (portaled). */}
@@ -19443,7 +19457,7 @@ export default function ManageOrdersPage() {
                 </motion.div>
               )}
             </AnimatePresence>,
-            document.body,
+            moPortalTarget(),
           )}
 
         {/* ===== Mobile bottom navigation ===== */}

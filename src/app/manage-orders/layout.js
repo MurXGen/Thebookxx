@@ -1,7 +1,9 @@
 // app/manage-orders/layout.js
 import AdminLock from "@/components/AdminLock";
-// Glassmorphic + gradient design layer. Scoped to `.my-orders-page.mo-glass`,
-// so it only ever applies inside this route — the storefront is untouched.
+// Monochrome design layer. Scoped to `.my-orders-page.mo-glass`, so it only
+// ever applies inside this route — the storefront is untouched. The generated
+// mono sheet remaps globals.css literals; the hand-written UI sheet loads last.
+import "./manage-orders-mono.css";
 import "./manage-orders-ui.css";
 
 export const metadata = {

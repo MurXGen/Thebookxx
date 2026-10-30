@@ -413,8 +413,11 @@ const waMessages = (order) => {
         `Your order is arriving today. *Delivery time window: 9 AM – 8 PM.* ` +
         `Our delivery person may *call you*, so please keep your phone reachable. 📞` +
         (isCodOrder
-          ? `\n\n💵 *Please keep ₹${codPayAtDoor} ready* to pay on delivery.`
+          ? `\n\n💵 *Please keep ₹${codPayAtDoor} ready* — pay in *cash or UPI* at the door.`
           : ``) +
+        `\n\n🏠 *Not at home?* Ask a family member or neighbour to collect it for you` +
+        (isCodOrder ? ` — they can pay the ₹${codPayAtDoor} by cash or UPI.` : `.`) +
+        `\n\n📦 *After delivery:* if any book is missing or damaged, just reply here — our team will reach out right away to arrange a *refund or return*. You're fully covered. 🙏` +
         minimalBlock,
     },
     {
@@ -598,8 +601,11 @@ const emailMessages = (order) => {
         `Hi ${first},\n\n` +
         `Your order is out for delivery today, anytime between 9 AM and 8 PM. Our delivery partner may call you, so please keep your phone reachable. 📞` +
         (isCodOrder
-          ? `\n\nPlease keep ₹${codPayAtDoor} ready to pay on delivery.`
+          ? `\n\nPlease keep ₹${codPayAtDoor} ready — you can pay in cash or by UPI at the door.`
           : ``) +
+        `\n\nNot at home? Ask a family member or neighbour to collect it for you` +
+        (isCodOrder ? ` — they can pay the ₹${codPayAtDoor} by cash or UPI.` : `.`) +
+        `\n\nAfter delivery, if any book is missing or damaged, just reply to this email — our team will contact you right away to arrange a refund or return. You're fully covered.` +
         footer,
     },
     {
@@ -3706,6 +3712,21 @@ export default function ManageOrdersPage() {
   const [dateTo, setDateTo] = useState("");
   const [selectedDate, setSelectedDate] = useState(""); // "YYYY-MM-DD" from calendar
   const [chartBaseOrders, setChartBaseOrders] = useState([]); // list filters minus the day pick
+  // 14-day chart under search: open by default, choice remembered.
+  const [dayChartOpen, setDayChartOpen] = useState(() => {
+    try {
+      return localStorage.getItem("mo_daychart") !== "0";
+    } catch {
+      return true;
+    }
+  });
+  const toggleDayChart = () =>
+    setDayChartOpen((o) => {
+      try {
+        localStorage.setItem("mo_daychart", o ? "0" : "1");
+      } catch {}
+      return !o;
+    });
   const [calMonth, setCalMonth] = useState(() => {
     const d = new Date();
     return { y: d.getFullYear(), m: d.getMonth() };
@@ -9155,7 +9176,7 @@ export default function ManageOrdersPage() {
         label: "🛵 Out for delivery",
         status: "Out for Delivery",
         heading: "Out for delivery today 🛵",
-        subheading: `Your parcel is out for delivery and should arrive within a few hours. Deliveries usually happen anytime between 8 AM and 9 PM, so please keep your phone handy for the agent's call. Can't be there? Kindly ask a family member or neighbour to collect it for you.${codNote}`,
+        subheading: `Your parcel is out for delivery and should arrive within a few hours. Deliveries usually happen anytime between 8 AM and 9 PM, so please keep your phone handy for the agent's call.${codNote} Not at home? Ask a family member or neighbour to collect it for you${isCOD && collect > 0 ? " — they can pay by cash or UPI" : ""}. After delivery, if any book is missing or damaged, just reply to this email — our team will reach out right away to arrange a refund or return, so you're fully covered.`,
       },
       {
         key: "delivered",
@@ -10553,9 +10574,13 @@ export default function ManageOrdersPage() {
   // Unconfirmed orders (by status OR the legacy "(unconfirmed)" name tag) are
   // hidden from the list unless the admin explicitly filters for them — they're
   // handled through the unconfirmed-orders modal instead.
+  // Unconfirmed orders stay out of the cards unless asked for — by the
+  // "Unconfirmed" status or the pipeline's "To confirm" step.
   const wantUnconfirmed =
     Array.isArray(statusFilter) &&
-    statusFilter.some((f) => /unconfirmed/i.test(String(f)));
+    statusFilter.some(
+      (f) => /unconfirmed/i.test(String(f)) || f === "phase:confirm",
+    );
   const isUnconfirmedOrder = (o) =>
     /unconfirmed/i.test(o["Order Status"] || "") ||
     /\(unconfirmed\)/i.test(o["Customer Name"] || "");
@@ -11277,7 +11302,7 @@ export default function ManageOrdersPage() {
                                 </button>
                               )}
                               <div className="mo2-head-l">
-                                <span className="mo2-name">{order["Customer Name"] || "—"}</span>
+                                <span className="mo2-name" title={order["Customer Name"] || ""}>{order["Customer Name"] || "—"}</span>
                                 <button
                                   type="button"
                                   className="mo2-phone"
@@ -14451,8 +14476,14 @@ export default function ManageOrdersPage() {
                     );
                     return (
                       <div className="mo-daybars">
-                        <div className="mo-daybars-head">
-                          <span>
+                        <button
+                          type="button"
+                          className={`mo-daybars-head${dayChartOpen ? " open" : ""}`}
+                          onClick={toggleDayChart}
+                          aria-expanded={dayChartOpen}
+                        >
+                          <span className="mo-daybars-title">
+                            <ChevronDown size={15} className="mo-daybars-chev" />
                             Last {DAYS} days
                             {chips.some((c) => c.key !== "date") ? " · current filters" : ""}
                           </span>
@@ -14461,7 +14492,10 @@ export default function ManageOrdersPage() {
                             <i className="adv" /> ₹99 advance {sum.adv}
                             <i className="cod" /> COD {sum.cod}
                           </span>
-                        </div>
+                        </button>
+                        <AnimatePresence initial={false}>
+                        {dayChartOpen && (
+                        <motion.div className="mo-daybars-body" {...SLIDE}>
                         <div className="mo-daybars-plot">
                           {days.map((x) => {
                             const t = tot(x);
@@ -14489,6 +14523,9 @@ export default function ManageOrdersPage() {
                             );
                           })}
                         </div>
+                        </motion.div>
+                        )}
+                        </AnimatePresence>
                       </div>
                     );
                   })()}
@@ -17316,35 +17353,43 @@ export default function ManageOrdersPage() {
                           {trackSelectMode ? "Done" : "Select"}
                         </span>
                       </button>
-                      {trackSelectMode && (
-                        <>
-                          <button
-                            type="button"
-                            className="mo-track-selall"
-                            onClick={() =>
-                              setTrackSel(
-                                trackList.map((r) => String(r["Shipping ID"])),
-                              )
-                            }
-                          >
-                            All ({trackList.length})
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-track-selall prepaid"
-                            onClick={() => selectTrackByPayment("prepaid")}
-                          >
-                            All prepaid
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-track-selall cod"
-                            onClick={() => selectTrackByPayment("cod")}
-                          >
-                            All COD
-                          </button>
-                        </>
-                      )}
+                      {trackSelectMode &&
+                        (() => {
+                          // Quick-pick sets with live counts; the one that
+                          // matches the current selection is highlighted.
+                          const idOf = (r) => String(r["Shipping ID"]);
+                          const isCod = (r) => /cash|cod/i.test(r["Payment Type"] || "");
+                          const sets = [
+                            { k: "all", label: "All", ids: trackList.map(idOf) },
+                            { k: "prepaid", label: "Prepaid", ids: trackList.filter((r) => !isCod(r)).map(idOf) },
+                            { k: "cod", label: "COD", ids: trackList.filter(isCod).map(idOf) },
+                          ];
+                          const same = (ids) =>
+                            ids.length === trackSel.length &&
+                            ids.every((id) => trackSel.includes(id));
+                          return (
+                            <div className="mo-seg mo-track-pick" role="group" aria-label="Quick select">
+                              {sets.map((x) => (
+                                <button
+                                  key={x.k}
+                                  type="button"
+                                  className={x.ids.length && same(x.ids) ? "on" : ""}
+                                  disabled={!x.ids.length}
+                                  onClick={() => setTrackSel(x.ids)}
+                                >
+                                  {x.label} <b>{x.ids.length}</b>
+                                </button>
+                              ))}
+                              <button
+                                type="button"
+                                className={trackSel.length === 0 ? "on" : ""}
+                                onClick={() => setTrackSel([])}
+                              >
+                                None
+                              </button>
+                            </div>
+                          );
+                        })()}
                     </div>
 
                     {/* Staged status pushes — one batch button instead of
@@ -17385,24 +17430,12 @@ export default function ManageOrdersPage() {
                     )}
 
                     {trackSelectMode && (
-                      <div className="mo-cardbulk-bar mo-track-bulkbar">
-                        <div className="mo-cardbulk-left">
-                          <CheckSquare size={16} />
-                          <span className="mo-cardbulk-count">
-                            {trackSel.length} selected
-                          </span>
-                          {trackSel.length > 0 && (
-                            <button
-                              type="button"
-                              className="mo-cardbulk-clear"
-                              onClick={() => setTrackSel([])}
-                            >
-                              Clear
-                            </button>
-                          )}
-                        </div>
-                        <div className="mo-cardbulk-right">
-                          <span className="mo-cardbulk-lbl">Set status</span>
+                      <div className="mo-track-bulk">
+                        <span className="mo-track-bulk-count">
+                          <b>{trackSel.length}</b> selected
+                        </span>
+                        <div className="mo-track-bulk-act">
+                          <span className="mo-track-bulk-lbl">Set status</span>
                           <select
                             className="mo-tp-status-select"
                             value={trackBulkStat}
@@ -17416,7 +17449,7 @@ export default function ManageOrdersPage() {
                           </select>
                           <button
                             type="button"
-                            className="mo-cardbulk-apply"
+                            className="mo-track-bulk-apply"
                             disabled={trackSel.length === 0 || trackBulkBusy}
                             onClick={applyTrackBulkStatus}
                           >
@@ -17661,7 +17694,9 @@ export default function ManageOrdersPage() {
                                     <span className="mo-track-share-lbl">
                                       <Send size={12} /> Share an update
                                     </span>
-                                    <div className="mo-track-card-row">
+                                    <div className="mo-track-card-row mo-tu-row">
+                                      <label className="mo-tu-col">
+                                      <span className="mo-tu-lbl">Status</span>
                                       <select
                                         className="bulk-wa-select mo-track-status"
                                         value={r.status || "Processing"}
@@ -17676,6 +17711,9 @@ export default function ManageOrdersPage() {
                                           </option>
                                         ))}
                                       </select>
+                                      </label>
+                                      <div className="mo-tu-col">
+                                      <span className="mo-tu-lbl">WhatsApp</span>
                                       <div className="mo-track-wa">
                                         <select
                                           className="bulk-wa-select"
@@ -17712,6 +17750,11 @@ export default function ManageOrdersPage() {
                                           <FaWhatsapp size={15} />
                                         </button>
                                       </div>
+                                      </div>
+                                      <div className="mo-tu-col">
+                                      <span className="mo-tu-lbl">
+                                        Email{r["Email"] ? "" : " · none on order"}
+                                      </span>
                                       <div className="mo-track-wa mo-track-email">
                                         <select
                                           className="bulk-wa-select"
@@ -17761,6 +17804,7 @@ export default function ManageOrdersPage() {
                                         >
                                           <Mail size={15} />
                                         </button>
+                                      </div>
                                       </div>
                                     </div>
                                     {Array.isArray(r.parsedBooks) &&

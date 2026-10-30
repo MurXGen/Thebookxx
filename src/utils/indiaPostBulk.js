@@ -244,17 +244,21 @@ export function orderBookMeta(order) {
   return { qty, lines: lines.length, isSet };
 }
 
+// Parcels lighter than this go Speed Post; this weight and heavier go
+// Contractual (normal parcel) unless the customer opted for Speed.
+export const SPEED_MAX_GRAMS = 150;
+
 // Product bucket for the India Post bulk file:
-//   • Faster-delivery orders          → SPEED (always, regardless of weight)
-//   • Parcels UNDER 500 g              → SPEED
-//   • Parcels 500 g and OVER           → CONTRACTUAL
+//   • Faster-delivery orders          → SPEED (customer opted, any weight)
+//   • Parcels UNDER 150 g              → SPEED
+//   • Parcels 150 g and OVER           → CONTRACTUAL (normal parcel)
 // Weight comes from the operator-entered "Weight(gm)" saved on the order; if
 // that's blank we fall back to the catalogue estimate.
 export function classifyOrderProduct(order) {
   // 1) Faster / express delivery always goes Speed.
   const deliv = String(order?.["Delivery Type"] || "");
   if (/faster|express/i.test(deliv)) return "speed";
-  // 2) Weight-based split (< 500 g = Speed, >= 500 g = Contractual).
+  // 2) Weight-based split (< 150 g = Speed, >= 150 g = Contractual).
   const saved = parseInt(
     String(order?.["Weight(gm)"] ?? order?.["Weight (gm)"] ?? "").replace(
       /[^\d]/g,
@@ -264,7 +268,7 @@ export function classifyOrderProduct(order) {
   );
   const grams =
     Number.isFinite(saved) && saved > 0 ? saved : estimateWeight(order);
-  return grams < 500 ? "speed" : "contractual";
+  return grams < SPEED_MAX_GRAMS ? "speed" : "contractual";
 }
 
 // Best-guess parcel weight (g) from the catalogue. Weight is REQUIRED by the

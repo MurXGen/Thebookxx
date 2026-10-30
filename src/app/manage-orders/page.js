@@ -121,6 +121,7 @@ import {
 import { getDeliveryCharge, getCodFee } from "@/utils/cartOffers";
 import {
   classifyOrderProduct,
+  SPEED_MAX_GRAMS,
   buildPreviewRow,
   downloadIpWorkbook,
   buildIpWorkbookBlob,
@@ -730,6 +731,29 @@ const formatDateForSheet = (date) => {
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 };
 
+// <input type="datetime-local"> value ("YYYY-MM-DDTHH:mm") for a Date.
+const toLocalInput = (d) => {
+  if (!d) return "";
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+};
+
+// Payment options in the edit form, each with the exact "Payment Type" label
+// checkout writes — so an edited row reads like a checked-out one.
+const PAY_MODES = [
+  { k: "cod", label: "COD", sheet: "Cash on Delivery" },
+  { k: "advance", label: "COD + ₹99", sheet: "COD · ₹99 advance" },
+  { k: "upi", label: "UPI", sheet: "UPI Payment" },
+  { k: "card", label: "Card", sheet: "Card Payment" },
+];
+const payModeOf = (paymentType, advancePaid) => {
+  const t = String(paymentType || "");
+  if (/advance/i.test(t) || /^\s*yes/i.test(String(advancePaid || ""))) return "advance";
+  if (/cash|cod/i.test(t)) return "cod";
+  if (/card|gift/i.test(t)) return "card";
+  return "upi";
+};
+
 // Parses every timestamp format we receive from Google Sheets
 // (the `Date(y,m,d,h,m,s)` string, the `dd/mm/yyyy hh:mm:ss` string,
 // raw Date objects, and ISO strings) into a real Date instance.
@@ -830,6 +854,61 @@ const dayKey = (d) => {
 
 // Pick the best timestamp field on an order and return it as a Date (or null).
 // We check the timestamp fields in order of preference.
+// Headline numbers for a list of orders — shared by the current period and
+// the comparison period so both use identical definitions.
+function summarizeOrders(list) {
+  const n = list.length;
+  const statusOf = (o) => String(o["Order Status"] || "");
+  const isCod = (o) => /cash|cod/i.test(String(o["Payment Type"] || ""));
+  const revenue = list.reduce((s, o) => s + (o.revenue || 0), 0);
+  const cost = list.reduce((s, o) => s + (o.totalCost || 0), 0);
+  const delivery = list.reduce((s, o) => s + (o.deliveryCost || 0), 0);
+  const profit = revenue - cost;
+  const delivered = list.filter((o) =>
+    /delivered|money received/i.test(statusOf(o)),
+  ).length;
+  const cancelled = list.filter((o) => /cancel|return/i.test(statusOf(o))).length;
+  const codN = list.filter(isCod).length;
+  // COD orders whose ₹99 advance is already paid online.
+  const advN = list.filter(
+    (o) => isCod(o) && /^\s*yes/i.test(String(o["Advance Paid"] || "")),
+  ).length;
+  const units = list.reduce(
+    (s, o) =>
+      s +
+      (o.parsedBooks || []).reduce((t, b) => t + (Number(b.quantity) || 1), 0),
+    0,
+  );
+  const pct = (a) => (n ? Math.round((a / n) * 100) : 0);
+  return {
+    n,
+    revenue,
+    cost,
+    delivery,
+    profit,
+    units,
+    margin: revenue > 0 ? Math.round((profit / revenue) * 100) : 0,
+    aov: n ? Math.round(revenue / n) : 0,
+    delivered,
+    cancelled,
+    codN,
+    advN,
+    upiN: n - codN,
+    cancelRate: pct(cancelled),
+    // Success among *closed* orders only — open (in-flight) orders would make
+    // a running period look worse than a finished one.
+    successRate:
+      delivered + cancelled
+        ? Math.round((delivered / (delivered + cancelled)) * 100)
+        : 0,
+    openN: n - delivered - cancelled,
+    // Fully prepaid (UPI) plus COD with the ₹99 advance — orders with skin in
+    // the game, which is what keeps RTO down.
+    prepaidRate: pct(n - codN + advN),
+    unitsPerOrder: n ? Math.round((units / n) * 10) / 10 : 0,
+  };
+}
+
 const getOrderDate = (order) =>
   parseAnyDate(order["Timestamp(D)"]) ||
   parseAnyDate(order["Timestamp"]) ||
@@ -932,6 +1011,98 @@ const orderEconomics = (parsedBooks = []) => {
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // Collapsible analytics section — click the header to wrap it up.
+// One headline KPI. `prev` (same metric for the comparison period) renders a
+// delta chip; `lowerIsBetter` flips its colour for rates like cancellations;
+// `unit: "pts"` compares percentages as point changes, not relative ones.
+function KpiTile({ icon: Icon, label, value, sub, cur, prev, lowerIsBetter, unit }) {
+  let delta = null;
+  if (prev != null && cur != null) {
+    const diff = unit === "pts" ? cur - prev : prev ? ((cur - prev) / prev) * 100 : null;
+    if (diff != null && isFinite(diff)) {
+      const r = Math.round(diff);
+      const good = r === 0 ? null : (r > 0) !== !!lowerIsBetter;
+      delta = (
+        <span className={`an2-delta${good == null ? "" : good ? " up" : " down"}`}>
+          {r > 0 ? "▲" : r < 0 ? "▼" : "•"} {Math.abs(r)}
+          {unit === "pts" ? " pts" : "%"}
+        </span>
+      );
+    } else if (!prev && cur) {
+      delta = <span className="an2-delta">new</span>;
+    }
+  }
+  return (
+    <div className="an2-stat">
+      <div className="an2-stat-ic">
+        <Icon size={16} />
+      </div>
+      <div className="an2-stat-body">
+        <span className="an2-stat-lbl">{label}</span>
+        <span className="an2-stat-val">{value}</span>
+        <span className="an2-stat-x">
+          {delta}
+          {sub}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// Slide open/closed for disclosure panels (height + fade).
+const SLIDE = {
+  initial: { height: 0, opacity: 0 },
+  animate: { height: "auto", opacity: 1 },
+  exit: { height: 0, opacity: 0 },
+  transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+};
+
+// A numbered analytics group — names the question its cards answer, so the
+// dashboard reads top-down as a story — and collapses as one unit. Open state
+// is remembered per group; on phones only the first group starts open.
+function An2Group({ step, title, sub, children }) {
+  const key = `mo_an_group_${step}`;
+  const [open, setOpen] = useState(() => {
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved != null) return saved === "1";
+      return step === "1" || !window.matchMedia("(max-width: 720px)").matches;
+    } catch {
+      return true;
+    }
+  });
+  const toggle = () =>
+    setOpen((o) => {
+      try {
+        localStorage.setItem(key, o ? "0" : "1");
+      } catch {}
+      return !o;
+    });
+  return (
+    <section className={`an2-grp${open ? " open" : ""}`}>
+      <button
+        type="button"
+        className="an2-group"
+        onClick={toggle}
+        aria-expanded={open}
+      >
+        <span className="an2-group-step">{step}</span>
+        <span className="an2-group-text">
+          <span className="an2-group-title">{title}</span>
+          {sub ? <span className="an2-group-sub">{sub}</span> : null}
+        </span>
+        <ChevronDown size={18} className="an2-group-chev" />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div className="an2-grp-body" {...SLIDE}>
+            <div className="an2-grp-inner">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+}
+
 function An2Section({ title, sub, right, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -954,7 +1125,13 @@ function An2Section({ title, sub, right, defaultOpen = true, children }) {
           />
         </div>
       </button>
-      {open && <div className="an2-acc-body">{children}</div>}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div style={{ overflow: "hidden" }} {...SLIDE}>
+            <div className="an2-acc-body">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -1158,6 +1335,9 @@ const PILL_SPRING = { type: "spring", stiffness: 420, damping: 34, mass: 0.7 };
 
 // Status options for the Track & notify quick status editor (includes the
 // extra "Money received" state on top of the usual delivery stages).
+// Set from the India Post tracking file when a parcel is "Item Kept on Hold".
+const HOLD_STATUS = "On hold by India Post";
+
 const TRACK_STATUS_OPTIONS = [
   "Unconfirmed",
   "Pending",
@@ -1169,8 +1349,33 @@ const TRACK_STATUS_OPTIONS = [
   "Delivered",
   "Money received",
   "On hold",
+  HOLD_STATUS,
   "Cancelled",
 ];
+
+// The fulfilment flow, in order. Every order sits in exactly one phase, so
+// the Orders tab can show the pipeline as a stepper with live counts.
+const ORDER_PHASES = [
+  { key: "confirm", label: "To confirm", hint: "Unconfirmed" },
+  { key: "pack", label: "To pack", hint: "Pending · processing" },
+  { key: "ship", label: "To ship", hint: "Needs tracking ID" },
+  { key: "transit", label: "In transit", hint: "Shipped · out for delivery" },
+  { key: "delivered", label: "Delivered", hint: "Payment not marked" },
+  { key: "closed", label: "Paid & closed", hint: "Money received" },
+  { key: "issues", label: "Exceptions", hint: "Hold · cancelled · returned" },
+];
+const phaseOf = (order) => {
+  const s = String(order["Order Status"] || "").toLowerCase();
+  const tracked = String(order["Shipping ID"] || "").trim() !== "";
+  if (/unconfirmed/.test(s)) return "confirm";
+  if (/cancel|return|hold/.test(s)) return "issues";
+  if (/money received/.test(s)) return "closed";
+  if (/delivered/.test(s) && !/out for/.test(s)) return "delivered";
+  if (/getting shipped/.test(s) || (/transit|shipped/.test(s) && !tracked))
+    return "ship";
+  if (/shipped|transit|out for delivery/.test(s)) return "transit";
+  return "pack";
+};
 
 // Group a raw "Payment Type" string into a common filter bucket, so the admin
 // filter shows a handful of options instead of every exact label variant.
@@ -2341,8 +2546,18 @@ function OrderCardSkeleton() {
 }
 
 function OrdersLoader() {
+  // Renders before the page mounts its theme state, so read the saved theme
+  // here — otherwise the skeleton flashes the light theme in dark mode.
+  // (AdminLock only renders on the client, so localStorage is available.)
+  const [dark] = useState(() => {
+    try {
+      return localStorage.getItem("mo_dark") === "1";
+    } catch {
+      return false;
+    }
+  });
   return (
-    <div className="my-orders-page">
+    <div className={`my-orders-page mo-glass mo-loader${dark ? " mo-dark" : ""}`}>
       <div className="section-1200 p-40">
         <div className="mo-skel-wrap">
           <div className="mo-skel-toprow">
@@ -3460,6 +3675,7 @@ export default function ManageOrdersPage() {
   // Users tab — which customer row's 3-dot action menu is open.
   const [openUserMenu, setOpenUserMenu] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [bulkSheetOpen, setBulkSheetOpen] = useState(false); // select-mode actions sheet
   // Orders list lazy loading — render 10 at a time, grow on scroll.
   const ORDERS_BATCH = 10;
   const [ordersVisible, setOrdersVisible] = useState(ORDERS_BATCH);
@@ -3489,6 +3705,7 @@ export default function ManageOrdersPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [selectedDate, setSelectedDate] = useState(""); // "YYYY-MM-DD" from calendar
+  const [chartBaseOrders, setChartBaseOrders] = useState([]); // list filters minus the day pick
   const [calMonth, setCalMonth] = useState(() => {
     const d = new Date();
     return { y: d.getFullYear(), m: d.getMonth() };
@@ -3569,6 +3786,28 @@ export default function ManageOrdersPage() {
   const [pickHydrated, setPickHydrated] = useState(false);
   const [packedOrders, setPackedOrders] = useState({}); // { orderId: true }
   const [detailOrder, setDetailOrder] = useState(null); // order shown in detail modal
+  // The open order lives in the URL (?order=ORD…) so it can be shared and
+  // survives a refresh. Read once when orders first load, then kept in sync.
+  const orderLinkReady = useRef(false);
+  useEffect(() => {
+    if (orderLinkReady.current || !orders.length) return;
+    orderLinkReady.current = true;
+    const id = new URLSearchParams(window.location.search).get("order");
+    if (!id) return;
+    const o = orders.find((x) => String(x["Order ID"]) === id);
+    if (o) {
+      setActiveTab("orders");
+      setDetailOrder(o);
+    }
+  }, [orders]);
+  useEffect(() => {
+    if (!orderLinkReady.current) return;
+    const url = new URL(window.location.href);
+    const id = detailOrder?.["Order ID"];
+    if (id) url.searchParams.set("order", id);
+    else url.searchParams.delete("order");
+    window.history.replaceState(window.history.state, "", url);
+  }, [detailOrder]);
   // Inline order-card accordions: which cards are expanded, plus per-order
   // draft state for inline tracking-ID and address edits pushed to the sheet.
   const [expandedCards, setExpandedCards] = useState({}); // { orderId: true }
@@ -3682,6 +3921,23 @@ export default function ManageOrdersPage() {
     setPortalReady(true);
   }, [darkMode]);
   useEffect(() => () => document.getElementById(MO_PORTAL_ID)?.remove(), []);
+  // Filters & view / bulk Actions sheets: Escape closes them, and the page
+  // behind stays put while one is open.
+  useEffect(() => {
+    if (!showFilters && !bulkSheetOpen) return;
+    const onKey = (e) => {
+      if (e.key !== "Escape") return;
+      setShowFilters(false);
+      setBulkSheetOpen(false);
+    };
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [showFilters, bulkSheetOpen]);
 
   // ── Left navigation rail: expanded by default, collapse state remembered.
   const [railCollapsed, setRailCollapsed] = useState(false);
@@ -5529,6 +5785,9 @@ export default function ManageOrdersPage() {
   // Returned to sender (last event "…Returned to Sender") → mark Cancelled.
   const [cancelMatches, setCancelMatches] = useState([]);
   const [cancelSel, setCancelSel] = useState([]);
+  // Held by India Post (file event "Item Kept on Hold") → HOLD_STATUS.
+  const [holdMatches, setHoldMatches] = useState([]);
+  const [holdSel, setHoldSel] = useState([]);
   // ── Paid COD bill(s): upload one or more Articles_Bill_COD*.xlsx and mark the
   // matched orders Delivered / Money Received. Accumulates across files. ──
   const [cbMatches, setCbMatches] = useState([]); // [{ order, article, newStatus, currentStatus }]
@@ -5962,6 +6221,11 @@ export default function ManageOrdersPage() {
       const isReturned = (r) =>
         /return(?:ed)?\s*to\s*sender/i.test(String(r.lastEvent || "")) ||
         /return(?:ed)?\s*to\s*sender/i.test(String(r.status || ""));
+      // "Item Kept on Hold" (or any hold event) — the parcel is sitting with
+      // India Post, neither delivered nor lost.
+      const isHold = (r) =>
+        /\bhold\b/i.test(String(r.lastEvent || "")) ||
+        /\bhold\b/i.test(String(r.status || ""));
       const delivered = rows.filter(
         (r) => isDelivered(r.status) && !isReturned(r),
       );
@@ -6015,7 +6279,7 @@ export default function ManageOrdersPage() {
       const revSeen = new Set();
       const reverts = [];
       rows
-        .filter((r) => !isDelivered(r.status))
+        .filter((r) => !isDelivered(r.status) && !isHold(r))
         .forEach((r) => {
           const o = findOrderForRow(r);
           if (!o) return;
@@ -6053,7 +6317,32 @@ export default function ManageOrdersPage() {
           });
         });
 
+      // On hold → HOLD_STATUS (skip cancelled/returned and already-held; a
+      // parcel wrongly marked delivered moves to on-hold, not back to transit).
+      const holdSeen = new Set();
+      const holds = [];
+      rows
+        .filter((r) => isHold(r) && !isDelivered(r.status) && !isReturned(r))
+        .forEach((r) => {
+          const o = findOrderForRow(r);
+          if (!o) return;
+          const oid = o["Order ID"];
+          if (!oid || holdSeen.has(oid)) return;
+          const cur = String(o["Order Status"] || "").trim();
+          if (cur.toLowerCase() === HOLD_STATUS.toLowerCase()) return;
+          if (/cancel|return/i.test(cur)) return;
+          holdSeen.add(oid);
+          holds.push({
+            order: o,
+            article: r.article,
+            currentStatus: cur || "—",
+            lastEvent: r.lastEvent || r.status || "Item kept on hold",
+          });
+        });
+
       setDelivMatches(matches);
+      setHoldMatches(holds);
+      setHoldSel(holds.map((m) => m.order["Order ID"]));
       setDelivSel(matches.map((m) => m.order["Order ID"]));
       setRevertMatches(reverts);
       setRevertSel(reverts.map((m) => m.order["Order ID"]));
@@ -6065,7 +6354,7 @@ export default function ManageOrdersPage() {
         already,
         notDelivered: rows.length - delivered.length,
       });
-      if (!matches.length && !reverts.length && !cancels.length) {
+      if (!matches.length && !reverts.length && !cancels.length && !holds.length) {
         showToast(
           delivered.length
             ? "All delivered parcels are already up to date ✓"
@@ -6076,6 +6365,7 @@ export default function ManageOrdersPage() {
         const parts = [];
         if (matches.length) parts.push(`${matches.length} to mark delivered`);
         if (cancels.length) parts.push(`${cancels.length} returned → cancel`);
+        if (holds.length) parts.push(`${holds.length} on hold`);
         if (reverts.length) parts.push(`${reverts.length} to revert`);
         showToast(`${parts.join(" · ")} ready`, "success");
       }
@@ -6097,6 +6387,8 @@ export default function ManageOrdersPage() {
     setRevertSel([]);
     setCancelMatches([]);
     setCancelSel([]);
+    setHoldMatches([]);
+    setHoldSel([]);
     setDelivFileName("");
     setDelivSkipped({ unmatched: 0, already: 0, notDelivered: 0 });
   };
@@ -6134,6 +6426,46 @@ export default function ManageOrdersPage() {
       );
       setCancelSel([]);
       showToast(`${picked.length} returned order(s) cancelled ✓`, "success");
+      setTimeout(fetchOrders, 1300);
+    } finally {
+      setDelivBusy(false);
+    }
+  };
+
+  const toggleHoldSel = (oid) =>
+    setHoldSel((prev) =>
+      prev.includes(oid) ? prev.filter((x) => x !== oid) : [...prev, oid],
+    );
+  // Push the selected held parcels → HOLD_STATUS.
+  const pushHoldUpdates = async () => {
+    const picked = holdMatches.filter((m) =>
+      holdSel.includes(m.order["Order ID"]),
+    );
+    if (!picked.length) return;
+    setDelivBusy(true);
+    setOrders((prev) =>
+      prev.map((o) =>
+        picked.some((x) => x.order["Order ID"] === o["Order ID"])
+          ? { ...o, "Order Status": HOLD_STATUS, status: HOLD_STATUS }
+          : o,
+      ),
+    );
+    try {
+      await Promise.all(
+        picked.map((m) =>
+          updateOrderRow(m.order["Order ID"], {
+            "Order Status": HOLD_STATUS,
+          }).catch((err) =>
+            console.error("Hold push failed:", m.order["Order ID"], err),
+          ),
+        ),
+      );
+      const ids = new Set(picked.map((m) => m.order["Order ID"]));
+      setHoldMatches((prev) =>
+        prev.filter((m) => !ids.has(m.order["Order ID"])),
+      );
+      setHoldSel([]);
+      showToast(`${picked.length} order(s) marked on hold by India Post`, "success");
       setTimeout(fetchOrders, 1300);
     } finally {
       setDelivBusy(false);
@@ -6202,6 +6534,7 @@ export default function ManageOrdersPage() {
       }
       setCbMatches(nextMatches);
       setCbSel(nextMatches.map((m) => m.order["Order ID"]));
+      setTrackAcc((p) => ({ ...p, codbill: true }));
       setCbFiles((prev) => [...prev, ...addedNames]);
       setCbSkipped((prev) => ({
         unmatched: prev.unmatched + unmatched,
@@ -7282,6 +7615,9 @@ export default function ManageOrdersPage() {
                 if (f === "intransit-notrack") {
                   return s === "In Transit" && !hasTracking;
                 }
+                if (String(f).startsWith("phase:")) {
+                  return phaseOf(order) === f.slice(6);
+                }
                 if (f === "returns") {
                   // Orders with a return request still awaiting refund — shown
                   // regardless of their delivery status.
@@ -7325,6 +7661,11 @@ export default function ManageOrdersPage() {
       });
     }
 
+    // The 14-day chart reads the list as filtered so far (status, payment,
+    // search, date range) — everything except the single-day pick, so tapping
+    // a bar narrows the list without collapsing the chart to one bar.
+    setChartBaseOrders(filtered);
+
     // Calendar day filter — show only orders received on the clicked date
     if (selectedDate) {
       filtered = filtered.filter((o) => {
@@ -7365,6 +7706,15 @@ export default function ManageOrdersPage() {
   // Case-insensitive dedupe for the quick status dropdown, and drop every
   // "Unconfirmed" variant — those are offered as ONE option that uses the
   // dedicated unconfirmed filter (so it actually shows unconfirmed orders).
+  // Live count per fulfilment phase (all real orders, ignoring list filters).
+  const phaseCounts = useMemo(() => {
+    const c = Object.fromEntries(ORDER_PHASES.map((p) => [p.key, 0]));
+    orders.forEach((o) => {
+      if (String(o["Order ID"] || "").trim()) c[phaseOf(o)] += 1;
+    });
+    return c;
+  }, [orders]);
+
   const quickStatuses = useMemo(() => {
     const seen = new Set();
     const out = [];
@@ -7695,53 +8045,35 @@ export default function ManageOrdersPage() {
     };
   }, [leads, orders]);
 
-  // 1 — Top overview stats for the selected period.
-  const overview = useMemo(() => {
-    const n = anOrders.length;
-    const revenue = anOrders.reduce((s, o) => s + (o.revenue || 0), 0);
-    const cost = anOrders.reduce((s, o) => s + (o.totalCost || 0), 0);
-    const delivery = anOrders.reduce((s, o) => s + (o.deliveryCost || 0), 0);
-    const profit = revenue - cost;
-    const delivered = anOrders.filter((o) =>
-      /delivered/i.test(String(o["Order Status"] || "")),
-    ).length;
-    const cancelled = anOrders.filter((o) =>
-      /cancel|return/i.test(String(o["Order Status"] || "")),
-    ).length;
-    const codN = anOrders.filter((o) =>
-      /cash|cod/i.test(String(o["Payment Type"] || "")),
-    ).length;
-    // COD orders whose ₹99 advance is already paid online.
-    const advN = anOrders.filter(
-      (o) =>
-        /cash|cod/i.test(String(o["Payment Type"] || "")) &&
-        /^\s*yes/i.test(String(o["Advance Paid"] || "")),
-    ).length;
-    const units = anOrders.reduce(
-      (s, o) =>
-        s +
-        (o.parsedBooks || []).reduce(
-          (t, b) => t + (Number(b.quantity) || 1),
-          0,
-        ),
-      0,
+  // 1 — Top overview stats for the selected period, plus the previous period
+  // clipped to the same elapsed span while this one is still running, so the
+  // KPI deltas compare like with like ("vs same point last month").
+  const overview = useMemo(() => summarizeOrders(anOrders), [anOrders]);
+  const prevOverview = useMemo(() => {
+    const { start, end } = periodWindow;
+    if (analyticsPeriod === "all" || !start || !end) return null;
+    const prevStart = new Date(start);
+    if (analyticsPeriod === "day") prevStart.setDate(prevStart.getDate() - 1);
+    else if (analyticsPeriod === "week") prevStart.setDate(prevStart.getDate() - 7);
+    else if (analyticsPeriod === "year") prevStart.setFullYear(prevStart.getFullYear() - 1);
+    else prevStart.setMonth(prevStart.getMonth() - 1);
+    const now = new Date();
+    const elapsed = now < end ? now - start : end - start;
+    const prevEnd = new Date(
+      Math.min(prevStart.getTime() + elapsed, start.getTime()),
     );
+    const list = orders.filter((o) => {
+      if (!hasOrderId(o)) return false;
+      const d = getOrderDate(o);
+      return d && d >= prevStart && d < prevEnd;
+    });
     return {
-      n,
-      revenue,
-      cost,
-      delivery,
-      profit,
-      units,
-      margin: revenue > 0 ? Math.round((profit / revenue) * 100) : 0,
-      aov: n ? Math.round(revenue / n) : 0,
-      delivered,
-      cancelled,
-      codN,
-      advN,
-      upiN: n - codN,
+      ...summarizeOrders(list),
+      label: now < end
+        ? `vs same point last ${analyticsPeriod}`
+        : `vs previous ${analyticsPeriod}`,
     };
-  }, [anOrders]);
+  }, [orders, analyticsPeriod, periodWindow]);
 
   // 2 — Distinct customers (all-time) who currently hold wallet balance.
   const walletUsers = useMemo(() => {
@@ -8279,6 +8611,67 @@ export default function ManageOrdersPage() {
     const maxRev = Math.max(1, ...months.map((mm) => mm.projTotalRev));
     return { year: y, curMonth, curDay, months, max, maxRev };
   }, [orders]);
+
+  // Run-rate insights: where this month stands against last month and the
+  // best month *at the same day*, where it is heading, what it takes to set a
+  // record, and short-term momentum. Follows the orders / revenue toggle.
+  const runInsights = useMemo(() => {
+    const { months, curDay } = monthlyRunRate;
+    const isRev = runRateMetric === "revenue";
+    const v = (p) => (p ? (isRev ? p.rev : p.value) : 0);
+    const cur = months.find((m) => m.isCurrent);
+    if (!cur) return null;
+    const atDay = (m, day) => v(m.pts[Math.min(day, m.pts.length) - 1]);
+    const past = months.filter((m) => !m.isCurrent);
+    const prev = past.find((m) => m.month === cur.month - 1) || null;
+    const best = past.reduce(
+      (b, m) => (!b || (isRev ? m.totalRev : m.total) > (isRev ? b.totalRev : b.total) ? m : b),
+      null,
+    );
+    const now = atDay(cur, curDay);
+    const tot = (m) => (m ? (isRev ? m.totalRev : m.total) : 0);
+    const proj = isRev ? cur.projTotalRev : cur.projTotal;
+    const daysInMonth = new Date(monthlyRunRate.year, cur.month + 1, 0).getDate();
+    const daysLeft = Math.max(0, daysInMonth - curDay);
+    const pct = (a, b) => (b ? Math.round(((a - b) / b) * 100) : null);
+    // Momentum: last 7 days vs the 7 before (orders or revenue per day).
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const sumRange = (from, to) =>
+      orders.reduce((s, o) => {
+        if (!hasOrderId(o)) return s;
+        const d = getOrderDate(o);
+        if (!d || d < from || d >= to) return s;
+        return s + (isRev ? o.revenue || 0 : 1);
+      }, 0);
+    const day = 86400000;
+    const tomorrow = new Date(today.getTime() + day);
+    const last7 = sumRange(new Date(tomorrow - 7 * day), tomorrow);
+    const prior7 = sumRange(new Date(tomorrow - 14 * day), new Date(tomorrow - 7 * day));
+    const ytd = months.reduce((s, m) => s + tot(m), 0);
+    const bestTot = tot(best);
+    return {
+      isRev,
+      cur,
+      prev,
+      best,
+      now,
+      curDay,
+      daysLeft,
+      proj,
+      vsPrevSameDay: prev ? pct(now, atDay(prev, curDay)) : null,
+      prevSameDay: prev ? atDay(prev, curDay) : 0,
+      projVsPrev: prev ? pct(proj, tot(prev)) : null,
+      prevTotal: tot(prev),
+      bestTotal: bestTot,
+      needPerDay:
+        best && daysLeft > 0 && bestTot > now ? (bestTot - now) / daysLeft : null,
+      runRatePerDay: last7 / 7,
+      momentum: pct(last7, prior7),
+      ytd,
+      avgMonth: months.length ? ytd / months.length : 0,
+    };
+  }, [monthlyRunRate, runRateMetric, orders]);
 
   // ── Users / customer management ────────────────────────────────────────
   // Aggregate every order by phone number one record per customer, with
@@ -9676,7 +10069,12 @@ export default function ManageOrdersPage() {
     const offerDiscount = num("Offer Discount");
     const couponDiscount = num("Coupon Discount");
     const walletApplied = num("Wallet Applied");
-    const isCOD = /cash|cod/i.test(fd.paymentType || "");
+    // Mirrors checkout: plain COD pays the COD fee; the ₹99-advance COD
+    // pays no fee and collects (total − ₹99) at the door; prepaid collects 0.
+    const mode =
+      fd.payMode || payModeOf(fd.paymentType, baseOrder["Advance Paid"]);
+    const advancePaid = mode === "advance";
+    const isCOD = mode === "cod" || advancePaid;
     const preCod =
       subtotal +
       delivery +
@@ -9686,11 +10084,10 @@ export default function ManageOrdersPage() {
       offerDiscount -
       couponDiscount -
       walletApplied;
-    const codFee = isCOD ? getCodFee(Math.max(0, preCod)) : 0;
+    const codFee = mode === "cod" ? getCodFee(Math.max(0, preCod)) : 0;
     const total = Math.max(0, Math.round(preCod + codFee));
     const mrp = num("Total MRP");
     const itemDiscount = mrp > 0 ? Math.max(0, mrp - subtotal) : 0;
-    const advancePaid = /^\s*yes/i.test(String(baseOrder["Advance Paid"] || ""));
     const advanceAmount = advancePaid ? 99 : 0;
     const codCollectible = isCOD ? Math.max(0, total - advanceAmount) : 0;
     return {
@@ -9704,6 +10101,8 @@ export default function ManageOrdersPage() {
       offerDiscount,
       couponDiscount,
       walletApplied,
+      mode,
+      advancePaid,
       isCOD,
       codFee,
       total,
@@ -9724,10 +10123,25 @@ export default function ManageOrdersPage() {
     }
 
     // Recompute the bill from the current inputs so the breakdown columns stay
-    // correct after an edit. The timestamp is intentionally NOT sent — the
-    // Apps Script patches only the given columns in place, so the original
-    // order date (and any column we don't touch) is preserved.
+    // correct after an edit. The Apps Script patches only the given columns,
+    // so anything not listed here is left exactly as checkout wrote it.
     const b = computeEditBreakdown(formData, selectedOrder);
+    const modeDef = PAY_MODES.find((m) => m.k === b.mode) || PAY_MODES[0];
+    // Keep a specific UPI label ("GPay (UPI)") when the mode didn't change.
+    const origMode = payModeOf(
+      selectedOrder["Payment Type"],
+      selectedOrder["Advance Paid"],
+    );
+    const paymentLabel =
+      b.mode === origMode && selectedOrder["Payment Type"]
+        ? selectedOrder["Payment Type"]
+        : modeDef.sheet;
+    // Date only written when it was actually changed.
+    const newDate =
+      formData.orderDateLocal &&
+      formData.orderDateLocal !== formData.origDateLocal
+        ? new Date(formData.orderDateLocal)
+        : null;
     const fields = {
       "Customer Name": formData.customerName,
       "Phone Number": formData.phoneNumber,
@@ -9736,7 +10150,7 @@ export default function ManageOrdersPage() {
       State: formData.state,
       Address: formData.address,
       "Books List": formData.booksList,
-      "Payment Type": formData.paymentType,
+      "Payment Type": paymentLabel,
       "Delivery Type": formData.deliveryType,
       "Order Status": formData.orderStatus,
       "Shipping ID": formData.shippingId,
@@ -9748,7 +10162,19 @@ export default function ManageOrdersPage() {
       "Delivery Charge": String(b.delivery),
       "COD Fee": String(b.codFee),
       "Total Amount": String(b.total),
-      "COD Collectible": String(b.isCOD ? b.codCollectible : b.total),
+      // Same payment columns checkout writes for each method.
+      "Advance Paid": b.advancePaid ? "Yes" : "",
+      "Advance Amount": String(b.advanceAmount),
+      "COD Collectible": String(b.isCOD ? b.codCollectible : 0),
+      ...(newDate && !Number.isNaN(newDate.getTime())
+        ? {
+            Timestamp: formatDateForSheet(newDate),
+            // Only touch "Timestamp (D)" when the row already has that column.
+            ...("Timestamp (D)" in selectedOrder
+              ? { "Timestamp (D)": formatDateForSheet(newDate) }
+              : {}),
+          }
+        : {}),
       ...(b.mrp > 0
         ? { "Total MRP": String(b.mrp), "Item Discount": String(b.itemDiscount) }
         : {}),
@@ -9791,6 +10217,9 @@ export default function ManageOrdersPage() {
       orderStatus: order["Order Status"] || "Processing",
       shippingId: order["Shipping ID"] || "",
       timestamp: order["Timestamp (D)"] || order["Timestamp"] || "",
+      payMode: payModeOf(order["Payment Type"], order["Advance Paid"]),
+      orderDateLocal: toLocalInput(getOrderDate(order)),
+      origDateLocal: toLocalInput(getOrderDate(order)),
     });
     setShowEditModal(true);
   };
@@ -10733,7 +11162,11 @@ export default function ManageOrdersPage() {
                               pendingTracking[orderId]
                                 ? " mo-card-pending-push"
                                 : ""
-                            }${isGiftOrder(order) ? " mo-card-gift" : ""}`}
+                            }${isGiftOrder(order) ? " mo-card-gift" : ""}${
+                              /faster|express/i.test(String(order["Delivery Type"] || ""))
+                                ? " mo-card-speed"
+                                : ""
+                            }`}
                             style={{
                               "--card-accent": isUrgentNoTrack
                                 ? "#dc2626"
@@ -10765,6 +11198,18 @@ export default function ManageOrdersPage() {
                             onPointerLeave={() =>
                               clearTimeout(lpTimer.current)
                             }
+                            // Tap anywhere that isn't a control → open the
+                            // order detail (deep-linked as ?order=ID).
+                            onClick={(e) => {
+                              if (selMode || longPressRef.current) return;
+                              if (
+                                e.target.closest(
+                                  "button, a, input, select, textarea, label, summary, details, [role='button']",
+                                )
+                              )
+                                return;
+                              setDetailOrder(order);
+                            }}
                           >
                             {/* Gift order — flowing confetti decoration across
                                 the whole card (no banner, no QR here). */}
@@ -10785,26 +11230,34 @@ export default function ManageOrdersPage() {
                               const fasterD =
                                 /faster|express/i.test(deliv) ||
                                 /^e/i.test(String(order.shippingId || "").trim());
-                              if (!fasterD) return null;
+                              const giftO = isGiftOrder(order);
+                              if (!fasterD && !giftO) return null;
+                              // Order-type strip: the first thing you read on
+                              // a card that needs different handling.
                               return (
-                                <span
-                                  className="mo-card-faster"
-                                  aria-hidden="true"
-                                >
-                                  <span className="mcf-glow" />
-                                  <span className="mcf-shine" />
-                                </span>
+                                <div className="mo2-ribbon">
+                                  {fasterD && (
+                                    <span className="mo2-tag speed">
+                                      <Truck size={12} /> Speed delivery
+                                    </span>
+                                  )}
+                                  {giftO && (
+                                    <span className="mo2-tag gift">
+                                      <Gift size={12} /> Gift order
+                                    </span>
+                                  )}
+                                </div>
                               );
                             })()}
                             {/* Header — name + phone (left); status + date (right) */}
                             <div
                               className="mo2-head"
                               onClick={(e) => {
+                                // Select mode: the header toggles selection.
+                                // Otherwise the tap bubbles up to open detail.
                                 if (selMode) {
                                   e.stopPropagation();
                                   toggleCardSelect();
-                                } else {
-                                  e.stopPropagation();
                                 }
                               }}
                               style={selMode ? { cursor: "pointer" } : undefined}
@@ -10902,6 +11355,45 @@ export default function ManageOrdersPage() {
                                 </span>
                               </div>
                             </div>
+
+                            {/* Held by India Post — why it usually happens and
+                                what to do. Collapsed to one line until opened. */}
+                            {String(order["Order Status"] || "").toLowerCase() ===
+                              HOLD_STATUS.toLowerCase() && (
+                              <details
+                                className="mo2-hold"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <summary>
+                                  <AlertTriangle size={15} />
+                                  <span>
+                                    <b>On hold by India Post</b>
+                                    <em>Parcel is waiting at the post office</em>
+                                  </span>
+                                  <span className="mo2-hold-why">Why?</span>
+                                </summary>
+                                <div className="mo2-hold-body">
+                                  <p>India Post usually holds a parcel when:</p>
+                                  <ul>
+                                    <li>The address is incomplete, or the pincode doesn&apos;t match the area</li>
+                                    <li>The customer wasn&apos;t reachable, or the door was locked on delivery attempts</li>
+                                    <li>The customer asked the post office to hold it, or refused it</li>
+                                    <li>There&apos;s a COD amount or paperwork query at the delivery office</li>
+                                  </ul>
+                                  <p className="mo2-hold-next">
+                                    <b>Next:</b> call the customer to confirm the
+                                    address and a good time, then ask them to
+                                    collect it from their post office or request
+                                    redelivery
+                                    {order["Shipping ID"]
+                                      ? ` (tracking ${order["Shipping ID"]})`
+                                      : ""}
+                                    . Unclaimed parcels are returned to sender
+                                    after the holding period.
+                                  </p>
+                                </div>
+                              </details>
+                            )}
 
                             <div className="mo2-div" />
 
@@ -12228,6 +12720,16 @@ export default function ManageOrdersPage() {
                         type="button"
                         className="mo-menu-item"
                         onClick={() => {
+                          fireConfetti();
+                          setShowToolsMenu(false);
+                        }}
+                      >
+                        <Gift size={16} /> Celebrate
+                      </button>
+                      <button
+                        type="button"
+                        className="mo-menu-item"
+                        onClick={() => {
                           setShowCalc(true);
                           setShowToolsMenu(false);
                         }}
@@ -12313,1243 +12815,1386 @@ export default function ManageOrdersPage() {
                 moPortalTarget(),
               )}
 
-            {/* Overview stats — one bordered section, grid cells split by lines. */}
-            <div className="an2-stats">
-              <div className="an2-stat s-orders">
-                <div className="an2-stat-ic">
-                  <ShoppingBag size={16} />
-                </div>
-                <div className="an2-stat-body">
-                  <span className="an2-stat-val">{overview.n}</span>
-                  <span className="an2-stat-lbl">Orders</span>
-                  <span className="an2-stat-x">
-                    {overview.delivered} delivered · {overview.cancelled}{" "}
-                    cancelled
-                  </span>
-                </div>
-              </div>
-              <div className="an2-stat s-rev">
-                <div className="an2-stat-ic">
-                  <IndianRupee size={16} />
-                </div>
-                <div className="an2-stat-body">
-                  <span className="an2-stat-val">
-                    ₹{overview.revenue.toLocaleString()}
-                  </span>
-                  <span className="an2-stat-lbl">Revenue</span>
-                  <span className="an2-stat-x">
-                    Avg order ₹{overview.aov.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-              <div className="an2-stat s-cost">
-                <div className="an2-stat-ic">
-                  <Package size={16} />
-                </div>
-                <div className="an2-stat-body">
-                  <span className="an2-stat-val">
-                    ₹{overview.cost.toLocaleString()}
-                  </span>
-                  <span className="an2-stat-lbl">Total cost</span>
-                  <span className="an2-stat-x">
-                    incl. ₹{overview.delivery.toLocaleString()} delivery
-                  </span>
-                </div>
-              </div>
-              <div className="an2-stat s-profit">
-                <div className="an2-stat-ic">
-                  {overview.profit >= 0 ? (
-                    <TrendingUp size={16} />
-                  ) : (
-                    <TrendingDown size={16} />
-                  )}
-                </div>
-                <div className="an2-stat-body">
-                  <span className="an2-stat-val">
-                    {overview.profit >= 0 ? "+" : "−"}₹
-                    {Math.abs(overview.profit).toLocaleString()}
-                  </span>
-                  <span className="an2-stat-lbl">
-                    {overview.profit >= 0 ? "Profit" : "Loss"} ·{" "}
-                    {overview.margin}%
-                  </span>
-                  <span className="an2-stat-x">
-                    Net {netProfit >= 0 ? "+" : "−"}₹
-                    {Math.abs(netProfit).toLocaleString()}
-                  </span>
-                </div>
-              </div>
-              <div className="an2-stat s-units">
-                <div className="an2-stat-ic">
-                  <BarChart3 size={16} />
-                </div>
-                <div className="an2-stat-body">
-                  <span className="an2-stat-val">{overview.units}</span>
-                  <span className="an2-stat-lbl">Books sold</span>
-                  <span className="an2-stat-x">
-                    across {overview.n} orders
-                  </span>
-                </div>
-              </div>
-              <div className="an2-stat s-wallet">
-                <div className="an2-stat-ic">
-                  <Wallet size={16} />
-                </div>
-                <div className="an2-stat-body">
-                  <span className="an2-stat-val">
-                    ₹{walletUsers.total.toLocaleString()}
-                  </span>
-                  <span className="an2-stat-lbl">Wallet outstanding</span>
-                  <span className="an2-stat-x">
-                    {walletUsers.count} customer
-                    {walletUsers.count === 1 ? "" : "s"} hold balance
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Projections & run rate */}
-            <An2Section
-              title="Projections & run rate"
-              sub={
-                projection.hasForecast
-                  ? `Current pace projected to the full ${
-                      analyticsPeriod === "week"
-                        ? "week"
-                        : analyticsPeriod === "year"
-                          ? "year"
-                          : "month"
-                    }`
-                  : "Observed sales pace for this period"
-              }
-              right={
-                <span className="an2-card-total">
-                  ₹{projection.revPerDay.toLocaleString()}/day
-                </span>
-              }
-            >
-              <div className="an2-proj-tiles">
-                <div className="an2-proj-tile">
-                  <span className="an2-proj-lbl">Run rate</span>
-                  <strong className="an2-proj-val">
-                    ₹{projection.revPerDay.toLocaleString()}
-                    <small>/day</small>
-                  </strong>
-                  <span className="an2-proj-x">
-                    {projection.ordPerDay} orders/day
-                  </span>
-                </div>
-                <div className="an2-proj-tile">
-                  <span className="an2-proj-lbl">So far</span>
-                  <strong className="an2-proj-val">
-                    ₹{projection.actualRev.toLocaleString()}
-                  </strong>
-                  <span className="an2-proj-x">
-                    {overview.n} orders · day {projection.elapsedDays}/
-                    {projection.totalDays}
-                  </span>
-                </div>
-                <div className="an2-proj-tile hot">
-                  <span className="an2-proj-lbl">
-                    Projected{" "}
-                    {analyticsPeriod === "week"
-                      ? "week"
-                      : analyticsPeriod === "year"
-                        ? "year"
-                        : analyticsPeriod === "month"
-                          ? "month"
-                          : "total"}
-                  </span>
-                  <strong className="an2-proj-val hot">
-                    ₹{projection.projectedRev.toLocaleString()}
-                  </strong>
-                  <span className="an2-proj-x">
-                    ~{projection.projectedOrders} orders
-                    {projection.hasForecast
-                      ? ` · ${projection.daysLeft} day${projection.daysLeft === 1 ? "" : "s"} left`
-                      : " · final"}
-                  </span>
-                </div>
-              </div>
-              {projection.hasForecast && (
-                <div className="an2-proj-prog">
-                  <div className="an2-proj-prog-head">
-                    <span>
-                      Achieved {projection.progressPct}% of projection
-                    </span>
-                    <span>
-                      ₹{projection.actualRev.toLocaleString()} / ₹
-                      {projection.projectedRev.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="an2-proj-bar">
-                    <div
-                      className="an2-proj-fill"
-                      style={{ width: `${projection.progressPct}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-            </An2Section>
-
-            {/* Orders by status — count, value & payment split */}
-            <An2Section
-              title="Orders by status"
-              sub="Where every order stands — value & COD/UPI split"
-              right={
-                <span className="an2-card-total">{breakdownTotals.count}</span>
-              }
-            >
-              <div className="an2-status-list">
-                {statusBreakdown.length === 0 && (
-                  <div className="an2-bp-empty">No orders in this period.</div>
-                )}
-                {statusBreakdown.map((s) => (
-                  <div
-                    className={`an2-status-row${/pending/i.test(s.key) ? " pending" : ""}`}
-                    key={s.key}
+            <An2Group
+              step="1"
+              title="Pulse"
+              sub="This month's pace, where it lands, and the period at a glance">
+              {/* Monthly run rate — one line per month, plotted by day-of-month */}
+              <An2Section
+                title={`Monthly run rate · ${monthlyRunRate.year}`}
+                sub={`Cumulative ${
+                  runRateMetric === "revenue" ? "revenue" : "orders"
+                } by day of month · dashed = forecast`}
+              >
+                {/* Orders / revenue — drives both the insights and the chart. */}
+                <div className="an2-mrr-tabs" role="tablist">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={runRateMetric !== "revenue"}
+                    className={`an2-mrr-tab${runRateMetric !== "revenue" ? " on" : ""}`}
+                    onClick={() => setRunRateMetric("orders")}
                   >
-                    <span
-                      className="an2-status-dot"
-                      style={{ background: s.color }}
-                    />
-                    <div className="an2-status-main">
-                      <span className="an2-status-name">{s.key}</span>
-                      <span className="an2-status-split">
-                        {s.cod} COD · ₹{Math.round(s.codVal).toLocaleString()}
-                        <span className="an2-status-sep">|</span>
-                        {s.upi} UPI · ₹{Math.round(s.upiVal).toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="an2-status-nums">
-                      <span className="an2-status-count">
-                        {s.count} order{s.count === 1 ? "" : "s"}
-                      </span>
-                      <span className="an2-status-val">
-                        ₹{Math.round(s.value).toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </An2Section>
-
-            {/* Total orders bar chart */}
-            <An2Section
-              title="Total orders"
-              sub={
-                analyticsPeriod === "year" || analyticsPeriod === "all"
-                  ? "By month"
-                  : analyticsPeriod === "week"
-                    ? "By day of week"
-                    : "By date"
-              }
-              right={
-                <span className="an2-total-wrap">
-                  <span className="an2-today-badge">Today</span>
-                  <span className="an2-card-total">{overview.n}</span>
-                </span>
-              }
-            >
-              {(() => {
-                const max = Math.max(1, ...ordersBar.map((b) => b.count));
-                const todayBar = ordersBar.find((b) => b.isToday);
-                const todayN = todayBar?.count || 0;
-                const todayRev = Math.round(todayBar?.revenue || 0);
-                return (
-                  <>
-                    <div className="an2-today-row">
-                      <span className="an2-today-k">Today</span>
-                      <span className="an2-today-v">
-                        <b>{todayN}</b> order{todayN === 1 ? "" : "s"}
-                      </span>
-                      <span className="an2-today-dot" />
-                      <span className="an2-today-v">
-                        <b>₹{todayRev.toLocaleString("en-IN")}</b> revenue
-                      </span>
-                    </div>
-                  <div
-                    className={`an2-bars${ordersBar.length > 16 ? " scroll" : ""}`}
+                    Orders
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={runRateMetric === "revenue"}
+                    className={`an2-mrr-tab${runRateMetric === "revenue" ? " on" : ""}`}
+                    onClick={() => setRunRateMetric("revenue")}
                   >
-                    {ordersBar.map((b, i) => (
-                      <div
-                        className={`an2-bar-col${b.isToday ? " today" : ""}`}
-                        key={i}
-                        ref={b.isToday ? centerTodayRef : undefined}
-                      >
-                        <span className="an2-bar-cap">
-                          {b.count || ""}
-                          {b.revenue > 0 && (
-                            <span className="an2-bar-rev">
-                              ₹
-                              {b.revenue >= 1000
-                                ? `${(b.revenue / 1000).toFixed(1)}k`
-                                : Math.round(b.revenue)}
+                    Revenue
+                  </button>
+                </div>
+                {/* Insights first: the questions an owner asks of this chart,
+                    answered in words — ahead or behind, where it lands, what a
+                    record takes, and which way it is trending. */}
+                {runInsights &&
+                  (() => {
+                    const r = runInsights;
+                    const f = (n) =>
+                      r.isRev
+                        ? `₹${Math.round(n).toLocaleString("en-IN")}`
+                        : Math.round(n).toLocaleString("en-IN");
+                    const fd = (n) =>
+                      r.isRev
+                        ? `₹${Math.round(n).toLocaleString("en-IN")}/day`
+                        : `${(Math.round(n * 10) / 10).toLocaleString("en-IN")}/day`;
+                    const tone = (n) => (n == null || n === 0 ? "" : n > 0 ? " up" : " down");
+                    const sign = (n) => (n > 0 ? "+" : n < 0 ? "−" : "±");
+                    const unit = r.isRev ? "revenue" : "orders";
+                    let headline;
+                    if (r.vsPrevSameDay == null) {
+                      headline = `${r.cur.label}: ${f(r.now)} ${unit} in ${r.curDay} days, heading for about ${f(r.proj)}.`;
+                    } else {
+                      headline = `${r.cur.label} is ${Math.abs(r.vsPrevSameDay)}% ${r.vsPrevSameDay >= 0 ? "ahead of" : "behind"} ${r.prev.label} at day ${r.curDay} and on track for about ${f(r.proj)} ${unit}.`;
+                    }
+                    return (
+                      <div className="rr-ins">
+                        <p className="rr-ins-head">{headline}</p>
+                        <div className="rr-ins-grid">
+                          <div className="rr-ins-tile">
+                            <span className="rr-ins-k">So far · day {r.curDay}</span>
+                            <span className="rr-ins-v">{f(r.now)}</span>
+                            {r.vsPrevSameDay != null && (
+                              <span className={`rr-ins-x${tone(r.vsPrevSameDay)}`}>
+                                {sign(r.vsPrevSameDay)}
+                                {Math.abs(r.vsPrevSameDay)}% vs {r.prev.label} ({f(r.prevSameDay)})
+                              </span>
+                            )}
+                          </div>
+                          <div className="rr-ins-tile">
+                            <span className="rr-ins-k">Projected month-end</span>
+                            <span className="rr-ins-v">{f(r.proj)}</span>
+                            {r.projVsPrev != null && (
+                              <span className={`rr-ins-x${tone(r.projVsPrev)}`}>
+                                {sign(r.projVsPrev)}
+                                {Math.abs(r.projVsPrev)}% vs {r.prev.label} total {f(r.prevTotal)}
+                              </span>
+                            )}
+                          </div>
+                          <div className="rr-ins-tile">
+                            <span className="rr-ins-k">
+                              {r.best ? `Beat best month (${r.best.label})` : "Best month"}
                             </span>
-                          )}
-                        </span>
-                        <div className="an2-bar-track">
-                          <div
-                            className="an2-bar an2-bar-grad"
-                            style={{ height: `${(b.count / max) * 100}%` }}
-                            data-tip={`${b.label}${b.sub ? " " + b.sub : ""}: ${b.count} order${b.count === 1 ? "" : "s"} · ₹${Math.round(b.revenue).toLocaleString("en-IN")}`}
-                          />
+                            {r.best && r.now >= r.bestTotal ? (
+                              <>
+                                <span className="rr-ins-v">Record 🎉</span>
+                                <span className="rr-ins-x up">
+                                  Already past {f(r.bestTotal)}
+                                </span>
+                              </>
+                            ) : r.needPerDay != null ? (
+                              <>
+                                <span className="rr-ins-v">{fd(r.needPerDay)}</span>
+                                <span
+                                  className={`rr-ins-x${r.runRatePerDay >= r.needPerDay ? " up" : " down"}`}
+                                >
+                                  needed for {r.daysLeft} day{r.daysLeft === 1 ? "" : "s"} · now{" "}
+                                  {fd(r.runRatePerDay)}
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <span className="rr-ins-v">{f(r.bestTotal)}</span>
+                                <span className="rr-ins-x">to beat</span>
+                              </>
+                            )}
+                          </div>
+                          <div className="rr-ins-tile">
+                            <span className="rr-ins-k">Momentum · last 7 days</span>
+                            <span className="rr-ins-v">{fd(r.runRatePerDay)}</span>
+                            {r.momentum != null && (
+                              <span className={`rr-ins-x${tone(r.momentum)}`}>
+                                {sign(r.momentum)}
+                                {Math.abs(r.momentum)}% vs the 7 days before
+                              </span>
+                            )}
+                          </div>
+                          <div className="rr-ins-tile">
+                            <span className="rr-ins-k">Year to date</span>
+                            <span className="rr-ins-v">{f(r.ytd)}</span>
+                            <span className="rr-ins-x">
+                              avg {f(r.avgMonth)} / month
+                            </span>
+                          </div>
                         </div>
-                        <span className="an2-bar-x">{b.label}</span>
-                        {b.sub ? (
-                          <span className="an2-bar-xsub">{b.sub}</span>
-                        ) : null}
                       </div>
-                    ))}
-                    </div>
-                  </>
-                );
-              })()}
-            </An2Section>
-
-            {/* Orders by weekday */}
-            <An2Section
-              title="Orders by weekday"
-              sub={`Which days bring the most orders this ${analyticsPeriod}`}
-            >
-              {(() => {
-                const max = Math.max(1, ...weekdayData.map((b) => b.count));
-                const busiest = weekdayData.reduce(
-                  (a, b) => (b.count > a.count ? b : a),
-                  weekdayData[0],
-                );
-                return (
-                  <div className="an2-bars">
-                    {weekdayData.map((b, i) => (
-                      <div className="an2-bar-col" key={i}>
-                        <span className="an2-bar-cap">{b.count || ""}</span>
-                        <div className="an2-bar-track">
-                          <div
-                            className={`an2-bar an2-bar-wd${b.label === busiest.label && busiest.count > 0 ? " peak" : ""}`}
-                            style={{ height: `${(b.count / max) * 100}%` }}
-                            data-tip={`${b.label}: ${b.count} order${b.count === 1 ? "" : "s"}`}
-                          />
-                        </div>
-                        <span className="an2-bar-x">{b.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </An2Section>
-
-            {/* Monthly run rate — one line per month, plotted by day-of-month */}
-            <An2Section
-              title={`Monthly run rate · ${monthlyRunRate.year}`}
-              sub={`Cumulative ${
-                runRateMetric === "revenue" ? "revenue" : "orders"
-              } by day — one line per month · dashed = forecast for the rest of this month`}
-            >
-              {(() => {
-                const { months, max, maxRev, year } = monthlyRunRate;
-                const isRev = runRateMetric === "revenue";
-                const maxV = isRev ? maxRev : max;
-                const valOf = (p) => (isRev ? p.rev : p.value);
-                const totOf = (m) => (isRev ? m.totalRev : m.total);
-                const fmtV = (v) =>
-                  isRev ? `₹${Number(v).toLocaleString("en-IN")}` : v;
-                const W = 700;
-                const H = 220;
-                const padL = 6;
-                const padR = 6;
-                const padT = 12;
-                const padB = 8;
-                const iW = W - padL - padR;
-                const iH = H - padT - padB;
-                const xOf = (day) => padL + iW * ((day - 1) / 30);
-                const yOf = (v) => padT + iH - (v / maxV) * iH;
-                const linePath = (pts) =>
-                  pts
-                    .map(
-                      (p, i) =>
-                        `${i === 0 ? "M" : "L"}${xOf(p.day)},${yOf(valOf(p))}`,
-                    )
-                    .join(" ");
-                const cur = months.find((m) => m.isCurrent);
-                let blink = null;
-                if (cur && cur.pts.length) {
-                  const last = cur.pts[cur.pts.length - 1];
-                  blink = {
-                    leftPct: (xOf(last.day) / W) * 100,
-                    topPct: (yOf(valOf(last)) / H) * 100,
-                    color: cur.color,
-                  };
-                }
-                const hoverDay = mrrTip?.day;
-                const hoverRows = hoverDay
-                  ? months
-                      .map((m) => {
-                        const p = m.pts.find((pt) => pt.day === hoverDay);
-                        return p
-                          ? { label: m.label, color: m.color, value: valOf(p) }
-                          : null;
-                      })
-                      .filter(Boolean)
-                      .sort((a, b) => b.value - a.value)
-                  : [];
-                if (!months.length)
+                    );
+                  })()}
+                {(() => {
+                  const { months, max, maxRev, year } = monthlyRunRate;
+                  const isRev = runRateMetric === "revenue";
+                  const maxV = isRev ? maxRev : max;
+                  const valOf = (p) => (isRev ? p.rev : p.value);
+                  const totOf = (m) => (isRev ? m.totalRev : m.total);
+                  const fmtV = (v) =>
+                    isRev ? `₹${Number(v).toLocaleString("en-IN")}` : v;
+                  const W = 700;
+                  const H = 220;
+                  const padL = 6;
+                  const padR = 6;
+                  const padT = 12;
+                  const padB = 8;
+                  const iW = W - padL - padR;
+                  const iH = H - padT - padB;
+                  const xOf = (day) => padL + iW * ((day - 1) / 30);
+                  const yOf = (v) => padT + iH - (v / maxV) * iH;
+                  const linePath = (pts) =>
+                    pts
+                      .map(
+                        (p, i) =>
+                          `${i === 0 ? "M" : "L"}${xOf(p.day)},${yOf(valOf(p))}`,
+                      )
+                      .join(" ");
+                  const cur = months.find((m) => m.isCurrent);
+                  let blink = null;
+                  if (cur && cur.pts.length) {
+                    const last = cur.pts[cur.pts.length - 1];
+                    blink = {
+                      leftPct: (xOf(last.day) / W) * 100,
+                      topPct: (yOf(valOf(last)) / H) * 100,
+                      color: cur.color,
+                    };
+                  }
+                  const hoverDay = mrrTip?.day;
+                  const hoverRows = hoverDay
+                    ? months
+                        .map((m) => {
+                          const p = m.pts.find((pt) => pt.day === hoverDay);
+                          return p
+                            ? { label: m.label, color: m.color, value: valOf(p) }
+                            : null;
+                        })
+                        .filter(Boolean)
+                        .sort((a, b) => b.value - a.value)
+                    : [];
+                  if (!months.length)
+                    return (
+                      <p className="an2-bp-empty">No orders yet this year.</p>
+                    );
                   return (
-                    <p className="an2-bp-empty">No orders yet this year.</p>
-                  );
-                return (
-                  <>
-                    <div className="an2-mrr-tabs" role="tablist">
-                      <button
-                        type="button"
-                        role="tab"
-                        aria-selected={!isRev}
-                        className={`an2-mrr-tab${!isRev ? " on" : ""}`}
-                        onClick={() => setRunRateMetric("orders")}
+                    <>
+                      <div
+                        className="an2-mrr"
+                        ref={mrrRef}
+                        onMouseMove={onMrrMove}
+                        onMouseLeave={onMrrLeave}
                       >
-                        Orders
-                      </button>
-                      <button
-                        type="button"
-                        role="tab"
-                        aria-selected={isRev}
-                        className={`an2-mrr-tab${isRev ? " on" : ""}`}
-                        onClick={() => setRunRateMetric("revenue")}
-                      >
-                        Revenue
-                      </button>
-                    </div>
-                    <div
-                      className="an2-mrr"
-                      ref={mrrRef}
-                      onMouseMove={onMrrMove}
-                      onMouseLeave={onMrrLeave}
-                    >
-                      <svg
-                        className="an2-mrr-svg"
-                        viewBox={`0 0 ${W} ${H}`}
-                        preserveAspectRatio="none"
-                        role="img"
-                        aria-label="Monthly run-rate lines"
-                      >
-                        {hoverDay && (
-                          <line
-                            x1={xOf(hoverDay)}
-                            y1={padT}
-                            x2={xOf(hoverDay)}
-                            y2={padT + iH}
-                            stroke="var(--dark-20, #cbd5e1)"
-                            strokeWidth="1"
-                            strokeDasharray="3 3"
-                            vectorEffect="non-scaling-stroke"
-                          />
-                        )}
-                        {months.map((m) => (
-                          <path
-                            key={m.month}
-                            d={linePath(m.pts)}
-                            fill="none"
-                            stroke={m.color}
-                            strokeWidth="2"
-                            vectorEffect="non-scaling-stroke"
-                            strokeLinejoin="round"
-                            strokeLinecap="round"
-                            opacity={
-                              hoverDay
-                                ? m.pts.some((p) => p.day === hoverDay)
-                                  ? 1
-                                  : 0.25
-                                : 0.9
-                            }
-                          />
-                        ))}
-                        {/* Dashed forecast for the rest of the current month */}
-                        {months
-                          .filter((m) => m.predicted && m.predicted.length > 1)
-                          .map((m) => (
+                        <svg
+                          className="an2-mrr-svg"
+                          viewBox={`0 0 ${W} ${H}`}
+                          preserveAspectRatio="none"
+                          role="img"
+                          aria-label="Monthly run-rate lines"
+                        >
+                          {hoverDay && (
+                            <line
+                              x1={xOf(hoverDay)}
+                              y1={padT}
+                              x2={xOf(hoverDay)}
+                              y2={padT + iH}
+                              stroke="var(--dark-20, #cbd5e1)"
+                              strokeWidth="1"
+                              strokeDasharray="3 3"
+                              vectorEffect="non-scaling-stroke"
+                            />
+                          )}
+                          {months.map((m) => (
                             <path
-                              key={`pred-${m.month}`}
-                              d={linePath(m.predicted)}
+                              key={m.month}
+                              d={linePath(m.pts)}
                               fill="none"
                               stroke={m.color}
                               strokeWidth="2"
-                              strokeDasharray="5 5"
                               vectorEffect="non-scaling-stroke"
                               strokeLinejoin="round"
                               strokeLinecap="round"
-                              opacity={hoverDay ? 0.25 : 0.55}
+                              opacity={
+                                hoverDay
+                                  ? m.pts.some((p) => p.day === hoverDay)
+                                    ? 1
+                                    : 0.25
+                                  : 0.9
+                              }
                             />
                           ))}
-                      </svg>
-
-                      {blink && (
-                        <span
-                          className="an2-mrr-blink"
-                          style={{
-                            left: `${blink.leftPct}%`,
-                            top: `${blink.topPct}%`,
-                            "--bc": blink.color,
-                          }}
-                          title="Today"
-                        />
-                      )}
-
-                      {hoverDay && hoverRows.length > 0 && (
-                        <div className="an2-mrr-tip" style={{ left: mrrTip.x }}>
-                          <div className="an2-mrr-tip-day">
-                            Day {hoverDay} · {year}
-                          </div>
-                          {hoverRows.map((r) => (
-                            <div className="an2-mrr-tip-row" key={r.label}>
-                              <i
-                                className="an2-mrr-tip-dot"
-                                style={{ background: r.color }}
+                          {/* Dashed forecast for the rest of the current month */}
+                          {months
+                            .filter((m) => m.predicted && m.predicted.length > 1)
+                            .map((m) => (
+                              <path
+                                key={`pred-${m.month}`}
+                                d={linePath(m.predicted)}
+                                fill="none"
+                                stroke={m.color}
+                                strokeWidth="2"
+                                strokeDasharray="5 5"
+                                vectorEffect="non-scaling-stroke"
+                                strokeLinejoin="round"
+                                strokeLinecap="round"
+                                opacity={hoverDay ? 0.25 : 0.55}
                               />
-                              <span className="an2-mrr-tip-m">{r.label}</span>
-                              <span className="an2-mrr-tip-v">
-                                {fmtV(r.value)}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                            ))}
+                        </svg>
 
-                    <div className="an2-mrr-x">
-                      {[1, 5, 10, 15, 20, 25, 31].map((d) => (
-                        <span key={d}>{d}</span>
-                      ))}
-                    </div>
-
-                    <div className="an2-mrr-legend">
-                      {months.map((m) => (
-                        <span className="an2-mrr-leg" key={m.month}>
-                          <i style={{ background: m.color }} />
-                          {m.label}
-                          <b>{fmtV(totOf(m))}</b>
-                          {m.isCurrent && (
-                            <span className="an2-mrr-leg-live">live</span>
-                          )}
-                        </span>
-                      ))}
-                    </div>
-                  </>
-                );
-              })()}
-            </An2Section>
-
-            {/* Profit / cost per day */}
-            <An2Section
-              title="Profit & cost by day"
-              sub={`Cost vs profit for each day${analyticsPeriod === "year" ? " of the chosen month" : ""}`}
-              right={
-                <div className="an2-pnl-right">
-                  <span className="an2-today-badge">Today</span>
-                  <div className="an2-legend">
-                    <span className="an2-leg">
-                      <i className="an2-dot d-cost" /> Cost
-                    </span>
-                    <span className="an2-leg">
-                      <i className="an2-dot d-profit" /> Profit
-                    </span>
-                    <span className="an2-leg">
-                      <i className="an2-dot d-loss" /> Loss
-                    </span>
-                  </div>
-                  {analyticsPeriod === "year" && (
-                    <div
-                      className="admin-select-wrap an2-month-sel"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <select
-                        className="admin-select"
-                        value={pnlMonth}
-                        onChange={(e) => setPnlMonth(Number(e.target.value))}
-                      >
-                        {MONTH_LABELS.map((m, i) => (
-                          <option key={i} value={i}>
-                            {m}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </div>
-              }
-            >
-              {(() => {
-                const posMax = Math.max(
-                  1,
-                  ...pnlDays.map((d) =>
-                    Math.max(d.cost, d.profit > 0 ? d.profit : 0),
-                  ),
-                );
-                const negMax = Math.max(
-                  1,
-                  ...pnlDays.map((d) => (d.profit < 0 ? -d.profit : 0)),
-                );
-                const hasLoss = pnlDays.some((d) => d.profit < 0);
-                const todayPnl = pnlDays.find((d) => d.isToday);
-                const tCost = Math.round(todayPnl?.cost || 0);
-                const tProfit = Math.round(todayPnl?.profit || 0);
-                return (
-                  <>
-                    <div className="an2-today-row">
-                      <span className="an2-today-k">Today</span>
-                      <span className="an2-today-v">
-                        Cost <b>₹{tCost.toLocaleString("en-IN")}</b>
-                      </span>
-                      <span className="an2-today-dot" />
-                      <span className="an2-today-v">
-                        {tProfit >= 0 ? "Profit" : "Loss"}{" "}
-                        <b className={tProfit >= 0 ? "pc-pos" : "pc-neg"}>
-                          ₹{Math.abs(tProfit).toLocaleString("en-IN")}
-                        </b>
-                      </span>
-                    </div>
-                  <div
-                    className={`an2-pnl${pnlDays.length > 14 ? " scroll" : ""}`}
-                  >
-                    {pnlDays.map((d) => (
-                      <div
-                        className={`an2-pnl-col${d.isToday ? " today" : ""}`}
-                        key={d.key}
-                        ref={d.isToday ? centerTodayRef : undefined}
-                      >
-                        <div className="an2-pnl-pos">
-                          <div
-                            className="an2-pnl-bar b-cost"
-                            style={{ height: `${(d.cost / posMax) * 100}%` }}
-                            data-tip={`${d.wd} ${d.day} · Cost ₹${Math.round(d.cost).toLocaleString()}`}
-                          />
-                          <div
-                            className="an2-pnl-bar b-profit"
+                        {blink && (
+                          <span
+                            className="an2-mrr-blink"
                             style={{
-                              height: `${((d.profit > 0 ? d.profit : 0) / posMax) * 100}%`,
+                              left: `${blink.leftPct}%`,
+                              top: `${blink.topPct}%`,
+                              "--bc": blink.color,
                             }}
-                            data-tip={`${d.wd} ${d.day} · Profit ₹${Math.round(d.profit).toLocaleString()}`}
+                            title="Today"
                           />
-                        </div>
-                        {hasLoss && (
-                          <div className="an2-pnl-neg">
-                            <div
-                              className="an2-pnl-bar b-loss"
-                              style={{
-                                height: `${((d.profit < 0 ? -d.profit : 0) / negMax) * 100}%`,
-                              }}
-                              data-tip={`${d.wd} ${d.day} · Loss ₹${Math.round(-d.profit).toLocaleString()}`}
-                            />
+                        )}
+
+                        {hoverDay && hoverRows.length > 0 && (
+                          <div className="an2-mrr-tip" style={{ left: mrrTip.x }}>
+                            <div className="an2-mrr-tip-day">
+                              Day {hoverDay} · {year}
+                            </div>
+                            {hoverRows.map((r) => (
+                              <div className="an2-mrr-tip-row" key={r.label}>
+                                <i
+                                  className="an2-mrr-tip-dot"
+                                  style={{ background: r.color }}
+                                />
+                                <span className="an2-mrr-tip-m">{r.label}</span>
+                                <span className="an2-mrr-tip-v">
+                                  {fmtV(r.value)}
+                                </span>
+                              </div>
+                            ))}
                           </div>
                         )}
-                        <span className="an2-pnl-x">{d.day}</span>
-                        <span className="an2-pnl-xsub">{d.wd}</span>
                       </div>
-                    ))}
-                    </div>
-                  </>
-                );
-              })()}
-            </An2Section>
 
-            {/* Delivery & India Post weight slabs */}
-            <An2Section
-              title="Delivery & India Post"
-              sub="Postage by weight slab for this period"
-              right={
-                <span className="an2-card-total">
-                  ₹{totalDeliveryCost.toLocaleString()}
-                </span>
-              }
-            >
-              <div className="an2-bp-sum">
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Total weight</span>
-                  <strong className="an2-bp-sc-v">
-                    {(totalWeight / 1000).toFixed(2)} kg
-                  </strong>
-                </div>
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Postage cost</span>
-                  <strong className="an2-bp-sc-v v-cost">
-                    ₹{totalDeliveryCost.toLocaleString()}
-                  </strong>
-                </div>
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Avg / order</span>
-                  <strong className="an2-bp-sc-v">
-                    ₹{avgDeliveryCost.toLocaleString()}
-                  </strong>
-                </div>
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Orders</span>
-                  <strong className="an2-bp-sc-v">{overview.n}</strong>
-                </div>
-              </div>
-              <div className="an2-slabs">
-                {deliverySlabs.map((s) => (
-                  <div className="an2-slab" key={s.label}>
-                    <span className="an2-slab-l">
-                      {s.label} · ₹{s.rate}
-                    </span>
-                    <div className="an2-slab-track">
-                      <div
-                        className="an2-slab-fill"
-                        style={{ width: `${(s.count / maxSlabCount) * 100}%` }}
-                        data-tip={`${s.label} @ ₹${s.rate}: ${s.count} order${s.count === 1 ? "" : "s"} · ₹${s.amount.toLocaleString()}`}
-                      />
-                    </div>
-                    <span className="an2-slab-c">
-                      {s.count} order{s.count === 1 ? "" : "s"} · ₹
-                      {s.amount.toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </An2Section>
-
-            {/* Orders by time of day (6-hour quadrants) */}
-            <An2Section
-              title="Orders by time of day"
-              sub="When customers place orders (6-hour blocks)"
-            >
-              {(() => {
-                const max = Math.max(1, ...quadrantData.map((q) => q.count));
-                return (
-                  <div className="an2-quads">
-                    {quadrantData.map((q, i) => (
-                      <div className="an2-quad" key={i}>
-                        <div className="an2-quad-track">
-                          <div
-                            className="an2-quad-bar"
-                            style={{ height: `${(q.count / max) * 100}%` }}
-                            data-tip={`${q.label} · ${q.tag}: ${q.count} order${q.count === 1 ? "" : "s"}`}
-                          >
-                            <span className="an2-quad-num">{q.count}</span>
-                          </div>
-                        </div>
-                        <span className="an2-quad-lbl">{q.label}</span>
-                        <span className="an2-quad-tag">{q.tag}</span>
+                      <div className="an2-mrr-x">
+                        {[1, 5, 10, 15, 20, 25, 31].map((d) => (
+                          <span key={d}>{d}</span>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </An2Section>
 
-            {/* Book profitability */}
-            <An2Section
-              title="Book profitability"
-              sub={`Per-title quantity, cost and profit for this ${analyticsPeriod}`}
-              right={
-                <span className="an2-card-total">{bookStats.rows.length}</span>
-              }
-            >
-              <div className="an2-bp-sum">
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Books sold</span>
-                  <strong className="an2-bp-sc-v">
-                    {bookStats.totals.qty}
-                  </strong>
-                </div>
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Revenue</span>
-                  <strong className="an2-bp-sc-v v-rev">
-                    ₹{bookStats.totals.revenue.toLocaleString()}
-                  </strong>
-                </div>
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Goods cost</span>
-                  <strong className="an2-bp-sc-v v-cost">
-                    ₹{bookStats.totals.cost.toLocaleString()}
-                  </strong>
-                </div>
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Net profit</span>
-                  <strong
-                    className={`an2-bp-sc-v ${bookStats.totals.profit >= 0 ? "v-pos" : "v-neg"}`}
-                  >
-                    {bookStats.totals.profit >= 0 ? "+" : "−"}₹
-                    {Math.abs(bookStats.totals.profit).toLocaleString()}
-                  </strong>
-                </div>
-              </div>
-              <div className="an2-bp-scroll">
-                <table className="an2-bp-table">
-                  <thead>
-                    <tr>
-                      <th>Book</th>
-                      <th className="ta-r">Qty</th>
-                      <th className="ta-r">Revenue</th>
-                      <th className="ta-r">Cost</th>
-                      <th className="ta-r">Profit / loss</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {bookStats.rows.length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="an2-bp-empty">
-                          No book sales in this period.
-                        </td>
-                      </tr>
-                    )}
-                    {(bpShowAll
-                      ? bookStats.rows
-                      : bookStats.rows.slice(0, 10)
-                    ).map((r) => (
-                      <tr key={r.name}>
-                        <td>
-                          <span className="an2-bp-name">{r.name}</span>
-                          {!r.matched && (
-                            <span
-                              className="an2-bp-warn"
-                              title="No catalogue cost — profit assumes ₹0 cost"
-                            >
-                              cost?
-                            </span>
-                          )}
-                        </td>
-                        <td className="ta-r">{r.qty}</td>
-                        <td className="ta-r">
-                          ₹{Math.round(r.revenue).toLocaleString()}
-                        </td>
-                        <td className="ta-r">
-                          ₹{Math.round(r.cost).toLocaleString()}
-                        </td>
-                        <td
-                          className={`ta-r an2-bp-p ${r.profit >= 0 ? "v-pos" : "v-neg"}`}
-                        >
-                          {r.profit >= 0 ? "+" : "−"}₹
-                          {Math.abs(Math.round(r.profit)).toLocaleString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {bookStats.rows.length > 10 && (
-                <button
-                  type="button"
-                  className="an2-bp-more"
-                  onClick={() => setBpShowAll((v) => !v)}
-                >
-                  {bpShowAll
-                    ? "Show top 10"
-                    : `Load ${bookStats.rows.length - 10} more`}
-                </button>
-              )}
-            </An2Section>
-
-            {/* Payment mix + customers */}
-            <div className="an2-grid2">
-              <An2Section title="Payment mix" sub="COD · ₹99 paid · online (UPI)">
-                {(() => {
-                  const codPure = Math.max(0, overview.codN - overview.advN);
-                  const adv = overview.advN;
-                  const upi = overview.upiN;
-                  const tot = codPure + adv + upi || 1;
-                  const pct = (x) => Math.round((x / tot) * 100);
-                  return (
-                    <>
-                      <div className="an2-mix-bar">
-                        <div
-                          className="an2-mix-seg seg-cod"
-                          style={{ width: `${pct(codPure)}%` }}
-                        />
-                        <div
-                          className="an2-mix-seg seg-adv"
-                          style={{ width: `${pct(adv)}%` }}
-                        />
-                        <div
-                          className="an2-mix-seg seg-upi"
-                          style={{ width: `${pct(upi)}%` }}
-                        />
-                      </div>
-                      <div className="an2-mix-legend">
-                        <span className="an2-leg">
-                          <i className="an2-dot d-cod" /> COD · {codPure} (
-                          {pct(codPure)}%)
-                        </span>
-                        <span className="an2-leg">
-                          <i className="an2-dot d-adv" /> ₹99 paid · {adv} (
-                          {pct(adv)}%)
-                        </span>
-                        <span className="an2-leg">
-                          <i className="an2-dot d-upi" /> UPI · {upi} ({pct(upi)}
-                          %)
-                        </span>
+                      <div className="an2-mrr-legend">
+                        {months.map((m) => (
+                          <span className="an2-mrr-leg" key={m.month}>
+                            <i style={{ background: m.color }} />
+                            {m.label}
+                            <b>{fmtV(totOf(m))}</b>
+                            {m.isCurrent && (
+                              <span className="an2-mrr-leg-live">live</span>
+                            )}
+                          </span>
+                        ))}
                       </div>
                     </>
                   );
                 })()}
               </An2Section>
 
-              <An2Section
-                title="Customers"
-                sub={`Reach & loyalty this ${analyticsPeriod}`}
-              >
-                <div className="an2-cust">
-                  <div className="an2-cust-item">
-                    <span className="an2-cust-num">
-                      {insights.uniqueCustomers}
-                    </span>
-                    <span className="an2-cust-lbl">Unique customers</span>
-                  </div>
-                  <div className="an2-cust-item">
-                    <span className="an2-cust-num">{insights.repeat}</span>
-                    <span className="an2-cust-lbl">Repeat buyers</span>
-                  </div>
-                  <div className="an2-cust-item">
-                    <span className="an2-cust-num">{insights.repeatPct}%</span>
-                    <span className="an2-cust-lbl">Repeat rate</span>
-                  </div>
-                </div>
-              </An2Section>
-            </div>
-
-            {/* Top books + revenue by category */}
-            <div className="an2-grid2">
-              <An2Section title="Top-selling books" sub="By units sold">
-                <HBars
-                  items={insights.topBooks.map((b) => ({
-                    label: b.name,
-                    value: b.units,
-                    display: `${b.units}`,
-                  }))}
-                />
-              </An2Section>
-
-              <An2Section
-                title="Revenue by category"
-                sub="Where the money comes from"
-              >
-                <HBars
-                  items={insights.topCats.map((c) => ({
-                    label: c.c,
-                    value: c.rev,
-                    display: `₹${Math.round(c.rev).toLocaleString()}`,
-                  }))}
-                  accent="#7c3aed"
-                />
-              </An2Section>
-            </div>
-
-            <An2Section
-              title="Top delivery pincodes"
-              sub="Where your orders ship to most"
-            >
-              <HBars
-                items={insights.topPins.map((p) => ({
-                  label: p.p,
-                  value: p.c,
-                  display: `${p.c}`,
-                }))}
-                accent="#0ea5e9"
-              />
-            </An2Section>
-
-            <An2Section
-              title="Lead sources & conversion"
-              sub="Numbers captured on first visit → who placed an order"
-            >
-              {leadsLoading ? (
-                <div className="sv-empty">Loading leads…</div>
-              ) : leadInsights.totalLeads === 0 ? (
-                <div className="sv-empty">
-                  No captured numbers found (check the leads sheet is published).
-                </div>
-              ) : (
-                <>
-                  <div className="lead-kpis">
-                    <div className="lead-kpi">
-                      <span className="lead-kpi-val">
-                        {leadInsights.totalLeads.toLocaleString()}
-                      </span>
-                      <span className="lead-kpi-lbl">Numbers captured</span>
-                    </div>
-                    <div className="lead-kpi">
-                      <span className="lead-kpi-val pos">
-                        {leadInsights.ordered.toLocaleString()}
-                      </span>
-                      <span className="lead-kpi-lbl">Ordered</span>
-                    </div>
-                    <div className="lead-kpi">
-                      <span className="lead-kpi-val muted">
-                        {leadInsights.notOrdered.toLocaleString()}
-                      </span>
-                      <span className="lead-kpi-lbl">Not ordered</span>
-                    </div>
-                    <div className="lead-kpi">
-                      <span className="lead-kpi-val accent">
-                        {leadInsights.rate}%
-                      </span>
-                      <span className="lead-kpi-lbl">Conversion</span>
-                    </div>
-                  </div>
-                  <div className="lead-src-head">
-                    By source · ordered / captured · conversion
-                  </div>
-                  <HBars
-                    items={leadInsights.sources.map((s) => ({
-                      label: s.source,
-                      value: s.leads,
-                      display: `${s.ordered}/${s.leads} · ${s.rate}%`,
-                    }))}
-                    accent="#7c3aed"
-                  />
-                </>
-              )}
-            </An2Section>
-
-            {/* Fulfillment funnel — where orders leak out on the way to delivery */}
-            <An2Section
-              title="Fulfillment funnel"
-              sub={`${periodWindow.label} · from placed to delivered — spot where orders leak out`}
-              right={
-                <span className="an2-card-total">
-                  {funnelStats.successPct}% success
+  {/* Overview stats — headline KPIs with the change vs the
+                  comparison period (same elapsed span of the previous one). */}
+              <div className="an2-stats-head">
+                <span>
+                  {periodWindow.label}
+                  {prevOverview ? ` · ${prevOverview.label}` : ""}
                 </span>
-              }
-            >
-              {funnelStats.placed === 0 ? (
-                <div className="an2-bp-empty">No orders in this period.</div>
-              ) : (
-                <>
-                  <div className="an2-funnel">
-                    {[
-                      {
-                        label: "Placed",
-                        n: funnelStats.placed,
-                        pct: 100,
-                        color: "#6366f1",
-                      },
-                      {
-                        label: "Shipped",
-                        n: funnelStats.shipped,
-                        pct: funnelStats.shippedPct,
-                        color: "#0891b2",
-                      },
-                      {
-                        label: "Delivered",
-                        n: funnelStats.delivered,
-                        pct: funnelStats.deliveredPct,
-                        color: "#16a34a",
-                      },
-                    ].map((st) => (
-                      <div className="an2-fn-row" key={st.label}>
-                        <span className="an2-fn-l">{st.label}</span>
-                        <div className="an2-fn-track">
-                          <div
-                            className="an2-fn-fill"
-                            style={{
-                              width: `${st.pct}%`,
-                              background: st.color,
-                            }}
-                          >
-                            <span className="an2-fn-n">{st.n}</span>
-                          </div>
-                        </div>
-                        <span className="an2-fn-pct">{st.pct}%</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="an2-fn-foot">
-                    <div className="an2-fn-chip">
-                      <span className="an2-fn-chip-v v-neg">
-                        {funnelStats.cancelPct}%
-                      </span>
-                      <span className="an2-fn-chip-l">
-                        Cancelled ({funnelStats.cancelled})
-                      </span>
-                    </div>
-                    <div className="an2-fn-chip">
-                      <span className="an2-fn-chip-v v-neg">
-                        {funnelStats.returned}
-                      </span>
-                      <span className="an2-fn-chip-l">Returned to sender</span>
-                    </div>
-                    <div className="an2-fn-chip">
-                      <span className="an2-fn-chip-v v-pos">
-                        {funnelStats.successPct}%
-                      </span>
-                      <span className="an2-fn-chip-l">Shipped → delivered</span>
-                    </div>
-                  </div>
-                </>
-              )}
-            </An2Section>
-
-            {/* COD vs Prepaid performance — argue the case for prepaid */}
-            <An2Section
-              title="COD vs Prepaid performance"
-              sub={`${periodWindow.label} · delivery success, cancellations & value by payment method`}
-            >
-              <div className="an2-pay2">
-                {payPerf.map((p) => (
-                  <div className={`an2-pay2-card pay-${p.key}`} key={p.key}>
-                    <div className="an2-pay2-head">
-                      <span className="an2-pay2-name">{p.label}</span>
-                      <span className="an2-pay2-n">
-                        {p.n} order{p.n === 1 ? "" : "s"}
-                      </span>
-                    </div>
-                    <div className="an2-pay2-metrics">
-                      <div className="an2-pay2-m">
-                        <span className="an2-pay2-mv v-pos">
-                          {p.deliveredPct}%
-                        </span>
-                        <span className="an2-pay2-ml">Delivered</span>
-                      </div>
-                      <div className="an2-pay2-m">
-                        <span className="an2-pay2-mv v-neg">{p.cancelPct}%</span>
-                        <span className="an2-pay2-ml">Cancelled</span>
-                      </div>
-                      <div className="an2-pay2-m">
-                        <span className="an2-pay2-mv">
-                          ₹{p.aov.toLocaleString()}
-                        </span>
-                        <span className="an2-pay2-ml">Avg order</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
               </div>
-            </An2Section>
+              <div className="an2-stats">
+                <KpiTile
+                  icon={IndianRupee}
+                  label="Revenue"
+                  value={`₹${overview.revenue.toLocaleString()}`}
+                  cur={overview.revenue}
+                  prev={prevOverview?.revenue}
+                  sub={`₹${overview.aov.toLocaleString()} avg order`}
+                />
+                <KpiTile
+                  icon={ShoppingBag}
+                  label="Orders"
+                  value={overview.n.toLocaleString()}
+                  cur={overview.n}
+                  prev={prevOverview?.n}
+                  sub={`${overview.units} books · ${overview.unitsPerOrder}/order`}
+                />
+                <KpiTile
+                  icon={overview.profit >= 0 ? TrendingUp : TrendingDown}
+                  label={overview.profit >= 0 ? "Gross profit" : "Gross loss"}
+                  value={`${overview.profit >= 0 ? "" : "−"}₹${Math.abs(overview.profit).toLocaleString()}`}
+                  cur={overview.profit}
+                  prev={prevOverview?.profit}
+                  sub={`${overview.margin}% margin · net ${netProfit >= 0 ? "" : "−"}₹${Math.abs(netProfit).toLocaleString()}`}
+                />
+                <KpiTile
+                  icon={Package}
+                  label="Total cost"
+                  value={`₹${overview.cost.toLocaleString()}`}
+                  cur={overview.cost}
+                  prev={prevOverview?.cost}
+                  lowerIsBetter
+                  sub={`incl. ₹${overview.delivery.toLocaleString()} postage`}
+                />
+                <KpiTile
+                  icon={CheckCircle}
+                  label="Delivery success"
+                  value={`${overview.successRate}%`}
+                  cur={overview.successRate}
+                  prev={prevOverview?.successRate}
+                  unit="pts"
+                  sub={`${overview.delivered} delivered · ${overview.openN} still open`}
+                />
+                <KpiTile
+                  icon={RotateCcw}
+                  label="Cancel & return"
+                  value={`${overview.cancelRate}%`}
+                  cur={overview.cancelRate}
+                  prev={prevOverview?.cancelRate}
+                  unit="pts"
+                  lowerIsBetter
+                  sub={`${overview.cancelled} orders lost`}
+                />
+                <KpiTile
+                  icon={ShieldCheck}
+                  label="Prepaid share"
+                  value={`${overview.prepaidRate}%`}
+                  cur={overview.prepaidRate}
+                  prev={prevOverview?.prepaidRate}
+                  unit="pts"
+                  sub={`${overview.upiN} UPI · ${overview.advN} ₹99 advance`}
+                />
+                <KpiTile
+                  icon={Wallet}
+                  label="Wallet outstanding"
+                  value={`₹${walletUsers.total.toLocaleString()}`}
+                  sub={`${walletUsers.count} customer${walletUsers.count === 1 ? "" : "s"} hold balance`}
+                />
+              </div>
 
-            {/* Basket size & upsell headroom */}
-            <An2Section
-              title="Basket size & upsell"
-              sub={`${periodWindow.label} · books per order — where the upsell headroom sits`}
-              right={
-                <span className="an2-card-total">
-                  {basketStats.avgBasket} avg
-                </span>
-              }
-            >
-              {basketStats.total === 0 ? (
-                <div className="an2-bp-empty">No orders in this period.</div>
-              ) : (
-                <div className="an2-basket">
-                  {basketStats.buckets.map((b) => {
-                    const max = Math.max(
-                      1,
-                      ...basketStats.buckets.map((x) => x.n),
-                    );
+              {/* Projections & run rate */}
+              <An2Section
+                title="Projections & run rate"
+                sub={
+                  projection.hasForecast
+                    ? `Current pace projected to the full ${
+                        analyticsPeriod === "week"
+                          ? "week"
+                          : analyticsPeriod === "year"
+                            ? "year"
+                            : "month"
+                      }`
+                    : "Observed sales pace for this period"
+                }
+                right={
+                  <span className="an2-card-total">
+                    ₹{projection.revPerDay.toLocaleString()}/day
+                  </span>
+                }
+              >
+                <div className="an2-proj-tiles">
+                  <div className="an2-proj-tile">
+                    <span className="an2-proj-lbl">Run rate</span>
+                    <strong className="an2-proj-val">
+                      ₹{projection.revPerDay.toLocaleString()}
+                      <small>/day</small>
+                    </strong>
+                    <span className="an2-proj-x">
+                      {projection.ordPerDay} orders/day
+                    </span>
+                  </div>
+                  <div className="an2-proj-tile">
+                    <span className="an2-proj-lbl">So far</span>
+                    <strong className="an2-proj-val">
+                      ₹{projection.actualRev.toLocaleString()}
+                    </strong>
+                    <span className="an2-proj-x">
+                      {overview.n} orders · day {projection.elapsedDays}/
+                      {projection.totalDays}
+                    </span>
+                  </div>
+                  <div className="an2-proj-tile hot">
+                    <span className="an2-proj-lbl">
+                      Projected{" "}
+                      {analyticsPeriod === "week"
+                        ? "week"
+                        : analyticsPeriod === "year"
+                          ? "year"
+                          : analyticsPeriod === "month"
+                            ? "month"
+                            : "total"}
+                    </span>
+                    <strong className="an2-proj-val hot">
+                      ₹{projection.projectedRev.toLocaleString()}
+                    </strong>
+                    <span className="an2-proj-x">
+                      ~{projection.projectedOrders} orders
+                      {projection.hasForecast
+                        ? ` · ${projection.daysLeft} day${projection.daysLeft === 1 ? "" : "s"} left`
+                        : " · final"}
+                    </span>
+                  </div>
+                </div>
+                {projection.hasForecast && (
+                  <div className="an2-proj-prog">
+                    <div className="an2-proj-prog-head">
+                      <span>
+                        Achieved {projection.progressPct}% of projection
+                      </span>
+                      <span>
+                        ₹{projection.actualRev.toLocaleString()} / ₹
+                        {projection.projectedRev.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="an2-proj-bar">
+                      <div
+                        className="an2-proj-fill"
+                        style={{ width: `${projection.progressPct}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </An2Section>
+            </An2Group>
+
+            <An2Group
+              step="2"
+              title="Sales & profit"
+              sub="How revenue, cost and margin move day to day">
+  {/* Total orders bar chart */}
+              <An2Section
+                title="Total orders"
+                sub={
+                  analyticsPeriod === "year" || analyticsPeriod === "all"
+                    ? "By month"
+                    : analyticsPeriod === "week"
+                      ? "By day of week"
+                      : "By date"
+                }
+                right={
+                  <span className="an2-total-wrap">
+                    <span className="an2-today-badge">Today</span>
+                    <span className="an2-card-total">{overview.n}</span>
+                  </span>
+                }
+              >
+                {(() => {
+                  const max = Math.max(1, ...ordersBar.map((b) => b.count));
+                  const todayBar = ordersBar.find((b) => b.isToday);
+                  const todayN = todayBar?.count || 0;
+                  const todayRev = Math.round(todayBar?.revenue || 0);
+                  return (
+                    <>
+                      <div className="an2-today-row">
+                        <span className="an2-today-k">Today</span>
+                        <span className="an2-today-v">
+                          <b>{todayN}</b> order{todayN === 1 ? "" : "s"}
+                        </span>
+                        <span className="an2-today-dot" />
+                        <span className="an2-today-v">
+                          <b>₹{todayRev.toLocaleString("en-IN")}</b> revenue
+                        </span>
+                      </div>
+                    <div
+                      className={`an2-bars${ordersBar.length > 16 ? " scroll" : ""}`}
+                    >
+                      {ordersBar.map((b, i) => (
+                        <div
+                          className={`an2-bar-col${b.isToday ? " today" : ""}`}
+                          key={i}
+                          ref={b.isToday ? centerTodayRef : undefined}
+                        >
+                          <span className="an2-bar-cap">
+                            {b.count || ""}
+                            {b.revenue > 0 && (
+                              <span className="an2-bar-rev">
+                                ₹
+                                {b.revenue >= 1000
+                                  ? `${(b.revenue / 1000).toFixed(1)}k`
+                                  : Math.round(b.revenue)}
+                              </span>
+                            )}
+                          </span>
+                          <div className="an2-bar-track">
+                            <div
+                              className="an2-bar an2-bar-grad"
+                              style={{ height: `${(b.count / max) * 100}%` }}
+                              data-tip={`${b.label}${b.sub ? " " + b.sub : ""}: ${b.count} order${b.count === 1 ? "" : "s"} · ₹${Math.round(b.revenue).toLocaleString("en-IN")}`}
+                            />
+                          </div>
+                          <span className="an2-bar-x">{b.label}</span>
+                          {b.sub ? (
+                            <span className="an2-bar-xsub">{b.sub}</span>
+                          ) : null}
+                        </div>
+                      ))}
+                      </div>
+                    </>
+                  );
+                })()}
+              </An2Section>
+
+              {/* Profit / cost per day */}
+              <An2Section
+                title="Profit & cost by day"
+                sub={`Cost vs profit for each day${analyticsPeriod === "year" ? " of the chosen month" : ""}`}
+                right={
+                  <div className="an2-pnl-right">
+                    <span className="an2-today-badge">Today</span>
+                    <div className="an2-legend">
+                      <span className="an2-leg">
+                        <i className="an2-dot d-cost" /> Cost
+                      </span>
+                      <span className="an2-leg">
+                        <i className="an2-dot d-profit" /> Profit
+                      </span>
+                      <span className="an2-leg">
+                        <i className="an2-dot d-loss" /> Loss
+                      </span>
+                    </div>
+                    {analyticsPeriod === "year" && (
+                      <div
+                        className="admin-select-wrap an2-month-sel"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <select
+                          className="admin-select"
+                          value={pnlMonth}
+                          onChange={(e) => setPnlMonth(Number(e.target.value))}
+                        >
+                          {MONTH_LABELS.map((m, i) => (
+                            <option key={i} value={i}>
+                              {m}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                }
+              >
+                {(() => {
+                  const posMax = Math.max(
+                    1,
+                    ...pnlDays.map((d) =>
+                      Math.max(d.cost, d.profit > 0 ? d.profit : 0),
+                    ),
+                  );
+                  const negMax = Math.max(
+                    1,
+                    ...pnlDays.map((d) => (d.profit < 0 ? -d.profit : 0)),
+                  );
+                  const hasLoss = pnlDays.some((d) => d.profit < 0);
+                  const todayPnl = pnlDays.find((d) => d.isToday);
+                  const tCost = Math.round(todayPnl?.cost || 0);
+                  const tProfit = Math.round(todayPnl?.profit || 0);
+                  return (
+                    <>
+                      <div className="an2-today-row">
+                        <span className="an2-today-k">Today</span>
+                        <span className="an2-today-v">
+                          Cost <b>₹{tCost.toLocaleString("en-IN")}</b>
+                        </span>
+                        <span className="an2-today-dot" />
+                        <span className="an2-today-v">
+                          {tProfit >= 0 ? "Profit" : "Loss"}{" "}
+                          <b className={tProfit >= 0 ? "pc-pos" : "pc-neg"}>
+                            ₹{Math.abs(tProfit).toLocaleString("en-IN")}
+                          </b>
+                        </span>
+                      </div>
+                    <div
+                      className={`an2-pnl${pnlDays.length > 14 ? " scroll" : ""}`}
+                    >
+                      {pnlDays.map((d) => (
+                        <div
+                          className={`an2-pnl-col${d.isToday ? " today" : ""}`}
+                          key={d.key}
+                          ref={d.isToday ? centerTodayRef : undefined}
+                        >
+                          <div className="an2-pnl-pos">
+                            <div
+                              className="an2-pnl-bar b-cost"
+                              style={{ height: `${(d.cost / posMax) * 100}%` }}
+                              data-tip={`${d.wd} ${d.day} · Cost ₹${Math.round(d.cost).toLocaleString()}`}
+                            />
+                            <div
+                              className="an2-pnl-bar b-profit"
+                              style={{
+                                height: `${((d.profit > 0 ? d.profit : 0) / posMax) * 100}%`,
+                              }}
+                              data-tip={`${d.wd} ${d.day} · Profit ₹${Math.round(d.profit).toLocaleString()}`}
+                            />
+                          </div>
+                          {hasLoss && (
+                            <div className="an2-pnl-neg">
+                              <div
+                                className="an2-pnl-bar b-loss"
+                                style={{
+                                  height: `${((d.profit < 0 ? -d.profit : 0) / negMax) * 100}%`,
+                                }}
+                                data-tip={`${d.wd} ${d.day} · Loss ₹${Math.round(-d.profit).toLocaleString()}`}
+                              />
+                            </div>
+                          )}
+                          <span className="an2-pnl-x">{d.day}</span>
+                          <span className="an2-pnl-xsub">{d.wd}</span>
+                        </div>
+                      ))}
+                      </div>
+                    </>
+                  );
+                })()}
+              </An2Section>
+
+
+              {/* Payment mix + customers */}
+              <div className="an2-grid2">
+                <An2Section title="Payment mix" sub="COD · ₹99 paid · online (UPI)">
+                  {(() => {
+                    const codPure = Math.max(0, overview.codN - overview.advN);
+                    const adv = overview.advN;
+                    const upi = overview.upiN;
+                    const tot = codPure + adv + upi || 1;
+                    const pct = (x) => Math.round((x / tot) * 100);
                     return (
-                      <div className="an2-bk-row" key={b.key}>
-                        <span className="an2-bk-l">{b.label}</span>
-                        <div className="an2-bk-track">
+                      <>
+                        <div className="an2-mix-bar">
                           <div
-                            className="an2-bk-fill"
-                            style={{ width: `${(b.n / max) * 100}%` }}
+                            className="an2-mix-seg seg-cod"
+                            style={{ width: `${pct(codPure)}%` }}
+                          />
+                          <div
+                            className="an2-mix-seg seg-adv"
+                            style={{ width: `${pct(adv)}%` }}
+                          />
+                          <div
+                            className="an2-mix-seg seg-upi"
+                            style={{ width: `${pct(upi)}%` }}
                           />
                         </div>
-                        <span className="an2-bk-meta">
-                          {b.n} · {b.pct}%
-                          <span className="an2-bk-aov">
-                            ₹{b.aov.toLocaleString()} AOV
+                        <div className="an2-mix-legend">
+                          <span className="an2-leg">
+                            <i className="an2-dot d-cod" /> COD · {codPure} (
+                            {pct(codPure)}%)
                           </span>
+                          <span className="an2-leg">
+                            <i className="an2-dot d-adv" /> ₹99 paid · {adv} (
+                            {pct(adv)}%)
+                          </span>
+                          <span className="an2-leg">
+                            <i className="an2-dot d-upi" /> UPI · {upi} ({pct(upi)}
+                            %)
+                          </span>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </An2Section>
+
+                <An2Section
+                  title="Customers"
+                  sub={`Reach & loyalty this ${analyticsPeriod}`}
+                >
+                  <div className="an2-cust">
+                    <div className="an2-cust-item">
+                      <span className="an2-cust-num">
+                        {insights.uniqueCustomers}
+                      </span>
+                      <span className="an2-cust-lbl">Unique customers</span>
+                    </div>
+                    <div className="an2-cust-item">
+                      <span className="an2-cust-num">{insights.repeat}</span>
+                      <span className="an2-cust-lbl">Repeat buyers</span>
+                    </div>
+                    <div className="an2-cust-item">
+                      <span className="an2-cust-num">{insights.repeatPct}%</span>
+                      <span className="an2-cust-lbl">Repeat rate</span>
+                    </div>
+                  </div>
+                </An2Section>
+              </div>
+            </An2Group>
+
+            <An2Group
+              step="3"
+              title="Fulfilment & delivery"
+              sub="Where orders are in the flow, where they leak, and what shipping costs">
+  {/* Orders by status — count, value & payment split */}
+              <An2Section
+                title="Orders by status"
+                sub="Where every order stands — value & COD/UPI split"
+                right={
+                  <span className="an2-card-total">{breakdownTotals.count}</span>
+                }
+              >
+                <div className="an2-status-list">
+                  {statusBreakdown.length === 0 && (
+                    <div className="an2-bp-empty">No orders in this period.</div>
+                  )}
+                  {statusBreakdown.map((s) => (
+                    <div
+                      className={`an2-status-row${/pending/i.test(s.key) ? " pending" : ""}`}
+                      key={s.key}
+                    >
+                      <span
+                        className="an2-status-dot"
+                        style={{ background: s.color }}
+                      />
+                      <div className="an2-status-main">
+                        <span className="an2-status-name">{s.key}</span>
+                        <span className="an2-status-split">
+                          {s.cod} COD · ₹{Math.round(s.codVal).toLocaleString()}
+                          <span className="an2-status-sep">|</span>
+                          {s.upi} UPI · ₹{Math.round(s.upiVal).toLocaleString()}
                         </span>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </An2Section>
-
-            {/* Frequently bought together — bundle ideas */}
-            <An2Section
-              title="Frequently bought together"
-              sub={`${periodWindow.label} · title pairs seen in the same order — ready-made bundle ideas`}
-            >
-              {bookPairs.length === 0 ? (
-                <div className="an2-bp-empty">
-                  Not enough multi-book orders yet to spot pairings.
-                </div>
-              ) : (
-                <div className="an2-pairs">
-                  {bookPairs.map((p, i) => (
-                    <div className="an2-pair" key={i}>
-                      <div className="an2-pair-books">
-                        <span className="an2-pair-b">{p.a}</span>
-                        <span className="an2-pair-plus">+</span>
-                        <span className="an2-pair-b">{p.b}</span>
+                      <div className="an2-status-nums">
+                        <span className="an2-status-count">
+                          {s.count} order{s.count === 1 ? "" : "s"}
+                        </span>
+                        <span className="an2-status-val">
+                          ₹{Math.round(s.value).toLocaleString()}
+                        </span>
                       </div>
-                      <span className="an2-pair-c">
-                        {p.count}×<span className="an2-pair-cl">together</span>
+                    </div>
+                  ))}
+                </div>
+              </An2Section>
+
+              {/* Fulfillment funnel — where orders leak out on the way to delivery */}
+              <An2Section
+                title="Fulfillment funnel"
+                sub={`${periodWindow.label} · from placed to delivered — spot where orders leak out`}
+                right={
+                  <span className="an2-card-total">
+                    {funnelStats.successPct}% success
+                  </span>
+                }
+              >
+                {funnelStats.placed === 0 ? (
+                  <div className="an2-bp-empty">No orders in this period.</div>
+                ) : (
+                  <>
+                    <div className="an2-funnel">
+                      {[
+                        {
+                          label: "Placed",
+                          n: funnelStats.placed,
+                          pct: 100,
+                          color: "#6366f1",
+                        },
+                        {
+                          label: "Shipped",
+                          n: funnelStats.shipped,
+                          pct: funnelStats.shippedPct,
+                          color: "#0891b2",
+                        },
+                        {
+                          label: "Delivered",
+                          n: funnelStats.delivered,
+                          pct: funnelStats.deliveredPct,
+                          color: "#16a34a",
+                        },
+                      ].map((st) => (
+                        <div className="an2-fn-row" key={st.label}>
+                          <span className="an2-fn-l">{st.label}</span>
+                          <div className="an2-fn-track">
+                            <div
+                              className="an2-fn-fill"
+                              style={{
+                                width: `${st.pct}%`,
+                                background: st.color,
+                              }}
+                            >
+                              <span className="an2-fn-n">{st.n}</span>
+                            </div>
+                          </div>
+                          <span className="an2-fn-pct">{st.pct}%</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="an2-fn-foot">
+                      <div className="an2-fn-chip">
+                        <span className="an2-fn-chip-v v-neg">
+                          {funnelStats.cancelPct}%
+                        </span>
+                        <span className="an2-fn-chip-l">
+                          Cancelled ({funnelStats.cancelled})
+                        </span>
+                      </div>
+                      <div className="an2-fn-chip">
+                        <span className="an2-fn-chip-v v-neg">
+                          {funnelStats.returned}
+                        </span>
+                        <span className="an2-fn-chip-l">Returned to sender</span>
+                      </div>
+                      <div className="an2-fn-chip">
+                        <span className="an2-fn-chip-v v-pos">
+                          {funnelStats.successPct}%
+                        </span>
+                        <span className="an2-fn-chip-l">Shipped → delivered</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </An2Section>
+
+              {/* COD vs Prepaid performance — argue the case for prepaid */}
+              <An2Section
+                title="COD vs Prepaid performance"
+                sub={`${periodWindow.label} · delivery success, cancellations & value by payment method`}
+              >
+                <div className="an2-pay2">
+                  {payPerf.map((p) => (
+                    <div className={`an2-pay2-card pay-${p.key}`} key={p.key}>
+                      <div className="an2-pay2-head">
+                        <span className="an2-pay2-name">{p.label}</span>
+                        <span className="an2-pay2-n">
+                          {p.n} order{p.n === 1 ? "" : "s"}
+                        </span>
+                      </div>
+                      <div className="an2-pay2-metrics">
+                        <div className="an2-pay2-m">
+                          <span className="an2-pay2-mv v-pos">
+                            {p.deliveredPct}%
+                          </span>
+                          <span className="an2-pay2-ml">Delivered</span>
+                        </div>
+                        <div className="an2-pay2-m">
+                          <span className="an2-pay2-mv v-neg">{p.cancelPct}%</span>
+                          <span className="an2-pay2-ml">Cancelled</span>
+                        </div>
+                        <div className="an2-pay2-m">
+                          <span className="an2-pay2-mv">
+                            ₹{p.aov.toLocaleString()}
+                          </span>
+                          <span className="an2-pay2-ml">Avg order</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </An2Section>
+
+              {/* Delivery & India Post weight slabs */}
+              <An2Section
+                title="Delivery & India Post"
+                sub="Postage by weight slab for this period"
+                right={
+                  <span className="an2-card-total">
+                    ₹{totalDeliveryCost.toLocaleString()}
+                  </span>
+                }
+              >
+                <div className="an2-bp-sum">
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Total weight</span>
+                    <strong className="an2-bp-sc-v">
+                      {(totalWeight / 1000).toFixed(2)} kg
+                    </strong>
+                  </div>
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Postage cost</span>
+                    <strong className="an2-bp-sc-v v-cost">
+                      ₹{totalDeliveryCost.toLocaleString()}
+                    </strong>
+                  </div>
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Avg / order</span>
+                    <strong className="an2-bp-sc-v">
+                      ₹{avgDeliveryCost.toLocaleString()}
+                    </strong>
+                  </div>
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Orders</span>
+                    <strong className="an2-bp-sc-v">{overview.n}</strong>
+                  </div>
+                </div>
+                <div className="an2-slabs">
+                  {deliverySlabs.map((s) => (
+                    <div className="an2-slab" key={s.label}>
+                      <span className="an2-slab-l">
+                        {s.label} · ₹{s.rate}
+                      </span>
+                      <div className="an2-slab-track">
+                        <div
+                          className="an2-slab-fill"
+                          style={{ width: `${(s.count / maxSlabCount) * 100}%` }}
+                          data-tip={`${s.label} @ ₹${s.rate}: ${s.count} order${s.count === 1 ? "" : "s"} · ₹${s.amount.toLocaleString()}`}
+                        />
+                      </div>
+                      <span className="an2-slab-c">
+                        {s.count} order{s.count === 1 ? "" : "s"} · ₹
+                        {s.amount.toLocaleString()}
                       </span>
                     </div>
                   ))}
                 </div>
-              )}
-            </An2Section>
+              </An2Section>
 
-            {/* Top customers — lifetime value & repeat revenue */}
-            <An2Section
-              title="Top customers"
-              sub="Lifetime spend across all time — your win-back & loyalty list"
-              right={
-                <span className="an2-card-total">
-                  {topCustomers.repeatRevPct}% repeat ₹
-                </span>
-              }
-            >
-              <div className="an2-bp-sum">
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Customers</span>
-                  <strong className="an2-bp-sc-v">
-                    {topCustomers.totalCustomers}
-                  </strong>
-                </div>
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Repeat buyers</span>
-                  <strong className="an2-bp-sc-v v-rev">
-                    {topCustomers.repeatCount}
-                  </strong>
-                </div>
-                <div className="an2-bp-sc">
-                  <span className="an2-bp-sc-l">Revenue from repeats</span>
-                  <strong className="an2-bp-sc-v v-pos">
-                    {topCustomers.repeatRevPct}%
-                  </strong>
-                </div>
+              <An2Section
+                title="Top delivery pincodes"
+                sub="Where your orders ship to most"
+              >
+                <HBars
+                  items={insights.topPins.map((p) => ({
+                    label: p.p,
+                    value: p.c,
+                    display: `${p.c}`,
+                  }))}
+                  accent="#0ea5e9"
+                />
+              </An2Section>
+            </An2Group>
+
+            <An2Group
+              step="4"
+              title="Products & basket"
+              sub="What sells, what earns, and what to bundle">
+  {/* Top books + revenue by category */}
+              <div className="an2-grid2">
+                <An2Section title="Top-selling books" sub="By units sold">
+                  <HBars
+                    items={insights.topBooks.map((b) => ({
+                      label: b.name,
+                      value: b.units,
+                      display: `${b.units}`,
+                    }))}
+                  />
+                </An2Section>
+
+                <An2Section
+                  title="Revenue by category"
+                  sub="Where the money comes from"
+                >
+                  <HBars
+                    items={insights.topCats.map((c) => ({
+                      label: c.c,
+                      value: c.rev,
+                      display: `₹${Math.round(c.rev).toLocaleString()}`,
+                    }))}
+                    accent="#7c3aed"
+                  />
+                </An2Section>
               </div>
-              <div className="an2-bp-scroll">
-                <table className="an2-bp-table">
-                  <thead>
-                    <tr>
-                      <th>Customer</th>
-                      <th className="ta-r">Orders</th>
-                      <th className="ta-r">Spend</th>
-                      <th className="ta-r">Last order</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {topCustomers.rows.length === 0 && (
+
+              {/* Book profitability */}
+              <An2Section
+                title="Book profitability"
+                sub={`Per-title quantity, cost and profit for this ${analyticsPeriod}`}
+                right={
+                  <span className="an2-card-total">{bookStats.rows.length}</span>
+                }
+              >
+                <div className="an2-bp-sum">
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Books sold</span>
+                    <strong className="an2-bp-sc-v">
+                      {bookStats.totals.qty}
+                    </strong>
+                  </div>
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Revenue</span>
+                    <strong className="an2-bp-sc-v v-rev">
+                      ₹{bookStats.totals.revenue.toLocaleString()}
+                    </strong>
+                  </div>
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Goods cost</span>
+                    <strong className="an2-bp-sc-v v-cost">
+                      ₹{bookStats.totals.cost.toLocaleString()}
+                    </strong>
+                  </div>
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Net profit</span>
+                    <strong
+                      className={`an2-bp-sc-v ${bookStats.totals.profit >= 0 ? "v-pos" : "v-neg"}`}
+                    >
+                      {bookStats.totals.profit >= 0 ? "+" : "−"}₹
+                      {Math.abs(bookStats.totals.profit).toLocaleString()}
+                    </strong>
+                  </div>
+                </div>
+                <div className="an2-bp-scroll">
+                  <table className="an2-bp-table">
+                    <thead>
                       <tr>
-                        <td colSpan={4} className="an2-bp-empty">
-                          No customers yet.
-                        </td>
+                        <th>Book</th>
+                        <th className="ta-r">Qty</th>
+                        <th className="ta-r">Revenue</th>
+                        <th className="ta-r">Cost</th>
+                        <th className="ta-r">Profit / loss</th>
                       </tr>
-                    )}
-                    {topCustomers.rows.map((r) => (
-                      <tr key={r.phone}>
-                        <td>
-                          <span className="an2-bp-name">
-                            {r.name || "Customer"}
+                    </thead>
+                    <tbody>
+                      {bookStats.rows.length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="an2-bp-empty">
+                            No book sales in this period.
+                          </td>
+                        </tr>
+                      )}
+                      {(bpShowAll
+                        ? bookStats.rows
+                        : bookStats.rows.slice(0, 10)
+                      ).map((r) => (
+                        <tr key={r.name}>
+                          <td>
+                            <span className="an2-bp-name">{r.name}</span>
+                            {!r.matched && (
+                              <span
+                                className="an2-bp-warn"
+                                title="No catalogue cost — profit assumes ₹0 cost"
+                              >
+                                cost?
+                              </span>
+                            )}
+                          </td>
+                          <td className="ta-r">{r.qty}</td>
+                          <td className="ta-r">
+                            ₹{Math.round(r.revenue).toLocaleString()}
+                          </td>
+                          <td className="ta-r">
+                            ₹{Math.round(r.cost).toLocaleString()}
+                          </td>
+                          <td
+                            className={`ta-r an2-bp-p ${r.profit >= 0 ? "v-pos" : "v-neg"}`}
+                          >
+                            {r.profit >= 0 ? "+" : "−"}₹
+                            {Math.abs(Math.round(r.profit)).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {bookStats.rows.length > 10 && (
+                  <button
+                    type="button"
+                    className="an2-bp-more"
+                    onClick={() => setBpShowAll((v) => !v)}
+                  >
+                    {bpShowAll
+                      ? "Show top 10"
+                      : `Load ${bookStats.rows.length - 10} more`}
+                  </button>
+                )}
+              </An2Section>
+
+              {/* Basket size & upsell headroom */}
+              <An2Section
+                title="Basket size & upsell"
+                sub={`${periodWindow.label} · books per order — where the upsell headroom sits`}
+                right={
+                  <span className="an2-card-total">
+                    {basketStats.avgBasket} avg
+                  </span>
+                }
+              >
+                {basketStats.total === 0 ? (
+                  <div className="an2-bp-empty">No orders in this period.</div>
+                ) : (
+                  <div className="an2-basket">
+                    {basketStats.buckets.map((b) => {
+                      const max = Math.max(
+                        1,
+                        ...basketStats.buckets.map((x) => x.n),
+                      );
+                      return (
+                        <div className="an2-bk-row" key={b.key}>
+                          <span className="an2-bk-l">{b.label}</span>
+                          <div className="an2-bk-track">
+                            <div
+                              className="an2-bk-fill"
+                              style={{ width: `${(b.n / max) * 100}%` }}
+                            />
+                          </div>
+                          <span className="an2-bk-meta">
+                            {b.n} · {b.pct}%
+                            <span className="an2-bk-aov">
+                              ₹{b.aov.toLocaleString()} AOV
+                            </span>
                           </span>
-                          <span className="an2-cust-ph">+91 {r.mask}</span>
-                        </td>
-                        <td className="ta-r">{r.orders}</td>
-                        <td className="ta-r">
-                          ₹{Math.round(r.spend).toLocaleString()}
-                        </td>
-                        <td className="ta-r an2-cust-last">{r.lastLabel}</td>
-                      </tr>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </An2Section>
+
+              {/* Frequently bought together — bundle ideas */}
+              <An2Section
+                title="Frequently bought together"
+                sub={`${periodWindow.label} · title pairs seen in the same order — ready-made bundle ideas`}
+              >
+                {bookPairs.length === 0 ? (
+                  <div className="an2-bp-empty">
+                    Not enough multi-book orders yet to spot pairings.
+                  </div>
+                ) : (
+                  <div className="an2-pairs">
+                    {bookPairs.map((p, i) => (
+                      <div className="an2-pair" key={i}>
+                        <div className="an2-pair-books">
+                          <span className="an2-pair-b">{p.a}</span>
+                          <span className="an2-pair-plus">+</span>
+                          <span className="an2-pair-b">{p.b}</span>
+                        </div>
+                        <span className="an2-pair-c">
+                          {p.count}×<span className="an2-pair-cl">together</span>
+                        </span>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </An2Section>
+                  </div>
+                )}
+              </An2Section>
+            </An2Group>
+
+            <An2Group
+              step="5"
+              title="Customers & demand"
+              sub="Who buys, where they come from, and when they order">
+  {/* Top customers — lifetime value & repeat revenue */}
+              <An2Section
+                title="Top customers"
+                sub="Lifetime spend across all time — your win-back & loyalty list"
+                right={
+                  <span className="an2-card-total">
+                    {topCustomers.repeatRevPct}% repeat ₹
+                  </span>
+                }
+              >
+                <div className="an2-bp-sum">
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Customers</span>
+                    <strong className="an2-bp-sc-v">
+                      {topCustomers.totalCustomers}
+                    </strong>
+                  </div>
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Repeat buyers</span>
+                    <strong className="an2-bp-sc-v v-rev">
+                      {topCustomers.repeatCount}
+                    </strong>
+                  </div>
+                  <div className="an2-bp-sc">
+                    <span className="an2-bp-sc-l">Revenue from repeats</span>
+                    <strong className="an2-bp-sc-v v-pos">
+                      {topCustomers.repeatRevPct}%
+                    </strong>
+                  </div>
+                </div>
+                <div className="an2-bp-scroll">
+                  <table className="an2-bp-table">
+                    <thead>
+                      <tr>
+                        <th>Customer</th>
+                        <th className="ta-r">Orders</th>
+                        <th className="ta-r">Spend</th>
+                        <th className="ta-r">Last order</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topCustomers.rows.length === 0 && (
+                        <tr>
+                          <td colSpan={4} className="an2-bp-empty">
+                            No customers yet.
+                          </td>
+                        </tr>
+                      )}
+                      {topCustomers.rows.map((r) => (
+                        <tr key={r.phone}>
+                          <td>
+                            <span className="an2-bp-name">
+                              {r.name || "Customer"}
+                            </span>
+                            <span className="an2-cust-ph">+91 {r.mask}</span>
+                          </td>
+                          <td className="ta-r">{r.orders}</td>
+                          <td className="ta-r">
+                            ₹{Math.round(r.spend).toLocaleString()}
+                          </td>
+                          <td className="ta-r an2-cust-last">{r.lastLabel}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </An2Section>
+
+              <An2Section
+                title="Lead sources & conversion"
+                sub="Numbers captured on first visit → who placed an order"
+              >
+                {leadsLoading ? (
+                  <div className="sv-empty">Loading leads…</div>
+                ) : leadInsights.totalLeads === 0 ? (
+                  <div className="sv-empty">
+                    No captured numbers found (check the leads sheet is published).
+                  </div>
+                ) : (
+                  <>
+                    <div className="lead-kpis">
+                      <div className="lead-kpi">
+                        <span className="lead-kpi-val">
+                          {leadInsights.totalLeads.toLocaleString()}
+                        </span>
+                        <span className="lead-kpi-lbl">Numbers captured</span>
+                      </div>
+                      <div className="lead-kpi">
+                        <span className="lead-kpi-val pos">
+                          {leadInsights.ordered.toLocaleString()}
+                        </span>
+                        <span className="lead-kpi-lbl">Ordered</span>
+                      </div>
+                      <div className="lead-kpi">
+                        <span className="lead-kpi-val muted">
+                          {leadInsights.notOrdered.toLocaleString()}
+                        </span>
+                        <span className="lead-kpi-lbl">Not ordered</span>
+                      </div>
+                      <div className="lead-kpi">
+                        <span className="lead-kpi-val accent">
+                          {leadInsights.rate}%
+                        </span>
+                        <span className="lead-kpi-lbl">Conversion</span>
+                      </div>
+                    </div>
+                    <div className="lead-src-head">
+                      By source · ordered / captured · conversion
+                    </div>
+                    <HBars
+                      items={leadInsights.sources.map((s) => ({
+                        label: s.source,
+                        value: s.leads,
+                        display: `${s.ordered}/${s.leads} · ${s.rate}%`,
+                      }))}
+                      accent="#7c3aed"
+                    />
+                  </>
+                )}
+              </An2Section>
+
+              {/* Orders by weekday */}
+              <An2Section
+                title="Orders by weekday"
+                sub={`Which days bring the most orders this ${analyticsPeriod}`}
+              >
+                {(() => {
+                  const max = Math.max(1, ...weekdayData.map((b) => b.count));
+                  const busiest = weekdayData.reduce(
+                    (a, b) => (b.count > a.count ? b : a),
+                    weekdayData[0],
+                  );
+                  return (
+                    <div className="an2-bars">
+                      {weekdayData.map((b, i) => (
+                        <div className="an2-bar-col" key={i}>
+                          <span className="an2-bar-cap">{b.count || ""}</span>
+                          <div className="an2-bar-track">
+                            <div
+                              className={`an2-bar an2-bar-wd${b.label === busiest.label && busiest.count > 0 ? " peak" : ""}`}
+                              style={{ height: `${(b.count / max) * 100}%` }}
+                              data-tip={`${b.label}: ${b.count} order${b.count === 1 ? "" : "s"}`}
+                            />
+                          </div>
+                          <span className="an2-bar-x">{b.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </An2Section>
+
+              {/* Orders by time of day (6-hour quadrants) */}
+              <An2Section
+                title="Orders by time of day"
+                sub="When customers place orders (6-hour blocks)"
+              >
+                {(() => {
+                  const max = Math.max(1, ...quadrantData.map((q) => q.count));
+                  return (
+                    <div className="an2-quads">
+                      {quadrantData.map((q, i) => (
+                        <div className="an2-quad" key={i}>
+                          <div className="an2-quad-track">
+                            <div
+                              className="an2-quad-bar"
+                              style={{ height: `${(q.count / max) * 100}%` }}
+                              data-tip={`${q.label} · ${q.tag}: ${q.count} order${q.count === 1 ? "" : "s"}`}
+                            >
+                              <span className="an2-quad-num">{q.count}</span>
+                            </div>
+                          </div>
+                          <span className="an2-quad-lbl">{q.label}</span>
+                          <span className="an2-quad-tag">{q.tag}</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </An2Section>
+            </An2Group>
           </div>
+        )}
+
+        {/* Fulfilment pipeline — the order flow as a stepper. Each step
+            filters the list to that phase; tapping it again goes back to the
+            default Active view. Always rendered, so a phase with no orders
+            never strands the user without a way back. */}
+        {activeTab === "orders" && (
+          <nav className="mo-phases" aria-label="Order phases">
+            {ORDER_PHASES.map((p, i) => {
+              const val = `phase:${p.key}`;
+              const on =
+                Array.isArray(statusFilter) &&
+                statusFilter.length === 1 &&
+                statusFilter[0] === val;
+              return (
+                <button
+                  key={p.key}
+                  type="button"
+                  className={`mo-phase${on ? " on" : ""}${p.key === "issues" ? " is-issues" : ""}${phaseCounts[p.key] ? "" : " empty"}`}
+                  onClick={() => setStatusFilter(on ? ["active"] : [val])}
+                  aria-pressed={on}
+                  title={p.hint}
+                >
+                  <span className="mo-phase-top">
+                    <span className="mo-phase-step">
+                      {p.key === "issues" ? "!" : i + 1}
+                    </span>
+                    <span className="mo-phase-n">
+                      {phaseCounts[p.key].toLocaleString()}
+                    </span>
+                  </span>
+                  <span className="mo-phase-label">{p.label}</span>
+                  <span className="mo-phase-hint">{p.hint}</span>
+                </button>
+              );
+            })}
+          </nav>
         )}
 
         {/* Search + Filter row — inside the Orders tab only */}
@@ -13567,6 +14212,9 @@ export default function ManageOrdersPage() {
                     ? "Active"
                     : v === "intransit-notrack"
                       ? "In Transit · no tracking"
+                      : String(v).startsWith("phase:")
+                        ? ORDER_PHASES.find((p) => `phase:${p.key}` === v)
+                            ?.label || v
                       : v === "confirmed"
                         ? "Confirmed only"
                         : v === "unconfirmed"
@@ -13640,15 +14288,19 @@ export default function ManageOrdersPage() {
               );
               return (
                 <>
-                  <div className="admin-search-bar">
+                  {/* Row 1 — only what is used every time: search, the
+                      Filters & view sheet (badge = filters applied) and, in
+                      card view, bulk select. Everything else slides in. */}
+                  <div className="admin-search-bar mo-toolbar">
                     <div className="admin-search-input">
                       <Search size={16} />
                       <input
                         type="text"
                         className="admin-input mo-search-field"
-                        placeholder="Search by name, order ID, phone, or shipping ID..."
+                        placeholder="Search name, order ID, phone or tracking ID"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        aria-label="Search orders"
                       />
                       {searchQuery && (
                         <button
@@ -13663,21 +14315,37 @@ export default function ManageOrdersPage() {
                     </div>
                     <button
                       type="button"
-                      className={`admin-filter-btn admin-filter-btn-icon${showFilters ? " open" : ""}`}
-                      onClick={() => setShowFilters(!showFilters)}
+                      className={`mo-tb-btn${chips.length ? " set" : ""}`}
+                      onClick={() => setShowFilters(true)}
+                      aria-haspopup="dialog"
                       aria-expanded={showFilters}
-                      aria-label="Filters"
-                      title="Filters"
                     >
-                      <Filter size={17} />
+                      <SlidersHorizontal size={16} />
+                      <span className="mo-tb-btn-label">Filters</span>
                       {chips.length > 0 && (
-                        <span className="admin-filter-count">
-                          {chips.length}
-                        </span>
+                        <b className="mo-tb-badge">{chips.length}</b>
                       )}
                     </button>
+                    {orderView === "cards" && (
+                      <button
+                        type="button"
+                        className={`mo-tb-btn icon${cardSelectMode ? " on" : ""}`}
+                        onClick={() =>
+                          setCardSelectMode((v) => {
+                            if (v) setSelectedIds([]);
+                            return !v;
+                          })
+                        }
+                        aria-pressed={cardSelectMode}
+                        aria-label={cardSelectMode ? "Exit select mode" : "Select orders"}
+                        title={cardSelectMode ? "Exit select mode" : "Select orders"}
+                      >
+                        <CheckSquare size={16} />
+                      </button>
+                    )}
                   </div>
 
+                  {/* Row 2 — what is applied, removable one by one. */}
                   {chips.length > 0 && (
                     <div className="admin-chips-row">
                       <div className="admin-chips-scroll">
@@ -13704,121 +14372,408 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
-                  {/* Overview card now renders inside the orders header below. */}
-
-                  {/* Filter dropdown panel — absolute overlay */}
-                  <AnimatePresence>
-                    {showFilters && (
-                      <>
-                        <div
-                          className="admin-filter-backdrop"
-                          onClick={() => setShowFilters(false)}
-                        />
-                        <motion.div
-                          className="admin-filter-panel"
-                          initial={{ opacity: 0, y: -8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -8 }}
-                          transition={{ duration: 0.18, ease: "easeOut" }}
-                        >
-                          <div className="admin-filter-head">
-                          <span className="admin-filter-title">
-                            <SlidersHorizontal size={15} /> Filters
-                          </span>
-                          <button
-                            type="button"
-                            className="admin-filter-x"
-                            onClick={() => setShowFilters(false)}
-                            aria-label="Close filters"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-                        <div className="admin-filter-grid">
-                          <div className="admin-field">
-                            <label className="admin-field-label">
-                              Analytics period
-                            </label>
-                            <div className="admin-select-wrap">
-                              <select
-                                className="admin-select"
-                                value={analyticsPeriod}
-                                onChange={(e) => selectPeriod(e.target.value)}
-                              >
-                                <option value="day">Day</option>
-                                <option value="week">Week</option>
-                                <option value="month">Month</option>
-                                <option value="year">Year</option>
-                                <option value="all">All time</option>
-                              </select>
-                            </div>
-                          </div>
-                          {/* Order Status filter moved to the Tools & overview
-                              header dropdown; not duplicated here. */}
-                          <div className="admin-field">
-                            <label className="admin-field-label">
-                              Payment Type
-                            </label>
-                            <div className="admin-select-wrap">
-                              <select
-                                className="admin-select"
-                                value={paymentFilter}
-                                onChange={(e) =>
-                                  setPaymentFilter(e.target.value)
-                                }
-                              >
-                                <option value="all">All Payments</option>
-                                {distinctPayments.map((p) => (
-                                  <option key={p} value={p}>
-                                    {p}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          </div>
-                          <div className="admin-field">
-                            <label className="admin-field-label">
-                              From date
-                            </label>
-                            <input
-                              type="date"
-                              className="admin-input"
-                              value={dateFrom}
-                              onChange={(e) => setDateFrom(e.target.value)}
-                            />
-                          </div>
-                          <div className="admin-field">
-                            <label className="admin-field-label">To date</label>
-                            <input
-                              type="date"
-                              className="admin-input"
-                              value={dateTo}
-                              onChange={(e) => setDateTo(e.target.value)}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="admin-filter-foot">
-                          <button
-                            type="button"
-                            className="admin-filter-reset"
-                            disabled={chips.length === 0}
-                            onClick={clearAll}
-                          >
-                            <X size={14} /> Reset
-                          </button>
-                          <button
-                            type="button"
-                            className="admin-filter-done"
-                            onClick={() => setShowFilters(false)}
-                          >
-                            Done
-                          </button>
-                        </div>
-                        </motion.div>
-                      </>
+                  {/* Row 3 — the current view in one line, plus anything that
+                      needs attention. Scrolls sideways on phones. */}
+                  <div className="mo-viewsum">
+                    <span>
+                      <b>{realOrders.length.toLocaleString()}</b> order
+                      {realOrders.length === 1 ? "" : "s"}
+                    </span>
+                    <span>
+                      <b>₹{fRevenue.toLocaleString()}</b>
+                    </span>
+                    <span>
+                      <b>{fBooks.toLocaleString()}</b> books
+                    </span>
+                    <span className="mo-vs-pay">
+                      COD {fCod} · UPI {fUpi} · ₹99 {fPrepaid}
+                    </span>
+                    {unconfirmedOrders.length > 0 && (
+                      <button
+                        type="button"
+                        className="mo-vs-alert"
+                        onClick={() => setShowUnconfirmed(true)}
+                      >
+                        <AlertCircle size={13} />
+                        {unconfirmedOrders.length} to review
+                      </button>
                     )}
-                  </AnimatePresence>
+                    {unavailCandidates.length > 0 && (
+                      <button
+                        type="button"
+                        className="mo-vs-alert warn"
+                        onClick={() => setUnavailOpen(true)}
+                      >
+                        <AlertTriangle size={13} />
+                        {unavailCandidates.length} unavailable
+                      </button>
+                    )}
+                    {dismissedIds.length > 0 && (
+                      <button
+                        type="button"
+                        className="mo-vs-alert"
+                        onClick={reloadCards}
+                      >
+                        <RefreshCw size={13} />
+                        {dismissedIds.length} hidden
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Last 14 days at a glance for the current filters, stacked
+                      by payment type. Tap a day to filter the list to it; tap
+                      again to clear. Bar count = cards you'll see. */}
+                  {(() => {
+                    const DAYS = 14;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const days = Array.from({ length: DAYS }, (_, i) => {
+                      const d = new Date(today);
+                      d.setDate(d.getDate() - (DAYS - 1 - i));
+                      return { d, k: dayKey(d), upi: 0, adv: 0, cod: 0 };
+                    });
+                    const idx = Object.fromEntries(days.map((x, i) => [x.k, i]));
+                    chartBaseOrders.forEach((o) => {
+                      if (!String(o["Order ID"] || "").trim()) return;
+                      const d = getOrderDate(o);
+                      const i = d ? idx[dayKey(d)] : undefined;
+                      if (i == null) return;
+                      const mode = payModeOf(o["Payment Type"], o["Advance Paid"]);
+                      if (mode === "advance") days[i].adv += 1;
+                      else if (mode === "cod") days[i].cod += 1;
+                      else days[i].upi += 1;
+                    });
+                    const tot = (x) => x.upi + x.adv + x.cod;
+                    const max = Math.max(1, ...days.map(tot));
+                    const sum = days.reduce(
+                      (a, x) => ({ upi: a.upi + x.upi, adv: a.adv + x.adv, cod: a.cod + x.cod }),
+                      { upi: 0, adv: 0, cod: 0 },
+                    );
+                    return (
+                      <div className="mo-daybars">
+                        <div className="mo-daybars-head">
+                          <span>
+                            Last {DAYS} days
+                            {chips.some((c) => c.key !== "date") ? " · current filters" : ""}
+                          </span>
+                          <span className="mo-daybars-legend">
+                            <i className="upi" /> Online {sum.upi}
+                            <i className="adv" /> ₹99 advance {sum.adv}
+                            <i className="cod" /> COD {sum.cod}
+                          </span>
+                        </div>
+                        <div className="mo-daybars-plot">
+                          {days.map((x) => {
+                            const t = tot(x);
+                            const on = selectedDate === x.k;
+                            const isToday = x.k === dayKey(today);
+                            return (
+                              <button
+                                key={x.k}
+                                type="button"
+                                className={`mo-daybar${on ? " on" : ""}${selectedDate && !on ? " dim" : ""}`}
+                                onClick={() => setSelectedDate(on ? "" : x.k)}
+                                title={`${x.d.toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · ${t} orders — Online ${x.upi}, ₹99 ${x.adv}, COD ${x.cod}`}
+                                aria-pressed={on}
+                              >
+                                <span className="mo-daybar-n">{t || ""}</span>
+                                <span className="mo-daybar-col" style={{ height: `${(t / max) * 100}%` }}>
+                                  {x.cod > 0 && <span className="cod" style={{ flexGrow: x.cod }} />}
+                                  {x.adv > 0 && <span className="adv" style={{ flexGrow: x.adv }} />}
+                                  {x.upi > 0 && <span className="upi" style={{ flexGrow: x.upi }} />}
+                                </span>
+                                <span className="mo-daybar-d">
+                                  {isToday ? "Today" : x.d.getDate()}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Filters & view — slide-over sheet: from the right on
+                      desktop, up from the bottom on phones. Changes apply
+                      live; the footer button just closes it. */}
+                  {typeof document !== "undefined" &&
+                    createPortal(
+                      <AnimatePresence>
+                        {showFilters &&
+                          (() => {
+                            const phone =
+                              window.matchMedia("(max-width: 720px)").matches;
+                            const off = phone ? { y: "100%" } : { x: "100%" };
+                            const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+                            const today = new Date();
+                            const daysAgo = (n) => {
+                              const d = new Date(today);
+                              d.setDate(d.getDate() - n);
+                              return ymd(d);
+                            };
+                            const presets = [
+                              { k: "Today", from: ymd(today), to: ymd(today) },
+                              { k: "Last 7 days", from: daysAgo(6), to: ymd(today) },
+                              { k: "Last 30 days", from: daysAgo(29), to: ymd(today) },
+                              {
+                                k: "This month",
+                                from: ymd(new Date(today.getFullYear(), today.getMonth(), 1)),
+                                to: ymd(today),
+                              },
+                            ];
+                            const statusVal =
+                              Array.isArray(statusFilter) && statusFilter.length === 1
+                                ? statusFilter[0]
+                                : "custom";
+                            return (
+                              <>
+                                <motion.div
+                                  key="mo-sheet-bg"
+                                  className="mo-sheet-backdrop"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  onClick={() => setShowFilters(false)}
+                                />
+                                <motion.aside
+                                  key="mo-sheet"
+                                  className="mo-sheet"
+                                  role="dialog"
+                                  aria-modal="true"
+                                  aria-label="Filters and view"
+                                  initial={off}
+                                  animate={{ x: 0, y: 0 }}
+                                  exit={off}
+                                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                >
+                                  <span className="mo-sheet-grip" aria-hidden="true" />
+                                  <div className="mo-sheet-head">
+                                    <h3>Filters &amp; view</h3>
+                                    <button
+                                      type="button"
+                                      className="mo-sheet-x"
+                                      onClick={() => setShowFilters(false)}
+                                      aria-label="Close"
+                                    >
+                                      <X size={18} />
+                                    </button>
+                                  </div>
+
+                                  <div className="mo-sheet-body">
+                                    <section className="mo-sheet-sec">
+                                      <h4>Status</h4>
+                                      <select
+                                        className="mo-sheet-select"
+                                        value={statusVal}
+                                        onChange={(e) => setStatusFilter([e.target.value])}
+                                      >
+                                        {statusVal === "custom" && (
+                                          <option value="custom" disabled>
+                                            Custom…
+                                          </option>
+                                        )}
+                                        <option value="active">Active (default)</option>
+                                        <option value="all">All statuses</option>
+                                        <optgroup label="Flow">
+                                          {ORDER_PHASES.map((p) => (
+                                            <option key={p.key} value={`phase:${p.key}`}>
+                                              {p.label}
+                                            </option>
+                                          ))}
+                                        </optgroup>
+                                        <optgroup label="Exact status">
+                                          {quickStatuses.map((st) => (
+                                            <option key={st} value={st}>
+                                              {st}
+                                            </option>
+                                          ))}
+                                          <option value="returns">Returns · pending</option>
+                                          <option value="unconfirmed">Unconfirmed</option>
+                                        </optgroup>
+                                      </select>
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>Payment</h4>
+                                      <div className="mo-seg wrap">
+                                        {["all", ...distinctPayments].map((p) => (
+                                          <button
+                                            key={p}
+                                            type="button"
+                                            className={paymentFilter === p ? "on" : ""}
+                                            onClick={() => setPaymentFilter(p)}
+                                          >
+                                            {p === "all" ? "All" : p}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>Date</h4>
+                                      <div className="mo-seg wrap">
+                                        {presets.map((p) => (
+                                          <button
+                                            key={p.k}
+                                            type="button"
+                                            className={dateFrom === p.from && dateTo === p.to ? "on" : ""}
+                                            onClick={() => {
+                                              setSelectedDate("");
+                                              setDateFrom(p.from);
+                                              setDateTo(p.to);
+                                            }}
+                                          >
+                                            {p.k}
+                                          </button>
+                                        ))}
+                                        <button
+                                          type="button"
+                                          className={!dateFrom && !dateTo ? "on" : ""}
+                                          onClick={() => {
+                                            setSelectedDate("");
+                                            setDateFrom("");
+                                            setDateTo("");
+                                          }}
+                                        >
+                                          Any time
+                                        </button>
+                                      </div>
+                                      <div className="mo-sheet-dates">
+                                        <label>
+                                          <span>From</span>
+                                          <input
+                                            type="date"
+                                            value={dateFrom}
+                                            max={dateTo || undefined}
+                                            onChange={(e) => setDateFrom(e.target.value)}
+                                          />
+                                        </label>
+                                        <label>
+                                          <span>To</span>
+                                          <input
+                                            type="date"
+                                            value={dateTo}
+                                            min={dateFrom || undefined}
+                                            onChange={(e) => setDateTo(e.target.value)}
+                                          />
+                                        </label>
+                                      </div>
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>View</h4>
+                                      <div className="mo-sheet-row">
+                                        <span>Layout</span>
+                                        <div className="mo-seg">
+                                          <button
+                                            type="button"
+                                            className={orderView === "cards" ? "on" : ""}
+                                            onClick={() => setOrderView("cards")}
+                                          >
+                                            <LayoutGrid size={14} /> Cards
+                                          </button>
+                                          <button
+                                            type="button"
+                                            className={orderView === "table" ? "on" : ""}
+                                            onClick={() => setOrderView("table")}
+                                          >
+                                            <List size={14} /> Table
+                                          </button>
+                                        </div>
+                                      </div>
+                                      <div className="mo-sheet-row">
+                                        <span>Sort</span>
+                                        <div className="mo-seg">
+                                          <button
+                                            type="button"
+                                            className={sortOrder === "desc" ? "on" : ""}
+                                            onClick={() => setSortOrder("desc")}
+                                          >
+                                            Newest
+                                          </button>
+                                          <button
+                                            type="button"
+                                            className={sortOrder === "asc" ? "on" : ""}
+                                            onClick={() => setSortOrder("asc")}
+                                          >
+                                            Oldest
+                                          </button>
+                                        </div>
+                                      </div>
+                                      {orderView === "cards" && (
+                                        <div className="mo-sheet-row">
+                                          <span>Card detail</span>
+                                          <div className="mo-seg">
+                                            <button
+                                              type="button"
+                                              className={!compactCards ? "on" : ""}
+                                              onClick={() => setCompactCards(false)}
+                                            >
+                                              Full
+                                            </button>
+                                            <button
+                                              type="button"
+                                              className={compactCards ? "on" : ""}
+                                              onClick={() => setCompactCards(true)}
+                                            >
+                                              Compact
+                                            </button>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>Export</h4>
+                                      <div className="mo-sheet-actions">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            exportGettingShippedCSV();
+                                            setShowFilters(false);
+                                          }}
+                                        >
+                                          <Download size={15} /> Shipped CSV
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setCoversModalOpen(true);
+                                            setShowFilters(false);
+                                          }}
+                                        >
+                                          <Download size={15} /> Covers PNG
+                                        </button>
+                                      </div>
+                                    </section>
+                                  </div>
+
+                                  <div className="mo-sheet-foot">
+                                    <button
+                                      type="button"
+                                      className="mo-sheet-clear"
+                                      disabled={chips.length === 0}
+                                      onClick={clearAll}
+                                    >
+                                      Clear all
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="mo-sheet-done"
+                                      onClick={() => setShowFilters(false)}
+                                    >
+                                      Show {realOrders.length.toLocaleString()} order
+                                      {realOrders.length === 1 ? "" : "s"}
+                                    </button>
+                                  </div>
+                                </motion.aside>
+                              </>
+                            );
+                          })()}
+                      </AnimatePresence>,
+                      moPortalTarget(),
+                    )}
                 </>
               );
             })()}
@@ -15646,8 +16601,9 @@ export default function ManageOrdersPage() {
                     />
                   </span>
                   <span className="mo-deliv-sub">
-                    Upload the paid-COD article bill(s). Matched orders become{" "}
-                    <b>Delivered</b>. You can add several files before pushing.
+                    Upload the paid-COD article bill(s) — money actually
+                    remitted. Review the preview, then push: matched orders
+                    become <b>Delivered</b>. Add several files before pushing.
                   </span>
                 </div>
                 <button
@@ -15693,97 +16649,161 @@ export default function ManageOrdersPage() {
 
               {cbMatches.length > 0 && (
                 <>
-                  <div className="mo-deliv-bar">
-                    <label className="mo-deliv-all">
-                      <input
-                        type="checkbox"
-                        checked={cbSel.length === cbMatches.length}
-                        onChange={(e) =>
-                          setCbSel(
-                            e.target.checked
-                              ? cbMatches.map((m) => m.order["Order ID"])
-                              : [],
-                          )
-                        }
-                      />
-                      Select all ({cbSel.length}/{cbMatches.length})
-                      <span className="mo-cb-total">
-                        Total COD ₹
-                        {cbMatches
-                          .filter((m) =>
-                            cbSel.length
-                              ? cbSel.includes(m.order["Order ID"])
-                              : true,
-                          )
-                          .reduce((s, m) => s + (Number(m.codValue) || 0), 0)
-                          .toLocaleString()}
-                      </span>
-                    </label>
-                    <div className="mo-deliv-bar-actions">
-                      <button
-                        type="button"
-                        className="mo-deliv-clear"
-                        onClick={clearCodBill}
-                        disabled={cbBusy}
-                      >
-                        Clear
-                      </button>
-                      <button
-                        type="button"
-                        className="mo-deliv-push"
-                        onClick={pushCodBillUpdates}
-                        disabled={cbBusy || cbSel.length === 0}
-                      >
-                        {cbBusy ? (
-                          <Loader2 size={15} className="mo-spin" />
-                        ) : (
-                          <Check size={15} />
-                        )}
-                        Push {cbSel.length} update
-                        {cbSel.length === 1 ? "" : "s"}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="mo-deliv-list">
-                    {cbMatches.map((m) => {
-                      const oid = m.order["Order ID"];
-                      const on = cbSel.includes(oid);
-                      return (
-                        <div
-                          key={oid}
-                          className={`mo-deliv-row${on ? " on" : ""}`}
-                          onClick={() => toggleCbSel(oid)}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={on}
-                            onChange={() => toggleCbSel(oid)}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <div className="mo-deliv-row-main">
-                            <span className="mo-deliv-row-name">
-                              {m.order["Customer Name"] || "—"}
-                              <span className="mo-deliv-row-oid">{oid}</span>
-                            </span>
-                            <span className="mo-deliv-row-art">
-                              {m.article}
-                              {m.codValue ? ` · COD ₹${m.codValue}` : ""}
-                            </span>
+                  {/* Preview, grouped by where each order is coming from:
+                      the expected path (Money received → Delivered) first,
+                      then everything else, with odd cases flagged. */}
+                  {(() => {
+                    const isMR = (m) => /money\s*received/i.test(m.currentStatus);
+                    const isOdd = (m) => /cancel|return|hold/i.test(m.currentStatus);
+                    const groups = [
+                      {
+                        k: "mr",
+                        title: "Money received → Delivered",
+                        hint: "COD collected and now remitted — the normal path",
+                        rows: cbMatches.filter(isMR),
+                      },
+                      {
+                        k: "other",
+                        title: "Other statuses → Delivered",
+                        hint: "Remitted before the delivery scan was recorded here",
+                        rows: cbMatches.filter((m) => !isMR(m)),
+                      },
+                    ].filter((g) => g.rows.length);
+                    const oddN = cbMatches.filter(isOdd).length;
+                    return (
+                      <>
+                        <div className="mo-cb-summary">
+                          <div>
+                            <b>{cbMatches.length}</b>
+                            <span>orders in bills</span>
                           </div>
-                          <div className="mo-deliv-row-flow">
-                            <span className="mo-deliv-cur">
-                              {m.currentStatus}
-                            </span>
-                            <ArrowRight size={13} />
-                            <span className="mo-deliv-new paid">
-                              <Truck size={11} />
-                              {m.newStatus}
-                            </span>
+                          <div>
+                            <b>
+                              ₹
+                              {cbMatches
+                                .reduce((t, m) => t + (Number(m.codValue) || 0), 0)
+                                .toLocaleString("en-IN")}
+                            </b>
+                            <span>COD remitted</span>
+                          </div>
+                          <div>
+                            <b>{cbMatches.filter(isMR).length}</b>
+                            <span>were Money received</span>
+                          </div>
+                          <div className={oddN ? "warn" : ""}>
+                            <b>{oddN}</b>
+                            <span>need a check</span>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="mo-deliv-bar">
+                          <label className="mo-deliv-all">
+                            <input
+                              type="checkbox"
+                              checked={cbSel.length === cbMatches.length}
+                              onChange={(e) =>
+                                setCbSel(
+                                  e.target.checked
+                                    ? cbMatches.map((m) => m.order["Order ID"])
+                                    : [],
+                                )
+                              }
+                            />
+                            Select all ({cbSel.length}/{cbMatches.length})
+                            <span className="mo-cb-total">
+                              Total COD ₹
+                              {cbMatches
+                                .filter((m) =>
+                                  cbSel.length
+                                    ? cbSel.includes(m.order["Order ID"])
+                                    : true,
+                                )
+                                .reduce((s, m) => s + (Number(m.codValue) || 0), 0)
+                                .toLocaleString()}
+                            </span>
+                          </label>
+                          <div className="mo-deliv-bar-actions">
+                            <button
+                              type="button"
+                              className="mo-deliv-clear"
+                              onClick={clearCodBill}
+                              disabled={cbBusy}
+                            >
+                              Clear
+                            </button>
+                            <button
+                              type="button"
+                              className="mo-deliv-push"
+                              onClick={pushCodBillUpdates}
+                              disabled={cbBusy || cbSel.length === 0}
+                            >
+                              {cbBusy ? (
+                                <Loader2 size={15} className="mo-spin" />
+                              ) : (
+                                <Check size={15} />
+                              )}
+                              Push {cbSel.length} update
+                              {cbSel.length === 1 ? "" : "s"}
+                            </button>
+                          </div>
+                        </div>
+                        {groups.map((g) => (
+                          <div key={g.k} className="mo-deliv-group">
+                            <div className="mo-deliv-group-head">
+                              <span>
+                                {g.title} · {g.rows.length}
+                              </span>
+                              <em>{g.hint}</em>
+                            </div>
+                            <div className="mo-deliv-list">
+                              {g.rows.map((m) => {
+                                const oid = m.order["Order ID"];
+                                const on = cbSel.includes(oid);
+                                const odd = isOdd(m);
+                                return (
+                                  <div
+                                    key={oid}
+                                    className={`mo-deliv-row${on ? " on" : ""}${odd ? " odd" : ""}`}
+                                    onClick={() => toggleCbSel(oid)}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={on}
+                                      onChange={() => toggleCbSel(oid)}
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                    <div className="mo-deliv-row-main">
+                                      <span className="mo-deliv-row-name">
+                                        {m.order["Customer Name"] || "—"}
+                                        <span className="mo-deliv-row-oid">{oid}</span>
+                                      </span>
+                                      <span className="mo-deliv-row-art">
+                                        {m.article}
+                                        {m.codValue
+                                          ? ` · COD ₹${Number(m.codValue).toLocaleString("en-IN")}`
+                                          : ""}
+                                        {odd &&
+                                          ` · was ${m.currentStatus} — confirm before pushing`}
+                                      </span>
+                                    </div>
+                                    <div className="mo-deliv-row-flow">
+                                      <span className="mo-deliv-cur">
+                                        {m.currentStatus}
+                                      </span>
+                                      <ArrowRight size={13} />
+                                      <span className="mo-deliv-new paid">
+                                        <CheckCircle size={11} />
+                                        {m.newStatus}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    );
+                  })()}
                 </>
               )}
               </>
@@ -15828,7 +16848,8 @@ export default function ManageOrdersPage() {
                   )}
                   {delivMatches.length ||
                   revertMatches.length ||
-                  cancelMatches.length
+                  cancelMatches.length ||
+                  holdMatches.length
                     ? "Upload another"
                     : "Upload file"}
                 </button>
@@ -15951,6 +16972,81 @@ export default function ManageOrdersPage() {
 
               {/* Reverse-reconcile — file says NOT delivered but order is marked
                   Delivered / Money Received → move back to In Transit. */}
+              {/* Held by India Post → "On hold by India Post". */}
+              {holdMatches.length > 0 && (
+                <>
+                  <div className="mo-deliv-bar mo-deliv-bar-hold">
+                    <label className="mo-deliv-all">
+                      <input
+                        type="checkbox"
+                        checked={holdSel.length === holdMatches.length}
+                        onChange={(e) =>
+                          setHoldSel(
+                            e.target.checked
+                              ? holdMatches.map((m) => m.order["Order ID"])
+                              : [],
+                          )
+                        }
+                      />
+                      On hold at India Post ({holdSel.length}/
+                      {holdMatches.length})
+                    </label>
+                    <button
+                      type="button"
+                      className="mo-deliv-hold-push"
+                      onClick={pushHoldUpdates}
+                      disabled={delivBusy || holdSel.length === 0}
+                    >
+                      {delivBusy ? (
+                        <Loader2 size={15} className="mo-spin" />
+                      ) : (
+                        <AlertTriangle size={15} />
+                      )}
+                      Mark {holdSel.length} on hold
+                    </button>
+                  </div>
+                  <div className="mo-deliv-list">
+                    {holdMatches.map((m) => {
+                      const oid = m.order["Order ID"];
+                      const on = holdSel.includes(oid);
+                      return (
+                        <div
+                          key={oid}
+                          className={`mo-deliv-row${on ? " on" : ""}`}
+                          onClick={() => toggleHoldSel(oid)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={on}
+                            onChange={() => toggleHoldSel(oid)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <div className="mo-deliv-row-main">
+                            <span className="mo-deliv-row-name">
+                              {m.order["Customer Name"] || "—"}
+                              <span className="mo-deliv-row-oid">{oid}</span>
+                            </span>
+                            <span className="mo-deliv-row-art">
+                              {m.article} · file: {m.lastEvent}
+                            </span>
+                          </div>
+                          <div className="mo-deliv-row-flow">
+                            <span className="mo-deliv-cur">
+                              {m.currentStatus}
+                            </span>
+                            <ArrowRight size={13} />
+                            <span className="mo-deliv-new hold">
+                              <AlertTriangle size={11} />
+                              On hold
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+
               {revertMatches.length > 0 && (
                 <>
                   <div className="mo-deliv-bar mo-deliv-bar-revert">
@@ -16759,551 +17855,7 @@ export default function ManageOrdersPage() {
           <>
               {filteredOrders.length > 0 ? (
                 <div className="flex flex-col gap-12">
-            {filteredOrders.length > 0 && (
-              <div className="mo-tools-box">
-                <div className="mo-tools-head">
-                  {/* Full-width top row: label on the left, chevron on the
-                      right. Clicking anywhere on it toggles the accordion. */}
-                  <button
-                    type="button"
-                    className={`mo-tools-accordion mo-tools-toprow${toolsOpen ? " open" : ""}`}
-                    onClick={() =>
-                      setToolsOpen((v) => {
-                        // Opening the tools accordion also expands the inner
-                        // Overview so everything is visible in one tap.
-                        if (!v) setOverviewOpen(true);
-                        return !v;
-                      })
-                    }
-                    aria-expanded={toolsOpen}
-                  >
-                    <span>
-                      {toolsOpen ? "Hide tools & overview" : "Tools & overview"}
-                    </span>
-                    {toolsOpen ? (
-                      <ChevronUp size={18} />
-                    ) : (
-                      <ChevronDown size={18} />
-                    )}
-                  </button>
-                  {/* Controls live in the header so they're reachable without
-                      expanding the accordion. */}
-                  <div className="orders-list-header mo-ohead mo-ohead-head">
-                    <div className="orders-header-right mo-menu-wrap">
-                      {/* Unconfirmed count moved to the Overview card ("Review orders"). */}
-                      {dismissedIds.length > 0 && (
-                        <button
-                          type="button"
-                          className="mo-view-btn"
-                          onClick={reloadCards}
-                          title={`Reload ${dismissedIds.length} hidden card${dismissedIds.length === 1 ? "" : "s"}`}
-                          aria-label="Reload hidden cards"
-                        >
-                          <RefreshCw size={16} />
-                        </button>
-                      )}
-                      <div className="mo-view-toggle mo-view-icons">
-                        <button
-                          type="button"
-                          className="mo-view-btn"
-                          onClick={() =>
-                            setSortOrder((s) => (s === "desc" ? "asc" : "desc"))
-                          }
-                          title={
-                            sortOrder === "desc"
-                              ? "Latest first (tap for oldest)"
-                              : "Oldest first (tap for latest)"
-                          }
-                          aria-label="Toggle sort order"
-                        >
-                          <motion.span
-                            animate={{ rotate: sortOrder === "desc" ? 0 : 180 }}
-                            transition={{
-                              type: "spring",
-                              stiffness: 320,
-                              damping: 22,
-                            }}
-                            style={{ display: "inline-flex" }}
-                          >
-                            <ArrowUpDown size={16} />
-                          </motion.span>
-                        </button>
-                        <span className="mo-view-div" />
-                        <select
-                          className="mo-status-filter mo-status-green"
-                          title="Filter by status"
-                          value={
-                            Array.isArray(statusFilter) &&
-                            statusFilter.length === 1
-                              ? statusFilter[0]
-                              : "custom"
-                          }
-                          onChange={(e) => setStatusFilter([e.target.value])}
-                        >
-                          {Array.isArray(statusFilter) &&
-                            statusFilter.length !== 1 && (
-                              <option value="custom" disabled>
-                                Custom…
-                              </option>
-                            )}
-                          <option value="active">Active</option>
-                          <option value="all">All statuses</option>
-                          {quickStatuses.map((s) => (
-                            <option key={s} value={s}>
-                              {s}
-                            </option>
-                          ))}
-                          <option value="returns">Returns · pending</option>
-                          <option value="unconfirmed">Unconfirmed</option>
-                        </select>
-                        {orderView === "cards" && (
-                          <>
-                            <span className="mo-view-div" />
-                            <button
-                              type="button"
-                              className={`mo-view-btn${compactCards ? " active" : ""}`}
-                              onClick={() => setCompactCards((v) => !v)}
-                              title={
-                                compactCards
-                                  ? "Expand all cards"
-                                  : "Collapse all cards"
-                              }
-                              aria-label={
-                                compactCards
-                                  ? "Expand all cards"
-                                  : "Collapse all cards"
-                              }
-                            >
-                              {compactCards ? (
-                                <Maximize2 size={16} />
-                              ) : (
-                                <Minimize2 size={16} />
-                              )}
-                            </button>
-                            {/* Unavailable moved to the Overview card. */}
-                            <span className="mo-view-div" />
-                            <button
-                              type="button"
-                              className={`mo-view-btn mo-select-btn${cardSelectMode ? " active" : ""}`}
-                              onClick={() => {
-                                setCardSelectMode((v) => {
-                                  if (v) setSelectedIds([]);
-                                  return !v;
-                                });
-                              }}
-                              aria-label={
-                                cardSelectMode ? "Exit select mode" : "Select orders"
-                              }
-                              title={
-                                cardSelectMode ? "Exit select mode" : "Select orders"
-                              }
-                            >
-                              <CheckSquare size={16} />
-                            </button>
-                          </>
-                        )}
-                        <span className="mo-view-div" />
-                        <button
-                          type="button"
-                          className="mo-view-btn"
-                          onClick={() => setShowListMenu((v) => !v)}
-                          title="More"
-                          aria-haspopup="true"
-                          aria-expanded={showListMenu}
-                        >
-                          <MoreVertical size={16} />
-                        </button>
-                      </div>
-                      <AnimatePresence>
-                        {showListMenu && (
-                          <>
-                            <div
-                              className="mo-menu-backdrop"
-                              onClick={() => setShowListMenu(false)}
-                            />
-                            <motion.div
-                              className="mo-menu"
-                              role="menu"
-                              initial={{ opacity: 0, scale: 0.94, y: -6 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.94, y: -6 }}
-                              transition={{ duration: 0.16, ease: "easeOut" }}
-                            >
-                              <button
-                                type="button"
-                                className="mo-menu-item"
-                                onClick={() => {
-                                  exportGettingShippedCSV();
-                                  setShowListMenu(false);
-                                }}
-                              >
-                                <Download size={16} /> Shipped CSV
-                              </button>
-                              <button
-                                type="button"
-                                className="mo-menu-item"
-                                onClick={() => {
-                                  setCoversModalOpen(true);
-                                  setShowListMenu(false);
-                                }}
-                              >
-                                <Download size={16} /> Covers PNG
-                              </button>
-                            </motion.div>
-                          </>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-                </div>
-                <AnimatePresence initial={false}>
-                  {toolsOpen && (
-                    <motion.div
-                      className="mo-tools-reveal"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
-                      style={{ overflow: "hidden" }}
-                    >
-                      <div className="mo-tools-reveal-inner">
-                        {/* Overview — collapsible stats + quick links (Show all / Hide all) */}
-                        <div className={`mo-ov${overviewOpen ? " open" : ""}`}>
-                    {!overviewOpen ? (
-                      <div className="mo-ov-collapsed">
-                        <span className="mo-ov-k">Overview</span>
-                        <span className="mo-ov-counts">
-                          <span className="mo-ov-num" title="Total orders">
-                            {orderStats.total}
-                          </span>
-                          <span className="mo-ov-sep" />
-                          <button
-                            type="button"
-                            className="mo-ov-num link"
-                            onClick={() => setShowUnconfirmed(true)}
-                            title="Review orders (unconfirmed)"
-                          >
-                            {unconfirmedOrders.length}
-                          </button>
-                          <span className="mo-ov-sep" />
-                          <button
-                            type="button"
-                            className="mo-ov-num link warn"
-                            onClick={() => setUnavailOpen(true)}
-                            title="Unavailable books"
-                          >
-                            {unavailCandidates.length}
-                          </button>
-                          <span className="mo-ov-sep" />
-                          <button
-                            type="button"
-                            className={`mo-ov-ly${orderView === "cards" ? " on" : ""}`}
-                            onClick={() =>
-                              setOrderView(
-                                orderView === "cards" ? "table" : "cards",
-                              )
-                            }
-                            title="Toggle layout"
-                            aria-label="Toggle layout"
-                          >
-                            <LayoutGrid size={16} />
-                          </button>
-                        </span>
-                        <button
-                          type="button"
-                          className="mo-ov-toggle"
-                          onClick={() => setOverviewOpen(true)}
-                        >
-                          Show all <ChevronDown size={14} />
-                        </button>
-                      </div>
-                    ) : (
-                      (() => {
-                        const total = Math.max(1, orderStats.total);
-                        const pct = (n) =>
-                          Math.min(100, Math.round((n / total) * 100));
-                        const fmtD = (d, withYear) =>
-                          d
-                            ? d.toLocaleDateString("en-IN", {
-                                day: "numeric",
-                                month: "short",
-                                ...(withYear ? { year: "numeric" } : {}),
-                              })
-                            : "";
-                        const sameDay =
-                          orderStats.minDate &&
-                          orderStats.maxDate &&
-                          orderStats.minDate.toDateString() ===
-                            orderStats.maxDate.toDateString();
-                        return (
-                          <div className="mo-ov-list mo-ov2">
-                            {orderStats.minDate && (
-                              <div className="mo-ov2-range">
-                                <Calendar size={14} />
-                                <span>
-                                  {sameDay
-                                    ? fmtD(orderStats.minDate, true)
-                                    : `${fmtD(orderStats.minDate)} – ${fmtD(
-                                        orderStats.maxDate,
-                                        true,
-                                      )}`}
-                                </span>
-                                <b>{orderStats.total} orders</b>
-                              </div>
-                            )}
-
-                            <div className="mo-ov2-tiles">
-                              <div className="mo-ov2-tile">
-                                <span className="mo-ov2-ic ic-blue">
-                                  <ShoppingBag size={15} />
-                                </span>
-                                <span className="mo-ov2-val">
-                                  {orderStats.total}
-                                </span>
-                                <span className="mo-ov2-cap">Total orders</span>
-                              </div>
-                              <div className="mo-ov2-tile">
-                                <span className="mo-ov2-ic ic-green">
-                                  <IndianRupee size={15} />
-                                </span>
-                                <span className="mo-ov2-val">
-                                  ₹{orderStats.revenue.toLocaleString()}
-                                </span>
-                                <span className="mo-ov2-cap">Revenue</span>
-                              </div>
-                              <div className="mo-ov2-tile">
-                                <span className="mo-ov2-ic ic-violet">
-                                  <Package size={15} />
-                                </span>
-                                <span className="mo-ov2-val">
-                                  {orderStats.books}
-                                </span>
-                                <span className="mo-ov2-cap">Books sold</span>
-                              </div>
-                            </div>
-
-                            <div className="mo-ov2-block">
-                              <div className="mo-ov2-block-head">
-                                <Wallet size={14} />
-                                <span>Payment split</span>
-                              </div>
-                              <div className="mo-ov2-seg">
-                                <i
-                                  className="seg-cod"
-                                  style={{ width: `${pct(orderStats.cod)}%` }}
-                                />
-                                <i
-                                  className="seg-upi"
-                                  style={{ width: `${pct(orderStats.upi)}%` }}
-                                />
-                                <i
-                                  className="seg-adv"
-                                  style={{
-                                    width: `${pct(orderStats.prepaid)}%`,
-                                  }}
-                                />
-                              </div>
-                              <div className="mo-ov2-legend">
-                                <span>
-                                  <i className="dot-cod" /> COD {orderStats.cod}
-                                </span>
-                                <span>
-                                  <i className="dot-upi" /> UPI {orderStats.upi}
-                                </span>
-                                <span>
-                                  <i className="dot-adv" /> ₹99{" "}
-                                  {orderStats.prepaid}
-                                </span>
-                              </div>
-                            </div>
-
-                            {orderStats.byDate.length > 0 &&
-                              (() => {
-                                const maxDay = Math.max(
-                                  1,
-                                  ...orderStats.byDate.map((d) => d.count),
-                                );
-                                return (
-                                  <div className="mo-ov2-block">
-                                    <button
-                                      type="button"
-                                      className={`mo-ov2-acc${byDateOpen ? " open" : ""}`}
-                                      onClick={toggleByDate}
-                                      aria-expanded={byDateOpen}
-                                    >
-                                      <span className="mo-ov2-acc-l">
-                                        <Calendar size={14} />
-                                        Orders by date
-                                        <b>
-                                          {" "}
-                                          · {orderStats.byDate.length} day
-                                          {orderStats.byDate.length === 1
-                                            ? ""
-                                            : "s"}
-                                        </b>
-                                      </span>
-                                      <ChevronDown
-                                        size={16}
-                                        className="mo-ov2-acc-chev"
-                                      />
-                                    </button>
-                                    {byDateOpen && (
-                                      <div className="mo-ov2-days-scroll">
-                                        {orderStats.byDate
-                                          .slice()
-                                          .reverse()
-                                          .map((day) => {
-                                            const fillH = Math.round(
-                                              (day.count / maxDay) * 100,
-                                            );
-                                            const codH =
-                                              day.count > 0
-                                                ? (day.cod / day.count) * 100
-                                                : 0;
-                                            const onH =
-                                              day.count > 0
-                                                ? (day.online / day.count) * 100
-                                                : 0;
-                                            return (
-                                              <div
-                                                className="mo-ov2-daycol"
-                                                key={day.dateT}
-                                                title={`${day.count} orders · COD ${day.cod} · Online ${day.online}`}
-                                              >
-                                                <span className="mo-ov2-daycol-n">
-                                                  {day.count}
-                                                </span>
-                                                <div className="mo-ov2-tube">
-                                                  <div
-                                                    className="mo-ov2-tube-fill"
-                                                    style={{
-                                                      height: `${Math.max(6, fillH)}%`,
-                                                    }}
-                                                  >
-                                                    <i
-                                                      className="t-online"
-                                                      style={{
-                                                        height: `${onH}%`,
-                                                      }}
-                                                    />
-                                                    <i
-                                                      className="t-cod"
-                                                      style={{
-                                                        height: `${codH}%`,
-                                                      }}
-                                                    />
-                                                  </div>
-                                                </div>
-                                                <span className="mo-ov2-daycol-date">
-                                                  {fmtD(day.date)}
-                                                </span>
-                                                <span className="mo-ov2-daycol-split">
-                                                  <i className="dot-cod" />
-                                                  {day.cod}
-                                                  <i className="dot-upi" />
-                                                  {day.online}
-                                                </span>
-                                              </div>
-                                            );
-                                          })}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })()}
-
-                            <button
-                              type="button"
-                              className="mo-ov2-prog link"
-                              onClick={() => setShowUnconfirmed(true)}
-                            >
-                              <span className="mo-ov2-ic ic-amber">
-                                <AlertCircle size={15} />
-                              </span>
-                              <div className="mo-ov2-prog-body">
-                                <div className="mo-ov2-prog-top">
-                                  <span>Review orders</span>
-                                  <b>{unconfirmedOrders.length}</b>
-                                </div>
-                                <div className="mo-ov2-bar">
-                                  <i
-                                    className="b-amber"
-                                    style={{
-                                      width: `${pct(unconfirmedOrders.length)}%`,
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </button>
-
-                            <button
-                              type="button"
-                              className="mo-ov2-prog link"
-                              onClick={() => setUnavailOpen(true)}
-                            >
-                              <span className="mo-ov2-ic ic-red">
-                                <AlertTriangle size={15} />
-                              </span>
-                              <div className="mo-ov2-prog-body">
-                                <div className="mo-ov2-prog-top">
-                                  <span>Unavailable books</span>
-                                  <b className="warn">
-                                    {unavailCandidates.length}
-                                  </b>
-                                </div>
-                                <div className="mo-ov2-bar">
-                                  <i
-                                    className="b-red"
-                                    style={{
-                                      width: `${pct(unavailCandidates.length)}%`,
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </button>
-
-                            <div className="mo-ov-li mo-ov2-layout">
-                              <span>
-                                <LayoutDashboard size={14} /> Layout
-                              </span>
-                              <span className="mo-ov-ly-toggle">
-                                <button
-                                  type="button"
-                                  className={orderView === "cards" ? "on" : ""}
-                                  onClick={() => setOrderView("cards")}
-                                  aria-label="Card view"
-                                >
-                                  <LayoutGrid size={15} />
-                                </button>
-                                <button
-                                  type="button"
-                                  className={orderView === "table" ? "on" : ""}
-                                  onClick={() => setOrderView("table")}
-                                  aria-label="Table view"
-                                >
-                                  <List size={15} />
-                                </button>
-                              </span>
-                            </div>
-
-                            <button
-                              type="button"
-                              className="mo-ov-toggle"
-                              onClick={() => setOverviewOpen(false)}
-                            >
-                              Hide all <ChevronUp size={14} />
-                            </button>
-                          </div>
-                        );
-                      })()
-                    )}
-                  </div>
-                  </div>
-                  </motion.div>
-                )}
-                </AnimatePresence>
-              </div>
-            )}
+            {/* View controls now live in the toolbar above the list. */}
 
 
                   {Object.keys(pendingStatus).length > 0 && (
@@ -17372,161 +17924,315 @@ export default function ManageOrdersPage() {
                   {/* (Removed the top "Gift cards PDF" stripe — the same
                       download lives in the select bulk bar below.) */}
 
-                  {orderView === "cards" && cardSelectMode && (
-                    <div className="mo-cardbulk-bar">
-                      <div className="mo-cardbulk-left">
-                        <CheckSquare size={16} />
-                        <span className="mo-cardbulk-count">
-                          {selectedIds.length} selected
-                        </span>
-                        {selectedIds.length > 0 && (
-                          <button
-                            type="button"
-                            className="mo-cardbulk-clear"
-                            onClick={() => setSelectedIds([])}
-                          >
-                            Clear
-                          </button>
-                        )}
+                  {/* Select mode — a slim selection bar pinned to the bottom
+                      (above the tab bar on phones) and an Actions sheet that
+                      slides up with everything you can do to the selection.
+                      Nothing pushes the cards down any more. */}
+                  {/* Portaled: the section's entrance transform would
+                      otherwise pin a fixed bar to the section, not the screen. */}
+                  {orderView === "cards" &&
+                    cardSelectMode &&
+                    typeof document !== "undefined" &&
+                    createPortal(
+                      <motion.div
+                        className={`mo-selbar${railCollapsed ? " rail-collapsed" : ""}`}
+                        role="toolbar"
+                        aria-label="Selected orders"
+                        initial={{ y: 24, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                      >
                         <button
                           type="button"
-                          className="mo-cardbulk-clear"
-                          onClick={() =>
-                            setSelectedIds(
-                              visibleOrders
-                                .map((o) => o["Order ID"])
-                                .filter(Boolean),
-                            )
-                          }
-                        >
-                          Select all
-                        </button>
-                        <button
-                          type="button"
-                          className="mo-cardbulk-cancel"
+                          className="mo-selbar-x"
                           onClick={() => {
                             setSelectedIds([]);
                             setCardSelectMode(false);
+                            setBulkSheetOpen(false);
                           }}
+                          aria-label="Exit select mode"
                         >
-                          <X size={14} /> Cancel
+                          <X size={18} />
                         </button>
-                      </div>
-                      <div className="mo-cardbulk-right">
-                        <span className="mo-cardbulk-lbl">Set status</span>
-                        <select
-                          className="mo-tp-status-select"
-                          value={cardBulkStatus}
-                          onChange={(e) => setCardBulkStatus(e.target.value)}
-                        >
-                          {TRACK_STATUS_OPTIONS.map((s) => (
-                            <option key={s} value={s}>
-                              {s}
-                            </option>
-                          ))}
-                        </select>
+                        <span className="mo-selbar-count">
+                          <b>{selectedIds.length}</b> selected
+                        </span>
+                        {(() => {
+                          const allIds = visibleOrders
+                            .map((o) => o["Order ID"])
+                            .filter(Boolean);
+                          const allSel =
+                            allIds.length > 0 &&
+                            allIds.every((id) => selectedIds.includes(id));
+                          return (
+                            <button
+                              type="button"
+                              className="mo-selbar-link"
+                              onClick={() =>
+                                setSelectedIds(allSel ? [] : allIds)
+                              }
+                            >
+                              {allSel ? "Clear" : `Select all ${allIds.length}`}
+                            </button>
+                          );
+                        })()}
                         <button
                           type="button"
-                          className="mo-cardbulk-apply"
-                          disabled={selectedIds.length === 0 || cardBulkBusy}
-                          onClick={applyCardBulkStatus}
+                          className="mo-selbar-primary"
+                          onClick={() => setBulkSheetOpen(true)}
+                          aria-haspopup="dialog"
                         >
-                          {cardBulkBusy
-                            ? "Applying…"
-                            : `Apply to ${selectedIds.length || ""}`}
+                          Actions <ChevronUp size={16} />
                         </button>
-                      </div>
-                      {(() => {
-                        // India Post bulk export — split into Speed vs
-                        // Contractual. Scope = selected cards if any are
-                        // ticked, else all available (non-dismissed).
-                        const { speed: speedN, contract: contractN, scoped } =
-                          ipCounts();
-                        const labelScope = selectedIds.length
-                          ? filteredOrders.filter((o) =>
-                              selectedIds.includes(o["Order ID"]),
-                            )
-                          : filteredOrders;
-                        return (
-                          <div className="mo-cardbulk-export">
-                            <span className="mo-cardbulk-lbl">
-                              Bulk actions · {scoped ? "selected" : "all"}
-                            </span>
-                            <button
-                              type="button"
-                              className="mo-ipx-btn label"
-                              disabled={!labelScope.length}
-                              onClick={() =>
-                                downloadFormsFor(
-                                  labelScope,
-                                  "pdf",
-                                  `address_labels_${selectedIds.length ? "selected_" : ""}${new Date().toISOString().slice(0, 10)}`,
-                                  true,
+                      </motion.div>,
+                      moPortalTarget(),
+                    )}
+
+                  {typeof document !== "undefined" &&
+                    createPortal(
+                      <AnimatePresence>
+                        {orderView === "cards" &&
+                          cardSelectMode &&
+                          bulkSheetOpen &&
+                          (() => {
+                            const phone =
+                              window.matchMedia("(max-width: 720px)").matches;
+                            const off = phone ? { y: "100%" } : { x: "100%" };
+                            const n = selectedIds.length;
+                            // India Post: ticked orders → you pick the file;
+                            // nothing ticked → auto-sorted by weight. Either
+                            // way only orders with weight & size qualify.
+                            const ipPool = n
+                              ? visibleOrders.filter((o) =>
+                                  selectedIds.includes(o["Order ID"]),
                                 )
-                              }
-                              title={
-                                selectedIds.length
-                                  ? `Download a merged address-label PDF for the ${labelScope.length} selected order(s)`
-                                  : `Download a merged address-label PDF for all ${labelScope.length} orders in view`
-                              }
-                            >
-                              📄 Address labels{" "}
-                              {selectedIds.length
-                                ? `(${labelScope.length} selected)`
-                                : `(all ${labelScope.length})`}
-                            </button>
-                            <button
-                              type="button"
-                              className="mo-ipx-btn speed"
-                              disabled={speedN === 0}
-                              onClick={() => openIpBulkPreview("speed")}
-                            >
-                              <Truck size={14} /> Speed ({speedN})
-                            </button>
-                            <button
-                              type="button"
-                              className="mo-ipx-btn contract"
-                              disabled={contractN === 0}
-                              onClick={() => openIpBulkPreview("contractual")}
-                            >
-                              <Package size={14} /> Contractual ({contractN})
-                            </button>
-                            <button
-                              type="button"
-                              className="mo-ipx-btn import"
-                              onClick={openIpImport}
-                              title="Import a filled India Post .xlsx"
-                            >
-                              <Download
-                                size={14}
-                                style={{ transform: "rotate(180deg)" }}
-                              />{" "}
-                              Import .xlsx
-                            </button>
-                            {(() => {
-                              const emailScope = (
-                                selectedIds.length ? labelScope : filteredOrders
-                              ).filter((o) =>
-                                String(o["Email"] || "").trim(),
-                              );
-                              return (
-                                <button
-                                  type="button"
-                                  className="mo-ipx-btn emailbulk"
-                                  disabled={!emailScope.length}
-                                  onClick={() => setEmailBulkOpen(true)}
-                                  title="Send a status email to every selected order that has an email"
+                              : visibleOrders.filter((o) => o["Order ID"]);
+                            const ipReady = ipPool.filter(ipHasWeightSizes);
+                            const ipMissing = ipPool.length - ipReady.length;
+                            const autoSpeed = ipReady.filter(
+                              (o) => classifyOrderProduct(o) === "speed",
+                            );
+                            const autoOpted = autoSpeed.filter((o) =>
+                              /faster|express/i.test(String(o["Delivery Type"] || "")),
+                            ).length;
+                            const autoContract = ipReady.length - autoSpeed.length;
+                            const labelScope = n
+                              ? filteredOrders.filter((o) =>
+                                  selectedIds.includes(o["Order ID"]),
+                                )
+                              : filteredOrders;
+                            const emailScope = labelScope.filter((o) =>
+                              String(o["Email"] || "").trim(),
+                            );
+                            const scopeTxt = n
+                              ? `${n} selected order${n === 1 ? "" : "s"}`
+                              : `all ${labelScope.length} orders in view`;
+                            const close = () => setBulkSheetOpen(false);
+                            return (
+                              <>
+                                <motion.div
+                                  key="mo-bulk-bg"
+                                  className="mo-sheet-backdrop"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  onClick={close}
+                                />
+                                <motion.aside
+                                  key="mo-bulk"
+                                  className="mo-sheet"
+                                  role="dialog"
+                                  aria-modal="true"
+                                  aria-label="Actions for selected orders"
+                                  initial={off}
+                                  animate={{ x: 0, y: 0 }}
+                                  exit={off}
+                                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                 >
-                                  <MailCheck size={14} /> Email (
-                                  {emailScope.length})
-                                </button>
-                              );
-                            })()}
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  )}
+                                  <span className="mo-sheet-grip" aria-hidden="true" />
+                                  <div className="mo-sheet-head">
+                                    <h3>
+                                      {n
+                                        ? `${n} order${n === 1 ? "" : "s"} selected`
+                                        : "Bulk actions"}
+                                    </h3>
+                                    <button
+                                      type="button"
+                                      className="mo-sheet-x"
+                                      onClick={close}
+                                      aria-label="Close"
+                                    >
+                                      <X size={18} />
+                                    </button>
+                                  </div>
+                                  <div className="mo-sheet-body">
+                                    <section className="mo-sheet-sec">
+                                      <h4>Change status</h4>
+                                      {n === 0 ? (
+                                        <p className="mo-sheet-note">
+                                          Tick at least one order card to change
+                                          its status.
+                                        </p>
+                                      ) : (
+                                        <div className="mo-sheet-inline">
+                                          <select
+                                            className="mo-sheet-select"
+                                            value={cardBulkStatus}
+                                            onChange={(e) =>
+                                              setCardBulkStatus(e.target.value)
+                                            }
+                                          >
+                                            {TRACK_STATUS_OPTIONS.map((st) => (
+                                              <option key={st} value={st}>
+                                                {st}
+                                              </option>
+                                            ))}
+                                          </select>
+                                          <button
+                                            type="button"
+                                            className="mo-sheet-apply"
+                                            disabled={cardBulkBusy}
+                                            onClick={applyCardBulkStatus}
+                                          >
+                                            {cardBulkBusy
+                                              ? "Applying…"
+                                              : `Apply to ${n}`}
+                                          </button>
+                                        </div>
+                                      )}
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>
+                                        India Post booking ·{" "}
+                                        {n ? `${n} selected` : "auto-sorted by weight"}
+                                      </h4>
+                                      {n ? (
+                                        <p className="mo-sheet-note">
+                                          Export the selected orders as one file — you
+                                          choose the service.
+                                          {ipMissing > 0 &&
+                                            ` ${ipMissing} without weight & size will be skipped.`}
+                                        </p>
+                                      ) : (
+                                        <p className="mo-sheet-note">
+                                          Under {SPEED_MAX_GRAMS} g → Speed. {SPEED_MAX_GRAMS} g
+                                          and over → Contractual, unless the customer
+                                          chose Speed.
+                                          {ipMissing > 0 &&
+                                            ` ${ipMissing} order${ipMissing === 1 ? "" : "s"} still need weight & size.`}
+                                        </p>
+                                      )}
+                                      <div className="mo-sheet-list">
+                                        <button
+                                          type="button"
+                                          disabled={!(n ? ipReady.length : autoSpeed.length)}
+                                          onClick={() => {
+                                            openIpBulkPreview("speed");
+                                            close();
+                                          }}
+                                        >
+                                          <Truck size={17} />
+                                          <span>
+                                            {n ? "Export all as Speed Post" : "Speed Post"}
+                                            <em>
+                                              {n
+                                                ? "Every selected order goes Speed"
+                                                : `Under ${SPEED_MAX_GRAMS} g${autoOpted ? ` · incl. ${autoOpted} customer-opted` : ""}`}
+                                            </em>
+                                          </span>
+                                          <b>{n ? ipReady.length : autoSpeed.length}</b>
+                                        </button>
+                                        <button
+                                          type="button"
+                                          disabled={!(n ? ipReady.length : autoContract)}
+                                          onClick={() => {
+                                            openIpBulkPreview("contractual");
+                                            close();
+                                          }}
+                                        >
+                                          <Package size={17} />
+                                          <span>
+                                            {n ? "Export all as Contractual" : "Contractual · normal parcel"}
+                                            <em>
+                                              {n
+                                                ? "Every selected order goes Contractual"
+                                                : `${SPEED_MAX_GRAMS} g and over, Speed not chosen`}
+                                            </em>
+                                          </span>
+                                          <b>{n ? ipReady.length : autoContract}</b>
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            openIpImport();
+                                            close();
+                                          }}
+                                        >
+                                          <UploadCloud size={17} />
+                                          <span>
+                                            Import filled .xlsx
+                                            <em>Read back India Post tracking IDs</em>
+                                          </span>
+                                        </button>
+                                      </div>
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>Print · {scopeTxt}</h4>
+                                      <div className="mo-sheet-list">
+                                        <button
+                                          type="button"
+                                          disabled={!labelScope.length}
+                                          onClick={() => {
+                                            downloadFormsFor(
+                                              labelScope,
+                                              "pdf",
+                                              `address_labels_${n ? "selected_" : ""}${new Date().toISOString().slice(0, 10)}`,
+                                              true,
+                                            );
+                                            close();
+                                          }}
+                                        >
+                                          <StickyNote size={17} />
+                                          <span>
+                                            Address labels
+                                            <em>One merged PDF to print</em>
+                                          </span>
+                                          <b>{labelScope.length}</b>
+                                        </button>
+                                      </div>
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>Notify customers</h4>
+                                      <div className="mo-sheet-list">
+                                        <button
+                                          type="button"
+                                          disabled={!emailScope.length}
+                                          onClick={() => {
+                                            setEmailBulkOpen(true);
+                                            close();
+                                          }}
+                                        >
+                                          <MailCheck size={17} />
+                                          <span>
+                                            Email status update
+                                            <em>Only orders with an email address</em>
+                                          </span>
+                                          <b>{emailScope.length}</b>
+                                        </button>
+                                      </div>
+                                    </section>
+                                  </div>
+                                </motion.aside>
+                              </>
+                            );
+                          })()}
+                      </AnimatePresence>,
+                      moPortalTarget(),
+                    )}
 
                   {orderView === "table" && selectedIds.length > 0 && (
                     <div className="orders-bulk-bar">
@@ -18326,8 +19032,8 @@ export default function ManageOrdersPage() {
                       </label>
 
                       {/* Live India Post bucket — Express-opted orders are
-                          always Speed; otherwise < 500 g = Speed, ≥ 500 g =
-                          Standard (Contractual). */}
+                          always Speed; otherwise under SPEED_MAX_GRAMS = Speed,
+                          at or over it = Standard (Contractual). */}
                       {(() => {
                         const faster =
                           /faster|express/i.test(
@@ -18347,8 +19053,8 @@ export default function ManageOrdersPage() {
                           kind = "speed";
                           reason = "Express delivery opted";
                         } else if (hasW) {
-                          kind = w < 500 ? "speed" : "standard";
-                          reason = `${w} g · ${w < 500 ? "under" : "over"} 500 g`;
+                          kind = w < SPEED_MAX_GRAMS ? "speed" : "standard";
+                          reason = `${w} g · ${w < SPEED_MAX_GRAMS ? "under" : "at or over"} ${SPEED_MAX_GRAMS} g`;
                         }
                         return (
                           <div
@@ -20765,16 +21471,19 @@ export default function ManageOrdersPage() {
                     className="ip-import-btn"
                     onClick={openIpImport}
                     title="Import a filled .xlsx to prefill this table"
+                    aria-label="Import .xlsx"
                   >
-                    <Download size={13} style={{ transform: "rotate(180deg)" }} />{" "}
-                    Import .xlsx
+                    <UploadCloud size={15} />
+                    <span className="ip-import-lbl">Import .xlsx</span>
                   </button>
-                  <span
-                    className="cursor-pointer"
+                  <button
+                    type="button"
+                    className="mo-modal-x"
                     onClick={() => setIpBulk(null)}
+                    aria-label="Close"
                   >
-                    <X size={16} />
-                  </span>
+                    <X size={18} />
+                  </button>
                 </div>
               </div>
 
@@ -21095,9 +21804,11 @@ export default function ManageOrdersPage() {
                     title={`Fill empty barcodes with unused ${ipBulk.product === "contractual" ? "Contractual (C…)" : "Speed (E…)"} tracking IDs`}
                   >
                     <UploadCloud size={15} />
-                    {ipFilling
-                      ? "Filling…"
-                      : `Fill barcodes (${ipBulk.product === "contractual" ? "C…" : "E…"})`}
+                    <span>
+                      {ipFilling
+                        ? "Filling…"
+                        : `Fill ${ipBulk.product === "contractual" ? "C…" : "E…"} IDs`}
+                    </span>
                   </button>
                   <button
                     type="button"
@@ -21106,9 +21817,11 @@ export default function ManageOrdersPage() {
                     onClick={downloadIpBulk}
                   >
                     <Download size={15} />
-                    {ipDownloading
-                      ? "Preparing…"
-                      : `Download ${ipBulk.rows.length} .xlsx`}
+                    <span>
+                      {ipDownloading
+                        ? "Preparing…"
+                        : `Download .xlsx · ${ipBulk.rows.length}`}
+                    </span>
                   </button>
                   <button
                     type="button"
@@ -21118,9 +21831,7 @@ export default function ManageOrdersPage() {
                     title="Book directly on the India Post portal via API"
                   >
                     <Send size={15} />
-                    {ipPushing
-                      ? "Pushing…"
-                      : `Push ${ipBulk.rows.length} to portal`}
+                    <span>{ipPushing ? "Pushing…" : "Push to portal"}</span>
                   </button>
                 </div>
               </div>
@@ -22160,7 +22871,9 @@ export default function ManageOrdersPage() {
           })()}
       </AnimatePresence>
 
-      {/* Add/Edit Modal, kept as-is, uses existing bill-modal classes */}
+      {/* Add / Edit order — same sheet pattern as the storefront's phone /
+          scratch-card modal (bottom sheet on phones, centred dialog on
+          desktop), with the form grouped into sections and a fixed footer. */}
       <AnimatePresence>
         {(showAddModal || showEditModal) && (
           <motion.div
@@ -22174,260 +22887,253 @@ export default function ManageOrdersPage() {
             }}
           >
             <motion.div
-              className="bill-modal"
+              className="bill-modal mo-edit-modal"
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "100%", opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
-              style={{ maxWidth: "750px" }}
             >
               <div className="bill-header">
-                <span className="weight-600 font-16">
-                  {showEditModal ? "Edit Order" : "Add New Order"}
+                <span className="mo-edit-title">
+                  <b>{showEditModal ? "Edit order" : "Add order"}</b>
+                  {showEditModal && (
+                    <em>
+                      {formData.customerName || "—"} · #
+                      {String(formData.orderId).slice(-6)}
+                    </em>
+                  )}
                 </span>
-                <span
-                  className="cursor-pointer"
+                <button
+                  type="button"
+                  className="mo-modal-x"
+                  aria-label="Close"
                   onClick={() => {
                     setShowAddModal(false);
                     setShowEditModal(false);
                   }}
                 >
-                  <X size={16} />
-                </span>
+                  <X size={18} />
+                </button>
               </div>
 
-              <div
-                className="address-form-content"
-                style={{ maxHeight: "70vh", overflowY: "auto" }}
-              >
-                <div className="input-group">
-                  <label>Order ID</label>
-                  <input
-                    type="text"
-                    name="orderId"
-                    className="sec-mid-btn width100"
-                    placeholder="Auto-generated"
-                    value={formData.orderId}
-                    onChange={handleInputChange}
-                    readOnly={showEditModal}
-                    disabled={showEditModal}
-                  />
-                </div>
+              {(() => {
+                const eb = computeEditBreakdown(formData, selectedOrder || {});
+                const setField = (key, val) =>
+                  setFormData((p) => ({ ...p, [key]: val }));
+                const statusOpts = TRACK_STATUS_OPTIONS.includes(formData.orderStatus)
+                  ? TRACK_STATUS_OPTIONS
+                  : [formData.orderStatus, ...TRACK_STATUS_OPTIONS].filter(Boolean);
+                return (
+                  <div className="mo-edit-body">
+                    {/* 1 · Status & date */}
+                    <section className="mo-ef-sec">
+                      <h4>Status &amp; date</h4>
+                      <div className="mo-ef-grid">
+                        <label className="mo-ef-field">
+                          <span>Order status</span>
+                          <select
+                            name="orderStatus"
+                            value={formData.orderStatus}
+                            onChange={handleInputChange}
+                          >
+                            {statusOpts.map((st) => (
+                              <option key={st} value={st}>
+                                {st}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        {showEditModal && (
+                          <label className="mo-ef-field">
+                            <span>Order date &amp; time</span>
+                            <input
+                              type="datetime-local"
+                              name="orderDateLocal"
+                              value={formData.orderDateLocal || ""}
+                              onChange={handleInputChange}
+                            />
+                          </label>
+                        )}
+                      </div>
+                      <label className="mo-ef-field">
+                        <span>Tracking ID</span>
+                        <input
+                          type="text"
+                          name="shippingId"
+                          placeholder="e.g. CM160465548IN"
+                          value={formData.shippingId}
+                          onChange={handleInputChange}
+                        />
+                      </label>
+                    </section>
 
-                <h4 className="font-14 weight-600 mb-12 mt-16">
-                  Customer Details
-                </h4>
-                <div className="flex flex-row gap-12">
-                  <div className="input-group flex-1">
-                    <label>
-                      Customer Name <span className="red">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="customerName"
-                      className="sec-mid-btn width100"
-                      placeholder="Enter customer name"
-                      value={formData.customerName}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="input-group flex-1">
-                    <label>
-                      Phone Number <span className="red">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      name="phoneNumber"
-                      className="sec-mid-btn width100"
-                      placeholder="10-digit number"
-                      maxLength="10"
-                      value={formData.phoneNumber}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
+                    {/* 2 · Customer */}
+                    <section className="mo-ef-sec">
+                      <h4>Customer</h4>
+                      <div className="mo-ef-grid">
+                        <label className="mo-ef-field">
+                          <span>Name *</span>
+                          <input
+                            type="text"
+                            name="customerName"
+                            placeholder="Customer name"
+                            value={formData.customerName}
+                            onChange={handleInputChange}
+                          />
+                        </label>
+                        <label className="mo-ef-field">
+                          <span>Phone *</span>
+                          <input
+                            type="tel"
+                            name="phoneNumber"
+                            placeholder="10-digit number"
+                            maxLength="10"
+                            value={formData.phoneNumber}
+                            onChange={handleInputChange}
+                          />
+                        </label>
+                      </div>
+                      <label className="mo-ef-field">
+                        <span>Address</span>
+                        <textarea
+                          name="address"
+                          rows={2}
+                          placeholder="House no, street, landmark"
+                          value={formData.address}
+                          onChange={handleInputChange}
+                        />
+                      </label>
+                      <div className="mo-ef-grid three">
+                        <label className="mo-ef-field">
+                          <span>City</span>
+                          <input type="text" name="city" value={formData.city} onChange={handleInputChange} />
+                        </label>
+                        <label className="mo-ef-field">
+                          <span>State</span>
+                          <input type="text" name="state" value={formData.state} onChange={handleInputChange} />
+                        </label>
+                        <label className="mo-ef-field">
+                          <span>Pincode</span>
+                          <input
+                            type="text"
+                            name="pincode"
+                            inputMode="numeric"
+                            maxLength="6"
+                            value={formData.pincode}
+                            onChange={handleInputChange}
+                          />
+                        </label>
+                      </div>
+                    </section>
 
-                <div className="input-group">
-                  <label>Address</label>
-                  <textarea
-                    name="address"
-                    className="sec-mid-btn textarea"
-                    placeholder="House no, street, landmark..."
-                    rows={2}
-                    value={formData.address}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <div className="flex flex-row gap-12">
-                  <div className="input-group flex-1">
-                    <label>City</label>
-                    <input
-                      type="text"
-                      name="city"
-                      className="sec-mid-btn width100"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="input-group flex-1">
-                    <label>State</label>
-                    <input
-                      type="text"
-                      name="state"
-                      className="sec-mid-btn width100"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="input-group flex-1">
-                    <label>Pincode</label>
-                    <input
-                      type="text"
-                      name="pincode"
-                      className="sec-mid-btn width100"
-                      maxLength="6"
-                      value={formData.pincode}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-
-                <div className="dashed-border my-16"></div>
-
-                <h4 className="font-14 weight-600 mb-12">Order Details</h4>
-                {(() => {
-                  const eb = computeEditBreakdown(formData, selectedOrder || {});
-                  const setField = (key, val) =>
-                    setFormData((p) => ({ ...p, [key]: val }));
-                  const payChips = [
-                    { v: "COD", label: "Cash on Delivery" },
-                    { v: "UPI Payment", label: "UPI" },
-                    { v: "Card Payment", label: "Card" },
-                  ];
-                  const statusChips = [
-                    "Processing",
-                    "Shipped",
-                    "In Transit",
-                    "Out for Delivery",
-                    "Delivered",
-                    "Cancelled",
-                  ];
-                  return (
-                    <>
-                      <div className="input-group">
-                        <label>Books List</label>
+                    {/* 3 · Items */}
+                    <section className="mo-ef-sec">
+                      <h4>Items</h4>
+                      <label className="mo-ef-field">
+                        <span>Books list · one per line</span>
                         <textarea
                           name="booksList"
-                          className="sec-mid-btn textarea"
-                          placeholder="1. Book Name | Qty: X | ₹Price each | Total: ₹XXX"
                           rows={4}
+                          placeholder="1. Book Name | Qty: X | ₹Price each | Total: ₹XXX"
                           value={formData.booksList}
                           onChange={handleInputChange}
                         />
-                      </div>
+                      </label>
+                    </section>
 
-                      <div className="input-group">
-                        <label>Payment Type</label>
-                        <div className="mo-chip-row">
-                          {payChips.map((c) => (
+                    {/* 4 · Payment & delivery */}
+                    <section className="mo-ef-sec">
+                      <h4>Payment &amp; delivery</h4>
+                      <div className="mo-ef-field">
+                        <span>Payment</span>
+                        <div className="mo-seg wrap">
+                          {PAY_MODES.map((m) => (
                             <button
-                              key={c.v}
+                              key={m.k}
                               type="button"
-                              className={`mo-chip${
-                                formData.paymentType === c.v ? " on" : ""
-                              }`}
-                              onClick={() => setField("paymentType", c.v)}
+                              className={eb.mode === m.k ? "on" : ""}
+                              onClick={() =>
+                                setFormData((p) => ({
+                                  ...p,
+                                  payMode: m.k,
+                                  paymentType: m.sheet,
+                                }))
+                              }
                             >
-                              {c.label}
+                              {m.label}
                             </button>
                           ))}
                         </div>
+                        <em className="mo-ef-hint">
+                          {eb.mode === "cod"
+                            ? `Collect ₹${eb.codCollectible.toLocaleString()} at the door · COD fee ₹${eb.codFee}`
+                            : eb.mode === "advance"
+                              ? `₹99 paid online · collect ₹${eb.codCollectible.toLocaleString()} at the door · no COD fee`
+                              : "Prepaid — nothing to collect at the door"}
+                        </em>
                       </div>
-
-                      <div className="input-group">
-                        <label>Delivery Type</label>
-                        <div className="mo-chip-row">
-                          {[
-                            { v: "Standard Delivery", label: "Standard" },
-                            { v: "Faster Delivery", label: "Faster" },
-                          ].map((c) => (
-                            <button
-                              key={c.v}
-                              type="button"
-                              className={`mo-chip${
-                                eb.isFaster === /faster/i.test(c.v) ? " on" : ""
-                              }`}
-                              onClick={() => setField("deliveryType", c.v)}
-                            >
-                              {c.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-row gap-12">
-                        <div className="input-group flex-1">
-                          <label>Gift Wrap</label>
-                          <div className="mo-chip-row">
-                            {["No", "Yes"].map((v) => (
+                      <div className="mo-ef-grid">
+                        <div className="mo-ef-field">
+                          <span>Delivery</span>
+                          <div className="mo-seg">
+                            {[
+                              { v: "Standard Delivery", label: "Standard" },
+                              { v: "Faster Delivery", label: "Speed" },
+                            ].map((c) => (
                               <button
-                                key={v}
+                                key={c.v}
                                 type="button"
-                                className={`mo-chip${
-                                  (formData.giftWrap || "No") === v ? " on" : ""
-                                }`}
-                                onClick={() => setField("giftWrap", v)}
+                                className={eb.isFaster === /faster/i.test(c.v) ? "on" : ""}
+                                onClick={() => setField("deliveryType", c.v)}
                               >
-                                {v}
+                                {c.label}
                               </button>
                             ))}
                           </div>
                         </div>
-                        <div className="input-group flex-1">
-                          <label>Gift Wrap Charge (₹)</label>
-                          <input
-                            type="number"
-                            name="giftWrapCharge"
-                            className="sec-mid-btn width100"
-                            value={formData.giftWrapCharge}
-                            onChange={handleInputChange}
-                            disabled={!/^yes/i.test(formData.giftWrap || "")}
-                          />
+                        <div className="mo-ef-field">
+                          <span>Gift wrap</span>
+                          <div className="mo-ef-inline">
+                            <div className="mo-seg">
+                              {["No", "Yes"].map((v) => (
+                                <button
+                                  key={v}
+                                  type="button"
+                                  className={(formData.giftWrap || "No") === v ? "on" : ""}
+                                  onClick={() => setField("giftWrap", v)}
+                                >
+                                  {v}
+                                </button>
+                              ))}
+                            </div>
+                            {/^yes/i.test(formData.giftWrap || "") && (
+                              <input
+                                type="number"
+                                name="giftWrapCharge"
+                                aria-label="Gift wrap charge"
+                                value={formData.giftWrapCharge}
+                                onChange={handleInputChange}
+                              />
+                            )}
+                          </div>
                         </div>
                       </div>
-
-                      <div className="input-group">
-                        <label>Offer Applied</label>
+                      <label className="mo-ef-field">
+                        <span>Offer applied</span>
                         <input
                           type="text"
                           name="offerApplied"
-                          className="sec-mid-btn width100"
                           placeholder="e.g. ₹100 OFF"
                           value={formData.offerApplied}
                           onChange={handleInputChange}
                         />
-                      </div>
+                      </label>
+                    </section>
 
-                      <div className="input-group">
-                        <label>Order Status</label>
-                        <div className="mo-chip-row">
-                          {statusChips.map((s) => (
-                            <button
-                              key={s}
-                              type="button"
-                              className={`mo-chip${
-                                formData.orderStatus === s ? " on" : ""
-                              }`}
-                              onClick={() => setField("orderStatus", s)}
-                            >
-                              {s}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
+                    {/* 5 · Bill */}
+                    <section className="mo-ef-sec">
+                      <h4>Bill</h4>
                       {showEditModal ? (
                         <div className="mo-editbill">
                           <div className="mo-editbill-head">
@@ -22520,83 +23226,67 @@ export default function ManageOrdersPage() {
                           )}
                         </div>
                       ) : (
-                        <div className="flex flex-row gap-12">
-                          <div className="input-group flex-1">
-                            <label>Total Amount (₹)</label>
+                        <div className="mo-ef-grid">
+                          <div className="mo-ef-field">
+                            <span>Total Amount (₹)</span>
                             <input
                               type="number"
                               name="totalAmount"
-                              className="sec-mid-btn width100"
+                             
                               value={formData.totalAmount}
                               onChange={handleInputChange}
                             />
                           </div>
-                          <div className="input-group flex-1">
-                            <label>Delivery Charge (₹)</label>
+                          <div className="mo-ef-field">
+                            <span>Delivery Charge (₹)</span>
                             <input
                               type="number"
                               name="deliveryCharge"
-                              className="sec-mid-btn width100"
+                             
                               value={formData.deliveryCharge}
                               onChange={handleInputChange}
                             />
                           </div>
                         </div>
                       )}
-                    </>
-                  );
-                })()}
+                    </section>
 
-                <div className="input-group mt-8">
-                  <label className="flex flex-row gap-4 items-center">
-                    <Truck size={14} />
-                    Shipping / Tracking ID{" "}
-                    <span className="orange">(Recommended)</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="shippingId"
-                    className="sec-mid-btn width100"
-                    placeholder="e.g. CM160465548IN or tracking number"
-                    value={formData.shippingId}
-                    onChange={handleInputChange}
-                  />
-                  <span className="font-10 gray-500 mt-4">
-                    Add tracking ID to help customers track their orders
-                  </span>
-                </div>
-
-                <div className="input-group">
-                  <label>TinyURL</label>
-                  <input
-                    type="text"
-                    name="tinyUrl"
-                    className="sec-mid-btn width100"
-                    placeholder="Order link"
-                    value={formData.tinyUrl}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                {showEditModal && formData.timestamp && (
-                  <div className="info-message mt-16 flex flex-row gap-8 items-center">
-                    <Calendar size={14} />
-                    <span className="font-12">
-                      Original order date: {formatDate(formData.timestamp)}
-                    </span>
+                    {/* 6 · Reference */}
+                    <section className="mo-ef-sec">
+                      <h4>Reference</h4>
+                      <div className="mo-ef-grid">
+                        <label className="mo-ef-field">
+                          <span>Order ID</span>
+                          <input
+                            type="text"
+                            name="orderId"
+                            placeholder="Auto-generated"
+                            value={formData.orderId}
+                            onChange={handleInputChange}
+                            readOnly={showEditModal}
+                            disabled={showEditModal}
+                          />
+                        </label>
+                        <label className="mo-ef-field">
+                          <span>TinyURL</span>
+                          <input
+                            type="text"
+                            name="tinyUrl"
+                            placeholder="Order link"
+                            value={formData.tinyUrl}
+                            onChange={handleInputChange}
+                          />
+                        </label>
+                      </div>
+                    </section>
                   </div>
-                )}
-              </div>
+                );
+              })()}
 
-              <div className="flex flex-row gap-12 p-20 border-t border-gray-200">
+              <div className="mo-edit-foot">
                 <button
-                  className="pri-big-btn flex-1"
-                  onClick={showEditModal ? handleEditOrder : handleAddOrder}
-                >
-                  {showEditModal ? "Update Order" : "Add Order"}
-                </button>
-                <button
-                  className="sec-mid-btn"
+                  type="button"
+                  className="mo-edit-cancel"
                   onClick={() => {
                     setShowAddModal(false);
                     setShowEditModal(false);
@@ -22604,23 +23294,19 @@ export default function ManageOrdersPage() {
                 >
                   Cancel
                 </button>
+                <button
+                  type="button"
+                  className="mo-edit-save"
+                  onClick={showEditModal ? handleEditOrder : handleAddOrder}
+                >
+                  {showEditModal ? "Save changes" : "Add order"}
+                </button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Celebrate button (mobile) — fires a smooth one-shot confetti shower. */}
-      {activeTab === "analytics" && (
-        <button
-          type="button"
-          className="mo-celebrate-btn"
-          onClick={fireConfetti}
-          aria-label="Celebrate"
-        >
-          <Gift size={16} /> Celebrate
-        </button>
-      )}
       {typeof document !== "undefined" &&
         confBursts.length > 0 &&
         createPortal(

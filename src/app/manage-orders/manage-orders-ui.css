@@ -75,7 +75,7 @@
 
   --g-rail-w: 246px;
   --g-rail-w-collapsed: 82px;
-  --g-bottombar-h: 68px;
+  --g-bottombar-h: 62px;
 
   --g-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -102,6 +102,7 @@
   --g-ink-rgb: 20 20 19;
 
   --tertiary: var(--g-accent);
+  --brand-orange: var(--g-accent);
   --tertiary-light: var(--g-accent-2);
   --tertiary-10: rgb(var(--g-accent-rgb) / 0.06);
   --tertiary-light-05: rgb(var(--g-accent-rgb) / 0.03);
@@ -801,62 +802,108 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
     border-radius: var(--g-r);
   }
 
+  /* Edge-to-edge tab bar: flush to the screen edges and bottom, square
+     corners, a hairline on top, and the home-indicator area padded in. */
   .mo-glass .mo-bottomnav {
     position: fixed;
-    left: 10px;
-    right: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 900;
     display: flex;
     align-items: stretch;
-    gap: 2px;
-    padding: 7px;
-    border-radius: 22px;
-    background: var(--g-surface-3);
-    border: 1px solid var(--g-hairline);
-    box-shadow: var(--g-shadow-lg), var(--g-inner);
+    gap: 0;
+    height: calc(var(--g-bottombar-h) + env(safe-area-inset-bottom, 0px));
+    padding: 0 4px env(safe-area-inset-bottom, 0px);
+    border: 0;
+    border-top: 1px solid var(--g-hairline);
+    border-radius: 0;
+    background: var(--g-surface-solid);
+    box-shadow: 0 -1px 0 rgb(var(--g-ink-rgb) / 0.02);
   }
 
-  .mo-glass .mo-bottomnav .mo-nav-item {
+  .my-orders-page.mo-glass .mo-bottomnav .mo-nav-item {
+    position: relative;
     flex: 1 1 0;
     flex-direction: column;
-    gap: 4px;
-    padding: 8px 2px;
-    border-radius: 16px;
-    font-size: 10.5px;
-    text-align: center;
+    align-items: center;
     justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 0 2px;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--g-ink-3);
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mo-glass .mo-bottomnav .mo-nav-item:hover {
+    background: transparent;
+    color: var(--g-ink-2);
+  }
+
+  /* Active: ink label; the sliding capsule (not a tile fill) marks it. */
+  .my-orders-page.mo-glass .mo-bottomnav .mo-nav-item.active,
+  .my-orders-page.mo-glass.mo-dark .mo-bottomnav .mo-nav-item.active {
+    color: var(--g-ink);
+    font-weight: 700;
+    background: transparent;
   }
 
   .mo-glass .mo-bottomnav .mo-nav-item span {
     max-width: 100%;
   }
 
-  /* Indicator flips to a short bar above the icon on mobile */
-  /* left/right instead of left+negative-margin: centring can't drift */
+  /* Active indicator: a capsule behind the icon that slides between tabs
+     (framer layoutId). Positioned with left/width so its transform is free
+     for the slide animation. */
   .mo-glass .mo-bottomnav .mo-nav-item .mo-nav-pill {
-    left: 36%;
-    right: 36%;
-    top: 5px;
+    position: absolute;
+    top: 8px;
     bottom: auto;
-    width: auto;
-    height: 3px;
+    left: calc(50% - 30px);
+    right: auto;
+    width: 60px;
+    height: 30px;
     margin: 0;
-    border-radius: 3px;
-    background: var(--g-accent);
+    border-radius: 99px;
+    background: rgb(var(--g-ink-rgb) / 0.09);
+    z-index: 1;
   }
 
-  .mo-glass .mo-bottomnav .mo-nav-count {
+  .mo-glass .mo-bottomnav .mo-nav-item svg {
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+  }
+
+  .mo-glass .mo-bottomnav .mo-nav-item:active svg {
+    transform: scale(0.92);
+  }
+
+  /* Count badge pinned to the icon's top-right corner. */
+  .my-orders-page.mo-glass .mo-bottomnav .mo-nav-count,
+  .my-orders-page.mo-glass .mo-bottomnav .mo-nav-item.active .mo-nav-count {
     position: absolute;
-    top: 3px;
-    right: 6px;
-    left: auto;
+    top: 5px;
+    left: calc(50% + 6px);
+    right: auto;
+    z-index: 3;
     margin: 0;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 4px;
-    font-size: 9.5px;
-    line-height: 1;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 99px;
+    border: 2px solid var(--g-surface-solid);
+    background: var(--g-accent);
+    color: var(--g-on-accent);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
   }
 
   /* Topbar on small screens: title + icon actions ALWAYS share the first row.
@@ -2381,16 +2428,13 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
   box-shadow: 0 0 0 1px var(--g-hairline), var(--g-shadow-sm);
 }
 
-/* Inputs and selects share one quiet field style. */
-.mo-glass input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-.mo-glass select,
-.mo-glass textarea {
+/* Inputs and selects share one quiet field style. :where() keeps these
+   defaults at zero extra specificity so component rules can refine them. */
+.mo-glass :where(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea) {
   color: var(--g-ink);
   border-color: var(--g-hairline);
 }
-.mo-glass.mo-dark select,
-.mo-glass.mo-dark textarea,
-.mo-glass.mo-dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+.mo-glass.mo-dark :where(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea) {
   background-color: var(--input-bg);
 }
 .mo-glass input::placeholder,
@@ -2430,4 +2474,2330 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
   background: var(--g-sunken);
   color: var(--g-ink);
   border: 1px solid var(--g-hairline);
+}
+
+/* =========================================================================
+   17. Analytics storyline — group headings, KPI grid, deltas
+   ========================================================================= */
+
+/* Numbered section headings: 1 Pulse → 5 Customers & demand. */
+.mo-glass .an2-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 18px 2px 2px;
+}
+.mo-glass .an2-group:first-child {
+  margin-top: 0;
+}
+.mo-glass .an2-group-step {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border-radius: 7px;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+.mo-glass .an2-group-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--g-ink);
+  line-height: 1.25;
+}
+.mo-glass .an2-group-sub {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--g-ink-3);
+}
+
+/* KPI grid: 4 across on desktop, 2 on phones; label → value → context. */
+.mo-glass .an2-stats-head {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g-ink-3);
+  margin: 0 2px -6px;
+}
+.my-orders-page.mo-glass .an2-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--g-hairline);
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-r);
+  overflow: hidden;
+}
+@media (max-width: 900px) {
+  .my-orders-page.mo-glass .an2-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.my-orders-page.mo-glass .an2-stats > .an2-stat {
+  grid-column: auto;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 0;
+}
+.mo-glass .an2-stats .an2-stat-lbl {
+  order: -1;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g-ink-2);
+}
+.mo-glass .an2-stats .an2-stat-val {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 2px 0;
+}
+.mo-glass .an2-stats .an2-stat-x {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  opacity: 1;
+}
+
+/* Period-over-period change. Green/red carry meaning; flat stays neutral. */
+.mo-glass .an2-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--g-sunken);
+  color: var(--g-ink-2);
+  white-space: nowrap;
+}
+.mo-glass .an2-delta.up {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+.mo-glass .an2-delta.down {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+}
+.mo-glass.mo-dark .an2-delta.up {
+  background: rgba(74, 222, 128, 0.14);
+  color: #86efac;
+}
+.mo-glass.mo-dark .an2-delta.down {
+  background: rgba(248, 113, 113, 0.14);
+  color: #fca5a5;
+}
+
+/* =========================================================================
+   18. Skeleton loaders — one calm style for both themes
+   ========================================================================= */
+
+/* The full-page loader sits outside the shell; give it the page padding. */
+.my-orders-page.mo-glass.mo-loader > .section-1200 {
+  padding: 32px clamp(16px, 4vw, 40px);
+}
+
+.my-orders-page.mo-glass .mo-skel-card {
+  background: var(--g-surface-solid);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow-sm);
+}
+
+/* Bones: a flat fill one step off the surface, breathing slowly instead of
+   a bright gradient sweep. */
+.my-orders-page.mo-glass :is(
+    .mo-skel-dot,
+    .mo-skel-line,
+    .mo-skel-pill,
+    .mo-skel-status,
+    .mo-skel-cover,
+    .an2-skel-line,
+    .an2-skel-card,
+    .an2-skel-chart,
+    .an2-skel-head
+  ) {
+  background: var(--g-sunken);
+  background-image: none;
+  animation: mo-skel-breathe 1.8s ease-in-out infinite;
+}
+.my-orders-page.mo-glass.mo-dark :is(
+    .mo-skel-dot,
+    .mo-skel-line,
+    .mo-skel-pill,
+    .mo-skel-status,
+    .mo-skel-cover,
+    .an2-skel-line,
+    .an2-skel-card,
+    .an2-skel-chart,
+    .an2-skel-head
+  ) {
+  background: #30302e;
+}
+.my-orders-page.mo-glass :is(
+    .an2-skel-card,
+    .an2-skel-line,
+    .an2-skel-chart,
+    .an2-skel-head
+  )::after {
+  display: none;
+}
+
+@keyframes mo-skel-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* =========================================================================
+   19. Orders — fulfilment phase stepper
+   ========================================================================= */
+
+.mo-glass .mo-phases {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(118px, 1fr));
+  gap: 1px;
+  margin-bottom: 12px;
+  background: var(--g-hairline);
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-r);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.mo-glass .mo-phases::-webkit-scrollbar {
+  display: none;
+}
+
+.mo-glass .mo-phase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  padding: 12px 14px 12px;
+  border: 0;
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s var(--g-ease);
+}
+.mo-glass .mo-phase:hover {
+  background: var(--g-sunken);
+}
+/* Flow arrow between steps (not after Paid & closed / on Exceptions). */
+.mo-glass .mo-phase:not(:nth-last-child(-n + 2))::after {
+  content: "›";
+  position: absolute;
+  right: 8px;
+  top: 10px;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--g-ink-3);
+}
+
+.mo-glass .mo-phase-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mo-glass .mo-phase-step {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  background: var(--g-sunken);
+  color: var(--g-ink-2);
+}
+.mo-glass .mo-phase-n {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.mo-glass .mo-phase-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--g-ink);
+  white-space: nowrap;
+}
+.mo-glass .mo-phase-hint {
+  font-size: 11px;
+  color: var(--g-ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.mo-glass .mo-phase.empty .mo-phase-n {
+  color: var(--g-ink-3);
+}
+
+/* Exceptions read as a warning only when there are any. */
+.mo-glass .mo-phase.is-issues:not(.empty) .mo-phase-step {
+  background: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+}
+.mo-glass.mo-dark .mo-phase.is-issues:not(.empty) .mo-phase-step {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fca5a5;
+}
+
+/* Selected phase: inverted ink tile. */
+.mo-glass .mo-phase.on,
+.mo-glass .mo-phase.on:hover {
+  background: var(--g-accent);
+}
+.mo-glass .mo-phase.on :is(.mo-phase-n, .mo-phase-label) {
+  color: var(--g-on-accent);
+}
+.mo-glass .mo-phase.on .mo-phase-hint,
+.mo-glass .mo-phase.on::after {
+  color: rgb(var(--g-ink-rgb) / 0.4);
+  color: color-mix(in srgb, var(--g-on-accent) 60%, transparent);
+}
+.mo-glass .mo-phase.on .mo-phase-step {
+  background: color-mix(in srgb, var(--g-on-accent) 18%, transparent);
+  color: var(--g-on-accent);
+}
+
+@media (max-width: 720px) {
+  .mo-glass .mo-phases {
+    grid-template-columns: repeat(7, 128px);
+  }
+}
+
+/* =========================================================================
+   20. Orders toolbar — search + inline filters, chips, view summary bar
+   ========================================================================= */
+
+/* The card that holds all three rows. */
+.my-orders-page.mo-glass .admin-search.mo-tools-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: var(--g-gap);
+  background: var(--g-surface-solid);
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-r);
+  box-shadow: var(--g-shadow-sm);
+}
+
+/* Row 1: search grows, filters keep their natural width; wraps on phones. */
+.my-orders-page.mo-glass .mo-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.my-orders-page.mo-glass .mo-toolbar .admin-search-input {
+  flex: 1 1 280px;
+  min-width: 0;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: var(--g-sunken);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--g-ink-3);
+  transition: border-color 0.18s var(--g-ease), background 0.18s var(--g-ease);
+}
+.my-orders-page.mo-glass .mo-toolbar .admin-search-input:focus-within {
+  background: var(--g-surface-solid);
+  border-color: var(--g-hairline-2);
+}
+.my-orders-page.mo-glass .mo-toolbar .mo-search-field {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo-toolbar .mo-search-field:focus-visible {
+  outline: none;
+}
+
+.my-orders-page.mo-glass .mo-tb-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+/* A filter = small label + bare control inside one 40px pill. */
+.my-orders-page.mo-glass .mo-tb-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 4px 0 12px;
+  background: var(--g-surface-solid);
+  border: 1px solid var(--g-hairline);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.18s var(--g-ease);
+}
+.my-orders-page.mo-glass .mo-tb-field:hover {
+  border-color: var(--g-hairline-2);
+}
+.my-orders-page.mo-glass .mo-tb-field.set {
+  border-color: var(--g-accent);
+}
+.my-orders-page.mo-glass .mo-tb-field > span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g-ink-3);
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo-tb-field :is(select, input) {
+  height: 34px;
+  padding: 0 6px;
+  border: 0;
+  background: transparent;
+  background-color: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g-ink);
+  cursor: pointer;
+  outline: none;
+  max-width: 170px;
+}
+.my-orders-page.mo-glass .mo-tb-field input[type="date"] {
+  width: 142px;
+  max-width: none;
+}
+
+/* Row 2: applied filters. */
+.my-orders-page.mo-glass .admin-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.my-orders-page.mo-glass .admin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 4px 0 10px;
+  border-radius: 8px;
+  background: var(--g-sunken);
+  border: 1px solid var(--g-hairline);
+  color: var(--g-ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+.my-orders-page.mo-glass .admin-chip button {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--g-ink-3);
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .admin-chip button:hover {
+  background: rgb(var(--g-ink-rgb) / 0.08);
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .admin-chips-clear {
+  margin-left: auto;
+  border: 0;
+  background: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--g-ink-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Row 3: view summary (left) · view controls (right). */
+.my-orders-page.mo-glass .mo-viewbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo-viewsum {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass .mo-viewsum b {
+  font-weight: 700;
+  color: var(--g-ink);
+  font-variant-numeric: tabular-nums;
+}
+.my-orders-page.mo-glass .mo-vs-pay {
+  color: var(--g-ink-3);
+  font-size: 12.5px;
+}
+.my-orders-page.mo-glass :is(.mo-vs-alert, .mo-vs-link) {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 8px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g-ink);
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-vs-alert.warn {
+  border-color: rgba(220, 38, 38, 0.3);
+  color: #b91c1c;
+}
+.my-orders-page.mo-glass.mo-dark .mo-vs-alert.warn {
+  border-color: rgba(248, 113, 113, 0.35);
+  color: #fca5a5;
+}
+.my-orders-page.mo-glass .mo-vs-link {
+  border-color: transparent;
+  background: transparent;
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass :is(.mo-vs-alert, .mo-vs-link):hover {
+  background: var(--g-sunken);
+}
+
+.my-orders-page.mo-glass .mo-viewbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+/* The lifted controls keep their markup; flatten their old wrappers. */
+.my-orders-page.mo-glass .mo-viewbar-tools .mo-ohead,
+.my-orders-page.mo-glass .mo-viewbar-tools .orders-header-right {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.my-orders-page.mo-glass .mo-viewbar-tools .mo-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.my-orders-page.mo-glass .mo-viewbar-tools .mo-view-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass .mo-viewbar-tools .mo-view-btn:hover {
+  color: var(--g-ink);
+  background: var(--g-sunken);
+}
+.my-orders-page.mo-glass .mo-viewbar-tools .mo-view-btn.active {
+  background: var(--g-accent);
+  border-color: var(--g-accent);
+  color: var(--g-on-accent);
+}
+.my-orders-page.mo-glass .mo-viewbar-tools .mo-view-div {
+  display: none;
+}
+.my-orders-page.mo-glass .mo-viewbar-tools .mo-status-filter {
+  height: 34px;
+  padding: 0 28px 0 10px;
+  border-radius: 9px;
+  border: 1px solid var(--g-hairline);
+  background-color: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .mo-tb-filters {
+    width: 100%;
+  }
+  .my-orders-page.mo-glass .mo-tb-field {
+    flex: 1 1 140px;
+  }
+  .my-orders-page.mo-glass .mo-tb-field :is(select, input) {
+    flex: 1 1 auto;
+    max-width: none;
+    width: auto;
+  }
+  .my-orders-page.mo-glass .mo-viewbar-tools {
+    margin-left: 0;
+  }
+}
+
+/* Status view select keeps the native chevron. */
+.my-orders-page.mo-glass .mo-viewbar-tools .mo-status-filter {
+  appearance: auto;
+  background-image: none;
+  padding-right: 8px;
+  min-width: 150px;
+}
+
+/* =========================================================================
+   21. Orders — slim toolbar + Filters & view slide-over sheet
+   ========================================================================= */
+
+/* Toolbar buttons beside search: same 40px height as the field. */
+.my-orders-page.mo-glass .mo-toolbar {
+  flex-wrap: nowrap;
+}
+.my-orders-page.mo-glass .mo-toolbar .admin-search-input {
+  flex: 1 1 auto;
+}
+.my-orders-page.mo-glass .mo-tb-btn {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s var(--g-ease), border-color 0.18s var(--g-ease);
+}
+.my-orders-page.mo-glass .mo-tb-btn:hover {
+  background: var(--g-sunken);
+}
+.my-orders-page.mo-glass .mo-tb-btn.set {
+  border-color: var(--g-accent);
+}
+.my-orders-page.mo-glass .mo-tb-btn.icon {
+  width: 40px;
+  padding: 0;
+  justify-content: center;
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass .mo-tb-btn.on {
+  background: var(--g-accent);
+  border-color: var(--g-accent);
+  color: var(--g-on-accent);
+}
+.my-orders-page.mo-glass .mo-tb-badge {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Summary: one line; scrolls sideways instead of wrapping on phones. */
+.my-orders-page.mo-glass .mo-viewsum {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  white-space: nowrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo-viewsum::-webkit-scrollbar {
+  display: none;
+}
+.my-orders-page.mo-glass .mo-viewsum > * {
+  flex: 0 0 auto;
+}
+
+/* ---- The sheet ---- */
+.mo-glass .mo-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.4);
+}
+.mo-glass .mo-sheet {
+  position: fixed;
+  z-index: 1001;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(400px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  border-left: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow-lg);
+}
+.mo-glass .mo-sheet-grip {
+  display: none;
+}
+.mo-glass .mo-sheet-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--g-hairline);
+}
+.mo-glass .mo-sheet-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.mo-glass .mo-sheet-x {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--g-ink-2);
+  cursor: pointer;
+}
+.mo-glass .mo-sheet-x:hover {
+  background: var(--g-sunken);
+  color: var(--g-ink);
+}
+.mo-glass .mo-sheet-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 18px 18px;
+}
+.mo-glass .mo-sheet-sec {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--g-hairline);
+}
+.mo-glass .mo-sheet-sec:last-child {
+  border-bottom: 0;
+}
+.mo-glass .mo-sheet-sec h4 {
+  margin: 0 0 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+}
+.mo-glass .mo-sheet-select {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--g-hairline);
+  background-color: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Segmented choices (single select). */
+.mo-glass .mo-seg {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--g-sunken);
+  border: 1px solid var(--g-hairline);
+}
+.mo-glass .mo-seg.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  gap: 6px;
+  background: none;
+  border: 0;
+}
+.mo-glass .mo-seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--g-ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.mo-glass .mo-seg.wrap button {
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+}
+.mo-glass .mo-seg button:hover {
+  color: var(--g-ink);
+}
+.mo-glass .mo-seg button.on {
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  box-shadow: 0 0 0 1px var(--g-hairline), var(--g-shadow-sm);
+}
+.mo-glass .mo-seg.wrap button.on {
+  background: var(--g-accent);
+  border-color: var(--g-accent);
+  color: var(--g-on-accent);
+  box-shadow: none;
+}
+
+.mo-glass .mo-sheet-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.mo-glass .mo-sheet-dates label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g-ink-3);
+}
+.mo-glass .mo-sheet-dates input {
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--g-hairline);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--g-ink);
+}
+.mo-glass .mo-sheet-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--g-ink-2);
+}
+.mo-glass .mo-sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mo-glass .mo-sheet-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.mo-glass .mo-sheet-actions button:hover {
+  background: var(--g-sunken);
+}
+.mo-glass .mo-sheet-foot {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+}
+.mo-glass .mo-sheet-clear {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 11px;
+  border: 1px solid var(--g-hairline);
+  background: transparent;
+  color: var(--g-ink);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.mo-glass .mo-sheet-clear:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.mo-glass .mo-sheet-done {
+  flex: 1 1 auto;
+  height: 44px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Phones: bottom sheet with a grab handle, capped at 88% height. */
+@media (max-width: 720px) {
+  .mo-glass .mo-sheet {
+    top: auto;
+    left: 0;
+    width: 100%;
+    max-height: 88dvh;
+    border-left: 0;
+    border-top: 1px solid var(--g-hairline);
+    border-radius: 18px 18px 0 0;
+  }
+  .mo-glass .mo-sheet-grip {
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: 8px auto 0;
+    border-radius: 99px;
+    background: var(--g-hairline-2);
+  }
+  .mo-glass .mo-sheet-head {
+    padding-top: 8px;
+  }
+  .my-orders-page.mo-glass .mo-tb-btn-label {
+    display: none;
+  }
+  .my-orders-page.mo-glass .mo-tb-btn:not(.icon) {
+    width: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+  .my-orders-page.mo-glass .mo-tb-btn .mo-tb-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+  }
+}
+
+/* Phase stepper on phones: compact pills, no hints. */
+@media (max-width: 720px) {
+  .mo-glass .mo-phases {
+    grid-template-columns: repeat(7, max-content);
+  }
+  .mo-glass .mo-phase {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+  .mo-glass .mo-phase-top {
+    order: 2;
+  }
+  .mo-glass .mo-phase-step,
+  .mo-glass .mo-phase-hint,
+  .mo-glass .mo-phase::after {
+    display: none;
+  }
+  .mo-glass .mo-phase-n {
+    font-size: 15px;
+  }
+  .mo-glass .mo-phase-label {
+    font-size: 13px;
+  }
+}
+
+/* =========================================================================
+   22. Analytics — collapsible groups
+   ========================================================================= */
+
+.mo-glass .an2-grp {
+  display: flex;
+  flex-direction: column;
+}
+/* The heading is the toggle: full-width, quiet, chevron on the right. */
+.mo-glass .an2-grp > .an2-group {
+  width: 100%;
+  margin: 0;
+  padding: 10px 8px 10px 4px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  align-items: center;
+  transition: background 0.18s var(--g-ease);
+}
+.mo-glass .an2-grp > .an2-group:hover {
+  background: rgb(var(--g-ink-rgb) / 0.04);
+}
+.mo-glass .an2-group-step {
+  margin-top: 0;
+}
+.mo-glass .an2-group-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.mo-glass .an2-group-title {
+  display: block;
+}
+.mo-glass .an2-group-sub {
+  display: block;
+  margin-top: 1px;
+  font-size: 12.5px;
+  color: var(--g-ink-3);
+}
+.mo-glass .an2-group-chev {
+  flex: 0 0 auto;
+  color: var(--g-ink-3);
+  transform: rotate(-90deg);
+  transition: transform 0.25s var(--g-ease);
+}
+.mo-glass .an2-grp.open .an2-group-chev {
+  transform: none;
+}
+.mo-glass .an2-grp-body {
+  overflow: hidden;
+}
+.mo-glass .an2-grp-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-gap);
+  padding: 8px 0 4px;
+}
+/* Collapsed groups sit tight together like a table of contents. */
+.mo-glass .an2 > .an2-grp:not(.open) + .an2-grp {
+  margin-top: -10px;
+}
+/* The KPI date line no longer needs to tuck under the heading. */
+.mo-glass .an2-stats-head {
+  margin: 0 2px -6px;
+}
+
+@media (max-width: 720px) {
+  .mo-glass .an2-group-sub {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* =========================================================================
+   23. Run-rate insights + mobile space fixes
+   ========================================================================= */
+
+.mo-glass .rr-ins {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.mo-glass .rr-ins-head {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--g-ink);
+}
+.mo-glass .rr-ins-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--g-hairline);
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-r);
+  overflow: hidden;
+}
+.mo-glass .rr-ins-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 12px 14px;
+  background: var(--g-surface-solid);
+}
+.mo-glass.mo-dark .rr-ins-tile {
+  background: var(--g-surface-3);
+}
+.mo-glass .rr-ins-k {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--g-ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mo-glass .rr-ins-v {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--g-ink);
+  font-variant-numeric: tabular-nums;
+}
+.mo-glass .rr-ins-x {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--g-ink-3);
+  line-height: 1.35;
+}
+.mo-glass .rr-ins-x.up {
+  color: #15803d;
+}
+.mo-glass .rr-ins-x.down {
+  color: #b91c1c;
+}
+.mo-glass.mo-dark .rr-ins-x.up {
+  color: #86efac;
+}
+.mo-glass.mo-dark .rr-ins-x.down {
+  color: #fca5a5;
+}
+@media (max-width: 1100px) {
+  .mo-glass .rr-ins-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .mo-glass .rr-ins-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* Year-to-date spans the last row so the grid has no hole. */
+  .mo-glass .rr-ins-tile:last-child {
+    grid-column: 1 / -1;
+  }
+  .mo-glass .rr-ins-head {
+    font-size: 13.5px;
+  }
+}
+
+/* ---- Phones: give the content the width, not the chrome ---- */
+@media (max-width: 720px) {
+  /* KPI tiles: drop the icon chip — the label already says what it is. */
+  .my-orders-page.mo-glass .an2-stats .an2-stat-ic {
+    display: none;
+  }
+  .my-orders-page.mo-glass .an2-stats > .an2-stat {
+    padding: 12px;
+    gap: 0;
+  }
+  .mo-glass .an2-stats .an2-stat-val {
+    font-size: 19px;
+  }
+  .mo-glass .an2-stats .an2-stat-x {
+    font-size: 11px;
+  }
+  /* Card headers: let the right-side total wrap under the title instead of
+     squeezing it. */
+  .mo-glass .an2-acc-head {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .mo-glass .an2-acc-titles {
+    min-width: 0;
+    flex: 1 1 60%;
+  }
+  /* Celebrate: a small round button that clears the bottom nav instead of a
+     wide pill sitting on top of it. */
+  .my-orders-page.mo-glass .mo-celebrate-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+    font-size: 0;
+    right: 14px;
+    bottom: calc(var(--g-bottombar-h) + 36px + env(safe-area-inset-bottom, 0px));
+    background: var(--g-accent);
+    color: var(--g-on-accent);
+    box-shadow: var(--g-shadow);
+  }
+  .my-orders-page.mo-glass .mo-celebrate-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  /* Content always scrolls clear of the bottom nav. */
+  .my-orders-page.mo-glass .mo-main {
+    padding-bottom: calc(var(--g-bottombar-h) + 48px + env(safe-area-inset-bottom, 0px));
+  }
+  /* Tighter page gutters. */
+  .my-orders-page.mo-glass .mo-topbar {
+    padding: 12px 14px;
+  }
+  .my-orders-page.mo-glass .admin-search.mo-tools-card {
+    padding: 10px;
+  }
+}
+
+/* Run-rate toggle sits above the insights it controls. */
+.mo-glass .an2-acc-body > .an2-mrr-tabs {
+  margin-bottom: 12px;
+}
+@media (max-width: 720px) {
+  /* Let insight labels wrap rather than truncate on narrow tiles. */
+  .mo-glass .rr-ins-k {
+    white-space: normal;
+  }
+}
+
+/* =========================================================================
+   24. Select mode — selection bar + Actions sheet
+   ========================================================================= */
+
+/* Keeps the last row of cards scrollable above the fixed bar (select boxes
+   only render in select mode). */
+.my-orders-page.mo-glass:has(.mo2-select-box) .mo-main {
+  padding-bottom: calc(var(--g-bottombar-h) + 120px);
+}
+
+/* Desktop: an ink pill floating at the bottom of the content column. */
+.mo-glass .mo-selbar {
+  position: fixed;
+  left: calc(var(--g-rail-w) + (100vw - var(--g-rail-w)) / 2);
+  bottom: 20px;
+  z-index: 950;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: min(560px, calc(100vw - var(--g-rail-w) - 32px));
+  padding: 6px 6px 6px 8px;
+  border-radius: 16px;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+  box-shadow: var(--g-shadow-lg);
+}
+.mo-glass .mo-selbar.rail-collapsed {
+  left: calc(var(--g-rail-w-collapsed) + (100vw - var(--g-rail-w-collapsed)) / 2);
+}
+.mo-glass .mo-selbar-x {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: inherit;
+  opacity: 0.75;
+  cursor: pointer;
+}
+.mo-glass .mo-selbar-x:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--g-on-accent) 12%, transparent);
+}
+.mo-glass .mo-selbar-count {
+  font-size: 14px;
+  white-space: nowrap;
+}
+.mo-glass .mo-selbar-count b {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.mo-glass .mo-selbar-link {
+  margin-left: 4px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.8;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.mo-glass .mo-selbar-link:hover {
+  opacity: 1;
+}
+.mo-glass .mo-selbar-primary {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px 0 16px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--g-on-accent);
+  color: var(--g-accent);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Phones: flush, full-width, sitting directly on top of the tab bar. */
+@media (max-width: 1023px) {
+  .mo-glass .mo-selbar {
+    left: 0;
+    right: 0;
+    translate: none;
+    width: auto;
+    bottom: calc(var(--g-bottombar-h) + env(safe-area-inset-bottom, 0px));
+    padding: 8px 10px 8px 6px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* ---- Actions sheet ---- */
+.mo-glass .mo-sheet-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--g-ink-3);
+}
+.mo-glass .mo-sheet-inline {
+  display: flex;
+  gap: 8px;
+}
+.mo-glass .mo-sheet-inline .mo-sheet-select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.mo-glass .mo-sheet-apply {
+  flex: 0 0 auto;
+  height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.mo-glass .mo-sheet-apply:disabled {
+  opacity: 0.5;
+}
+/* Action rows: icon · title + hint · count — one tap each. */
+.mo-glass .mo-sheet-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--g-hairline);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.mo-glass .mo-sheet-list button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.mo-glass .mo-sheet-list button:last-child {
+  border-bottom: 0;
+}
+.mo-glass .mo-sheet-list button:hover:not(:disabled) {
+  background: var(--g-sunken);
+}
+.mo-glass .mo-sheet-list button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.mo-glass .mo-sheet-list button > svg {
+  flex: 0 0 auto;
+  color: var(--g-ink-2);
+}
+.mo-glass .mo-sheet-list button > span {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 600;
+}
+.mo-glass .mo-sheet-list em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--g-ink-3);
+}
+.mo-glass .mo-sheet-list b {
+  flex: 0 0 auto;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 99px;
+  background: var(--g-sunken);
+  color: var(--g-ink);
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+/* Card select checkbox: ink when ticked, in both themes. */
+.my-orders-page.mo-glass .mo2-select-box {
+  border-color: var(--g-hairline-2);
+  background: var(--g-surface-solid);
+  color: var(--g-on-accent);
+}
+.my-orders-page.mo-glass .mo2-select-box.on {
+  border-color: var(--g-accent);
+  background: var(--g-accent);
+}
+
+/* =========================================================================
+   25. Modals — shared polish + India Post bulk file
+   ========================================================================= */
+
+/* Every console modal: solid theme surface, hairline edge. Phones keep the
+   bottom sheet; wider screens get a centred dialog instead of a full-width
+   strip glued to the bottom. */
+.mo-glass .bill-modal-overlay {
+  background: rgba(10, 10, 10, 0.45);
+}
+.mo-glass .bill-modal {
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  border: 1px solid var(--g-hairline);
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  box-shadow: var(--g-shadow-lg);
+}
+.mo-glass .bill-modal::before {
+  background: var(--g-hairline-2);
+}
+@media (min-width: 721px) {
+  /* Centred without transforms (the slide-in animation owns transform). */
+  .mo-glass .bill-modal {
+    inset: 0;
+    margin: auto;
+    width: min(560px, calc(100vw - 48px));
+    height: fit-content;
+    min-height: 0;
+    max-height: min(86vh, 860px);
+    animation: none;
+    border: 1px solid var(--g-hairline);
+    border-radius: 18px;
+  }
+  .mo-glass .bill-modal::before {
+    display: none;
+  }
+}
+.mo-glass .bill-header {
+  align-items: center;
+  gap: 12px;
+  border-bottom-color: var(--g-hairline);
+}
+.mo-glass .mo-modal-x {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--g-ink-2);
+  cursor: pointer;
+}
+.mo-glass .mo-modal-x:hover {
+  background: var(--g-sunken);
+  color: var(--g-ink);
+}
+
+/* ---- India Post bulk file ---- */
+.mo-glass .bill-modal.ip-bulk-modal {
+  padding: 0;
+  overflow: hidden;
+}
+@media (min-width: 721px) {
+  .mo-glass .bill-modal.ip-bulk-modal {
+    width: min(1040px, calc(100vw - 48px));
+    max-width: none;
+    height: min(86vh, 860px);
+  }
+}
+.mo-glass .ip-bulk-modal .bill-header {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 16px 16px 14px;
+}
+.mo-glass .ip-bulk-modal .bill-header .font-16 {
+  min-width: 0;
+  gap: 2px;
+}
+.mo-glass .ip-import-btn {
+  height: 36px;
+  padding: 0 12px;
+  gap: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mo-glass .ip-import-btn:hover {
+  background: var(--g-sunken);
+}
+.mo-glass .ip-bulk-sender {
+  border-bottom-color: var(--g-hairline);
+}
+.mo-glass .ip-bulk-body {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Footer: note on the left, actions on the right — Download is the one
+   filled button; Fill IDs and Push are secondary outlines. */
+.mo-glass .ip-bulk-foot {
+  flex: 0 0 auto;
+  gap: 10px 16px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top-color: var(--g-hairline);
+  background: var(--g-surface-solid);
+}
+.mo-glass .ip-bulk-foot-note {
+  color: var(--g-ink-3);
+  line-height: 1.4;
+}
+.mo-glass .ip-bulk-foot-btns {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.mo-glass :is(.ip-bulk-cancel, .ip-bulk-fill, .ip-bulk-download, .ip-bulk-push) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 11px;
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.mo-glass :is(.ip-bulk-cancel, .ip-bulk-fill, .ip-bulk-push) {
+  border: 1px solid var(--g-hairline-2);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+}
+.mo-glass :is(.ip-bulk-cancel, .ip-bulk-fill, .ip-bulk-push):hover:not(:disabled) {
+  background: var(--g-sunken);
+}
+.mo-glass .ip-bulk-download {
+  border: 0;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+}
+.mo-glass :is(.ip-bulk-fill, .ip-bulk-download, .ip-bulk-push):disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (max-width: 720px) {
+  .mo-glass .ip-import-lbl {
+    display: none;
+  }
+  .mo-glass .ip-import-btn {
+    width: 36px;
+    padding: 0;
+  }
+  .mo-glass .ip-bulk-modal .bill-header .font-12 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  /* Phones: primary action full width on top, secondaries share a row.
+     The header ✕ replaces Cancel. */
+  .mo-glass .ip-bulk-foot {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .mo-glass .ip-bulk-foot-note {
+    flex: 0 0 auto;
+    font-size: 11px;
+  }
+  .mo-glass .ip-bulk-foot-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .mo-glass .ip-bulk-cancel {
+    display: none;
+  }
+  .mo-glass .ip-bulk-download {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    height: 46px;
+    font-size: 14.5px;
+  }
+}
+
+/* Bulk table: every cell centred on the row, sticky # column on the surface. */
+.mo-glass .ip-tbl td {
+  vertical-align: middle;
+}
+.mo-glass .ip-tbl .ip-tbl-sticky {
+  background: var(--g-surface-solid);
+}
+.mo-glass.mo-dark .ip-tbl .ip-tbl-sticky {
+  background: var(--g-surface-3);
+}
+.mo-glass .ip-tbl td.ip-tbl-sr {
+  display: table-cell;
+  white-space: nowrap;
+}
+.mo-glass .ip-tbl td.ip-tbl-sr .ip-tbl-srnum {
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* =========================================================================
+   26. Track orders — Mark paid / Mark delivered previews, hold callout
+   ========================================================================= */
+
+/* Action bar above each preview list. */
+.my-orders-page.mo-glass .mo-deliv-bar {
+  padding: 12px 0 10px;
+  border-top: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo-deliv-all {
+  color: var(--g-ink);
+  font-weight: 600;
+}
+.my-orders-page.mo-glass :is(.mo-deliv-all, .mo-deliv-row) input[type="checkbox"] {
+  accent-color: var(--g-accent);
+}
+.my-orders-page.mo-glass .mo-deliv-clear {
+  border-color: var(--g-hairline);
+  color: var(--g-ink-2);
+}
+/* One filled button per screen (the main push); the corrective pushes —
+   revert, cancel, hold — are outlines so they never compete with it. */
+.my-orders-page.mo-glass .mo-deliv-push {
+  height: 38px;
+  border-radius: 10px;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+  font-weight: 700;
+}
+.my-orders-page.mo-glass :is(.mo-deliv-revert-push, .mo-deliv-cancel-push, .mo-deliv-hold-push) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--g-hairline-2);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: none;
+}
+.my-orders-page.mo-glass .mo-deliv-cancel-push {
+  color: #b91c1c;
+  border-color: rgba(220, 38, 38, 0.35);
+}
+.my-orders-page.mo-glass .mo-deliv-hold-push {
+  color: #b45309;
+  border-color: rgba(217, 119, 6, 0.4);
+}
+.my-orders-page.mo-glass.mo-dark .mo-deliv-cancel-push {
+  color: #fca5a5;
+}
+.my-orders-page.mo-glass.mo-dark .mo-deliv-hold-push {
+  color: #fcd34d;
+}
+.my-orders-page.mo-glass :is(.mo-deliv-revert-push, .mo-deliv-cancel-push, .mo-deliv-hold-push):disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* The list: one bordered table-like block with hairline rows, instead of a
+   stack of heavy green-outlined boxes. */
+.my-orders-page.mo-glass .mo-deliv-list {
+  gap: 0;
+  max-height: 460px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 12px;
+  background: var(--g-surface-solid);
+  overflow-y: auto;
+}
+.my-orders-page.mo-glass .mo-deliv-row,
+.my-orders-page.mo-glass.mo-dark .mo-deliv-row {
+  gap: 12px;
+  padding: 11px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--g-hairline);
+  border-radius: 0;
+  background: transparent;
+}
+.my-orders-page.mo-glass .mo-deliv-row:last-child {
+  border-bottom: 0;
+}
+.my-orders-page.mo-glass .mo-deliv-row:hover {
+  background: var(--g-sunken);
+}
+.my-orders-page.mo-glass .mo-deliv-row.on,
+.my-orders-page.mo-glass.mo-dark .mo-deliv-row.on {
+  border-color: var(--g-hairline);
+  background: transparent;
+}
+/* Unticked rows fade back so the push count is easy to read at a glance. */
+.my-orders-page.mo-glass .mo-deliv-row:not(.on) :is(.mo-deliv-row-main, .mo-deliv-row-flow) {
+  opacity: 0.5;
+}
+.my-orders-page.mo-glass .mo-deliv-row.odd {
+  box-shadow: inset 3px 0 0 #d97706;
+}
+.my-orders-page.mo-glass :is(.mo-deliv-row-name) {
+  color: var(--g-ink);
+  font-weight: 600;
+}
+.my-orders-page.mo-glass :is(.mo-deliv-row-oid, .mo-deliv-row-art, .mo-deliv-cur) {
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-deliv-new {
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 7px;
+  font-weight: 700;
+}
+.my-orders-page.mo-glass .mo-deliv-new.revert {
+  background: var(--g-sunken);
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo-deliv-new.hold {
+  background: rgba(217, 119, 6, 0.12);
+  color: #b45309;
+}
+.my-orders-page.mo-glass.mo-dark .mo-deliv-new.hold {
+  background: rgba(251, 191, 36, 0.14);
+  color: #fcd34d;
+}
+
+/* Mark paid: summary tiles + grouped lists. */
+.my-orders-page.mo-glass .mo-cb-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 4px 0 14px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 12px;
+  background: var(--g-hairline);
+  overflow: hidden;
+}
+.my-orders-page.mo-glass .mo-cb-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  background: var(--g-surface-solid);
+}
+.my-orders-page.mo-glass .mo-cb-summary b {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--g-ink);
+  font-variant-numeric: tabular-nums;
+}
+.my-orders-page.mo-glass .mo-cb-summary span {
+  font-size: 12px;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-cb-summary > .warn b {
+  color: #b45309;
+}
+.my-orders-page.mo-glass.mo-dark .mo-cb-summary > .warn b {
+  color: #fcd34d;
+}
+.my-orders-page.mo-glass .mo-deliv-group + .mo-deliv-group {
+  margin-top: 14px;
+}
+.my-orders-page.mo-glass .mo-deliv-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0 2px 8px;
+}
+.my-orders-page.mo-glass .mo-deliv-group-head span {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo-deliv-group-head em {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--g-ink-3);
+}
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .mo-cb-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* Rows stack the status flow under the name on phones. */
+  .my-orders-page.mo-glass .mo-deliv-row {
+    flex-wrap: wrap;
+  }
+  .my-orders-page.mo-glass .mo-deliv-row-main {
+    flex: 1 1 calc(100% - 40px);
+  }
+  .my-orders-page.mo-glass .mo-deliv-row-flow {
+    margin-left: 28px;
+  }
+}
+
+/* ---- Order card: on hold by India Post ---- */
+.my-orders-page.mo-glass .mo2-hold {
+  margin: 2px 0 0;
+  border: 1px solid rgba(217, 119, 6, 0.35);
+  border-radius: 12px;
+  background: rgba(217, 119, 6, 0.07);
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass.mo-dark .mo2-hold {
+  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(251, 191, 36, 0.07);
+}
+.my-orders-page.mo-glass .mo2-hold summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  list-style: none;
+}
+.my-orders-page.mo-glass .mo2-hold summary::-webkit-details-marker {
+  display: none;
+}
+.my-orders-page.mo-glass .mo2-hold summary > svg {
+  flex: 0 0 auto;
+  color: #d97706;
+}
+.my-orders-page.mo-glass .mo2-hold summary > span:first-of-type {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+.my-orders-page.mo-glass .mo2-hold summary em {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo2-hold-why {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g-ink-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.my-orders-page.mo-glass .mo2-hold[open] .mo2-hold-why {
+  visibility: hidden;
+}
+.my-orders-page.mo-glass .mo2-hold-body {
+  padding: 0 12px 12px 37px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass .mo2-hold-body p {
+  margin: 0 0 4px;
+}
+.my-orders-page.mo-glass .mo2-hold-body ul {
+  margin: 0 0 8px;
+  padding-left: 16px;
+}
+.my-orders-page.mo-glass .mo2-hold-next b {
+  color: var(--g-ink);
+}
+
+/* =========================================================================
+   27. Edit / add order modal
+   ========================================================================= */
+
+.mo-glass .bill-modal.mo-edit-modal {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+@media (min-width: 721px) {
+  .mo-glass .bill-modal.mo-edit-modal {
+    width: min(680px, calc(100vw - 48px));
+    height: min(88vh, 900px);
+  }
+}
+.mo-glass .mo-edit-modal .bill-header {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 14px 16px 12px;
+}
+.mo-glass .mo-edit-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.mo-glass .mo-edit-title b {
+  font-size: 16px;
+  font-weight: 700;
+}
+.mo-glass .mo-edit-title em {
+  font-style: normal;
+  font-size: 12.5px;
+  color: var(--g-ink-3);
+}
+.mo-glass .mo-edit-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* Each section is a quiet card: small caps heading, then fields. */
+.mo-glass .mo-ef-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 14px;
+  background: var(--g-surface-solid);
+}
+.mo-glass.mo-dark .mo-ef-sec {
+  background: var(--g-surface-3);
+}
+.mo-glass .mo-ef-sec > h4 {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+}
+.mo-glass .mo-ef-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.mo-glass .mo-ef-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.mo-glass .mo-ef-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+}
+.mo-glass .mo-ef-field > span {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--g-ink-2);
+}
+.mo-glass .mo-ef-field :is(input, select, textarea) {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.15s var(--g-ease);
+}
+.mo-glass.mo-dark .mo-ef-field :is(input, select, textarea) {
+  background: var(--g-canvas-1);
+}
+.mo-glass .mo-ef-field textarea {
+  padding: 10px 12px;
+  line-height: 1.45;
+  resize: vertical;
+}
+.mo-glass .mo-ef-field :is(input, select, textarea):focus {
+  border-color: var(--g-accent);
+}
+.mo-glass .mo-ef-field :is(input, select):disabled {
+  opacity: 0.6;
+}
+.mo-glass .mo-ef-hint {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--g-ink-3);
+}
+.mo-glass .mo-ef-inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.mo-glass .mo-ef-inline input {
+  width: 90px;
+  min-height: 38px;
+}
+/* Bill breakdown inside its section: drop its own box. */
+.mo-glass .mo-ef-sec .mo-editbill {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.mo-glass .mo-ef-sec .mo-editbill-head {
+  display: none;
+}
+.mo-glass .mo-edit-foot {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+}
+.mo-glass .mo-edit-cancel {
+  height: 46px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid var(--g-hairline-2);
+  background: transparent;
+  color: var(--g-ink);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.mo-glass .mo-edit-save {
+  flex: 1 1 auto;
+  height: 46px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+@media (max-width: 720px) {
+  .mo-glass .bill-modal.mo-edit-modal {
+    max-height: 92dvh;
+  }
+  .mo-glass .mo-ef-grid,
+  .mo-glass .mo-ef-grid.three {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================================
+   28. Orders — 14-day payment chart, order-type tags, card refresh
+   ========================================================================= */
+
+/* Series colours carry meaning: online = paid (green), ₹99 = part-paid
+   (blue), COD = nothing paid yet (neutral). */
+.mo-glass {
+  --pay-upi: #16a34a;
+  --pay-adv: #2563eb;
+  --pay-cod: #a8a29e;
+}
+.mo-glass.mo-dark {
+  --pay-upi: #4ade80;
+  --pay-adv: #60a5fa;
+  --pay-cod: #6b6a65;
+}
+.my-orders-page.mo-glass .mo-daybars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo-daybars-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass .mo-daybars-legend {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  font-weight: 500;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-daybars-legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+  border-radius: 2px;
+}
+.my-orders-page.mo-glass :is(.mo-daybars-legend i, .mo-daybar-col span).upi {
+  background: var(--pay-upi);
+}
+.my-orders-page.mo-glass :is(.mo-daybars-legend i, .mo-daybar-col span).adv {
+  background: var(--pay-adv);
+}
+.my-orders-page.mo-glass :is(.mo-daybars-legend i, .mo-daybar-col span).cod {
+  background: var(--pay-cod);
+}
+.my-orders-page.mo-glass .mo-daybars-plot {
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+  gap: 6px;
+  height: 104px;
+}
+.my-orders-page.mo-glass .mo-daybar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.15s var(--g-ease);
+}
+.my-orders-page.mo-glass .mo-daybar:hover .mo-daybar-col {
+  filter: brightness(1.08);
+}
+.my-orders-page.mo-glass .mo-daybar.dim {
+  opacity: 0.35;
+}
+.my-orders-page.mo-glass .mo-daybar-n {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--g-ink-2);
+  font-variant-numeric: tabular-nums;
+  min-height: 13px;
+}
+.my-orders-page.mo-glass .mo-daybar-col {
+  display: flex;
+  flex-direction: column-reverse;
+  width: min(100%, 22px);
+  min-height: 3px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--g-sunken);
+}
+.my-orders-page.mo-glass .mo-daybar-col span {
+  display: block;
+  min-height: 2px;
+}
+.my-orders-page.mo-glass .mo-daybar-d {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--g-ink-3);
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo-daybar.on .mo-daybar-d,
+.my-orders-page.mo-glass .mo-daybar.on .mo-daybar-n {
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo-daybar.on .mo-daybar-col {
+  box-shadow: 0 0 0 2px var(--g-surface-solid), 0 0 0 3px var(--g-accent);
+}
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .mo-daybars-plot {
+    gap: 3px;
+    height: 90px;
+  }
+  .my-orders-page.mo-glass .mo-daybar-d {
+    font-size: 9.5px;
+  }
+}
+
+/* ---- Order-type tags (top of card) ---- */
+.my-orders-page.mo-glass .mo2-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: -2px;
+}
+.my-orders-page.mo-glass .mo2-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.my-orders-page.mo-glass .mo2-tag.speed {
+  background: #4f46e5;
+  color: #fff;
+}
+.my-orders-page.mo-glass .mo2-tag.gift {
+  background: rgba(225, 29, 72, 0.1);
+  color: #be123c;
+  border: 1px dashed rgba(225, 29, 72, 0.45);
+}
+.my-orders-page.mo-glass.mo-dark .mo2-tag.gift {
+  background: rgba(251, 113, 133, 0.1);
+  color: #fda4af;
+  border-color: rgba(251, 113, 133, 0.45);
+}
+/* A coloured top edge on cards that need different handling. */
+.my-orders-page.mo-glass .admin-order-card.mo-card.mo-card-speed {
+  box-shadow: inset 0 3px 0 #4f46e5, var(--g-shadow);
+}
+.my-orders-page.mo-glass .admin-order-card.mo-card.mo-card-gift:not(.mo-card-speed) {
+  box-shadow: inset 0 3px 0 #e11d48, var(--g-shadow);
+}
+.my-orders-page.mo-glass .mo-card-faster {
+  display: none;
+}
+
+/* ---- Card refresh ---- */
+.my-orders-page.mo-glass .admin-order-card.mo-card {
+  cursor: pointer;
+  transition: border-color 0.18s var(--g-ease), box-shadow 0.18s var(--g-ease);
+}
+.my-orders-page.mo-glass .admin-order-card.mo-card:hover {
+  border-color: var(--g-hairline-2);
+}
+/* Solid hairlines instead of dashed rules between sections. */
+.my-orders-page.mo-glass .mo2-div {
+  border-top: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo2-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo2-phone,
+.my-orders-page.mo-glass .mo2-date {
+  color: var(--g-ink-3);
+}
+/* Badges: one quiet chip style; colour only where it means something. */
+.my-orders-page.mo-glass .mo2-badge {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+.my-orders-page.mo-glass .mo2-badge-count {
+  background: var(--g-sunken);
+  border-color: transparent;
+}
+/* Field labels: small and muted so values lead. */
+.my-orders-page.mo-glass .mo2-cell-k,
+.my-orders-page.mo-glass .mo2-note-k {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo2-total {
+  padding: 2px 0;
+}
+.my-orders-page.mo-glass .mo2-total-k {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass .mo2-total-v {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--g-ink);
+}
+/* Action row: lighter icon buttons, pinned to the card bottom. The divider
+   above it is the card's own .mo2-div — no second border here. */
+.my-orders-page.mo-glass .mo2-actions {
+  margin-top: auto;
+  padding-top: 0;
+  border-top: 0;
+}
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ic,
+.my-orders-page.mo-glass .mo2-actions .mo-kebab-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ic:hover,
+.my-orders-page.mo-glass .mo2-actions .mo-kebab-btn:hover {
+  background: var(--g-sunken);
+  color: var(--g-ink);
+}
+
+/* Equal-height cards per row: the grid stretches each card, and the last
+   divider + actions sit at the bottom so rows line up. */
+.my-orders-page.mo-glass .admin-orders-grid {
+  align-items: stretch;
+}
+.my-orders-page.mo-glass .admin-orders-grid > .admin-order-card.mo-card {
+  height: auto;
+  align-self: stretch;
+}
+.my-orders-page.mo-glass .admin-order-card.mo-card > .mo2-div:nth-last-child(2) {
+  margin-top: auto;
+}
+.my-orders-page.mo-glass .admin-order-card.mo-card > .mo2-div:nth-last-child(2) + .mo2-actions {
+  margin-top: 0;
 }

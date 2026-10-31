@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { Lock, Eye, EyeOff } from "lucide-react";
+import { isValidAdminCode, ADMIN_CODE_KEY } from "@/lib/adminCode";
 
 // Client-side gate only. Anyone with DevTools can bypass it.
 // For real protection use server-side auth.
@@ -14,18 +15,14 @@ import { Lock, Eye, EyeOff } from "lucide-react";
 //   • 9631 → unlocks for this session (cleared when the tab closes).
 //   • 9731 → entered via the "Remember me" box, keeps the session unlocked
 //            on this device across visits (no password needed next time).
-const SECRET =
-  "xP7k2Qm9Rv4Ls8Nz5Wc1Ft3Hj6Dy0Ae9631Ug2iO7Xb4qBnwLzA6kDsE3tV9731hJ5uCoX8mPrT2yG";
-const MIN_CODE_LEN = 4;
 
 const SESSION_KEY = "admin_unlocked"; // sessionStorage — clears on tab close
 const PERSIST_KEY = "admin_remember"; // localStorage — persists across visits
 
 // A code is valid when it is a long-enough substring of the secret string.
-const isValidCode = (v) => {
-  const c = String(v || "").trim();
-  return c.length >= MIN_CODE_LEN && SECRET.includes(c);
-};
+// The secret + check live in lib/adminCode so server routes can verify the
+// same code (sent as "x-admin-code") for admin-only actions.
+const isValidCode = isValidAdminCode;
 
 export default function AdminLock({ children, pageName = "Admin" }) {
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -72,6 +69,7 @@ export default function AdminLock({ children, pageName = "Admin" }) {
         try {
           localStorage.setItem(PERSIST_KEY, "true");
           sessionStorage.setItem(SESSION_KEY, "true");
+          localStorage.setItem(ADMIN_CODE_KEY, rememberCode.trim());
         } catch {}
         setIsUnlocked(true);
         setError("");
@@ -89,6 +87,7 @@ export default function AdminLock({ children, pageName = "Admin" }) {
     if (isValidCode(code)) {
       try {
         sessionStorage.setItem(SESSION_KEY, "true");
+        sessionStorage.setItem(ADMIN_CODE_KEY, code.trim());
       } catch {}
       setIsUnlocked(true);
       setError("");
@@ -107,6 +106,8 @@ export default function AdminLock({ children, pageName = "Admin" }) {
         try {
           sessionStorage.removeItem(SESSION_KEY);
           localStorage.removeItem(PERSIST_KEY);
+          sessionStorage.removeItem(ADMIN_CODE_KEY);
+          localStorage.removeItem(ADMIN_CODE_KEY);
         } catch {}
         setIsUnlocked(false);
       };

@@ -5181,3 +5181,267 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
     min-width: 0;
   }
 }
+
+/* =========================================================================
+   31. Paste & match — revamp
+   ========================================================================= */
+
+/* Input: the paste tile is the primary action. Once IDs are listed it
+   shrinks to a one-line bar so the matched orders get the screen. */
+.my-orders-page.mo-glass .mo-track-paste {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.my-orders-page.mo-glass .mo-paste-dash {
+  border: 1px dashed var(--g-hairline-2);
+  border-radius: 14px;
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  transition: border-color 0.18s var(--g-ease), background 0.18s var(--g-ease);
+}
+.my-orders-page.mo-glass .mo-paste-dash:hover {
+  border-color: var(--g-accent);
+  background: var(--g-sunken);
+}
+.my-orders-page.mo-glass .mo-paste-dash-ic {
+  background: var(--g-sunken);
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo-paste-dash-s {
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-track-paste.compact .mo-paste-dash {
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 12px;
+  min-height: 0;
+  padding: 12px 14px;
+  text-align: left;
+}
+.my-orders-page.mo-glass .mo-track-paste.compact .mo-paste-dash-ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+.my-orders-page.mo-glass .mo-track-paste.compact .mo-paste-dash-ic svg {
+  width: 17px;
+  height: 17px;
+}
+.my-orders-page.mo-glass .mo-track-paste.compact .mo-paste-dash-t {
+  font-size: 14px;
+}
+.my-orders-page.mo-glass .mo-track-paste.compact .mo-paste-dash-s {
+  display: none;
+}
+/* "Or paste manually" — a quiet disclosure, the textarea only when opened. */
+.my-orders-page.mo-glass .mo-paste-manual > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g-ink-2);
+  cursor: pointer;
+  list-style: none;
+}
+.my-orders-page.mo-glass .mo-paste-manual > summary::-webkit-details-marker {
+  display: none;
+}
+.my-orders-page.mo-glass .mo-paste-manual > summary::before {
+  content: "+";
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: var(--g-sunken);
+  font-size: 13px;
+  line-height: 1;
+}
+.my-orders-page.mo-glass .mo-paste-manual[open] > summary::before {
+  content: "−";
+}
+.my-orders-page.mo-glass .mo-paste-manual[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.my-orders-page.mo-glass .mo-track-textarea {
+  border-radius: 12px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.my-orders-page.mo-glass .mo-track-paste-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.my-orders-page.mo-glass .mo-track-hint {
+  font-size: 12.5px;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-track-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.my-orders-page.mo-glass .mo-track-add:disabled {
+  opacity: 0.4;
+}
+
+/* Result chips (added / linked / not matched). */
+.my-orders-page.mo-glass .mo-track-chip {
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Select row: toggle + quick-pick on one line, scrolls on phones. */
+.my-orders-page.mo-glass .mo-track-selrow {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.my-orders-page.mo-glass .mo-track-selrow::-webkit-scrollbar {
+  display: none;
+}
+.my-orders-page.mo-glass .mo-track-selrow > * {
+  flex: 0 0 auto;
+}
+.my-orders-page.mo-glass .mo-track-selrow .mo-select-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-weight: 600;
+}
+.my-orders-page.mo-glass .mo-track-selrow .mo-select-btn.active {
+  background: var(--g-accent);
+  border-color: var(--g-accent);
+  color: var(--g-on-accent);
+}
+
+/* Pinned bulk bar: select inside the ink bar. */
+.mo-glass .mo-track-selbar .mo-selbar-select {
+  min-width: 0;
+  flex: 1 1 auto;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--g-on-accent) 25%, transparent);
+  background-color: color-mix(in srgb, var(--g-on-accent) 10%, transparent);
+  color: var(--g-on-accent);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.mo-glass .mo-track-selbar .mo-selbar-select option {
+  color: var(--g-ink);
+  background: var(--g-surface-solid);
+}
+.mo-glass .mo-track-selbar .mo-selbar-primary {
+  margin-left: 0;
+}
+.mo-glass .mo-track-selbar .mo-selbar-primary:disabled {
+  opacity: 0.6;
+}
+/* Room for the pinned bar under the last card. */
+.my-orders-page.mo-glass:has(.mo-track-card.selected) .mo-main {
+  padding-bottom: calc(var(--g-bottombar-h) + 120px);
+}
+
+/* Cards: tighter rhythm, smaller covers, quiet secondary action. */
+.my-orders-page.mo-glass .mo-track-card {
+  gap: 12px;
+  padding: 16px;
+}
+.my-orders-page.mo-glass .mo-track-card-covers {
+  padding: 8px;
+}
+.my-orders-page.mo-glass .mo-track-cover {
+  width: 44px;
+  height: 64px;
+  border-radius: 6px;
+}
+.my-orders-page.mo-glass .mo-track-paid-line {
+  font-size: 13.5px;
+}
+.my-orders-page.mo-glass .mo-track-refund-row {
+  display: flex;
+  justify-content: flex-end;
+}
+.my-orders-page.mo-glass .mo-track-refund-btn {
+  width: auto;
+  height: 32px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--g-ink-3);
+  font-size: 12.5px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.my-orders-page.mo-glass .mo-track-refund-btn:hover:not(:disabled) {
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo-track-group-head {
+  border-radius: 12px;
+}
+
+/* Already-listed card pulse after a paste. */
+@keyframes mo-track-flash {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  30%,
+  70% {
+    box-shadow: 0 0 0 3px #f59e0b;
+  }
+}
+.my-orders-page.mo-glass .mo-track-card.flash {
+  border-color: #f59e0b;
+  animation: mo-track-flash 1.2s ease-in-out 2;
+}
+/* Clear all — pushed to the end of the select row. */
+.my-orders-page.mo-glass .mo-track-clearall {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 10px;
+  background: var(--g-surface-solid);
+  color: var(--g-ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo-track-clearall:hover {
+  color: #b91c1c;
+  border-color: rgba(220, 38, 38, 0.35);
+}
+.my-orders-page.mo-glass.mo-dark .mo-track-clearall:hover {
+  color: #fca5a5;
+}

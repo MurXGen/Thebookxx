@@ -5919,6 +5919,7 @@ export default function ManageOrdersPage() {
 
     let added = 0;
     let dup = 0;
+    const dupIds = []; // already in the list → highlight their cards
     let attached = 0;
     const failed = [];
     const writes = []; // { orderId, id } — new numbers to save to the sheet
@@ -5963,6 +5964,7 @@ export default function ManageOrdersPage() {
       }
       if (have.has(id)) {
         dup += 1;
+        dupIds.push(id);
         return;
       }
       if (isNew && match["Order ID"]) {
@@ -6022,6 +6024,7 @@ export default function ManageOrdersPage() {
       setTimeout(fetchOrders, 1500);
     }
     setTrackFailed(failed);
+    flashTrackCards(dupIds);
     setTrackSummary({
       added,
       dup,
@@ -6065,6 +6068,25 @@ export default function ManageOrdersPage() {
       persistTrackList(next);
       return next;
     });
+  };
+  // Pasted IDs that were already listed: open their date group, scroll to
+  // the first, and pulse those cards for a moment so they're easy to find.
+  const [trackFlash, setTrackFlash] = useState([]);
+  const flashTrackCards = (ids) => {
+    if (!ids.length) return;
+    const rows = trackList.filter((r) => ids.includes(sidUp(r["Shipping ID"])));
+    setTrackDateOpen((p) => {
+      const n = { ...p };
+      rows.forEach((r) => (n[r.dateLabel || "Undated"] = true));
+      return n;
+    });
+    setTrackFlash(ids);
+    setTimeout(() => {
+      document
+        .getElementById(`trk-${ids[0]}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 120);
+    setTimeout(() => setTrackFlash([]), 2600);
   };
   const clearTracking = () => {
     setTrackList([]);
@@ -12728,6 +12750,13 @@ export default function ManageOrdersPage() {
                       >
                         <Wallet size={16} /> Transactions
                       </Link>
+                      <Link
+                        href="/manage-orders/escrow"
+                        className="mo-menu-item"
+                        onClick={() => setShowToolsMenu(false)}
+                      >
+                        <ShieldCheck size={16} /> Escrow review
+                      </Link>
                       <button
                         type="button"
                         className="mo-menu-item"
@@ -17240,7 +17269,7 @@ export default function ManageOrdersPage() {
 
             {trackSubTab === "paste" && (
               <>
-            <div className="mo-track-paste">
+            <div className={`mo-track-paste${trackList.length ? " compact" : ""}`}>
               <button
                 type="button"
                 className="mo-paste-dash"
@@ -17390,6 +17419,23 @@ export default function ManageOrdersPage() {
                             </div>
                           );
                         })()}
+                      <button
+                        type="button"
+                        className="mo-track-clearall"
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `Clear all ${trackList.length} tracking IDs from this list? (Orders aren't changed.)`,
+                            )
+                          ) {
+                            setTrackSel([]);
+                            setTrackSelectMode(false);
+                            clearTracking();
+                          }
+                        }}
+                      >
+                        <Trash2 size={14} /> Clear all
+                      </button>
                     </div>
 
                     {/* Staged status pushes — one batch button instead of
@@ -17429,37 +17475,55 @@ export default function ManageOrdersPage() {
                       </div>
                     )}
 
-                    {trackSelectMode && (
-                      <div className="mo-track-bulk">
-                        <span className="mo-track-bulk-count">
-                          <b>{trackSel.length}</b> selected
-                        </span>
-                        <div className="mo-track-bulk-act">
-                          <span className="mo-track-bulk-lbl">Set status</span>
+                    {/* Bulk status — pinned to the bottom (above the tab bar
+                        on phones) and only once something is ticked, the
+                        same pattern as select mode on the Orders tab. */}
+                    {trackSelectMode &&
+                      trackSel.length > 0 &&
+                      typeof document !== "undefined" &&
+                      createPortal(
+                        <motion.div
+                          className={`mo-selbar mo-track-selbar${railCollapsed ? " rail-collapsed" : ""}`}
+                          role="toolbar"
+                          aria-label="Selected tracking IDs"
+                          initial={{ y: 24, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          <button
+                            type="button"
+                            className="mo-selbar-x"
+                            onClick={() => setTrackSel([])}
+                            aria-label="Clear selection"
+                          >
+                            <X size={18} />
+                          </button>
+                          <span className="mo-selbar-count">
+                            <b>{trackSel.length}</b> selected
+                          </span>
                           <select
-                            className="mo-tp-status-select"
+                            className="mo-selbar-select"
                             value={trackBulkStat}
                             onChange={(e) => setTrackBulkStat(e.target.value)}
+                            aria-label="Status to apply"
                           >
-                            {TRACK_STATUS_OPTIONS.map((s) => (
-                              <option key={s} value={s}>
-                                {s}
+                            {TRACK_STATUS_OPTIONS.map((st2) => (
+                              <option key={st2} value={st2}>
+                                {st2}
                               </option>
                             ))}
                           </select>
                           <button
                             type="button"
-                            className="mo-track-bulk-apply"
-                            disabled={trackSel.length === 0 || trackBulkBusy}
+                            className="mo-selbar-primary"
+                            disabled={trackBulkBusy}
                             onClick={applyTrackBulkStatus}
                           >
-                            {trackBulkBusy
-                              ? "Applying…"
-                              : `Apply to ${trackSel.length || ""}`}
+                            {trackBulkBusy ? "Applying…" : "Apply"}
                           </button>
-                        </div>
-                      </div>
-                    )}
+                        </motion.div>,
+                        moPortalTarget(),
+                      )}
 
                     {groups.map((grp) => {
                       const open = trackDateOpen[grp.label] !== false;
@@ -17496,7 +17560,8 @@ export default function ManageOrdersPage() {
                                 );
                                 return (
                                   <div
-                                    className={`mo-track-card${tSel ? " selected" : ""}`}
+                                    id={`trk-${sidUp(key)}`}
+                                    className={`mo-track-card${tSel ? " selected" : ""}${trackFlash.includes(sidUp(key)) ? " flash" : ""}`}
                                     key={key}
                                   >
                                     <div className="mo-track-card-top">

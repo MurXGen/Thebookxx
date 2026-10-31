@@ -78,6 +78,17 @@ export const EXCHANGE_SHEET_NAME =
 //   Status | Author
 export const NOTES_SHEET_NAME = process.env.NOTES_SHEET_NAME || "Notes";
 
+// ── Escrow ─────────────────────────────────────────────────────────────────
+// Two-party escrow deals reviewed by TheBookX. Create a tab named "Escrow" in
+// the orders spreadsheet with this header row (columns are matched by name):
+//   Escrow ID | Created At | Updated At | Status | Title | Terms | Amount |
+//   PIN | P1 Phone | P1 Name | P1 Role | P2 Phone | P2 Name | P2 Joined At |
+//   P1 Agreed | P2 Agreed | Sources | Notes | Review Note | Reviewed At |
+//   Reviewed By
+// Sources / Notes hold JSON arrays. Status: Awaiting P2 → Open →
+// Under review → Approved | Rejected.
+export const ESCROW_SHEET_NAME = process.env.ESCROW_SHEET_NAME || "Escrow";
+
 export const ABANDONED_CART_SHEET_NAME =
   process.env.ABANDONED_CART_SHEET_NAME || "Abandoned Cart";
 
@@ -626,6 +637,35 @@ export function notesUpdate(noteId, data) {
 export async function notesAllRows() {
   try {
     const table = await gvizQuery({ sheet: NOTES_SHEET_NAME });
+    return tableToObjects(table);
+  } catch {
+    return [];
+  }
+}
+
+// ── Escrow ─────────────────────────────────────────────────────────────────
+// Append one escrow row.
+export function escrowAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "append",
+    sheet: ESCROW_SHEET_NAME,
+    data,
+  });
+}
+// Update an escrow row matched on its Escrow ID (only the given columns).
+export function escrowUpdate(escrowId, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: ESCROW_SHEET_NAME,
+    matchColumn: "Escrow ID",
+    matchValue: String(escrowId),
+    data,
+  });
+}
+// Read every escrow row (small table; the route filters by phone / id).
+export async function escrowAllRows() {
+  try {
+    const table = await gvizQuery({ sheet: ESCROW_SHEET_NAME });
     return tableToObjects(table);
   } catch {
     return [];

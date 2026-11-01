@@ -5445,3 +5445,34 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
 .my-orders-page.mo-glass.mo-dark .mo-track-clearall:hover {
   color: #fca5a5;
 }
+
+/* Chart tooltip: anchored to the mark (see placeChartTip); arrow matches the
+   themed bubble instead of the old hard-coded dark wedge. */
+/* min-height: the tip carries "mo-dark" in dark mode, and the global
+   ".mo-dark { min-height: 100vh }" stretched it into a full-height box. */
+.mo-glass .an2-tip,
+.mo-glass .an2-tip.mo-dark {
+  min-height: 0;
+}
+.mo-glass .an2-tip {
+  transform: translate(-50%, calc(-100% - 10px));
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.mo-glass .an2-tip.below {
+  transform: translate(-50%, 10px);
+}
+.mo-glass .an2-tip::after,
+.mo-glass.mo-dark .an2-tip::after,
+.mo-glass .an2-tip.mo-dark::after {
+  border: 6px solid transparent;
+  border-top-color: var(--g-surface-3);
+}
+.mo-glass .an2-tip.below::after,
+.mo-glass.mo-dark .an2-tip.below::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: var(--g-surface-3);
+}

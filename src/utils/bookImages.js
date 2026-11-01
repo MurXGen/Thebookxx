@@ -731,4 +731,6 @@ export const bookImages = {
   "tintin-adventures-red-box-set": `${BOOK_IMAGE_BASE_PATH}/tintin-adventures-red-box-set.jpeg`,
   "solo-leveling-set-1-10": `${BOOK_IMAGE_BASE_PATH}/solo-leveling-set-1-10.jpeg`,
   "demon-slayer-complete-box-set": `${BOOK_IMAGE_BASE_PATH}/demon-slayer-complete-box-set.jpeg`,
+  "happy-place": `${BOOK_IMAGE_BASE_PATH}/happy-place.jpeg`,
+  "funny-story": `${BOOK_IMAGE_BASE_PATH}/funny-story.jpeg`,
 };

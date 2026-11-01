@@ -4244,13 +4244,20 @@ export default function ManageOrdersPage() {
       setChartTip((t) => (t ? null : t));
       return false;
     }
+    // Anchor to the hovered mark, not the cursor: centred on it, just above
+    // the top of its column (bar groups share a parent), so the tooltip never
+    // sits on top of the bars it describes. Flips below when there's no room.
     const pad = 78;
     const vw = typeof window !== "undefined" ? window.innerWidth : 0;
+    const r = el.getBoundingClientRect();
+    const pr = el.parentElement?.getBoundingClientRect() || r;
+    const top = Math.min(r.top, pr.top);
+    const below = top < 72;
     setChartTip({
-      x: Math.min(Math.max(e.clientX, pad), Math.max(pad, vw - pad)),
-      y: e.clientY,
+      x: Math.min(Math.max(r.left + r.width / 2, pad), Math.max(pad, vw - pad)),
+      y: below ? Math.max(r.bottom, pr.bottom) : top,
       text: el.getAttribute("data-tip"),
-      below: e.clientY < 72,
+      below,
       sticky,
     });
     return true;

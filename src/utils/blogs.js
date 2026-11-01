@@ -4,6 +4,169 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "kerala-piravi-2026-kerala-at-70-books-to-read-india": {
+    "id": "blog-095",
+    "title": "Kerala Piravi 2026: Kerala at 70 and 19 Books to Read on Kerala Formation Day",
+    "slug": "kerala-piravi-2026-kerala-at-70-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-31",
+    "lastModified": "2026-10-31",
+    "excerpt": "Kerala turns 70 on 1 November 2026. Mark Kerala Piravi with books set in Kerala, classics, bestsellers and non-fiction picks, with Cash on Delivery across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "On 1 November 2026, Kerala turns 70. The state was formed on 1 November 1956, when the Malayalam-speaking regions of Travancore, Cochin and Malabar were brought together under the States Reorganisation Act, and Kerala Piravi, or Kerala Formation Day, falls on a Sunday this year. It is a good excuse to look at a state that Indian readers think of first when they think of books: a place with some of the country's highest literacy rates, a deep habit of reading and libraries in small towns, and a literary tradition that reaches well beyond Malayalam."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Kerala Piravi 2026 at a glance",
+        "content": "Date: Sunday, 1 November 2026. Occasion: 70 years since the formation of Kerala on 1 November 1956. How it is marked: school competitions, debates, quizzes, cultural programmes and many people wearing traditional dress. A reading list is a simple way to join in from anywhere in India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why Kerala Piravi is a reading occasion"
+      },
+      {
+        "type": "paragraph",
+        "content": "Kerala's reputation as a state of readers did not happen by accident. Reading rooms, village libraries and a strong tradition of newspapers and weekly magazines have shaped how generations grew up. Each year Kerala also marks Vayana Dinam on 19 June in memory of P.N. Panicker, who is remembered for building the library and reading movement. If you want to mark the 70th Piravi in a meaningful way, the best gift to yourself is an hour with a good book."
+      },
+      {
+        "type": "paragraph",
+        "content": "TheBookX is an India-first online bookstore, and our catalogue has a limited number of Malayalam titles at the moment. So this list is honest about what it is: books set in Kerala, books by people connected to the state's story, and classics and bestsellers that Kerala readers love, all of which you can order with Cash on Delivery across India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Start with Kerala on the page"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy is the obvious first pick. It won the Booker Prize in 1997 and is set in Ayemenem, a village in Kerala, where the humid rainy season, the river and a family's secrets shape every page. It is not an easy read, but its language alone, playful, bent and musical, shows why Kerala matters to Indian writing in English."
+      },
+      {
+        "type": "paragraph",
+        "content": "For gentler small-town storytelling from the same India, try <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> and <a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> by R.K. Narayan. Narayan was born in Madras, and his imaginary town of Malgudi is in the south, written in plain, warm English that has stayed in print for decades. They are an easy way to enjoy the rhythm of southern Indian life without a heavy reading commitment."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books from a state that values knowledge"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> is the autobiography of A.P.J. Abdul Kalam, and it is a good fit for this occasion because the book follows his path from Rameswaram to India's space and missile programmes, including his early years with the space research centre at Thumba near Thiruvananthapuram. Its sequel-in-spirit, <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds</a>, is a short, hopeful call to young Indians to build the country they want. Pair either with <a href=\"/books/autobiography-of-a-yogi\" style=\"color:#fb8500;font-weight:600\">Autobiography of a Yogi</a> if you want a quieter, spiritual memoir from India's long tradition of seekers."
+      },
+      {
+        "type": "paragraph",
+        "content": "Kerala is also known for its strong tradition of Ayurveda, temple arts and storytelling. If you enjoy mythology told with a modern voice, <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni retells the Mahabharata from Draupadi's point of view, and <a href=\"/books/mahabharat-unraveled\" style=\"color:#fb8500;font-weight:600\">Mahabharat Unraveled</a> offers a fresh, accessible look at the epic. Both are good companions for anyone who grew up hearing kathakali stories and temple-festival tales."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels and translations for a wider view"
+      },
+      {
+        "type": "paragraph",
+        "content": "A state that reads widely deserves a wide reading list. <a href=\"/books/a-thousand-splendid-suns\" style=\"color:#fb8500;font-weight:600\">A Thousand Splendid Suns</a> and <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini are among the most read novels in India in any language, and both are the kind of story book clubs argue about for weeks. For something quieter and international, <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> by Han Kang, in translation, shows how much a short novel can say, and <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> is a gentle story about a second-hand bookshop that suits anyone who loves the smell of old paper."
+      },
+      {
+        "type": "paragraph",
+        "content": "Readers who like thrillers will find plenty to enjoy. <a href=\"/books/and-then-there-were-none\" style=\"color:#fb8500;font-weight:600\">And Then There Were None</a> by Agatha Christie remains one of the best-selling mysteries of all time, and <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> by Alex Michaelides is a fast, twisty psychological thriller to finish in a weekend."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-fiction for the next 70 years"
+      },
+      {
+        "type": "paragraph",
+        "content": "Kerala's story is also about education, migration and new skills. Whether you are a student preparing for exams, a professional working abroad or a parent trying to build a reading habit at home, a few practical books can help. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear explains how small daily actions compound, <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport shows how to protect long stretches of focus, and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is a calm, readable guide to money decisions that suits families who send savings home or plan for the future. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> offers a Japanese approach to finding purpose."
+      },
+      {
+        "type": "blockquote",
+        "content": "A reading habit is the cheapest form of education a family can build, and the one that lasts the longest."
+      },
+      {
+        "type": "paragraph",
+        "content": "And our own recommendation: <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical guide to thinking, speaking and deciding without the fog. It works well for students and professionals alike, and its core idea is easy to apply on a busy day: separate what matters from what only feels urgent, then act on one thing at a time."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to celebrate Kerala Piravi with books"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Pick one book from this list and read the first chapter aloud with family or friends on Sunday.",
+          "Gift a book to someone in your family who reads in Malayalam, then ask them to recommend one in return.",
+          "Visit a local library or reading room this week, or start a small shelf at home.",
+          "Join in the spirit of the day with a quiz or a reading challenge for children."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Shopping tip",
+        "content": "TheBookX has books from ₹1, free delivery and Cash on Delivery across India. Add gift wrapping for just ₹25 if you are sending a book to someone for the occasion."
+      },
+      {
+        "type": "paragraph",
+        "content": "Kerala at 70 is a reminder that a state is built by its schools, libraries and readers. Whether you live in Kochi, Kozhikode, Kolkata or Kansas, there is a book on this list that fits your Sunday."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/kerala-piravi-2026-kerala-at-70-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/kerala-piravi-2026-kerala-at-70-books-to-read-india.jpeg",
+        "alt": "A young woman reading a book on a verandah with coconut palms and a cup of tea in soft morning light",
+        "caption": "Kerala Piravi 2026: seventy years of a state that loves to read.",
+        "category": "Occasions"
+      }
+    ],
+    "keywords": [
+      "Kerala Piravi 2026",
+      "Kerala Formation Day",
+      "Kerala at 70",
+      "books set in Kerala",
+      "The God of Small Things",
+      "Malayalam literature",
+      "books to read on 1 November",
+      "Indian books to gift",
+      "The Art of Clarity"
+    ],
+    "categories": [
+      "Occasions",
+      "Reading Lists",
+      "Indian Writing"
+    ],
+    "faqs": [
+      {
+        "question": "When is Kerala Piravi 2026?",
+        "answer": "Kerala Piravi, or Kerala Formation Day, is on Sunday, 1 November 2026. It marks 70 years since Kerala was formed on 1 November 1956."
+      },
+      {
+        "question": "What is Kerala Piravi?",
+        "answer": "It is the anniversary of the formation of Kerala in 1956, when Travancore, Cochin and Malabar were united under the States Reorganisation Act. It is marked with cultural programmes, quizzes and competitions."
+      },
+      {
+        "question": "Which famous novel is set in Kerala?",
+        "answer": "The God of Small Things by Arundhati Roy, which won the Booker Prize in 1997, is set in the Kerala village of Ayemenem and is the best-known novel set in the state."
+      },
+      {
+        "question": "Can I order these books with Cash on Delivery?",
+        "answer": "Yes. TheBookX offers books from ₹1 with free delivery and Cash on Delivery across India, and gift wrapping for ₹25."
+      }
+    ]
+  },
   "novel-november-2026-write-a-novel-books-for-first-time-writers-india": {
     "id": "blog-094",
     "title": "Novel November 2026: 15 Books to Help You Write Your First Novel (After NaNoWriMo)",

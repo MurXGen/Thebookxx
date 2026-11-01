@@ -4,6 +4,184 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "booker-prize-2026-winner-9-november-how-to-read-the-shortlist-india": {
+    "id": "blog-096",
+    "title": "Booker Prize 2026 Winner on 9 November: Six Shortlisted Books and What to Read Before the Result",
+    "slug": "booker-prize-2026-winner-9-november-how-to-read-the-shortlist-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-01",
+    "lastModified": "2026-11-01",
+    "excerpt": "The Booker Prize 2026 winner is named on 9 November. Meet the six shortlisted novels and read Booker-linked books from India first, with Cash on Delivery.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "On Monday, 9 November 2026, the Booker Prize will name its winner from six shortlisted novels, and the £50,000 award will instantly turn one of them into the most talked-about book in English. The six are The End of Everything by M. John Harrison, The Disappearers by Marlon James, Black Bag by Luke Kennard, May We Feed the King by Rebecca Perry, The Things We Never Say by Elizabeth Strout and John of John by Douglas Stuart. That leaves eight days. This guide is for Indian readers who want to follow the result with a stake in it, even if the shortlisted hardbacks are not yet on your shelf."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Booker Prize 2026: the dates that matter",
+        "content": "Shortlist announced: 22 September 2026. Winner announced: 9 November 2026. Prize: £50,000 for the winner; each shortlisted author also receives a bound edition of their book. Full coverage of the longlist and judges is in our earlier Booker 2026 guide."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The Six Shortlisted Books at a Glance"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "The End of Everything by M. John Harrison: the veteran British writer's latest, the kind of strange, precise fiction that critics argue about.",
+          "The Disappearers by Marlon James: James won the Booker in 2015 for A Brief History of Seven Killings, so he arrives with a record.",
+          "Black Bag by Luke Kennard: a novel from a writer better known as a poet, which tends to mean unusual sentences.",
+          "May We Feed the King by Rebecca Perry: the shortlist's newer name, and often where prize surprises come from.",
+          "The Things We Never Say by Elizabeth Strout: Strout is a Pulitzer winner whose quiet, domestic fiction is a reliable shortlist presence.",
+          "John of John by Douglas Stuart: Stuart won the Booker in 2020 for Shuggie Bain, and this is his third novel."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "These six are mostly imported titles, so stock and pricing vary. The practical way to follow the prize from India is to read the winners and contenders of earlier years that are easy to find and cheap to buy, which is where the rest of this guide goes."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why Prize Season Is the Best Time to Read Literary Fiction"
+      },
+      {
+        "type": "paragraph",
+        "content": "A shortlist is a reading plan with a deadline. Most people drift towards the same genres, and a prize gives you a reason to pick up something you would not otherwise choose. It also gives you someone to talk to: the week of the announcement, every bookshop, newsroom and group chat has an opinion. Reading a single Booker-linked book beforehand turns the result from a headline into something you care about."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Booker Winners and Contenders You Can Read Today"
+      },
+      {
+        "type": "paragraph",
+        "content": "The easiest place to start is India's own Booker story. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy won the Booker in 1997 and remains the most-read Booker winner in the country, a Kerala novel about twins, a family and the rules of who may be loved. If you read it years ago, it rewards a second visit."
+      },
+      {
+        "type": "paragraph",
+        "content": "Kazuo Ishiguro is the other name to know. <a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a> was shortlisted for the Booker in 2005, and <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a>, his first novel after winning the Nobel Prize in Literature, was longlisted in 2021. Both are quiet, patient novels about what it means to be human, and both are good picks if you want to understand why juries keep returning to him."
+      },
+      {
+        "type": "paragraph",
+        "content": "For something that has crossed borders, read <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> by Han Kang, winner of the International Booker Prize in 2016, a short, unsettling book that is easy to finish in a weekend. For emotional endurance, <a href=\"/books/a-little-life\" style=\"color:#fb8500;font-weight:600\">A Little Life</a> by Hanya Yanagihara was shortlisted for the Booker in 2015 and is the novel readers either love without reservation or struggle to forget. And <a href=\"/books/normal-people\" style=\"color:#fb8500;font-weight:600\">Normal People</a> by Sally Rooney, longlisted in 2018, is the quickest way into contemporary prize fiction, with sentences as plain as speech."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Books from ₹1, free delivery, Cash on Delivery",
+        "content": "TheBookX has books starting from ₹1 with free delivery and Cash on Delivery across India, so you can try a Booker-linked title without committing to a hardback price."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "If Literary Fiction Feels Heavy: Page-Turners With Depth"
+      },
+      {
+        "type": "paragraph",
+        "content": "Not every prize-season reader wants difficult. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig is a warm, fast novel about the lives we do not live, and it is a good gateway for anyone intimidated by shortlists. <a href=\"/books/a-gentleman-in-moscow\" style=\"color:#fb8500;font-weight:600\">A Gentleman in Moscow</a> by Amor Towles follows a count confined to a hotel for decades and is among the most graceful historical novels of recent years. <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini is the book many Indian readers say made them cry on a train."
+      },
+      {
+        "type": "paragraph",
+        "content": "Closer to home, <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R. K. Narayan is the gentlest possible introduction to Indian fiction in English, and <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni retells the Mahabharata through Draupadi's voice, a book that sits comfortably alongside any prize list."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-Fiction for the Week Ahead"
+      },
+      {
+        "type": "paragraph",
+        "content": "Prize reading is not only novels. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari and <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman are the two non-fiction books most readers name when asked what changed how they think, and both reward slow reading. If you want a practical companion, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear helps you build the twenty-pages-a-night habit that a shortlist needs."
+      },
+      {
+        "type": "paragraph",
+        "content": "A word on clear thinking, because a good reading habit depends on it. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical book on decluttering your mind and making decisions without noise, a useful companion for anyone who wants to read more and scroll less."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to Follow the Booker Prize 2026 Result From India"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Mark Monday, 9 November 2026 and check the Booker Prize website for the announcement and the judges' citation.",
+          "Pick one earlier Booker winner or contender from this guide and start it now. A week is enough for a short novel.",
+          "Choose the shortlisted author whose style appeals most and read an extract from the official Booker site before committing to a purchase.",
+          "Compare your own favourite with the winner after the result. Disagreeing with a jury is half the fun.",
+          "Keep going afterwards. Winners tend to see a surge in sales and editions, and Indian editions can appear within months."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Gifting a book that has just won a prize is a thoughtful move because it carries a reason with it. Gift wrapping is available at +₹25 per book, which makes a Booker-themed set easy to send to a friend before the result."
+      },
+      {
+        "type": "blockquote",
+        "content": "A prize list is a map, not a verdict. The point is to wander off it."
+      },
+      {
+        "type": "paragraph",
+        "content": "Eight days is enough time to read a short novel, form an opinion, and watch the result with something at stake. Start with one title and see where it leads."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/booker-prize-2026-winner-9-november-how-to-read-the-shortlist-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/booker-prize-2026-winner-9-november-how-to-read-the-shortlist-india.jpeg",
+        "alt": "A cheerful young woman reading a hardback novel on a sofa beside a cup of tea and a small stack of unmarked books, soft window light",
+        "caption": "The Booker Prize 2026 winner will be announced on 9 November",
+        "category": "Book Awards"
+      }
+    ],
+    "keywords": [
+      "booker prize 2026 winner",
+      "booker prize 2026 shortlist",
+      "booker prize 2026 winner date",
+      "booker prize 2026 shortlisted books",
+      "booker prize winning books to read",
+      "booker prize books india",
+      "douglas stuart john of john",
+      "marlon james the disappearers",
+      "elizabeth strout the things we never say",
+      "buy award winning books online india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Book Awards",
+      "Book Lists",
+      "Reading Culture"
+    ],
+    "faqs": [
+      {
+        "question": "When is the Booker Prize 2026 winner announced?",
+        "answer": "The Booker Prize 2026 winner will be announced on 9 November 2026. The winner receives £50,000 and each shortlisted author receives a specially bound edition of their book."
+      },
+      {
+        "question": "Which books are on the Booker Prize 2026 shortlist?",
+        "answer": "The six shortlisted novels are The End of Everything by M. John Harrison, The Disappearers by Marlon James, Black Bag by Luke Kennard, May We Feed the King by Rebecca Perry, The Things We Never Say by Elizabeth Strout and John of John by Douglas Stuart."
+      },
+      {
+        "question": "Which Booker-linked books can I buy in India right now?",
+        "answer": "Several Booker winners and contenders are widely available, including The God of Small Things by Arundhati Roy, Never Let Me Go and Klara and the Sun by Kazuo Ishiguro, A Little Life by Hanya Yanagihara and Normal People by Sally Rooney. TheBookX offers books from ₹1 with free delivery and Cash on Delivery across India."
+      },
+      {
+        "question": "Did Arundhati Roy win the Booker Prize?",
+        "answer": "Yes. Arundhati Roy won the Booker Prize in 1997 for The God of Small Things, her debut novel set in Kerala."
+      }
+    ]
+  },
   "kerala-piravi-2026-kerala-at-70-books-to-read-india": {
     "id": "blog-095",
     "title": "Kerala Piravi 2026: Kerala at 70 and 19 Books to Read on Kerala Formation Day",

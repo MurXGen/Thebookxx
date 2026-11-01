@@ -60167,3 +60167,39 @@ img[data-loaded="true"] {
   font-weight: 600;
   color: #8a8f98;
 }
+
+/* Track-orders · Mark-delivered: India Post verify link + force-delivered toggle */
+.mo-deliv-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #2563eb;
+  text-decoration: none;
+  padding: 1px 6px;
+  border: 1px solid rgba(37, 99, 235, 0.3);
+  border-radius: 999px;
+}
+.mo-deliv-track:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+.mo-deliv-forcedeliv {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #15803d;
+}
+
+/* Track-orders · revert section status picker */
+.mo-revert-status {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 9px;
+  border: 1px solid var(--dark-20, #d1d5db);
+  background: #fff;
+  color: #111827;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}

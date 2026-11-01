@@ -5799,6 +5799,9 @@ export default function ManageOrdersPage() {
   // as "Money Received", online-paid orders as "Delivered". Review → push.
   const [delivMatches, setDelivMatches] = useState([]); // [{ order, article, ... }]
   const [delivSel, setDelivSel] = useState([]); // selected Order IDs
+  // When on, COD parcels are pushed straight to "Delivered" instead of the
+  // default "Money Received".
+  const [delivForceDelivered, setDelivForceDelivered] = useState(false);
   const [delivBusy, setDelivBusy] = useState(false);
   const [delivFileName, setDelivFileName] = useState("");
   const [delivSkipped, setDelivSkipped] = useState({
@@ -5810,6 +5813,8 @@ export default function ManageOrdersPage() {
   // Delivered / Money Received → offer to move it back to "In Transit".
   const [revertMatches, setRevertMatches] = useState([]);
   const [revertSel, setRevertSel] = useState([]);
+  // Target status for the "wrongly delivered" revert (default In Transit).
+  const [revertStatus, setRevertStatus] = useState("In Transit");
   // Returned to sender (last event "…Returned to Sender") → mark Cancelled.
   const [cancelMatches, setCancelMatches] = useState([]);
   const [cancelSel, setCancelSel] = useState([]);
@@ -6651,11 +6656,12 @@ export default function ManageOrdersPage() {
       revertSel.includes(m.order["Order ID"]),
     );
     if (!picked.length) return;
+    const target = revertStatus || "In Transit";
     setDelivBusy(true);
     setOrders((prev) =>
       prev.map((o) =>
         picked.some((x) => x.order["Order ID"] === o["Order ID"])
-          ? { ...o, "Order Status": "In Transit", status: "In Transit" }
+          ? { ...o, "Order Status": target, status: target }
           : o,
       ),
     );
@@ -6663,7 +6669,7 @@ export default function ManageOrdersPage() {
       await Promise.all(
         picked.map((m) =>
           updateOrderRow(m.order["Order ID"], {
-            "Order Status": "In Transit",
+            "Order Status": target,
           }).catch((err) =>
             console.error("Revert push failed:", m.order["Order ID"], err),
           ),
@@ -6674,24 +6680,39 @@ export default function ManageOrdersPage() {
         prev.filter((m) => !ids.has(m.order["Order ID"])),
       );
       setRevertSel([]);
-      showToast(`${picked.length} order(s) moved to In Transit ✓`, "success");
+      showToast(`${picked.length} order(s) moved to ${target} ✓`, "success");
       setTimeout(fetchOrders, 1300);
     } finally {
       setDelivBusy(false);
     }
   };
   // Push every selected delivered-status change to the sheet in one batch.
+  // Verify click → copy the tracking ID so it can be pasted on India Post, then
+  // let the link open the site (no preventDefault).
+  const copyTrackingOnVerify = (e, article) => {
+    e.stopPropagation();
+    const id = String(article || "").trim();
+    if (!id) return;
+    try {
+      navigator.clipboard?.writeText(id);
+      showToast(`Tracking ID ${id} copied — paste it on India Post`, "success");
+    } catch {}
+  };
+
   const pushDelivUpdates = async () => {
     const picked = delivMatches.filter((m) =>
       delivSel.includes(m.order["Order ID"]),
     );
     if (!picked.length) return;
+    // When the "mark as Delivered" toggle is on, everything (incl. COD) goes to
+    // "Delivered" instead of the default "Money Received".
+    const effStatus = (m) => (delivForceDelivered ? "Delivered" : m.newStatus);
     setDelivBusy(true);
     setOrders((prev) =>
       prev.map((o) => {
         const m = picked.find((x) => x.order["Order ID"] === o["Order ID"]);
         return m
-          ? { ...o, "Order Status": m.newStatus, status: m.newStatus }
+          ? { ...o, "Order Status": effStatus(m), status: effStatus(m) }
           : o;
       }),
     );
@@ -6699,7 +6720,7 @@ export default function ManageOrdersPage() {
       await Promise.all(
         picked.map((m) =>
           updateOrderRow(m.order["Order ID"], {
-            "Order Status": m.newStatus,
+            "Order Status": effStatus(m),
           }).catch((err) =>
             console.error("Delivered push failed:", m.order["Order ID"], err),
           ),
@@ -16969,6 +16990,19 @@ export default function ManageOrdersPage() {
                       />
                       Select all ({delivSel.length}/{delivMatches.length})
                     </label>
+                    <label
+                      className="mo-deliv-all mo-deliv-forcedeliv"
+                      title="Push every selected parcel as Delivered instead of Money Received"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={delivForceDelivered}
+                        onChange={(e) =>
+                          setDelivForceDelivered(e.target.checked)
+                        }
+                      />
+                      Mark as Delivered (not Money Received)
+                    </label>
                     <div className="mo-deliv-bar-actions">
                       <button
                         type="button"
@@ -17018,6 +17052,18 @@ export default function ManageOrdersPage() {
                             </span>
                             <span className="mo-deliv-row-art">
                               {m.article}
+                              {m.article && (
+                                <a
+                                  href={INDIA_POST_URL}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mo-deliv-track"
+                                  title="Verify on India Post (copies the tracking ID)"
+                                  onClick={(e) => copyTrackingOnVerify(e, m.article)}
+                                >
+                                  <ExternalLink size={11} /> Verify
+                                </a>
+                              )}
                             </span>
                           </div>
                           <div className="mo-deliv-row-flow">
@@ -17025,16 +17071,24 @@ export default function ManageOrdersPage() {
                               {m.currentStatus}
                             </span>
                             <ArrowRight size={13} />
-                            <span
-                              className={`mo-deliv-new${m.isCOD ? " cod" : " paid"}`}
-                            >
-                              {m.isCOD ? (
-                                <IndianRupee size={11} />
-                              ) : (
-                                <Truck size={11} />
-                              )}
-                              {m.newStatus}
-                            </span>
+                            {(() => {
+                              const eff = delivForceDelivered
+                                ? "Delivered"
+                                : m.newStatus;
+                              const cod = m.isCOD && !delivForceDelivered;
+                              return (
+                                <span
+                                  className={`mo-deliv-new${cod ? " cod" : " paid"}`}
+                                >
+                                  {cod ? (
+                                    <IndianRupee size={11} />
+                                  ) : (
+                                    <Truck size={11} />
+                                  )}
+                                  {eff}
+                                </span>
+                              );
+                            })()}
                           </div>
                         </div>
                       );
@@ -17101,6 +17155,18 @@ export default function ManageOrdersPage() {
                             </span>
                             <span className="mo-deliv-row-art">
                               {m.article} · file: {m.lastEvent}
+                              {m.article && (
+                                <a
+                                  href={INDIA_POST_URL}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mo-deliv-track"
+                                  title="Verify on India Post (copies the tracking ID)"
+                                  onClick={(e) => copyTrackingOnVerify(e, m.article)}
+                                >
+                                  <ExternalLink size={11} /> Verify
+                                </a>
+                              )}
                             </span>
                           </div>
                           <div className="mo-deliv-row-flow">
@@ -17138,19 +17204,34 @@ export default function ManageOrdersPage() {
                       Wrongly delivered — revert ({revertSel.length}/
                       {revertMatches.length})
                     </label>
-                    <button
-                      type="button"
-                      className="mo-deliv-revert-push"
-                      onClick={pushRevertUpdates}
-                      disabled={delivBusy || revertSel.length === 0}
-                    >
-                      {delivBusy ? (
-                        <Loader2 size={15} className="mo-spin" />
-                      ) : (
-                        <Truck size={15} />
-                      )}
-                      Move {revertSel.length} to In Transit
-                    </button>
+                    <div className="mo-deliv-bar-actions">
+                      <select
+                        className="mo-revert-status"
+                        value={revertStatus}
+                        onChange={(e) => setRevertStatus(e.target.value)}
+                        title="Status to move these orders to"
+                        disabled={delivBusy}
+                      >
+                        {TRACK_STATUS_OPTIONS.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="mo-deliv-revert-push"
+                        onClick={pushRevertUpdates}
+                        disabled={delivBusy || revertSel.length === 0}
+                      >
+                        {delivBusy ? (
+                          <Loader2 size={15} className="mo-spin" />
+                        ) : (
+                          <Truck size={15} />
+                        )}
+                        Move {revertSel.length} to {revertStatus}
+                      </button>
+                    </div>
                   </div>
                   <div className="mo-deliv-list">
                     {revertMatches.map((m) => {
@@ -17175,6 +17256,18 @@ export default function ManageOrdersPage() {
                             </span>
                             <span className="mo-deliv-row-art">
                               {m.article} · file: {m.fileStatus}
+                              {m.article && (
+                                <a
+                                  href={INDIA_POST_URL}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mo-deliv-track"
+                                  title="Verify on India Post (copies the tracking ID)"
+                                  onClick={(e) => copyTrackingOnVerify(e, m.article)}
+                                >
+                                  <ExternalLink size={11} /> Verify
+                                </a>
+                              )}
                             </span>
                           </div>
                           <div className="mo-deliv-row-flow">
@@ -17184,7 +17277,7 @@ export default function ManageOrdersPage() {
                             <ArrowRight size={13} />
                             <span className="mo-deliv-new revert">
                               <Truck size={11} />
-                              In Transit
+                              {revertStatus}
                             </span>
                           </div>
                         </div>

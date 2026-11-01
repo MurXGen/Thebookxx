@@ -203,20 +203,25 @@ function computeProgress(order) {
   if (/out for delivery/.test(st)) return 1;
   // Only once it's actually in transit do we move the vehicle along the route.
   if (/in\s*transit/.test(st)) {
-    // Spread the whole journey over a fixed window — 14 days for standard
-    // post (6 for express). The parcel advances CONTINUOUSLY and LINEARLY:
-    // each day covers ~1/win of the route, so it never jumps near the
-    // destination early and never appears stuck at the customer's location.
-    // (India Post often shows the last scan for days; this keeps the visual
-    // journey moving smoothly until it's actually marked Delivered.)
+    // Spread the journey over a window — 14 days for standard post (6 express).
+    // Instead of a flat/linear crawl, the parcel moves on an EASE-OUT curve: it
+    // covers ~half the route by ~day 3 (standard) so it visibly "gets going",
+    // then gradually slows as it nears the destination — mirroring how a parcel
+    // moves fast between hubs early, with the last mile taking longer. It keeps
+    // creeping forward every day (never hard-stuck) until the status flips to
+    // Delivered. (India Post often shows the same last scan for days.)
     const win = isExpressOrder(order) ? 6 : 14;
     const od = parseSheetDate(
       order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
     );
     const days = od ? (Date.now() - od.getTime()) / 86400000 : 0;
-    // Start a touch off the origin (0.05) so it reads as "moving", and cap at
-    // 0.97 so it only reaches the doorstep once the status flips to Delivered.
-    const p = days / win;
+
+    // Half-progress point: ~3 days for standard, ~1.3 days for express.
+    const halfDay = win * 0.214;
+    const k = 0.724 / halfDay; // exp-approach rate so p(halfDay) ≈ 0.5
+    const p = 0.97 * (1 - Math.exp(-k * Math.max(0, days)));
+    // Start a touch off the origin (0.05) so it reads as "moving", cap at 0.97
+    // so the doorstep is only reached once it's actually marked Delivered.
     return Math.max(0.05, Math.min(0.97, p));
   }
   // Confirmed / getting shipped / anything else → still at the source.

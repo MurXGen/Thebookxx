@@ -5476,3 +5476,697 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
   border-top-color: transparent;
   border-bottom-color: var(--g-surface-3);
 }
+
+/* =========================================================================
+   32. Track → Notes
+   ========================================================================= */
+
+.my-orders-page.mo-glass .mo-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* Collapsed composer: one quiet line. */
+.my-orders-page.mo-glass .mo-note-new {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px dashed var(--g-hairline-2);
+  border-radius: 14px;
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s var(--g-ease), background 0.18s var(--g-ease);
+}
+.my-orders-page.mo-glass .mo-note-new:hover {
+  border-color: var(--g-accent);
+  background: var(--g-sunken);
+}
+.my-orders-page.mo-glass .mo-note-new span {
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.my-orders-page.mo-glass .mo-note-new em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 12.5px;
+  color: var(--g-ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Expanded composer: title + body read like one sheet of paper. */
+.my-orders-page.mo-glass .mo-note-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--g-hairline-2);
+  border-radius: 14px;
+  background: var(--g-surface-solid);
+  box-shadow: var(--g-shadow);
+}
+.my-orders-page.mo-glass .mo-note-in-title {
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--g-ink);
+  font-size: 17px;
+  font-weight: 700;
+  outline: none;
+}
+.my-orders-page.mo-glass .mo-note-in-body {
+  min-height: 96px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--g-ink);
+  font-size: 14.5px;
+  line-height: 1.55;
+  text-align: left;
+  resize: vertical;
+  outline: none;
+}
+.my-orders-page.mo-glass :is(.mo-note-in-title, .mo-note-in-body)::placeholder {
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass.mo-dark :is(.mo-note-in-title, .mo-note-in-body) {
+  background-color: transparent;
+}
+.my-orders-page.mo-glass .mo-note-composer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo-note-composer-row .mo-seg.wrap button {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12.5px;
+}
+.my-orders-page.mo-glass .mo-note-in-oid {
+  flex: 1 1 160px;
+  max-width: 240px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 9px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 13px;
+}
+.my-orders-page.mo-glass .mo-note-composer-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.my-orders-page.mo-glass .mo-note-kbd {
+  margin-right: auto;
+  font-size: 11.5px;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-note-cancel {
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--g-ink-2);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-note-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--g-accent);
+  color: var(--g-on-accent);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-note-save:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Toolbar */
+.my-orders-page.mo-glass .mo-notes-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.my-orders-page.mo-glass .mo-notes-bar .mo-seg b {
+  margin-left: 4px;
+  opacity: 0.6;
+  font-weight: 700;
+}
+.my-orders-page.mo-glass .mo-notes-search {
+  flex: 1 1 200px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: var(--g-sunken);
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-notes-search input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--g-ink);
+  font-size: 14px;
+  outline: none;
+}
+.my-orders-page.mo-glass.mo-dark .mo-notes-search input {
+  background-color: transparent;
+}
+.my-orders-page.mo-glass .mo-notes-refresh {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 10px;
+  background: var(--g-surface-solid);
+  color: var(--g-ink-2);
+  cursor: pointer;
+}
+
+/* List */
+.my-orders-page.mo-glass .mo-notes-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--g-hairline);
+  border-radius: 14px;
+  background: var(--g-surface-solid);
+  overflow: hidden;
+}
+.my-orders-page.mo-glass .mo-note-card,
+.my-orders-page.mo-glass.mo-dark .mo-note-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--g-hairline);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.my-orders-page.mo-glass .mo-note-card:last-child {
+  border-bottom: 0;
+}
+.my-orders-page.mo-glass .mo-note-card:hover {
+  background: var(--g-sunken);
+}
+.my-orders-page.mo-glass .mo-note-check {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  border-radius: 6px;
+  border: 2px solid var(--g-hairline-2);
+  background: var(--g-surface-solid);
+  color: var(--g-on-accent);
+}
+.my-orders-page.mo-glass .mo-note-check.on {
+  border-color: var(--g-accent);
+  background: var(--g-accent);
+}
+.my-orders-page.mo-glass .mo-note-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.my-orders-page.mo-glass .mo-note-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.my-orders-page.mo-glass .mo-note-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--g-ink);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.my-orders-page.mo-glass .mo-note-cat {
+  flex: 0 0 auto;
+  margin-left: auto;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--g-sunken);
+  color: var(--g-ink-2);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 22px;
+}
+.my-orders-page.mo-glass .mo-note-text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--g-ink-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.my-orders-page.mo-glass .mo-note-text.clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.my-orders-page.mo-glass .mo-note-text a {
+  color: var(--g-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+.my-orders-page.mo-glass .mo-note-more {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--g-ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass button.mo-note-oid {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--g-ink-2);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-note-card.done :is(.mo-note-title, .mo-note-text) {
+  color: var(--g-ink-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--g-hairline-2);
+}
+.my-orders-page.mo-glass .mo-note-copy {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--g-ink-3);
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-note-copy:hover {
+  border-color: var(--g-hairline);
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+}
+/* Skeleton rows while notes load. */
+.my-orders-page.mo-glass .mo-note-skel .mo-skel-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+}
+.my-orders-page.mo-glass .mo-note-skel .mo-note-body {
+  gap: 8px;
+}
+.my-orders-page.mo-glass .mo-note-skel .mo-skel-line {
+  display: block;
+  height: 11px;
+  border-radius: 6px;
+}
+.my-orders-page.mo-glass .mo-note-skel .mo-skel-line.w-60 {
+  width: 55%;
+  height: 13px;
+}
+.my-orders-page.mo-glass .mo-note-skel .mo-skel-line.w-40 {
+  width: 30%;
+}
+.my-orders-page.mo-glass .mo-notes-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 28px 16px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-notes-empty b {
+  font-size: 14.5px;
+  color: var(--g-ink);
+}
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .mo-note-new em,
+  .my-orders-page.mo-glass .mo-note-kbd {
+    display: none;
+  }
+  .my-orders-page.mo-glass .mo-note-composer-foot .mo-note-save {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+/* =========================================================================
+   33. Track → Abandoned carts
+   ========================================================================= */
+
+.my-orders-page.mo-glass .mo-carts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.my-orders-page.mo-glass .mo-carts-stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 14px;
+  background: var(--g-hairline);
+  overflow: hidden;
+}
+.my-orders-page.mo-glass .mo-carts-stat,
+.my-orders-page.mo-glass.mo-dark .mo-carts-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 0;
+  background: var(--g-surface-solid);
+}
+.my-orders-page.mo-glass .mo-carts-stat-n {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--g-ink);
+  font-variant-numeric: tabular-nums;
+}
+.my-orders-page.mo-glass .mo-carts-stat-l {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-carts-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.my-orders-page.mo-glass .mo-carts-toolbar .mo-seg b {
+  margin-left: 4px;
+  opacity: 0.6;
+}
+.my-orders-page.mo-glass .mo-carts-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 10px;
+  background: var(--g-surface-solid);
+  color: var(--g-ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-carts-toggle.on {
+  border-color: var(--g-accent);
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo-carts-sort {
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 10px;
+  background-color: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+/* Cards: equal height per row; the footer (time + action) pins to the bottom. */
+.my-orders-page.mo-glass .mo-carts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+.my-orders-page.mo-glass .mo-cart-card,
+.my-orders-page.mo-glass.mo-dark .mo-cart-card,
+.my-orders-page.mo-glass .mo-cart-card.converted {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 14px;
+  background: var(--g-surface-solid);
+  box-shadow: var(--g-shadow-sm);
+}
+.my-orders-page.mo-glass .mo-cart-name {
+  color: var(--g-ink);
+  font-weight: 700;
+}
+.my-orders-page.mo-glass .mo-cart-phone {
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass .mo-cart-nophone {
+  color: var(--g-ink-3);
+  font-style: italic;
+}
+.my-orders-page.mo-glass .mo-cart-badge,
+.my-orders-page.mo-glass.mo-dark .mo-cart-badge {
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--g-sunken);
+  color: var(--g-ink-2);
+  font-size: 11px;
+  font-weight: 700;
+}
+.my-orders-page.mo-glass .mo-cart-badge.done {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+.my-orders-page.mo-glass.mo-dark .mo-cart-badge.done {
+  background: rgba(74, 222, 128, 0.14);
+  color: #86efac;
+}
+.my-orders-page.mo-glass .mo-cart-books {
+  color: var(--g-ink-2);
+  font-size: 13.5px;
+}
+.my-orders-page.mo-glass .mo-cart-books span {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.my-orders-page.mo-glass .mo-cart-mchip,
+.my-orders-page.mo-glass.mo-dark .mo-cart-mchip {
+  border-radius: 7px;
+  background: var(--g-sunken);
+  color: var(--g-ink-2);
+}
+.my-orders-page.mo-glass .mo-cart-mchip.strong {
+  color: var(--g-ink);
+  font-weight: 700;
+}
+.my-orders-page.mo-glass .mo-cart-mchip.ghost {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo-cart-foot {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo-cart-time {
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-cart-wa {
+  height: 36px;
+  border-radius: 10px;
+  background: #16a34a;
+  color: #fff;
+  font-weight: 700;
+}
+.my-orders-page.mo-glass .mo-cart-wa:disabled {
+  background: var(--g-sunken);
+  color: var(--g-ink-3);
+}
+/* Skeleton cards while carts load. */
+.my-orders-page.mo-glass .mo-cart-skel {
+  min-height: 170px;
+}
+.my-orders-page.mo-glass .mo-cart-skel .mo-cart-id {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 auto;
+}
+.my-orders-page.mo-glass .mo-cart-skel .mo-skel-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 99px;
+}
+.my-orders-page.mo-glass .mo-cart-skel .mo-skel-line {
+  display: block;
+  height: 11px;
+  border-radius: 6px;
+}
+.my-orders-page.mo-glass .mo-cart-skel .mo-skel-line.w-60 {
+  width: 60%;
+}
+.my-orders-page.mo-glass .mo-cart-skel .mo-skel-line.w-40 {
+  width: 40%;
+}
+.my-orders-page.mo-glass .mo-cart-skel .mo-skel-pill {
+  display: block;
+  width: 130px;
+  height: 34px;
+  margin: auto 0 0 auto;
+  border-radius: 10px;
+}
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .mo-carts-stat-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Phase row: "All" + seven steps. */
+.my-orders-page.mo-glass .mo-phases {
+  grid-template-columns: repeat(8, minmax(112px, 1fr));
+}
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .mo-phases {
+    grid-template-columns: repeat(8, max-content);
+  }
+}
+
+/* 34 · Cancelled losses — postage lost on shipped-then-cancelled orders. */
+.my-orders-page.mo-glass .an2-closs {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.my-orders-page.mo-glass .an2-closs-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--g-hairline);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.my-orders-page.mo-glass .an2-closs-kpis > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  min-width: 0;
+}
+.my-orders-page.mo-glass .an2-closs-kpis > div + div {
+  border-left: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .an2-closs-kpis b {
+  font-size: 18px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .an2-closs-kpis > div:nth-child(2) b {
+  color: var(--g-neg, #b42318);
+}
+.my-orders-page.mo-glass .an2-closs-kpis span {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--g-ink-3, var(--tertiary));
+}
+.my-orders-page.mo-glass .an2-closs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.my-orders-page.mo-glass .an2-closs-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--g-ink-3, var(--tertiary));
+  padding: 0 8px 8px;
+  border-bottom: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .an2-closs-table td {
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--g-hairline);
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .an2-closs-table tr:last-child td {
+  border-bottom: 0;
+}
+.my-orders-page.mo-glass .an2-closs-table th:first-child,
+.my-orders-page.mo-glass .an2-closs-table td:first-child {
+  padding-left: 0;
+}
+.my-orders-page.mo-glass .an2-closs-table th:last-child,
+.my-orders-page.mo-glass .an2-closs-table td:last-child {
+  padding-right: 0;
+}
+.my-orders-page.mo-glass .an2-closs-table .ta-r {
+  text-align: right;
+}
+.my-orders-page.mo-glass .an2-closs-table .v-neg {
+  color: var(--g-neg, #b42318);
+  font-weight: 600;
+}
+.my-orders-page.mo-glass.mo-dark .an2-closs-table .v-neg,
+.my-orders-page.mo-glass.mo-dark .an2-closs-kpis > div:nth-child(2) b {
+  color: #f97066;
+}
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .an2-closs-kpis {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .my-orders-page.mo-glass .an2-closs-kpis > div + div {
+    border-left: 0;
+    border-top: 1px solid var(--g-hairline);
+  }
+}

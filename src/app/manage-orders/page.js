@@ -4496,6 +4496,12 @@ export default function ManageOrdersPage() {
   const [noteCategory, setNoteCategory] = useState("General");
   const [noteOrderId, setNoteOrderId] = useState("");
   const [noteSaving, setNoteSaving] = useState(false);
+  // Notes board UI: collapsed composer, Open/Done/All filter, search, and
+  // per-note "show more" for long text.
+  const [noteComposerOpen, setNoteComposerOpen] = useState(false);
+  const [noteFilter, setNoteFilter] = useState("open"); // open | done | all
+  const [noteSearch, setNoteSearch] = useState("");
+  const [noteExpanded, setNoteExpanded] = useState({});
   const loadNotes = async () => {
     setNotesLoading(true);
     try {
@@ -4518,7 +4524,12 @@ export default function ManageOrdersPage() {
   const [cartsList, setCartsList] = useState([]);
   const [cartsLoading, setCartsLoading] = useState(false);
   const [cartsLoaded, setCartsLoaded] = useState(false);
-  const [cartsFilter, setCartsFilter] = useState("all"); // all | active | converted
+  const [cartsFilter, setCartsFilter] = useState("active"); // all | active | converted
+  // Who can actually be nudged: carts with a phone number come first.
+  const [cartsContact, setCartsContact] = useState("reachable"); // reachable | nonumber | any
+  const [cartsHideEmpty, setCartsHideEmpty] = useState(true);
+  const [cartsSort, setCartsSort] = useState("recent"); // recent | value
+  const [cartsSearch, setCartsSearch] = useState("");
   const loadCarts = async () => {
     setCartsLoading(true);
     try {
@@ -4580,6 +4591,8 @@ export default function ManageOrdersPage() {
       setNoteBody("");
       setNoteOrderId("");
       setNoteCategory("General");
+      setNoteComposerOpen(false);
+      setNoteFilter("open");
       showToast("Note saved.", "success");
       await loadNotes();
     } catch {
@@ -8539,68 +8552,6 @@ export default function ManageOrdersPage() {
     return q;
   }, [anOrders]);
 
-  // Projection & run rate — extrapolate the period's pace to its full length.
-  const projection = useMemo(() => {
-    const now = new Date();
-    const msDay = 86400000;
-    const start = periodWindow.start;
-    const end = periodWindow.end;
-    // No bounded window (all-time / day) report the observed daily pace only.
-    if (analyticsPeriod === "all" || !start || !end) {
-      const activeDays = Math.max(
-        1,
-        new Set(anOrders.map((o) => dayKey(getOrderDate(o))).filter(Boolean))
-          .size,
-      );
-      return {
-        hasForecast: false,
-        revPerDay: Math.round(overview.revenue / activeDays),
-        ordPerDay: Math.round((overview.n / activeDays) * 10) / 10,
-        totalDays: activeDays,
-        elapsedDays: activeDays,
-        daysLeft: 0,
-        actualRev: overview.revenue,
-        projectedRev: overview.revenue,
-        projectedOrders: overview.n,
-        progressPct: 100,
-      };
-    }
-    const totalDays = Math.max(1, Math.round((end - start) / msDay));
-    const complete = now >= end;
-    let elapsedDays;
-    if (complete) elapsedDays = totalDays;
-    else if (now < start) elapsedDays = 0;
-    else
-      elapsedDays = Math.min(totalDays, Math.floor((now - start) / msDay) + 1);
-    const eDays = Math.max(1, elapsedDays);
-    const revPerDay = overview.revenue / eDays;
-    const ordPerDay = overview.n / eDays;
-    const daysLeft = Math.max(0, totalDays - elapsedDays);
-    const hasForecast = !complete && totalDays > 1 && daysLeft > 0;
-    const projectedRev = hasForecast
-      ? Math.round(revPerDay * totalDays)
-      : overview.revenue;
-    const projectedOrders = hasForecast
-      ? Math.round(ordPerDay * totalDays)
-      : overview.n;
-    const progressPct =
-      projectedRev > 0
-        ? Math.min(100, Math.round((overview.revenue / projectedRev) * 100))
-        : 0;
-    return {
-      hasForecast,
-      revPerDay: Math.round(revPerDay),
-      ordPerDay: Math.round(ordPerDay * 10) / 10,
-      totalDays,
-      elapsedDays,
-      daysLeft,
-      actualRev: overview.revenue,
-      projectedRev,
-      projectedOrders,
-      progressPct,
-    };
-  }, [anOrders, overview, analyticsPeriod, periodWindow]);
-
   // Monthly run rate — one line per month of the CURRENT year, plotted by
   // day-of-month (x = 1…31). Each point is the running cumulative order count
   // for that month through that day. Past months run to their last day; the
@@ -10617,20 +10568,49 @@ export default function ManageOrdersPage() {
     (s, o) => s + (o.revenue || 0),
     0,
   );
-  // Each cancelled order forfeits the average India Post postage, so the loss
-  // is cancelled-count × average post value. Deducted from total profit.
-  const cancelledLoss = Math.round(cancelledOrders.length * avgDeliveryCost);
+  // Each shipped-then-cancelled order forfeits its own India Post postage —
+  // the same weight-slab postage (o.deliveryCost) used for delivered orders.
+  // Orders with no weight fall back to the period's average postage.
+  const postageOf = (o) => o.deliveryCost || avgDeliveryCost || 0;
+  const cancelledLoss = Math.round(
+    cancelledOrders.reduce((s2, o) => s2 + postageOf(o), 0),
+  );
+  // Month-by-month record of shipped-then-cancelled orders (all time, newest
+  // first): count, postage lost, order value lost.
+  const cancelledByMonth = (() => {
+    const map = {};
+    orders.forEach((o) => {
+      if (!String(o["Order ID"] || "").trim()) return;
+      if (!(isCancelled(o) && hasShippingId(o))) return;
+      const d = getOrderDate(o);
+      if (!d) return;
+      const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      if (!map[k])
+        map[k] = {
+          k,
+          label: d.toLocaleDateString("en-IN", { month: "short", year: "numeric" }),
+          n: 0,
+          postage: 0,
+          value: 0,
+        };
+      map[k].n += 1;
+      map[k].postage += postageOf(o);
+      map[k].value += o.revenue || 0;
+    });
+    return Object.values(map).sort((a, b) => (a.k < b.k ? 1 : -1));
+  })();
   const netProfit = totalPnL - cancelledLoss;
 
   // Unconfirmed orders (by status OR the legacy "(unconfirmed)" name tag) are
   // hidden from the list unless the admin explicitly filters for them — they're
   // handled through the unconfirmed-orders modal instead.
   // Unconfirmed orders stay out of the cards unless asked for — by the
-  // "Unconfirmed" status or the pipeline's "To confirm" step.
+  // "Unconfirmed" status, the pipeline's "To confirm" step, or "All".
   const wantUnconfirmed =
     Array.isArray(statusFilter) &&
     statusFilter.some(
-      (f) => /unconfirmed/i.test(String(f)) || f === "phase:confirm",
+      (f) =>
+        /unconfirmed/i.test(String(f)) || f === "phase:confirm" || f === "all",
     );
   const isUnconfirmedOrder = (o) =>
     /unconfirmed/i.test(o["Order Status"] || "") ||
@@ -12904,7 +12884,7 @@ export default function ManageOrdersPage() {
               sub="This month's pace, where it lands, and the period at a glance">
               {/* Monthly run rate — one line per month, plotted by day-of-month */}
               <An2Section
-                title={`Monthly run rate · ${monthlyRunRate.year}`}
+                title={`Live month · run rate ${monthlyRunRate.year}`}
                 sub={`Cumulative ${
                   runRateMetric === "revenue" ? "revenue" : "orders"
                 } by day of month · dashed = forecast`}
@@ -13276,89 +13256,8 @@ export default function ManageOrdersPage() {
                 />
               </div>
 
-              {/* Projections & run rate */}
-              <An2Section
-                title="Projections & run rate"
-                sub={
-                  projection.hasForecast
-                    ? `Current pace projected to the full ${
-                        analyticsPeriod === "week"
-                          ? "week"
-                          : analyticsPeriod === "year"
-                            ? "year"
-                            : "month"
-                      }`
-                    : "Observed sales pace for this period"
-                }
-                right={
-                  <span className="an2-card-total">
-                    ₹{projection.revPerDay.toLocaleString()}/day
-                  </span>
-                }
-              >
-                <div className="an2-proj-tiles">
-                  <div className="an2-proj-tile">
-                    <span className="an2-proj-lbl">Run rate</span>
-                    <strong className="an2-proj-val">
-                      ₹{projection.revPerDay.toLocaleString()}
-                      <small>/day</small>
-                    </strong>
-                    <span className="an2-proj-x">
-                      {projection.ordPerDay} orders/day
-                    </span>
-                  </div>
-                  <div className="an2-proj-tile">
-                    <span className="an2-proj-lbl">So far</span>
-                    <strong className="an2-proj-val">
-                      ₹{projection.actualRev.toLocaleString()}
-                    </strong>
-                    <span className="an2-proj-x">
-                      {overview.n} orders · day {projection.elapsedDays}/
-                      {projection.totalDays}
-                    </span>
-                  </div>
-                  <div className="an2-proj-tile hot">
-                    <span className="an2-proj-lbl">
-                      Projected{" "}
-                      {analyticsPeriod === "week"
-                        ? "week"
-                        : analyticsPeriod === "year"
-                          ? "year"
-                          : analyticsPeriod === "month"
-                            ? "month"
-                            : "total"}
-                    </span>
-                    <strong className="an2-proj-val hot">
-                      ₹{projection.projectedRev.toLocaleString()}
-                    </strong>
-                    <span className="an2-proj-x">
-                      ~{projection.projectedOrders} orders
-                      {projection.hasForecast
-                        ? ` · ${projection.daysLeft} day${projection.daysLeft === 1 ? "" : "s"} left`
-                        : " · final"}
-                    </span>
-                  </div>
-                </div>
-                {projection.hasForecast && (
-                  <div className="an2-proj-prog">
-                    <div className="an2-proj-prog-head">
-                      <span>
-                        Achieved {projection.progressPct}% of projection
-                      </span>
-                      <span>
-                        ₹{projection.actualRev.toLocaleString()} / ₹
-                        {projection.projectedRev.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="an2-proj-bar">
-                      <div
-                        className="an2-proj-fill"
-                        style={{ width: `${projection.progressPct}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-              </An2Section>
+              {/* (Projections card removed — the run-rate insights above already
+                show pace and the projected month-end.) */}
             </An2Group>
 
             <An2Group
@@ -13778,6 +13677,56 @@ export default function ManageOrdersPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </An2Section>
+
+              {/* Cancelled after shipping — postage lost, per month */}
+              <An2Section
+                title="Cancelled losses"
+                sub="Orders cancelled or returned after shipping — the postage is gone either way"
+                right={
+                  <span className="an2-card-total">
+                    −₹{cancelledLoss.toLocaleString("en-IN")}
+                  </span>
+                }
+              >
+                <div className="an2-closs">
+                  <div className="an2-closs-kpis">
+                    <div>
+                      <b>{cancelledOrders.length}</b>
+                      <span>shipped then cancelled · {periodWindow.label}</span>
+                    </div>
+                    <div>
+                      <b>−₹{cancelledLoss.toLocaleString("en-IN")}</b>
+                      <span>postage lost (same slabs as delivered orders)</span>
+                    </div>
+                    <div>
+                      <b>₹{Math.round(cancelledValue).toLocaleString("en-IN")}</b>
+                      <span>order value that didn&apos;t convert</span>
+                    </div>
+                  </div>
+                  {cancelledByMonth.length > 0 && (
+                    <table className="an2-closs-table">
+                      <thead>
+                        <tr>
+                          <th>Month</th>
+                          <th className="ta-r">Cancelled</th>
+                          <th className="ta-r">Postage lost</th>
+                          <th className="ta-r">Value lost</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cancelledByMonth.slice(0, 12).map((m) => (
+                          <tr key={m.k}>
+                            <td>{m.label}</td>
+                            <td className="ta-r">{m.n}</td>
+                            <td className="ta-r v-neg">−₹{Math.round(m.postage).toLocaleString("en-IN")}</td>
+                            <td className="ta-r">₹{Math.round(m.value).toLocaleString("en-IN")}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </An2Section>
 
@@ -14249,6 +14198,30 @@ export default function ManageOrdersPage() {
             never strands the user without a way back. */}
         {activeTab === "orders" && (
           <nav className="mo-phases" aria-label="Order phases">
+            {(() => {
+              // "All" — every order across the flow; tap again for Active.
+              const on =
+                Array.isArray(statusFilter) &&
+                statusFilter.length === 1 &&
+                statusFilter[0] === "all";
+              const total = ORDER_PHASES.reduce((t, p) => t + phaseCounts[p.key], 0);
+              return (
+                <button
+                  type="button"
+                  className={`mo-phase mo-phase-all${on ? " on" : ""}`}
+                  onClick={() => setStatusFilter(on ? ["active"] : ["all"])}
+                  aria-pressed={on}
+                  title="Every order"
+                >
+                  <span className="mo-phase-top">
+                    <span className="mo-phase-step">≡</span>
+                    <span className="mo-phase-n">{total.toLocaleString()}</span>
+                  </span>
+                  <span className="mo-phase-label">All</span>
+                  <span className="mo-phase-hint">Every order</span>
+                </button>
+              );
+            })()}
             {ORDER_PHASES.map((p, i) => {
               const val = `phase:${p.key}`;
               const on =
@@ -16111,13 +16084,56 @@ export default function ManageOrdersPage() {
             {trackSubTab === "carts" && (
               <div className="mo-carts">
                 {(() => {
-                  const list = cartsList.filter((c) =>
-                    cartsFilter === "all"
-                      ? true
-                      : cartsFilter === "converted"
-                        ? c.status === "Converted"
-                        : c.status !== "Converted",
+                  const isConv = (c) => c.status === "Converted";
+                  const hasPhone = (c) => String(c.phone || "").replace(/\D/g, "").length >= 10;
+                  const q = cartsSearch.trim().toLowerCase();
+                  // "02/11/2026 16:13:02" → Date (sheet format), for sort + "2h ago".
+                  const tsOf = (v) => {
+                    const m = String(v || "").match(/(\d{1,2})\/(\d{1,2})\/(\d{4})[ ,]+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+                    return m ? new Date(+m[3], +m[2] - 1, +m[1], +m[4], +m[5], +(m[6] || 0)).getTime() : 0;
+                  };
+                  const ago = (t) => {
+                    if (!t) return "";
+                    const mins = Math.max(0, Math.round((Date.now() - t) / 60000));
+                    if (mins < 60) return `${mins || 1}m ago`;
+                    const h = Math.round(mins / 60);
+                    return h < 24 ? `${h}h ago` : `${Math.round(h / 24)}d ago`;
+                  };
+                  // Status + empties + search first; contact counts are taken here
+                  // so each contact chip shows what it would leave.
+                  const base = cartsList.filter(
+                    (c) =>
+                      (cartsFilter === "all" ||
+                        (cartsFilter === "converted") === isConv(c)) &&
+                      (!cartsHideEmpty || c.itemCount > 0 || isConv(c)) &&
+                      (!q ||
+                        [c.name, c.phone, c.books, c.orderId]
+                          .join(" ")
+                          .toLowerCase()
+                          .includes(q)),
                   );
+                  const contactCounts = {
+                    reachable: base.filter(hasPhone).length,
+                    nonumber: base.filter((c) => !hasPhone(c)).length,
+                    any: base.length,
+                  };
+                  const list = base
+                    .filter((c) =>
+                      cartsContact === "any"
+                        ? true
+                        : cartsContact === "reachable"
+                          ? hasPhone(c)
+                          : !hasPhone(c),
+                    )
+                    .sort((a, b) =>
+                      cartsSort === "value"
+                        ? (b.cartValue || 0) - (a.cartValue || 0)
+                        : tsOf(b.lastUpdated) - tsOf(a.lastUpdated),
+                    );
+                  const reachable = cartsList.filter(
+                    (c) => !isConv(c) && c.itemCount > 0 && hasPhone(c),
+                  );
+                  const reachableValue = reachable.reduce((s2, c) => s2 + (c.cartValue || 0), 0);
                   const activeList = cartsList.filter(
                     (c) => c.status !== "Converted" && c.itemCount > 0,
                   );
@@ -16128,6 +16144,9 @@ export default function ManageOrdersPage() {
                   const convertedN = cartsList.filter(
                     (c) => c.status === "Converted",
                   ).length;
+                  const convRate = cartsList.length
+                    ? Math.round((convertedN / cartsList.length) * 100)
+                    : 0;
                   return (
                     <>
                       <div className="mo-carts-stat-row">
@@ -16144,48 +16163,116 @@ export default function ManageOrdersPage() {
                           <span className="mo-carts-stat-l">At risk</span>
                         </div>
                         <div className="mo-carts-stat">
+                          <span className="mo-carts-stat-n">
+                            {reachable.length}
+                          </span>
+                          <span className="mo-carts-stat-l">
+                            Reachable · ₹{reachableValue.toLocaleString("en-IN")}
+                          </span>
+                        </div>
+                        <div className="mo-carts-stat">
                           <span className="mo-carts-stat-n">{convertedN}</span>
-                          <span className="mo-carts-stat-l">Converted</span>
+                          <span className="mo-carts-stat-l">Converted · {convRate}%</span>
                         </div>
                       </div>
 
                       <div className="mo-carts-toolbar">
-                        <div className="mo-carts-filters">
+                        <div className="mo-seg" role="group" aria-label="Cart status">
                           {[
-                            { k: "all", label: "All" },
                             { k: "active", label: "Active" },
                             { k: "converted", label: "Converted" },
+                            { k: "all", label: "All" },
                           ].map((f) => (
                             <button
                               key={f.k}
                               type="button"
-                              className={`mo-carts-chip${cartsFilter === f.k ? " on" : ""}`}
+                              className={cartsFilter === f.k ? "on" : ""}
                               onClick={() => setCartsFilter(f.k)}
                             >
                               {f.label}
                             </button>
                           ))}
                         </div>
+                        <div className="mo-seg" role="group" aria-label="Contact">
+                          {[
+                            { k: "reachable", label: "With number" },
+                            { k: "nonumber", label: "No number" },
+                            { k: "any", label: "Any" },
+                          ].map((f) => (
+                            <button
+                              key={f.k}
+                              type="button"
+                              className={cartsContact === f.k ? "on" : ""}
+                              onClick={() => setCartsContact(f.k)}
+                            >
+                              {f.label} <b>{contactCounts[f.k]}</b>
+                            </button>
+                          ))}
+                        </div>
                         <button
                           type="button"
-                          className="mo-carts-refresh"
+                          className={`mo-carts-toggle${cartsHideEmpty ? " on" : ""}`}
+                          onClick={() => setCartsHideEmpty((v) => !v)}
+                          aria-pressed={cartsHideEmpty}
+                        >
+                          {cartsHideEmpty ? <Check size={13} /> : null} Hide empty
+                        </button>
+                      </div>
+                      <div className="mo-carts-toolbar">
+                        <label className="mo-notes-search">
+                          <Search size={15} />
+                          <input
+                            placeholder="Search name, phone or book"
+                            value={cartsSearch}
+                            onChange={(e) => setCartsSearch(e.target.value)}
+                          />
+                        </label>
+                        <select
+                          className="mo-carts-sort"
+                          value={cartsSort}
+                          onChange={(e) => setCartsSort(e.target.value)}
+                          aria-label="Sort carts"
+                        >
+                          <option value="recent">Newest first</option>
+                          <option value="value">Highest value</option>
+                        </select>
+                        <button
+                          type="button"
+                          className="mo-notes-refresh"
                           onClick={loadCarts}
                           disabled={cartsLoading}
+                          aria-label="Refresh carts"
+                          title="Refresh"
                         >
-                          <RefreshCw
-                            size={14}
-                            className={cartsLoading ? "mo-spin" : ""}
-                          />
-                          {cartsLoading ? "Loading…" : "Refresh"}
+                          <RefreshCw size={15} className={cartsLoading ? "mo-spin" : ""} />
                         </button>
                       </div>
 
                       {cartsLoading && !cartsList.length ? (
-                        <div className="mo-carts-empty">Loading carts…</div>
+                        <div className="mo-carts-list">
+                          {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="mo-cart-card mo-cart-skel" aria-hidden="true">
+                              <div className="mo-cart-who">
+                                <span className="mo-skel-dot" />
+                                <div className="mo-cart-id">
+                                  <span className="mo-skel-line w-60" />
+                                  <span className="mo-skel-line w-40" />
+                                </div>
+                              </div>
+                              <span className="mo-skel-line" />
+                              <span className="mo-skel-line w-60" />
+                              <span className="mo-skel-pill" />
+                            </div>
+                          ))}
+                        </div>
                       ) : !list.length ? (
                         <div className="mo-carts-empty">
                           <ShoppingBag size={28} />
-                          <p>No carts to show here yet.</p>
+                          <p>
+                            {cartsList.length
+                              ? "No carts match these filters."
+                              : "No carts to show here yet."}
+                          </p>
                         </div>
                       ) : (
                         <div className="mo-carts-list">
@@ -16282,7 +16369,10 @@ export default function ManageOrdersPage() {
 
                                 <div className="mo-cart-foot">
                                   <span className="mo-cart-time">
-                                    <Clock size={11} /> {c.lastUpdated || "—"}
+                                    <Clock size={11} />{" "}
+                                    <span title={c.lastUpdated || ""}>
+                                      {ago(tsOf(c.lastUpdated)) || c.lastUpdated || "—"}
+                                    </span>
                                     {converted && c.orderId
                                       ? ` · ${c.orderId}`
                                       : ""}
@@ -16315,150 +16405,266 @@ export default function ManageOrdersPage() {
 
             {/* Operator notes board — add + list team notes (saved to the
                 "Notes" sheet tab). */}
-            {trackSubTab === "notes" && (
-              <div className="mo-notes">
-                <div className="mo-notes-form">
-                  <div className="input-group">
-                    <label>Note title</label>
-                    <input
-                      className="sec-mid-btn"
-                      placeholder="e.g. Reorder bubble wrap"
-                      value={noteTitle}
-                      onChange={(e) => setNoteTitle(e.target.value)}
-                    />
-                  </div>
-                  <div className="input-group">
-                    <label>Details</label>
-                    <textarea
-                      className="sec-mid-btn mo-note-ta"
-                      rows={4}
-                      placeholder="Write the details here…"
-                      value={noteBody}
-                      onChange={(e) => setNoteBody(e.target.value)}
-                    />
-                  </div>
-                  <div className="mo-notes-row">
-                    <div className="input-group mo-notes-cat">
-                      <label>Category</label>
-                      <select
-                        className="sec-mid-btn"
-                        value={noteCategory}
-                        onChange={(e) => setNoteCategory(e.target.value)}
+            {trackSubTab === "notes" &&
+              (() => {
+                const NOTE_CATS = ["General", "Reminder", "Order", "Supplier", "Finance", "Follow-up"];
+                const isDone = (n) => /done/i.test(n.status);
+                const q = noteSearch.trim().toLowerCase();
+                const counts = {
+                  open: notesList.filter((n) => !isDone(n)).length,
+                  done: notesList.filter(isDone).length,
+                  all: notesList.length,
+                };
+                const shown = notesList.filter(
+                  (n) =>
+                    (noteFilter === "all" || (noteFilter === "done") === isDone(n)) &&
+                    (!q ||
+                      [n.title, n.note, n.category, n.orderId]
+                        .join(" ")
+                        .toLowerCase()
+                        .includes(q)),
+                );
+                // Clickable links inside note text (URLs break anywhere).
+                const linkify = (text) =>
+                  String(text)
+                    .split(/(https?:\/\/\S+)/g)
+                    .map((part, i) =>
+                      /^https?:\/\//.test(part) ? (
+                        <a key={i} href={part} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                          {part}
+                        </a>
+                      ) : (
+                        part
+                      ),
+                    );
+                const closeComposer = () => {
+                  setNoteComposerOpen(false);
+                  setNoteTitle("");
+                  setNoteBody("");
+                  setNoteOrderId("");
+                  setNoteCategory("General");
+                };
+                return (
+                  <div className="mo-notes">
+                    {/* Composer — one line until you start a note. */}
+                    {!noteComposerOpen ? (
+                      <button
+                        type="button"
+                        className="mo-note-new"
+                        onClick={() => setNoteComposerOpen(true)}
                       >
-                        {[
-                          "General",
-                          "Reminder",
-                          "Order",
-                          "Supplier",
-                          "Finance",
-                          "Follow-up",
-                        ].map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="input-group mo-notes-oidg">
-                      <label>Order ID (optional)</label>
-                      <input
-                        className="sec-mid-btn"
-                        placeholder="ORD…"
-                        value={noteOrderId}
-                        onChange={(e) => setNoteOrderId(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="pri-big-btn width100"
-                    onClick={addNote}
-                    disabled={noteSaving}
-                  >
-                    {noteSaving ? "Saving…" : "Add note"}
-                  </button>
-                </div>
-
-                <div className="mo-notes-list">
-                  {notesLoading ? (
-                    <p className="mo-notes-empty">Loading notes…</p>
-                  ) : notesList.length === 0 ? (
-                    <p className="mo-notes-empty">
-                      No notes yet. Fill the form above and tap <b>Add note</b> —
-                      it’s saved to the Notes sheet and shows here for the whole
-                      team.
-                    </p>
-                  ) : (
-                    notesList.map((n) => {
-                      const done = /done/i.test(n.status);
-                      return (
-                        <div
-                          key={n.id || n.timestamp + n.title}
-                          className={`mo-note-card${done ? " done" : ""}`}
-                        >
+                        <Plus size={16} />
+                        <span>New note…</span>
+                        <em>Reminders, supplier info, order follow-ups, links</em>
+                      </button>
+                    ) : (
+                      <div
+                        className="mo-note-composer"
+                        onKeyDown={(e) => {
+                          if ((e.metaKey || e.ctrlKey) && e.key === "Enter") addNote();
+                          if (e.key === "Escape") closeComposer();
+                        }}
+                      >
+                        <input
+                          className="mo-note-in-title"
+                          placeholder="Title"
+                          value={noteTitle}
+                          autoFocus
+                          onChange={(e) => setNoteTitle(e.target.value)}
+                        />
+                        <textarea
+                          className="mo-note-in-body"
+                          rows={4}
+                          placeholder="Details, links, numbers…"
+                          value={noteBody}
+                          onChange={(e) => setNoteBody(e.target.value)}
+                        />
+                        <div className="mo-note-composer-row">
+                          <div className="mo-seg wrap" role="group" aria-label="Category">
+                            {NOTE_CATS.map((c) => (
+                              <button
+                                key={c}
+                                type="button"
+                                className={noteCategory === c ? "on" : ""}
+                                onClick={() => setNoteCategory(c)}
+                              >
+                                {c}
+                              </button>
+                            ))}
+                          </div>
+                          <input
+                            className="mo-note-in-oid"
+                            placeholder="Order ID (optional)"
+                            value={noteOrderId}
+                            onChange={(e) => setNoteOrderId(e.target.value)}
+                          />
+                        </div>
+                        <div className="mo-note-composer-foot">
+                          <span className="mo-note-kbd">⌘/Ctrl + Enter to save</span>
+                          <button type="button" className="mo-note-cancel" onClick={closeComposer}>
+                            Cancel
+                          </button>
                           <button
                             type="button"
-                            className={`mo-note-check${done ? " on" : ""}`}
-                            title={done ? "Mark open" : "Mark done"}
-                            onClick={() => toggleNoteStatus(n)}
+                            className="mo-note-save"
+                            onClick={addNote}
+                            disabled={noteSaving || (!noteTitle.trim() && !noteBody.trim())}
                           >
-                            {done ? <Check size={13} strokeWidth={3} /> : null}
+                            {noteSaving ? <Loader2 size={15} className="mo-spin" /> : <Check size={15} />}
+                            {noteSaving ? "Saving…" : "Save note"}
                           </button>
-                          <div className="mo-note-body">
-                            <div className="mo-note-top">
-                              {n.title && (
-                                <span className="mo-note-title" title={n.title}>
-                                  {n.title}
-                                </span>
-                              )}
-                              {n.category && (
-                                <span className="mo-note-cat">{n.category}</span>
-                              )}
-                              {n.title && (
-                                <button
-                                  type="button"
-                                  className="mo-note-copy"
-                                  title="Copy title"
-                                  onClick={() =>
-                                    copyNoteField(n.title, "Title")
-                                  }
-                                >
-                                  <Copy size={13} />
-                                </button>
-                              )}
-                            </div>
-                            {n.note && (
-                              <div className="mo-note-textrow">
-                                <p className="mo-note-text">{n.note}</p>
-                                <button
-                                  type="button"
-                                  className="mo-note-copy"
-                                  title="Copy details"
-                                  onClick={() =>
-                                    copyNoteField(n.note, "Note")
-                                  }
-                                >
-                                  <Copy size={13} />
-                                </button>
-                              </div>
-                            )}
-                            <div className="mo-note-meta">
-                              {n.timestamp && <span>{n.timestamp}</span>}
-                              {n.orderId && (
-                                <span className="mo-note-oid">
-                                  · {n.orderId}
-                                </span>
-                              )}
-                              {n.author && <span>· {n.author}</span>}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Toolbar — filter, search, refresh. */}
+                    <div className="mo-notes-bar">
+                      <div className="mo-seg" role="group" aria-label="Filter notes">
+                        {[
+                          { k: "open", label: "Open" },
+                          { k: "done", label: "Done" },
+                          { k: "all", label: "All" },
+                        ].map((f) => (
+                          <button
+                            key={f.k}
+                            type="button"
+                            className={noteFilter === f.k ? "on" : ""}
+                            onClick={() => setNoteFilter(f.k)}
+                          >
+                            {f.label} <b>{counts[f.k]}</b>
+                          </button>
+                        ))}
+                      </div>
+                      <label className="mo-notes-search">
+                        <Search size={15} />
+                        <input
+                          placeholder="Search notes"
+                          value={noteSearch}
+                          onChange={(e) => setNoteSearch(e.target.value)}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        className="mo-notes-refresh"
+                        onClick={loadNotes}
+                        disabled={notesLoading}
+                        aria-label="Refresh notes"
+                        title="Refresh"
+                      >
+                        <RefreshCw size={15} className={notesLoading ? "mo-spin" : ""} />
+                      </button>
+                    </div>
+
+                    <div className="mo-notes-list">
+                      {notesLoading && !notesList.length ? (
+                        Array.from({ length: 3 }).map((_, i) => (
+                          <div key={i} className="mo-note-card mo-note-skel" aria-hidden="true">
+                            <span className="mo-skel-dot" />
+                            <div className="mo-note-body">
+                              <span className="mo-skel-line w-60" />
+                              <span className="mo-skel-line" />
+                              <span className="mo-skel-line w-40" />
                             </div>
                           </div>
+                        ))
+                      ) : shown.length === 0 ? (
+                        <div className="mo-notes-empty">
+                          {notesList.length === 0 ? (
+                            <>
+                              <b>No notes yet</b>
+                              <span>Tap “New note…” above — notes save to the Notes sheet and the whole team sees them.</span>
+                            </>
+                          ) : q ? (
+                            <>
+                              <b>Nothing matches “{noteSearch}”</b>
+                              <span>Try another word, or clear the search.</span>
+                            </>
+                          ) : (
+                            <>
+                              <b>{noteFilter === "done" ? "Nothing marked done yet" : "All caught up"}</b>
+                              <span>{noteFilter === "done" ? "Tick a note's box when it's handled." : "Every note is marked done."}</span>
+                            </>
+                          )}
                         </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            )}
+                      ) : (
+                        shown.map((n) => {
+                          const done = isDone(n);
+                          const key = n.id || n.timestamp + n.title;
+                          const long = String(n.note || "").length > 220;
+                          const open = !!noteExpanded[key];
+                          const linked = n.orderId
+                            ? orders.find((o) => String(o["Order ID"]) === String(n.orderId).trim())
+                            : null;
+                          return (
+                            <div key={key} className={`mo-note-card${done ? " done" : ""}`}>
+                              <button
+                                type="button"
+                                className={`mo-note-check${done ? " on" : ""}`}
+                                title={done ? "Mark open" : "Mark done"}
+                                aria-pressed={done}
+                                onClick={() => toggleNoteStatus(n)}
+                              >
+                                {done ? <Check size={13} strokeWidth={3} /> : null}
+                              </button>
+                              <div className="mo-note-body">
+                                <div className="mo-note-top">
+                                  {n.title && <span className="mo-note-title">{n.title}</span>}
+                                  {n.category && <span className="mo-note-cat">{n.category}</span>}
+                                </div>
+                                {n.note && (
+                                  <p className={`mo-note-text${long && !open ? " clamp" : ""}`}>
+                                    {linkify(n.note)}
+                                  </p>
+                                )}
+                                {long && (
+                                  <button
+                                    type="button"
+                                    className="mo-note-more"
+                                    onClick={() => setNoteExpanded((p) => ({ ...p, [key]: !open }))}
+                                  >
+                                    {open ? "Show less" : "Show more"}
+                                  </button>
+                                )}
+                                <div className="mo-note-meta">
+                                  {n.timestamp && <span>{n.timestamp}</span>}
+                                  {n.author && <span>· {n.author}</span>}
+                                  {n.orderId &&
+                                    (linked ? (
+                                      <button
+                                        type="button"
+                                        className="mo-note-oid"
+                                        onClick={() => setDetailOrder(linked)}
+                                        title="Open this order"
+                                      >
+                                        · {n.orderId}
+                                      </button>
+                                    ) : (
+                                      <span className="mo-note-oid">· {n.orderId}</span>
+                                    ))}
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                className="mo-note-copy"
+                                title="Copy note"
+                                aria-label="Copy note"
+                                onClick={() =>
+                                  copyNoteField(
+                                    [n.title, n.note].filter(Boolean).join("\n"),
+                                    "Note",
+                                  )
+                                }
+                              >
+                                <Copy size={14} />
+                              </button>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
             {/* Tracking-ID export — all tracking IDs by status + date range */}
             {trackSubTab === "live" && (
               <div className="mo-tid">

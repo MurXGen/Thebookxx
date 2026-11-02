@@ -151,11 +151,20 @@ export async function POST(request) {
   }
 
   try {
-    await fetch(url, {
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
     });
+    // The Apps Script answers { ok, error? }. Surface a reported failure (e.g.
+    // a cell rejected by data validation) instead of always claiming success.
+    const script = await res.json().catch(() => null);
+    if (script && script.ok === false) {
+      return Response.json(
+        { success: false, error: script.error || "write failed" },
+        { status: 502 },
+      );
+    }
     // Order writes (not wallet/edit) reconcile the wallet spend server-side.
     // Awaited so it completes before the serverless function can freeze.
     if (target !== "wallet" && target !== "edit") {

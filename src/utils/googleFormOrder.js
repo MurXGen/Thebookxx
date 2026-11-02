@@ -111,12 +111,15 @@ export const updateOrderRow = async (orderId, fields) => {
   if (!orderId) return { success: false };
   try {
     // Server route forwards to the Apps Script; the /exec URL stays off-client.
-    await fetch("/api/order-write", {
+    const res = await fetch("/api/order-write", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "update", orderId, data: fields || {} }),
     });
-    return { success: true };
+    const j = await res.json().catch(() => ({}));
+    return j.success === false
+      ? { success: false, error: j.error }
+      : { success: true };
   } catch (error) {
     console.error("updateOrderRow failed:", error);
     return { success: false, error };

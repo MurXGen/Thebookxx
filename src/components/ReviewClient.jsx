@@ -25,6 +25,7 @@ import ScratchCard from "@/components/UI/ScratchCard";
 import ReviewsShowcase from "@/components/ReviewsShowcase";
 import {
   submitReviewToSheet,
+  notifyReviewTelegram,
   isReviewRateLimited,
   recordReviewSubmission,
 } from "@/utils/reviewForm";
@@ -64,23 +65,6 @@ export default function ReviewClient() {
     return emailOk || phoneOk;
   };
 
-  const notifyTelegram = async (payload) => {
-    const url =
-      activeTab === "book"
-        ? "https://api.journalx.app/api/bookxTelegram/review"
-        : "https://api.journalx.app/api/bookxTelegram/store-review";
-    try {
-      await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        keepalive: true,
-        body: JSON.stringify(payload),
-      });
-    } catch (e) {
-      console.error("Review Telegram failed:", e);
-    }
-  };
-
   const handleSubmit = async () => {
     setMessage("");
     if (rating === 0 || !review.trim()) {
@@ -114,7 +98,7 @@ export default function ReviewClient() {
     };
 
     try {
-      await notifyTelegram(payload);
+      await notifyReviewTelegram(payload);
       await submitReviewToSheet({
         type: activeTab === "book" ? "Book" : "Store",
         bookName,

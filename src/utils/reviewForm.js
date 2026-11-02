@@ -110,6 +110,25 @@ export async function submitReviewToSheet(data) {
   }
 }
 
+// Telegram alert for a new review (same endpoints the /review page uses).
+// `payload` = { review, rating, email, phoneNumber, bookId?, bookName?, type }.
+export async function notifyReviewTelegram(payload) {
+  const url =
+    payload?.type === "Book"
+      ? "https://api.journalx.app/api/bookxTelegram/review"
+      : "https://api.journalx.app/api/bookxTelegram/store-review";
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    console.error("Review Telegram failed:", e);
+  }
+}
+
 // ── Per-device rate limiting: max 10 reviews per rolling 10 minutes ──
 const RL_KEY = "tbx_review_ts";
 const RL_WINDOW = 10 * 60 * 1000;

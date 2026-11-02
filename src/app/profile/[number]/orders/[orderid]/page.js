@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,6 +13,7 @@ import {
   Store,
   MapPin,
   Mail,
+  Phone,
   Navigation,
   Package,
   Loader2,
@@ -38,10 +39,17 @@ import {
   Star,
   Copy,
   AlertCircle,
+  Minus,
+  LocateFixed,
+  Route,
+  Layers,
+  GripHorizontal,
+  TrainFront,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
   submitReviewToSheet,
+  notifyReviewTelegram,
   isReviewRateLimited,
   recordReviewSubmission,
 } from "@/utils/reviewForm";
@@ -88,6 +96,38 @@ const BOOK_BY_NAME = {};
 ALL_BOOKS.forEach((b) => {
   if (b.name) BOOK_BY_NAME[normName(b.name)] = b;
 });
+// Great-circle distance (km) along a [lat, lng] path.
+function pathKm(pts) {
+  let km = 0;
+  for (let i = 1; i < (pts || []).length; i++) {
+    const [la1, ln1] = pts[i - 1];
+    const [la2, ln2] = pts[i];
+    const r = Math.PI / 180;
+    const a =
+      Math.sin(((la2 - la1) * r) / 2) ** 2 +
+      Math.cos(la1 * r) *
+        Math.cos(la2 * r) *
+        Math.sin(((ln2 - ln1) * r) / 2) ** 2;
+    km += 12742 * Math.asin(Math.sqrt(a));
+  }
+  return km;
+}
+
+// Base map styles for the layer switcher.
+const MAP_LAYERS = {
+  streets: {
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: "© OpenStreetMap",
+    maxZoom: 18,
+  },
+  satellite: {
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    attribution: "Imagery © Esri",
+    maxZoom: 18,
+  },
+};
+const MAP_H_KEY = "tbx_order_map_h";
+
 function findBook(name) {
   // QuickReads share the same title as their book — drop the tag so the cover
   // resolves to that book's image.
@@ -239,12 +279,17 @@ function statusLabel(order) {
   if (/shipped|getting shipped/.test(st))
     return { title: "About to ship", sub: "Your parcel is being handed over" };
   if (/processing/.test(st))
-    return { title: "Order status", sub: "We're preparing your order" };
+    return { title: "Preparing your order", sub: "We're packing your books" };
   if (/on\s*hold/.test(st))
-    return {
-      title: "On hold",
-      sub: "There is some issue in packaging this item",
-    };
+    return /post/.test(st)
+      ? {
+          title: "Held at the post office",
+          sub: "India Post is holding your parcel — usually because they couldn't reach you or need an address detail. Message us and we'll get it moving.",
+        }
+      : {
+          title: "On hold",
+          sub: "There is some issue in packaging this item — message us and we'll sort it out.",
+        };
   if (/return/.test(st))
     return {
       title: "Cancelled",
@@ -254,7 +299,7 @@ function statusLabel(order) {
     return { title: "Cancelled", sub: "This order was cancelled" };
   if (/unconfirmed|pending/.test(st)) {
     return {
-      title: "Order status",
+      title: "Awaiting confirmation",
       sub: "We're confirming your order — this usually takes a few minutes",
     };
   }
@@ -262,81 +307,192 @@ function statusLabel(order) {
 }
 
 // Side-view SVG vehicles for the animated Route scene (wheels spin via CSS).
-function TrainSVG() {
+// Shared bits for the scene vehicles: a spoked alloy wheel and the book-cover
+// "ad" panel printed on the cargo body (the reader's own book rides along).
+function VehWheel({ cx, cy, r = 8.5 }) {
+  return (
+    <g className="rs-wheel">
+      <circle cx={cx} cy={cy} r={r} fill="#1f2328" />
+      <circle cx={cx} cy={cy} r={r - 1.6} fill="#2d333b" />
+      <circle cx={cx} cy={cy} r={r * 0.55} fill="#cfd5dc" />
+      {[0, 60, 120].map((a) => (
+        <rect
+          key={a}
+          x={cx - 0.7}
+          y={cy - r * 0.55}
+          width="1.4"
+          height={r * 1.1}
+          fill="#8b949e"
+          transform={`rotate(${a} ${cx} ${cy})`}
+        />
+      ))}
+      <circle cx={cx} cy={cy} r={r * 0.2} fill="#57606a" />
+    </g>
+  );
+}
+
+function CoverDecal({ id, cover, x, y, w, h }) {
+  return (
+    <g>
+      <clipPath id={id}>
+        <rect x={x} y={y} width={w} height={h} rx="1.6" />
+      </clipPath>
+      <rect
+        x={x - 1}
+        y={y - 1}
+        width={w + 2}
+        height={h + 2}
+        rx="2.2"
+        fill="#fff"
+        stroke="#e5e7eb"
+        strokeWidth="0.6"
+      />
+      {cover ? (
+        <image
+          href={cover}
+          x={x}
+          y={y}
+          width={w}
+          height={h}
+          preserveAspectRatio="xMidYMid slice"
+          clipPath={`url(#${id})`}
+        />
+      ) : (
+        <rect x={x} y={y} width={w} height={h} rx="1.6" fill="#fdba74" />
+      )}
+    </g>
+  );
+}
+
+// Express: a modern electric loco (white/orange livery, pantograph, bogies)
+// hauling a TheBookX parcel van.
+function TrainSVG({ cover = "" }) {
+  const uid = useId().replace(/:/g, "");
   return (
     <svg className="rs-veh-svg" viewBox="0 0 120 70" aria-hidden="true">
-      {/* open cargo wagon — low walls so the boxes inside show */}
-      <rect x="2" y="22" width="44" height="28" rx="4" fill="#b65c10" />
-      <rect x="5" y="26" width="38" height="22" rx="2" fill="#8f470b" />
-      <rect x="2" y="40" width="44" height="10" rx="2" fill="#c96a12" />
-      <path d="M2 44h44" stroke="#a9560c" strokeWidth="1.4" />
-      {/* locomotive body */}
-      <rect x="48" y="12" width="60" height="38" rx="7" fill="#e76f00" />
-      <rect x="52" y="18" width="30" height="16" rx="3" fill="#fff4e3" />
-      <rect x="88" y="16" width="16" height="10" rx="3" fill="#ffd9a8" />
-      {/* chimney + cab roof */}
-      <rect x="58" y="4" width="9" height="10" rx="2" fill="#7a3d00" />
-      <rect x="46" y="8" width="64" height="6" rx="3" fill="#c25e00" />
+      <defs>
+        <linearGradient id={`tb${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#e8ecef" />
+        </linearGradient>
+        <linearGradient id={`to${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ff9a1f" />
+          <stop offset="1" stopColor="#e36d00" />
+        </linearGradient>
+        <linearGradient id={`tg${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#bfe3ff" />
+          <stop offset="1" stopColor="#5b8db8" />
+        </linearGradient>
+      </defs>
+      <ellipse cx="60" cy="63" rx="58" ry="3" fill="rgba(0,0,0,0.18)" />
+      {/* parcel van */}
+      <rect x="2" y="17" width="47" height="33" rx="4" fill={`url(#tb${uid})`} />
+      <rect x="2" y="41" width="47" height="6" fill={`url(#to${uid})`} />
+      <rect x="2" y="17" width="47" height="3" rx="1.5" fill="#cfd5dc" />
+      <CoverDecal id={`tc${uid}`} cover={cover} x={7} y={22} w={12} h={16} />
+      <text x="22" y="29" fontSize="5.4" fontWeight="800" fill="#e36d00">
+        TheBookX
+      </text>
+      <text x="22" y="35" fontSize="3.4" fontWeight="700" fill="#6b7280">
+        PARCEL EXPRESS
+      </text>
+      <rect x="36" y="38" width="9" height="3" rx="1" fill="#9aa4ae" />
       {/* coupler */}
-      <rect x="44" y="34" width="8" height="5" rx="2" fill="#7a3d00" />
-      {/* undercarriage */}
-      <rect x="2" y="49" width="106" height="6" rx="3" fill="#5a2e00" />
-      {/* wheels */}
-      <g className="rs-wheel">
-        <circle cx="16" cy="56" r="9" fill="#3a2500" />
-        <circle cx="16" cy="56" r="3.4" fill="#caa06a" />
-        <rect x="15" y="48" width="2" height="16" fill="#caa06a" />
-        <rect x="8" y="55" width="16" height="2" fill="#caa06a" />
-      </g>
-      <g className="rs-wheel">
-        <circle cx="62" cy="56" r="10" fill="#3a2500" />
-        <circle cx="62" cy="56" r="3.6" fill="#caa06a" />
-        <rect x="61" y="47" width="2" height="18" fill="#caa06a" />
-        <rect x="53" y="55" width="18" height="2" fill="#caa06a" />
-      </g>
-      <g className="rs-wheel">
-        <circle cx="92" cy="56" r="10" fill="#3a2500" />
-        <circle cx="92" cy="56" r="3.6" fill="#caa06a" />
-        <rect x="91" y="47" width="2" height="18" fill="#caa06a" />
-        <rect x="83" y="55" width="18" height="2" fill="#caa06a" />
-      </g>
-      {/* headlight */}
-      <circle cx="104" cy="40" r="3.4" fill="#fde68a" />
+      <rect x="48" y="40" width="8" height="3" rx="1.2" fill="#3b4148" />
+      {/* loco body with a raked nose */}
+      <path
+        d="M54 17h44c8 0 12 5 14.5 12l2.5 8v13H54z"
+        fill={`url(#tb${uid})`}
+      />
+      <path d="M54 39h61v8H54z" fill={`url(#to${uid})`} />
+      <path d="M54 37h60.4" stroke="#1e3a8a" strokeWidth="1.2" />
+      {/* windscreen + side windows */}
+      <path d="M100 21h3c3 0 5.5 2.5 7 6.5l1.4 4.5H100z" fill={`url(#tg${uid})`} />
+      <path d="M101.5 22.5l3 0" stroke="#fff" strokeWidth="0.8" opacity="0.8" />
+      <rect x="60" y="23" width="9" height="8" rx="1.5" fill={`url(#tg${uid})`} />
+      <rect x="73" y="23" width="9" height="8" rx="1.5" fill={`url(#tg${uid})`} />
+      <rect x="86" y="23" width="9" height="8" rx="1.5" fill={`url(#tg${uid})`} />
+      {/* roof + pantograph */}
+      <rect x="56" y="14" width="44" height="3.5" rx="1.5" fill="#9aa4ae" />
+      <path
+        d="M70 14l6-7 6 7M74 7h8"
+        stroke="#3b4148"
+        strokeWidth="1.1"
+        fill="none"
+        strokeLinejoin="round"
+      />
+      {/* headlight + marker */}
+      <circle cx="112.5" cy="42.5" r="1.8" fill="#fff7c2" />
+      <circle cx="112.5" cy="42.5" r="3.6" fill="#fde68a" opacity="0.35" />
+      {/* underframe + bogies */}
+      <rect x="3" y="49" width="45" height="3" fill="#3b4148" />
+      <rect x="55" y="49" width="59" height="3" fill="#3b4148" />
+      <VehWheel cx={12} cy={55} r={5.5} />
+      <VehWheel cx={25} cy={55} r={5.5} />
+      <VehWheel cx={39} cy={55} r={5.5} />
+      <VehWheel cx={64} cy={55} r={6} />
+      <VehWheel cx={77} cy={55} r={6} />
+      <VehWheel cx={93} cy={55} r={6} />
+      <VehWheel cx={106} cy={55} r={6} />
     </svg>
   );
 }
 
-function TruckSVG() {
+// Standard: a TheBookX delivery van — white cargo box with brand stripe,
+// orange cab, glass with highlights, alloy wheels, lights.
+function TruckSVG({ cover = "" }) {
+  const uid = useId().replace(/:/g, "");
   return (
     <svg className="rs-veh-svg" viewBox="0 0 120 70" aria-hidden="true">
+      <defs>
+        <linearGradient id={`vb${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#e6eaee" />
+        </linearGradient>
+        <linearGradient id={`vo${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ff9a1f" />
+          <stop offset="1" stopColor="#dd6a00" />
+        </linearGradient>
+        <linearGradient id={`vg${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#d6eeff" />
+          <stop offset="1" stopColor="#6b9cc4" />
+        </linearGradient>
+      </defs>
+      <ellipse cx="60" cy="63" rx="56" ry="3" fill="rgba(0,0,0,0.18)" />
+      {/* cargo box */}
+      <rect x="3" y="9" width="74" height="41" rx="3.5" fill={`url(#vb${uid})`} />
+      <rect x="3" y="40" width="74" height="7" fill={`url(#vo${uid})`} />
+      <rect x="3" y="9" width="74" height="2.5" rx="1.2" fill="#d5dbe1" />
+      <path d="M58 13v26" stroke="#d5dbe1" strokeWidth="0.8" />
+      <CoverDecal id={`vc${uid}`} cover={cover} x={9} y={14} w={15} h={21} />
+      <text x="28" y="24" fontSize="8.4" fontWeight="800" fill="#e36d00">
+        TheBookX
+      </text>
+      <text x="28" y="31" fontSize="4.6" fontWeight="600" fill="#6b7280">
+        Books, delivered with care
+      </text>
       {/* cab */}
-      <path d="M70 22h20l16 14v14H70z" fill="#e76f00" />
-      <path d="M74 26h14l10 9H74z" fill="#cfe9ff" />
-      <rect x="86" y="30" width="2" height="5" fill="#a9560c" />
-      {/* open cargo bed — low walls so the boxes inside are visible */}
-      <rect x="4" y="18" width="66" height="32" rx="3" fill="#b65c10" />
-      <rect x="7" y="22" width="60" height="26" rx="2" fill="#8f470b" />
-      {/* near (front) wall, lower so cargo peeks over it */}
-      <rect x="4" y="40" width="66" height="10" rx="2" fill="#c96a12" />
-      <path d="M4 44h66" stroke="#a9560c" strokeWidth="1.4" />
-      {/* bumper + chassis */}
-      <rect x="4" y="49" width="104" height="6" rx="3" fill="#5a2e00" />
-      <rect x="104" y="42" width="4" height="9" rx="2" fill="#7a3d00" />
-      {/* wheels */}
-      <g className="rs-wheel">
-        <circle cx="30" cy="56" r="10" fill="#2b2b2b" />
-        <circle cx="30" cy="56" r="3.6" fill="#b9b9b9" />
-        <rect x="29" y="47" width="2" height="18" fill="#b9b9b9" />
-        <rect x="21" y="55" width="18" height="2" fill="#b9b9b9" />
-      </g>
-      <g className="rs-wheel">
-        <circle cx="90" cy="56" r="10" fill="#2b2b2b" />
-        <circle cx="90" cy="56" r="3.6" fill="#b9b9b9" />
-        <rect x="89" y="47" width="2" height="18" fill="#b9b9b9" />
-        <rect x="81" y="55" width="18" height="2" fill="#b9b9b9" />
-      </g>
-      {/* headlight */}
-      <circle cx="105" cy="44" r="3" fill="#fde68a" />
+      <path
+        d="M77 18h17c2.4 0 4.4 1.2 5.6 3.2l8.6 13.4c.9 1.4 1.3 3 1.3 4.6V50H77z"
+        fill={`url(#vo${uid})`}
+      />
+      <path d="M81 22h11.5c1.4 0 2.6.7 3.3 1.9l6.4 10.6H81z" fill={`url(#vg${uid})`} />
+      <path d="M84 23.5l5 0" stroke="#fff" strokeWidth="0.9" opacity="0.8" />
+      <path d="M92.5 22v12.5" stroke="#c75f00" strokeWidth="1" />
+      <rect x="86" y="37" width="5" height="1.6" rx="0.8" fill="#9a4a00" />
+      {/* mirror */}
+      <rect x="97" y="25" width="2.2" height="5" rx="1" fill="#3b4148" />
+      {/* chassis, bumper, lights */}
+      <rect x="4" y="49" width="104" height="3.4" rx="1.5" fill="#2d333b" />
+      <rect x="106" y="43" width="6" height="8" rx="2" fill="#3b4148" />
+      <rect x="107.5" y="38.5" width="3.4" height="3" rx="1" fill="#fff7c2" />
+      <circle cx="109" cy="40" r="4" fill="#fde68a" opacity="0.3" />
+      <rect x="3" y="41" width="2.4" height="4" rx="0.8" fill="#ef4444" />
+      {/* wheel arches + wheels */}
+      <path d="M15 50a11 11 0 0 1 22 0" fill="#2d333b" />
+      <path d="M83 50a11 11 0 0 1 22 0" fill="#2d333b" />
+      <VehWheel cx={26} cy={53} r={8.5} />
+      <VehWheel cx={94} cy={53} r={8.5} />
     </svg>
   );
 }
@@ -471,39 +627,6 @@ function WaitingPersonSVG() {
   );
 }
 
-// The parcel's cargo — a stack of cardboard boxes; one is open and holds the
-// actual book covers for this order, so the reader sees their own books riding
-// along. Rendered as an overlay that sits inside the vehicle's cargo bay.
-function RouteCargo({ covers = [], count = 0, isTrain = false }) {
-  const lead = covers[0] || null;
-  const total = Math.max(count || 0, covers.length);
-  const extra = Math.max(0, total - 1);
-  return (
-    <div className={`rs-cargo ${isTrain ? "rs-cargo-train" : "rs-cargo-truck"}`}>
-      <span className="rs-box rs-box-a" />
-      <motion.div
-        className="rs-box rs-box-open"
-        initial={{ y: 4, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.25, duration: 0.4 }}
-      >
-        <div className="rs-box-flap rs-box-flap-l" />
-        <div className="rs-box-flap rs-box-flap-r" />
-        <div className="rs-box-books">
-          {lead ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={lead} alt="" className="rs-box-book" />
-          ) : (
-            <span className="rs-box-book rs-box-book-ph" />
-          )}
-        </div>
-        {extra > 0 && <span className="rs-box-more">+{extra}</span>}
-      </motion.div>
-      <span className="rs-box rs-box-b" />
-    </div>
-  );
-}
-
 // Animated 2D travel scene. The vehicle is positioned by delivery stage — parked
 // at the hub while packing, travelling (scenery scrolls) in transit, out near
 // your door for out-for-delivery, parked at your door when delivered, and back
@@ -529,7 +652,7 @@ function RouteScene({
   const hubBehind = stage === "transit" || stage === "ofd";
   const caption =
     stage === "delivered"
-      ? "Delivered to your door 🎉"
+      ? "Delivered to your door"
       : stage === "returned"
         ? "Came back to our hub"
         : stage === "processing"
@@ -612,7 +735,7 @@ function RouteScene({
             exit={{ opacity: 0, x: -14 }}
             transition={{ duration: 0.4, ease }}
           >
-            <span className="rs-behind-ic">🏬</span>
+            <Store size={12} className="rs-behind-ic" />
             <span className="rs-behind-tx">Left the hub</span>
             <ArrowLeft size={12} className="rs-behind-ar" />
           </motion.div>
@@ -663,8 +786,11 @@ function RouteScene({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.5, ease }}
       >
-        {isTrain ? <TrainSVG /> : <TruckSVG />}
-        <RouteCargo covers={covers} count={bookCount} isTrain={isTrain} />
+        {isTrain ? (
+          <TrainSVG cover={covers[0]} />
+        ) : (
+          <TruckSVG cover={covers[0]} />
+        )}
       </motion.div>
 
       {/* The top caption is hidden while packing — the cloud over the truck
@@ -839,7 +965,20 @@ export default function OrderDetailPage() {
   const [trackCopied, setTrackCopied] = useState(false);
   const [itemsOpen, setItemsOpen] = useState(false);
   const [mapFull, setMapFull] = useState(false);
+  // Map tools: viewer-resizable height (remembered per device), base layer,
+  // and route distances for the info chip / journey panel.
+  const [mapH, setMapH] = useState(340);
+  const [mapLayer, setMapLayer] = useState("streets");
+  const [routeInfo, setRouteInfo] = useState(null); // { totalKm, leftKm }
+  useEffect(() => {
+    try {
+      const h = parseInt(localStorage.getItem(MAP_H_KEY) || "", 10);
+      if (h >= 220 && h <= 900) setMapH(h);
+    } catch {}
+  }, []);
   const [mapTab, setMapTab] = useState("map"); // map | route
+  // Delivered orders keep the map collapsed behind a toggle.
+  const [mapOpen, setMapOpen] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   // Return / refund-for-books-back request.
   const [retOpen, setRetOpen] = useState(false);
@@ -851,6 +990,7 @@ export default function OrderDetailPage() {
   const [showAddrEdit, setShowAddrEdit] = useState(false);
   const [addrForm, setAddrForm] = useState(null);
   const [addrSaving, setAddrSaving] = useState(false);
+  const [addrErr, setAddrErr] = useState({}); // { field: message }
   // Order note (Order Comment)
   const [noteEditing, setNoteEditing] = useState(false);
   const [noteDraft, setNoteDraft] = useState("");
@@ -869,6 +1009,7 @@ export default function OrderDetailPage() {
   const [revBusy, setRevBusy] = useState(false);
   const [revDone, setRevDone] = useState(false);
   const [revErr, setRevErr] = useState("");
+  const [revTags, setRevTags] = useState([]); // quick-pick highlights
   // Quick-action slide-up sheets (note / rate / refer).
   const [showNoteSheet, setShowNoteSheet] = useState(false);
   const [showRateSheet, setShowRateSheet] = useState(false);
@@ -881,6 +1022,8 @@ export default function OrderDetailPage() {
   const mapRef = useRef(null);
   const mapObj = useRef(null);
   const animRef = useRef(null);
+  const tileRef = useRef(null);
+  const routeRef = useRef(null); // { path, cur } for recenter / fit tools
   const geoKey = `tbx_geo_${number}`;
 
   // Fetch the order. The `ignore` guard means React's dev double-invoke (Strict
@@ -1020,6 +1163,10 @@ export default function OrderDetailPage() {
   // Draw / update the Leaflet map.
   useEffect(() => {
     if (!receiver || !mapRef.current) return;
+    // Delivered → the map is collapsed; draw it once it's opened (Leaflet
+    // can't measure a hidden container).
+    if (/delivered|money received/i.test(order?.["Order Status"] || "") && !mapOpen)
+      return;
     let disposed = false;
     (async () => {
       const L = await loadLeaflet();
@@ -1028,11 +1175,14 @@ export default function OrderDetailPage() {
       if (!mapObj.current) {
         mapObj.current = L.map(mapRef.current, {
           zoomControl: false,
-          attributionControl: false,
+          attributionControl: true,
           scrollWheelZoom: false,
         });
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 18,
+        mapObj.current.attributionControl.setPrefix(false);
+        const base = MAP_LAYERS[mapLayer] || MAP_LAYERS.streets;
+        tileRef.current = L.tileLayer(base.url, {
+          maxZoom: base.maxZoom,
+          attribution: base.attribution,
         }).addTo(mapObj.current);
       }
       const map = mapObj.current;
@@ -1120,19 +1270,32 @@ export default function OrderDetailPage() {
       // Vehicle travelling the route — a train for Faster/express delivery, a
       // truck for Standard. No flight (it never followed the roads). The emoji
       // sits in a tilted white badge for a subtle 3D feel.
-      const vehicleEmoji = isExpressOrder(order) ? "🚆" : "🚚";
+      // Parcel marker: orange badge (matches the legend) with a white
+      // train (express) or truck (standard) icon.
+      const ICON_TRUCK =
+        '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>';
+      const ICON_TRAIN =
+        '<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>';
+      const ICON_PKG =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 2.004 0L20.71 7"/></svg>';
+      const vehicleSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${
+        isExpressOrder(order) ? ICON_TRAIN : ICON_TRUCK
+      }</svg>`;
+      const tip = (t) =>
+        `<span class="od-veh-tip-in">${ICON_PKG}<span>${String(t)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")}</span></span>`;
       const vehicle = L.marker(path[0], {
         icon: L.divIcon({
           className: "od-vehicle od-vehicle-3d",
-          html: `<span class="od-veh-badge"><span class="od-veh-pulse"></span><span class="od-veh-emoji">${vehicleEmoji}</span></span>`,
+          html: `<span class="od-veh-badge od-veh-parcel"><span class="od-veh-pulse"></span>${vehicleSvg}</span>`,
           iconSize: [46, 46],
           iconAnchor: [23, 23],
         }),
         zIndexOffset: 1000,
       }).addTo(map);
       if (!delivered && !cancelled) {
-        vehicle.bindTooltip("📦 Your order is here", {
-          permanent: true,
+        vehicle.bindTooltip(tip("Estimated position"), {
           direction: "top",
           offset: [0, -30],
           className: "od-veh-tip",
@@ -1146,7 +1309,7 @@ export default function OrderDetailPage() {
         vehicle.setLatLng(liveP);
         try {
           vehicle.setTooltipContent(
-            `📦 ${liveEvent?.lastEvent?.event || "Your order is here"}`,
+            tip(liveEvent?.lastEvent?.event || "Your order is here"),
           );
         } catch {}
       }
@@ -1155,6 +1318,18 @@ export default function OrderDetailPage() {
       // and lift it up so it sits in the visible upper area (not hidden behind
       // the bottom status overlay).
       const curPoint = liveP || path[splitIdx];
+      routeRef.current = { path, cur: delivered ? B : curPoint };
+      if (!disposed) {
+        const totalKm = pathKm(path);
+        setRouteInfo({
+          totalKm,
+          leftKm: delivered
+            ? 0
+            : liveP
+              ? pathKm([liveP, B])
+              : pathKm(path.slice(splitIdx)),
+        });
+      }
       const OVERLAY_LIFT = 96; // px to push the current point above the card
       const focusCurrent = () => {
         try {
@@ -1208,7 +1383,7 @@ export default function OrderDetailPage() {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receiver, order, routeCoords, liveLatLng]);
+  }, [receiver, order, routeCoords, liveLatLng, mapOpen]);
 
   // Keep the map filling its container on window resize.
   useEffect(() => {
@@ -1233,7 +1408,7 @@ export default function OrderDetailPage() {
       } catch {}
     }, 60);
     return () => clearTimeout(t);
-  }, [mapTab]);
+  }, [mapTab, mapOpen]);
 
   useEffect(
     () => () => {
@@ -1248,23 +1423,111 @@ export default function OrderDetailPage() {
   // Resize the Leaflet map after a full-screen toggle (container changed size).
   useEffect(() => {
     if (!mapObj.current) return;
+    const map = mapObj.current;
+    // Keep the current view (no jump back to the whole route); mouse-wheel
+    // zoom only in full screen so the page still scrolls normally.
+    const center = map.getCenter();
     const t = setTimeout(() => {
       try {
-        mapObj.current.invalidateSize();
-        if (receiver)
-          mapObj.current.fitBounds(
-            routeCoords && routeCoords.length > 1
-              ? routeCoords
-              : [
-                  [SENDER.lat, SENDER.lng],
-                  [receiver.lat, receiver.lng],
-                ],
-            { padding: [36, 36] },
-          );
+        map.invalidateSize();
+        map.setView(center, map.getZoom(), { animate: false });
+        if (mapFull) map.scrollWheelZoom.enable();
+        else map.scrollWheelZoom.disable();
       } catch {}
     }, 260);
-    return () => clearTimeout(t);
-  }, [mapFull, receiver, routeCoords]);
+    const onKey = (e) => {
+      if (e.key === "Escape") setMapFull(false);
+    };
+    if (mapFull) window.addEventListener("keydown", onKey);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [mapFull]);
+
+  // Base layer switch (streets ↔ satellite).
+  useEffect(() => {
+    const tl = tileRef.current;
+    const base = MAP_LAYERS[mapLayer];
+    if (!tl || !base) return;
+    try {
+      const map = mapObj.current;
+      if (map?.attributionControl) {
+        Object.values(MAP_LAYERS).forEach((l) =>
+          map.attributionControl.removeAttribution(l.attribution),
+        );
+        map.attributionControl.addAttribution(base.attribution);
+      }
+      tl.setUrl(base.url);
+    } catch {}
+  }, [mapLayer]);
+
+  // Re-measure Leaflet after the viewer drags the map to a new height.
+  useEffect(() => {
+    if (!mapObj.current) return;
+    const id = requestAnimationFrame(() => {
+      try {
+        mapObj.current.invalidateSize();
+      } catch {}
+    });
+    return () => cancelAnimationFrame(id);
+  }, [mapH]);
+
+  // Map tool actions.
+  const mapZoom = (d) => {
+    try {
+      if (d > 0) mapObj.current?.zoomIn();
+      else mapObj.current?.zoomOut();
+    } catch {}
+  };
+  const mapRecenter = () => {
+    const m = mapObj.current;
+    const cur = routeRef.current?.cur;
+    if (!m || !cur) return;
+    try {
+      m.flyTo(cur, Math.max(m.getZoom(), 10), { duration: 0.6 });
+    } catch {}
+  };
+  const mapFitRoute = () => {
+    const m = mapObj.current;
+    const path = routeRef.current?.path;
+    if (!m || !path) return;
+    try {
+      m.flyToBounds(path, { padding: [40, 40], duration: 0.6 });
+    } catch {}
+  };
+  // Drag the grip under the map to resize it (220px – 85% of the screen).
+  const startMapResize = (e) => {
+    e.preventDefault();
+    const startY = e.clientY;
+    const startH = mapH;
+    const maxH = Math.round(window.innerHeight * 0.85);
+    let last = startH;
+    const move = (ev) => {
+      last = Math.round(
+        Math.max(220, Math.min(maxH, startH + ev.clientY - startY)),
+      );
+      setMapH(last);
+    };
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      try {
+        localStorage.setItem(MAP_H_KEY, String(last));
+      } catch {}
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  };
+  const nudgeMapH = (d) => {
+    setMapH((h) => {
+      const n = Math.max(220, Math.min(Math.round(window.innerHeight * 0.85), h + d));
+      try {
+        localStorage.setItem(MAP_H_KEY, String(n));
+      } catch {}
+      return n;
+    });
+  };
 
   // Lock body scroll while the map is full-screen.
   useEffect(() => {
@@ -1657,17 +1920,44 @@ export default function OrderDetailPage() {
     return (
       <main className="od-page">
         <header className="ord-head">
-          <button className="ord-back" onClick={() => router.back()}>
+          <button
+            type="button"
+            className="ord-back"
+            onClick={() => router.push(`/profile/${number}/orders`)}
+            aria-label="Back to my orders"
+          >
             <ArrowLeft size={20} />
           </button>
           <div className="ord-head-titles">
             <h1>Order</h1>
           </div>
         </header>
-        <div className="ord-empty">
+        <div className="ord-empty od-notfound">
           <Package size={26} />
-          <strong>Order not found</strong>
-          <span>{orderId}</span>
+          <strong>We couldn&apos;t find this order</strong>
+          <span>
+            {orderId ? `${orderId} isn't linked to +91 ${number}. ` : ""}
+            Check the link from your WhatsApp or email, or open your orders
+            list.
+          </span>
+          <div className="od-notfound-actions">
+            <Link
+              href={`/profile/${number}/orders`}
+              className="od-notfound-btn primary"
+            >
+              View my orders
+            </Link>
+            <a
+              href={`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
+                `Hi TheBookX, I can't find my order ${orderId} (phone ${number}).`,
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="od-notfound-btn"
+            >
+              <FaWhatsapp size={15} /> Message us
+            </a>
+          </div>
         </div>
       </main>
     );
@@ -1721,6 +2011,25 @@ export default function OrderDetailPage() {
   const cancelled = /cancel|return/i.test(order["Order Status"] || "");
   const isReturned = /return/i.test(order["Order Status"] || "");
   const onHold = /on\s*hold/i.test(order["Order Status"] || "");
+  // Payment-pending / needs attention. A plain "Unconfirmed" status is what the
+  // pay-online flow sets after the customer pays, so it reads as "verifying".
+  const unconfirmed =
+    /unconfirmed|pending/i.test(order["Order Status"] || "") ||
+    /\(unconfirmed\)/i.test(order["Customer Name"] || "");
+  const verifyingPayment = /^\s*unconfirmed\s*$/i.test(
+    order["Order Status"] || "",
+  );
+  // Placed-on date + estimated arrival window (calendar dates, not a static
+  // "4–9 days" that never counts down).
+  const orderDate = parseSheetDate(
+    order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
+  );
+  const fmtDay = (d) =>
+    d.toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
   // Which scene the animated Route tab shows, + the lead book cover (with a
   // "+N" badge for the rest) to ride in the vehicle's cargo.
   const routeStage = isReturned
@@ -1746,21 +2055,25 @@ export default function OrderDetailPage() {
     !outForDelivery &&
     (!inTransit || !String(shippingId).trim());
 
+  const altPhone = String(order["Alternate number"] ?? "")
+    .replace(/\.0+$/, "")
+    .replace(/\D/g, "")
+    .slice(-10);
+
   const cleanAddr = String(order["Address"] || "").replace(
     /,?\s*Pinned location:\s*https?:\/\/\S+/i,
     "",
   ).trim();
 
   const openAddrEdit = () => {
+    setAddrErr({});
     setAddrForm({
       name: custName,
       address: cleanAddr,
       city: String(order["City"] || ""),
       state: String(order["State"] || ""),
       pincode: String(order["Pincode"] || ""),
-      altPhone: String(order["Alternate number"] || "")
-        .replace(/\D/g, "")
-        .slice(-10),
+      altPhone,
       email: String(order["Email"] || "").trim(),
     });
     setShowAddrEdit(true);
@@ -1840,10 +2153,19 @@ export default function OrderDetailPage() {
   const saveAddr = async () => {
     if (!addrForm) return;
     const em = String(addrForm.email || "").trim();
-    if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
-      alert("Please enter a valid email address.");
-      return;
-    }
+    const alt = String(addrForm.altPhone || "");
+    const errs = {};
+    if (!addrForm.address.trim()) errs.address = "Please enter your address.";
+    if (addrForm.pincode && !/^\d{6}$/.test(addrForm.pincode))
+      errs.pincode = "Pincode should be 6 digits.";
+    if (alt && !/^[6-9]\d{9}$/.test(alt))
+      errs.altPhone = "Enter a valid 10-digit mobile number.";
+    else if (alt && alt === String(order["Phone Number"] || number).slice(-10))
+      errs.altPhone = "This is the same as your main number.";
+    if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))
+      errs.email = "Please enter a valid email address.";
+    setAddrErr(errs);
+    if (Object.keys(errs).length) return;
     setAddrSaving(true);
     const fields = {
       Address: addrForm.address.trim(),
@@ -1856,14 +2178,18 @@ export default function OrderDetailPage() {
       Email: em,
     };
     try {
-      await updateOrderRow(orderId, fields);
+      const res = await updateOrderRow(orderId, fields);
+      if (!res.success) throw new Error(res.error || "save failed");
       setOrder((o) => ({ ...o, ...fields }));
       setShowAddrEdit(false);
       // Tell the team the address changed so they update the courier before dispatch.
       const line = [fields.Address, fields.City, fields.State, fields.Pincode]
         .filter(Boolean)
         .join(", ");
-      const msg = `Hi TheBookX, I've updated the delivery address for order ${orderId}. New address: ${line}. Please use this for shipping. (${number})`;
+      const alt = fields["Alternate number"];
+      const msg = `Hi TheBookX, I've updated the delivery address for order ${orderId}. New address: ${line}.${
+        alt ? ` Alternate number: ${alt}.` : ""
+      } Please use this for shipping. (${number})`;
       window.open(
         `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
         "_blank",
@@ -1927,25 +2253,6 @@ export default function OrderDetailPage() {
     }
   };
 
-  // ETA pill: the delivery-window range shows only once the parcel is moving
-  // (in transit / out for delivery). Before that we show the current stage.
-  const eta = (() => {
-    if (/cancel|return/i.test(order["Order Status"] || ""))
-      return { done: "Cancelled" };
-    if (
-      /unconfirmed|pending/i.test(order["Order Status"] || "") ||
-      /\(unconfirmed\)/i.test(order["Customer Name"] || "")
-    )
-      return { done: "Unconfirmed" };
-    if (delivered) return { done: "Delivered" };
-    if (inTransit || outForDelivery)
-      return isFaster
-        ? { num: "1–5", unit: "days" }
-        : { num: "4–9", unit: "days" };
-    const st = String(order["Order Status"] || "").toLowerCase();
-    if (/shipped|getting shipped/.test(st)) return { done: "Packing" };
-    return { done: "Confirmed" };
-  })();
   // Badge text for the compact status (per the custom status→badge mapping).
   const psBadge = (() => {
     const st = String(order?.["Order Status"] || "").toLowerCase();
@@ -1954,7 +2261,8 @@ export default function OrderDetailPage() {
     if (delivered) return "Delivered"; // includes "money received"
     if (/shipped|getting shipped/.test(st)) return "Getting shipped";
     if (/processing/.test(st)) return "Preparing";
-    if (inTransit || outForDelivery) return `${eta.num} ${eta.unit}`;
+    if (outForDelivery) return "Today";
+    if (inTransit) return "On the way";
     if (/unconfirmed|pending/.test(st)) return "Processing";
     return "Confirmed";
   })();
@@ -1964,6 +2272,21 @@ export default function OrderDetailPage() {
 
   // Delivery window (min/max days) — used for the support sheet ETA copy.
   const [etaMin, etaMax] = isFaster ? [1, 5] : [4, 9];
+  const etaText = (() => {
+    if (!orderDate) return `Reaching you in ${etaMin}–${etaMax} days`;
+    const from = new Date(orderDate.getTime() + etaMin * 86400000);
+    const by = new Date(orderDate.getTime() + etaMax * 86400000);
+    const now = Date.now();
+    if (now > by.getTime() + 86400000)
+      return "Taking a little longer than usual — it should reach you soon";
+    if (now >= from.getTime()) return `Arriving by ${fmtDay(by)}`;
+    return `Arriving ${fmtDay(from)} – ${fmtDay(by)}`;
+  })();
+  // Delivered-on date, when the live India Post status recorded it.
+  const deliveredOn =
+    delivered && trackStage?.idx === 4 && trackUpdatedAt && !isNaN(trackUpdatedAt)
+      ? fmtDay(trackUpdatedAt)
+      : "";
   const trackOrder = {
     ...order,
     orderId,
@@ -2116,8 +2439,12 @@ export default function OrderDetailPage() {
       setRevErr("Please tap a star to rate.");
       return;
     }
-    if (!revText.trim()) {
-      setRevErr("Please write a line about your experience.");
+    // Quick-pick tags count as the review line when nothing is typed.
+    const reviewText = [revTags.join(", "), revText.trim()]
+      .filter(Boolean)
+      .join(". ");
+    if (!reviewText) {
+      setRevErr("Pick a highlight or write a line about your experience.");
       return;
     }
     if (isReviewRateLimited()) {
@@ -2127,15 +2454,30 @@ export default function OrderDetailPage() {
     setRevErr("");
     setRevBusy(true);
     try {
+      // Same pipeline as the /review page: Telegram alert + review sheet.
+      const revPhone = String(order["Phone Number"] || number || "")
+        .replace(/\D/g, "")
+        .slice(-10);
+      const revEmail = String(order["Email"] || "").trim();
+      await notifyReviewTelegram({
+        review: reviewText,
+        rating: revRating,
+        email: revEmail || null,
+        phoneNumber: revPhone || null,
+        type: "Store",
+      });
       await submitReviewToSheet({
         type: "Store",
         bookName: books[0]?.name || "",
         rating: revRating,
-        review: revText.trim(),
-        phone: String(order["Phone Number"] || number || ""),
-        timestamp: new Date().toISOString(),
+        review: reviewText,
+        email: revEmail,
+        phone: revPhone,
+        timestamp: new Date().toLocaleString("en-IN"),
         userAgent:
-          typeof navigator !== "undefined" ? navigator.userAgent : "",
+          typeof navigator !== "undefined"
+            ? navigator.userAgent.slice(0, 300)
+            : "",
       });
       recordReviewSubmission();
       // Reward a review on a delivered order with ₹10 straight to the wallet.
@@ -2217,19 +2559,21 @@ export default function OrderDetailPage() {
       )}
 
       {/* Unconfirmed order — payment-pending / needs attention. */}
-      {order &&
-        (/unconfirmed|pending/i.test(order["Order Status"] || "") ||
-          /\(unconfirmed\)/i.test(order["Customer Name"] || "")) && (
+      {order && unconfirmed && (
           <div className="od-unconf-banner">
             <span className="od-unconf-ic">
               <AlertCircle size={18} />
             </span>
             <div className="od-unconf-txt">
-              <strong>This order isn&apos;t confirmed yet</strong>
+              <strong>
+                {verifyingPayment
+                  ? "We're verifying your payment"
+                  : "This order isn't confirmed yet"}
+              </strong>
               <span>
-                We may be waiting for your payment, or there could be an issue
-                with this order. Please contact us and we&apos;ll sort it out
-                right away.
+                {verifyingPayment
+                  ? "Thanks for paying online — we'll confirm your order shortly, usually within a few minutes. Questions? Message us."
+                  : "We may be waiting for your payment, or there could be an issue with this order. Please contact us and we'll sort it out right away."}
               </span>
               <button
                 type="button"
@@ -2269,6 +2613,34 @@ export default function OrderDetailPage() {
               {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
             </span>
           </div>
+
+          {/* Alternate number — shown when set; otherwise an "Add" prompt while
+              the address is still editable (it's saved via the Edit sheet). */}
+          {(altPhone || canEditAddress) && (
+            <div className="od-email-row od-email-readonly">
+              <Phone size={15} />
+              {altPhone ? (
+                <span className="od-email-val">
+                  +91 {altPhone}
+                  <span className="od-alt-tag">Alternate</span>
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  className="od-email-add"
+                  onClick={() => {
+                    openAddrEdit();
+                    setTimeout(
+                      () => document.getElementById("od-alt-input")?.focus(),
+                      380,
+                    );
+                  }}
+                >
+                  No alternate number · Add one
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Email — read-only; edit via the Edit sheet (near name/address). */}
           <div className="od-email-row od-email-readonly">
@@ -2313,22 +2685,29 @@ export default function OrderDetailPage() {
                   </>
                 ) : cancelled ? (
                   "This order was cancelled"
-                ) : onHold ? (
-                  "There is some issue in packaging this item"
+                ) : onHold || unconfirmed ? (
+                  stLabel.sub
                 ) : delivered ? (
-                  "Your books have arrived — enjoy!"
+                  deliveredOn ? (
+                    `Delivered on ${deliveredOn} — enjoy your books!`
+                  ) : (
+                    "Your books have arrived — enjoy!"
+                  )
                 ) : outForDelivery ? (
                   "Arriving today — keep your phone handy"
                 ) : (
-                  `Reaching you in ${etaMin}–${etaMax} days`
+                  etaText
                 )}
               </span>
             </div>
-            <span
-              className={`od-map-eta-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
-            >
-              {psBadge}
-            </span>
+            {psBadge.toLowerCase() !==
+              String(trackDetail || stLabel.title).toLowerCase() && (
+              <span
+                className={`od-map-eta-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
+              >
+                {psBadge}
+              </span>
+            )}
           </div>
           {liveEvent?.lastEvent?.event && !cancelled && (
             <div className="od-last-scan">
@@ -2355,7 +2734,14 @@ export default function OrderDetailPage() {
           )}
           {/* Live tracking fetch button temporarily removed. */}
           {!cancelled && (
-            <div className="od-map-eta-bar" aria-hidden="true">
+            <div
+              className="od-map-eta-bar"
+              role="progressbar"
+              aria-label="Delivery progress"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progressPct}
+            >
               <span style={{ width: `${progressPct}%` }} />
             </div>
           )}
@@ -2363,16 +2749,30 @@ export default function OrderDetailPage() {
             <span className="od-map-eta-deliv">
               {delivered ? (
                 <>
-                  <Home size={13} /> Delivered
+                  <Home size={13} />
+                  {orderDate
+                    ? `Ordered ${orderDate.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`
+                    : "Delivered"}
                 </>
               ) : (
                 <>
                   {isFaster ? <Plane size={13} /> : <Train size={13} />}
-                  {isFaster ? "Express delivery" : "Standard delivery"}
+                  {isFaster ? "Express" : "Standard"}
+                  {orderDate
+                    ? ` · Ordered ${orderDate.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`
+                    : " delivery"}
                 </>
               )}
             </span>
-            {delivered ? (
+            {onHold ? (
+              <button
+                type="button"
+                className="od-map-eta-btn"
+                onClick={contactSupport}
+              >
+                <FaWhatsapp size={12} /> Message us
+              </button>
+            ) : delivered ? (
               <button
                 type="button"
                 className="od-map-eta-btn"
@@ -2408,9 +2808,26 @@ export default function OrderDetailPage() {
         </div>
       )}
 
-      {/* Map + floating arrival card (Flipkart-style) */}
+      {/* Map + floating arrival card (Flipkart-style). Once delivered it's
+          collapsed behind a toggle — the journey is history by then. */}
+      {delivered && (
+        <button
+          type="button"
+          className="od-map-toggle"
+          onClick={() => setMapOpen((v) => !v)}
+          aria-expanded={mapOpen}
+        >
+          <Navigation size={14} />
+          {mapOpen ? "Hide delivery journey" : "View delivery journey"}
+          <ChevronDown
+            size={16}
+            className={`od-items-chev${mapOpen ? " open" : ""}`}
+          />
+        </button>
+      )}
       <section
         className={`od-map-card${mapFull ? " od-map-full" : ""}`}
+        style={delivered && !mapOpen ? { display: "none" } : undefined}
       >
         {geoState === "ok" && receiver ? (
           <>
@@ -2420,7 +2837,8 @@ export default function OrderDetailPage() {
                 className={`od-map-tab${mapTab === "map" ? " on" : ""}`}
                 onClick={() => setMapTab("map")}
               >
-                <MapPin size={14} /> Live location
+                <MapPin size={14} />{" "}
+                {liveLatLng ? "Live location" : "Estimated route"}
               </button>
               <button
                 type="button"
@@ -2430,7 +2848,12 @@ export default function OrderDetailPage() {
                 <Navigation size={14} /> Delivery journey
               </button>
             </div>
-            <div className="od-map-stage">
+            <div
+              className="od-map-stage"
+              style={
+                mapFull ? undefined : { height: mapTab === "route" ? 250 : mapH }
+              }
+            >
               <div
                 ref={mapRef}
                 className="od-map"
@@ -2449,16 +2872,219 @@ export default function OrderDetailPage() {
                 />
               )}
               {mapTab === "map" && (
-                <button
-                  type="button"
-                  className="od-map-expand"
-                  onClick={() => setMapFull((v) => !v)}
-                  aria-label={mapFull ? "Exit full screen" : "Full screen map"}
-                >
-                  {mapFull ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
-                </button>
+                <>
+                  {/* Map tools — zoom, find the parcel, whole route, layer,
+                      full screen. */}
+                  <div
+                    className="od-map-tools"
+                    role="toolbar"
+                    aria-label="Map tools"
+                  >
+                    <div className="od-map-tgroup">
+                      <button
+                        type="button"
+                        onClick={() => mapZoom(1)}
+                        aria-label="Zoom in"
+                        title="Zoom in"
+                      >
+                        <Plus size={17} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => mapZoom(-1)}
+                        aria-label="Zoom out"
+                        title="Zoom out"
+                      >
+                        <Minus size={17} />
+                      </button>
+                    </div>
+                    <div className="od-map-tgroup">
+                      <button
+                        type="button"
+                        onClick={mapRecenter}
+                        aria-label={delivered ? "Show delivery address" : "Show my parcel"}
+                        title={delivered ? "Delivery address" : "My parcel"}
+                      >
+                        <LocateFixed size={17} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={mapFitRoute}
+                        aria-label="Show the whole route"
+                        title="Whole route"
+                      >
+                        <Route size={17} />
+                      </button>
+                      <button
+                        type="button"
+                        className={mapLayer === "satellite" ? "on" : ""}
+                        onClick={() =>
+                          setMapLayer((l) =>
+                            l === "satellite" ? "streets" : "satellite",
+                          )
+                        }
+                        aria-pressed={mapLayer === "satellite"}
+                        aria-label="Satellite view"
+                        title={
+                          mapLayer === "satellite" ? "Street map" : "Satellite"
+                        }
+                      >
+                        <Layers size={17} />
+                      </button>
+                    </div>
+                    <div className="od-map-tgroup">
+                      <button
+                        type="button"
+                        onClick={() => setMapFull((v) => !v)}
+                        aria-label={
+                          mapFull ? "Exit full screen" : "Full screen map"
+                        }
+                        title={mapFull ? "Exit full screen (Esc)" : "Full screen"}
+                      >
+                        {mapFull ? (
+                          <Minimize2 size={17} />
+                        ) : (
+                          <Maximize2 size={17} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Distance chip + legend. */}
+                  {routeInfo && (
+                    <div className="od-map-info" aria-live="polite">
+                      <strong>
+                        {delivered
+                          ? `Delivered · ${Math.round(routeInfo.totalKm)} km journey`
+                          : `≈ ${Math.max(1, Math.round(routeInfo.leftKm))} km to go`}
+                      </strong>
+                      {!delivered && (
+                        <span>
+                          of {Math.round(routeInfo.totalKm)} km
+                          {liveLatLng ? " · last scan" : " · estimated"}
+                        </span>
+                      )}
+                      <span className="od-map-legend">
+                        <i className="lg-hub" /> Hub
+                        {!delivered && (
+                          <>
+                            <i className="lg-parcel" /> Parcel
+                          </>
+                        )}
+                        <i className="lg-home" /> You
+                      </span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
+
+            {/* Journey details under the animated scene. */}
+            {mapTab === "route" && !mapFull && (
+              <div className="od-jr-panel">
+                <div className="od-jr-rail">
+                  <span className="od-jr-end">
+                    <i className="lg-hub" />
+                    <b>Mumbai hub</b>
+                  </span>
+                  <span
+                    className="od-jr-track"
+                    role="progressbar"
+                    aria-label="Journey progress"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={delivered ? 100 : progressPct}
+                  >
+                    <span
+                      className="od-jr-fill"
+                      style={{ width: `${delivered ? 100 : progressPct}%` }}
+                    />
+                    <span
+                      className="od-jr-veh"
+                      style={{ left: `${delivered ? 100 : progressPct}%` }}
+                      aria-hidden="true"
+                    >
+                      {isFaster ? (
+                        <TrainFront size={16} strokeWidth={2.2} />
+                      ) : (
+                        <Truck size={16} strokeWidth={2.2} />
+                      )}
+                    </span>
+                  </span>
+                  <span className="od-jr-end od-jr-end-r">
+                    <i className="lg-home" />
+                    <b>{String(order["City"] || "You").trim() || "You"}</b>
+                  </span>
+                </div>
+                <div className="od-jr-facts">
+                  <span>
+                    <small>Distance</small>
+                    <b>
+                      {routeInfo ? `${Math.round(routeInfo.totalKm)} km` : "—"}
+                    </b>
+                  </span>
+                  <span>
+                    <small>{delivered ? "Status" : "To go"}</small>
+                    <b>
+                      {delivered
+                        ? "Delivered"
+                        : routeInfo
+                          ? `≈ ${Math.max(1, Math.round(routeInfo.leftKm))} km`
+                          : "—"}
+                    </b>
+                  </span>
+                  <span>
+                    <small>{delivered ? "Ordered" : "Mode"}</small>
+                    <b>
+                      {delivered
+                        ? orderDate
+                          ? orderDate.toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                            })
+                          : "—"
+                        : isFaster
+                          ? "Express"
+                          : "Standard"}
+                    </b>
+                  </span>
+                </div>
+                {(liveEvent?.lastEvent?.event || trackDetail) && (
+                  <p className="od-jr-scan">
+                    <MapPin size={13} />
+                    <span>
+                      <b>Latest:</b>{" "}
+                      {liveEvent?.lastEvent?.event || trackDetail}
+                      {liveEvent?.lastEvent?.office
+                        ? ` · ${liveEvent.lastEvent.office}`
+                        : ""}
+                    </span>
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Drag (or arrow keys) to resize the map. */}
+            {!mapFull && mapTab === "map" && (
+              <button
+                type="button"
+                className="od-map-grip"
+                onPointerDown={startMapResize}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    nudgeMapH(40);
+                  } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    nudgeMapH(-40);
+                  }
+                }}
+                aria-label="Resize map — drag, or use the arrow keys"
+                title="Drag to resize"
+              >
+                <GripHorizontal size={18} />
+              </button>
+            )}
           </>
         ) : geoState === "loading" ? (
           <div className="od-map-locating">
@@ -2510,13 +3136,28 @@ export default function OrderDetailPage() {
                       ? 1
                       : 0;
             return (
-              <ol className="od-timeline">
+              <ol
+                className="od-timeline od-tl-path"
+                aria-label="Order progress"
+              >
                 {steps.map((s, i) => {
+                  // Delivered is final — nothing pending, so it reads as done.
+                  // The leg into the next step animates while the order moves.
                   const state =
-                    i < idx ? "done" : i === idx ? "active" : "todo";
+                    i < idx || (i === idx && idx === steps.length - 1)
+                      ? "done"
+                      : i === idx
+                        ? "active"
+                        : i === idx + 1
+                          ? "todo next"
+                          : "todo";
                   const Ic = s.Icon;
                   return (
-                    <li key={s.k} className={`od-tl-step ${state}`}>
+                    <li
+                      key={s.k}
+                      className={`od-tl-step ${state}`}
+                      aria-current={state === "active" ? "step" : undefined}
+                    >
                       <span className="od-tl-dot">
                         <Ic size={13} />
                       </span>
@@ -2600,13 +3241,16 @@ export default function OrderDetailPage() {
           <Pencil size={15} />
           {orderNote ? "Edit note" : "Add note"}
         </button>
-        <button
-          type="button"
-          className={`od-quick-btn${delivered ? " od-quick-reward" : ""}`}
-          onClick={() => setShowRateSheet(true)}
-        >
-          <Star size={15} /> {delivered ? "Rate us · +₹10" : "Rate us"}
-        </button>
+        {/* Review asks wait until the books are in hand. */}
+        {delivered && (
+          <button
+            type="button"
+            className="od-quick-btn od-quick-reward"
+            onClick={() => setShowRateSheet(true)}
+          >
+            <Star size={15} /> Rate us · +₹10
+          </button>
+        )}
         <button
           type="button"
           className="od-quick-btn od-quick-refer"
@@ -2617,7 +3261,7 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Share & earn — post a review of this order, get up to ₹200 back. */}
-      <ReviewRewardCard phone={number} orderId={orderId} />
+      {delivered && <ReviewRewardCard phone={number} orderId={orderId} />}
 
       {/* Faster-delivery upgrade — confirmation modal (benefits + air mode) */}
       <AnimatePresence>
@@ -2647,8 +3291,10 @@ export default function OrderDetailPage() {
                 <span className="weight-600 font-16 flex items-center gap-8">
                   <Plane size={17} /> Upgrade to Faster delivery
                 </span>
-                <span
-                  className="cursor-pointer"
+                <button
+                  type="button"
+                  className="od-sheet-x"
+                  aria-label="Close"
                   onClick={() => {
                     if (upgrading) return;
                     setShowUpgradeModal(false);
@@ -2657,7 +3303,7 @@ export default function OrderDetailPage() {
                   }}
                 >
                   <X size={18} />
-                </span>
+                </button>
               </div>
 
               <div className="fdu-body">
@@ -2789,8 +3435,11 @@ export default function OrderDetailPage() {
           type="button"
           className="od-items-head"
           onClick={() => setItemsOpen((v) => !v)}
+          aria-expanded={itemsOpen}
         >
-          <span className="od-items-count">Total {itemCount} items</span>
+          <span className="od-items-count">
+            {itemCount} {itemCount === 1 ? "book" : "books"} in this order
+          </span>
           <span className="od-items-toggle">
             {itemsOpen ? "Hide details" : "See details"}
             <ChevronDown
@@ -2818,6 +3467,12 @@ export default function OrderDetailPage() {
               );
             })}
           </div>
+        )}
+        {!itemsOpen && books[0]?.name && (
+          <p className="od-items-names">
+            {books[0].name}
+            {books.length > 1 ? ` & ${books.length - 1} more` : ""}
+          </p>
         )}
 
         <AnimatePresence initial={false}>
@@ -2861,7 +3516,7 @@ export default function OrderDetailPage() {
 
       {/* Price details (Flipkart-style breakdown) */}
       <section className="od-block od-price-block">
-        <div className="od-block-title">Price details</div>
+        <h2 className="od-block-title">Price details</h2>
         {/* Clear, meaningful flow: Total MRP → after discount → offer/coupon →
             add-ons → wallet → net bill (each step adds up to the next). */}
         <div className="od-price-row">
@@ -2968,7 +3623,9 @@ export default function OrderDetailPage() {
           </span>
           <span className="od-paid-mode">
             {order["Payment Type"] || "—"}
-            {bd.advancePaid ? " · ₹99 advance paid" : ""}
+            {bd.advancePaid && !/advance/i.test(order["Payment Type"] || "")
+              ? " · ₹99 advance paid"
+              : ""}
           </span>
         </div>
         {bd.savings > 0 && (
@@ -3078,7 +3735,7 @@ export default function OrderDetailPage() {
       {recos.length > 0 && !cancelled && (
         <section className="od-reco">
           <div className="od-reco-head">
-            <span className="od-reco-title">Readers also loved</span>
+            <h2 className="od-reco-title">Readers also loved</h2>
             <span className="od-reco-sub">Add your next great read</span>
           </div>
           <div className="od-reco-rail">
@@ -3093,10 +3750,7 @@ export default function OrderDetailPage() {
 
       {/* Scratch-card reward — below the bill breakdown (skeleton → 3D → reveal).
           Hidden for unconfirmed orders (payment-pending / needs attention). */}
-      {!(
-        /unconfirmed|pending/i.test(order["Order Status"] || "") ||
-        /\(unconfirmed\)/i.test(order["Customer Name"] || "")
-      ) && (
+      {!unconfirmed && (
         <OrderScratchCard
           phone={String(order["Phone Number"] || number)}
           orderId={orderId}
@@ -3309,7 +3963,8 @@ export default function OrderDetailPage() {
         )}
       </AnimatePresence>
 
-      {/* Edit delivery address — bottom sheet */}
+      {/* Edit delivery details — bottom sheet (full width like the other
+          order slide-ups). */}
       <AnimatePresence>
         {showAddrEdit && addrForm && (
           <motion.div
@@ -3318,9 +3973,13 @@ export default function OrderDetailPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => !addrSaving && setShowAddrEdit(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
           >
             <motion.div
               className="bill-modal od-addr-sheet"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="od-addr-title"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -3328,111 +3987,198 @@ export default function OrderDetailPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bill-header">
-                <span className="weight-700 font-16">Edit delivery address</span>
                 <span
-                  className="cursor-pointer"
+                  id="od-addr-title"
+                  className="weight-600 font-16 flex items-center gap-8"
+                >
+                  <MapPin size={16} /> Edit delivery details
+                </span>
+                <button
+                  type="button"
+                  className="od-sheet-x"
+                  aria-label="Close"
                   onClick={() => !addrSaving && setShowAddrEdit(false)}
                 >
                   <X size={18} />
-                </span>
+                </button>
               </div>
-              <p className="ep-hint" style={{ marginBottom: 10 }}>
-                We&apos;ll update the address on your order and open WhatsApp so
-                our team can ship it to the new address.
-              </p>
 
-              <label className="od-field-lbl">Full address</label>
-              <textarea
-                className="od-note-input"
-                rows={3}
-                value={addrForm.address}
-                onChange={(e) =>
-                  setAddrForm((f) => ({ ...f, address: e.target.value }))
-                }
-              />
-              <div className="od-field-grid">
-                <div>
-                  <label className="od-field-lbl">City</label>
-                  <input
-                    className="od-field-input"
-                    value={addrForm.city}
-                    onChange={(e) =>
-                      setAddrForm((f) => ({ ...f, city: e.target.value }))
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="od-field-lbl">State</label>
-                  <input
-                    className="od-field-input"
-                    value={addrForm.state}
-                    onChange={(e) =>
-                      setAddrForm((f) => ({ ...f, state: e.target.value }))
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="od-field-lbl">Pincode</label>
-                  <input
-                    className="od-field-input"
-                    inputMode="numeric"
-                    maxLength={6}
-                    value={addrForm.pincode}
-                    onChange={(e) =>
-                      setAddrForm((f) => ({
-                        ...f,
-                        pincode: e.target.value.replace(/\D/g, "").slice(0, 6),
-                      }))
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="od-field-lbl">Alternate number</label>
-                  <input
-                    className="od-field-input"
-                    inputMode="tel"
-                    maxLength={10}
-                    placeholder="Optional"
-                    value={addrForm.altPhone || ""}
-                    onChange={(e) =>
-                      setAddrForm((f) => ({
-                        ...f,
-                        altPhone: e.target.value
-                          .replace(/\D/g, "")
-                          .slice(0, 10),
-                      }))
-                    }
-                  />
-                </div>
-                <div className="od-field-full">
-                  <label className="od-field-lbl">Email</label>
-                  <input
-                    className="od-field-input"
-                    type="email"
-                    inputMode="email"
-                    autoCapitalize="off"
-                    autoCorrect="off"
-                    placeholder="you@example.com (optional)"
-                    value={addrForm.email || ""}
-                    onChange={(e) =>
-                      setAddrForm((f) => ({ ...f, email: e.target.value }))
-                    }
-                  />
-                  <span className="od-field-note">
-                    Used for order tracking &amp; further communications only.
+              <div className="od-addr-body">
+                <div className="od-addr-who">
+                  <span className="od-addr-who-ic">
+                    <User size={16} />
+                  </span>
+                  <span className="od-addr-who-txt">
+                    <strong>{custName || "Customer"}</strong>
+                    <span>+91 {order["Phone Number"] || number}</span>
                   </span>
                 </div>
+
+                <section className="od-addr-sec">
+                  <h3 className="od-addr-sec-title">
+                    <Home size={14} /> Delivery address
+                  </h3>
+                  <label className="od-field-lbl" htmlFor="od-addr-line">
+                    House / street / area
+                  </label>
+                  <textarea
+                    id="od-addr-line"
+                    className={`od-field-input od-field-area${addrErr.address ? " err" : ""}`}
+                    rows={3}
+                    placeholder="Flat, building, street, landmark"
+                    value={addrForm.address}
+                    onChange={(e) => {
+                      setAddrForm((f) => ({ ...f, address: e.target.value }));
+                      setAddrErr((x) => ({ ...x, address: "" }));
+                    }}
+                  />
+                  {addrErr.address && (
+                    <span className="od-field-err">{addrErr.address}</span>
+                  )}
+                  <div className="od-field-row3">
+                    <div>
+                      <label className="od-field-lbl" htmlFor="od-addr-city">
+                        City
+                      </label>
+                      <input
+                        id="od-addr-city"
+                        className="od-field-input"
+                        autoComplete="address-level2"
+                        value={addrForm.city}
+                        onChange={(e) =>
+                          setAddrForm((f) => ({ ...f, city: e.target.value }))
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="od-field-lbl" htmlFor="od-addr-state">
+                        State
+                      </label>
+                      <input
+                        id="od-addr-state"
+                        className="od-field-input"
+                        autoComplete="address-level1"
+                        value={addrForm.state}
+                        onChange={(e) =>
+                          setAddrForm((f) => ({ ...f, state: e.target.value }))
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="od-field-lbl" htmlFor="od-addr-pin">
+                        Pincode
+                      </label>
+                      <input
+                        id="od-addr-pin"
+                        className={`od-field-input${addrErr.pincode ? " err" : ""}`}
+                        inputMode="numeric"
+                        autoComplete="postal-code"
+                        maxLength={6}
+                        value={addrForm.pincode}
+                        onChange={(e) => {
+                          setAddrForm((f) => ({
+                            ...f,
+                            pincode: e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 6),
+                          }));
+                          setAddrErr((x) => ({ ...x, pincode: "" }));
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {addrErr.pincode && (
+                    <span className="od-field-err">{addrErr.pincode}</span>
+                  )}
+                </section>
+
+                <section className="od-addr-sec">
+                  <h3 className="od-addr-sec-title">
+                    <Phone size={14} /> Contact
+                  </h3>
+                  <label className="od-field-lbl" htmlFor="od-alt-input">
+                    Alternate number <span>(optional)</span>
+                  </label>
+                  <div
+                    className={`od-field-prefix${addrErr.altPhone ? " err" : ""}`}
+                  >
+                    <span aria-hidden="true">+91</span>
+                    <input
+                      id="od-alt-input"
+                      className="od-field-input"
+                      inputMode="tel"
+                      autoComplete="tel-national"
+                      maxLength={10}
+                      placeholder="If we can't reach you"
+                      value={addrForm.altPhone || ""}
+                      onChange={(e) => {
+                        setAddrForm((f) => ({
+                          ...f,
+                          altPhone: e.target.value
+                            .replace(/\D/g, "")
+                            .slice(0, 10),
+                        }));
+                        setAddrErr((x) => ({ ...x, altPhone: "" }));
+                      }}
+                    />
+                  </div>
+                  {addrErr.altPhone ? (
+                    <span className="od-field-err">{addrErr.altPhone}</span>
+                  ) : (
+                    <span className="od-field-note">
+                      The courier calls this if your main number is busy.
+                    </span>
+                  )}
+                  <label className="od-field-lbl" htmlFor="od-addr-email">
+                    Email <span>(optional)</span>
+                  </label>
+                  <input
+                    id="od-addr-email"
+                    className={`od-field-input${addrErr.email ? " err" : ""}`}
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    placeholder="you@example.com"
+                    value={addrForm.email || ""}
+                    onChange={(e) => {
+                      setAddrForm((f) => ({ ...f, email: e.target.value }));
+                      setAddrErr((x) => ({ ...x, email: "" }));
+                    }}
+                  />
+                  {addrErr.email ? (
+                    <span className="od-field-err">{addrErr.email}</span>
+                  ) : (
+                    <span className="od-field-note">
+                      For order updates only — no spam.
+                    </span>
+                  )}
+                </section>
               </div>
 
-              <button
-                type="button"
-                className="od-track-btn"
-                style={{ marginTop: 14 }}
-                onClick={saveAddr}
-                disabled={addrSaving || !addrForm.address.trim()}
-              >
-                {addrSaving ? "Saving…" : "Save & notify on WhatsApp"}
-              </button>
+              <div className="od-addr-foot">
+                <p className="od-addr-foot-note">
+                  <Info size={13} /> We&apos;ll update your order and open
+                  WhatsApp so our team ships to the new details.
+                </p>
+                <button
+                  type="button"
+                  className="od-rate-submit"
+                  onClick={saveAddr}
+                  disabled={addrSaving}
+                >
+                  {addrSaving ? (
+                    <>
+                      <Loader2 size={16} className="lb-spinner" /> Saving…
+                    </>
+                  ) : (
+                    <>
+                      <FaWhatsapp size={17} /> Save &amp; notify on WhatsApp
+                    </>
+                  )}
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -3461,12 +4207,14 @@ export default function OrderDetailPage() {
                 <span className="weight-600 font-16 flex items-center gap-8">
                   <Pencil size={16} /> Note for this order
                 </span>
-                <span
-                  className="cursor-pointer"
+                <button
+                  type="button"
+                  className="od-sheet-x"
+                  aria-label="Close"
                   onClick={() => !noteSaving && setShowNoteSheet(false)}
                 >
                   <X size={16} />
-                </span>
+                </button>
               </div>
               <div className="od-sheet-body">
                 <textarea
@@ -3517,12 +4265,14 @@ export default function OrderDetailPage() {
                 <span className="weight-600 font-16 flex items-center gap-8">
                   <Mail size={16} /> Add your email
                 </span>
-                <span
-                  className="cursor-pointer"
+                <button
+                  type="button"
+                  className="od-sheet-x"
+                  aria-label="Close"
                   onClick={() => !emailSaving && setShowEmailSheet(false)}
                 >
                   <X size={16} />
-                </span>
+                </button>
               </div>
               <div className="od-sheet-body">
                 <p className="od-sheet-hint">
@@ -3567,7 +4317,10 @@ export default function OrderDetailPage() {
             style={{ maxWidth: "980px", margin: "0 auto" }}
           >
             <motion.div
-              className="bill-modal od-sheet"
+              className="bill-modal od-rate-sheet"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="od-rate-title"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -3575,80 +4328,178 @@ export default function OrderDetailPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bill-header">
-                <span className="weight-600 font-16 flex items-center gap-8">
+                <span
+                  id="od-rate-title"
+                  className="weight-600 font-16 flex items-center gap-8"
+                >
                   <Star size={16} /> Rate your experience
                 </span>
-                <span
-                  className="cursor-pointer"
+                <button
+                  type="button"
+                  className="od-sheet-x"
+                  aria-label="Close"
                   onClick={() => !revBusy && setShowRateSheet(false)}
                 >
                   <X size={16} />
-                </span>
+                </button>
               </div>
               <div className="od-sheet-body">
                 {revDone ? (
-                  <div className="od-review-done">
-                    <span className="od-review-done-ic">
-                      <Check size={20} strokeWidth={3} />
+                  <div className="od-rate-done">
+                    <span className="od-rate-done-ic">
+                      <Check size={26} strokeWidth={3} />
                     </span>
-                    <div>
-                      <strong>Thanks for the review! 🙏</strong>
-                      <p>Your feedback helps other readers trust TheBookX.</p>
-                    </div>
+                    <strong>Thanks for the review! 🙏</strong>
+                    <p>
+                      Your feedback helps other readers trust TheBookX
+                      {delivered ? " — ₹10 is on its way to your wallet." : "."}
+                    </p>
+                    <button
+                      type="button"
+                      className="od-rate-submit"
+                      onClick={() => setShowRateSheet(false)}
+                    >
+                      Done
+                    </button>
                   </div>
                 ) : (
                   <>
+                    {/* What they're rating — the order's books. */}
+                    <div className="od-rate-order">
+                      <span className="od-rate-covers">
+                        {books.slice(0, 3).map((b, i) => {
+                          const bk = findBook(b.name);
+                          return bk?.image ? (
+                            <Image
+                              key={i}
+                              src={bk.image}
+                              alt=""
+                              width={34}
+                              height={46}
+                            />
+                          ) : null;
+                        })}
+                      </span>
+                      <span className="od-rate-order-txt">
+                        <strong>How was your order?</strong>
+                        <span>
+                          {books[0]?.name || orderId}
+                          {books.length > 1 ? ` & ${books.length - 1} more` : ""}
+                        </span>
+                      </span>
+                      {delivered && (
+                        <span className="od-rate-reward">+₹10</span>
+                      )}
+                    </div>
+
                     <div
-                      className="od-review-stars"
+                      className="od-rate-stars"
+                      role="radiogroup"
+                      aria-label="Your rating"
                       onMouseLeave={() => setRevHover(0)}
                     >
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <button
-                          key={n}
-                          type="button"
-                          className="od-star"
-                          aria-label={`${n} star${n > 1 ? "s" : ""}`}
-                          onMouseEnter={() => setRevHover(n)}
-                          onClick={() => {
-                            setRevRating(n);
-                            setRevErr("");
-                          }}
-                        >
-                          <Star
-                            size={32}
-                            strokeWidth={1.5}
-                            className={
-                              (revHover || revRating) >= n
-                                ? "od-star-on"
-                                : "od-star-off"
-                            }
-                            fill={
-                              (revHover || revRating) >= n
-                                ? "currentColor"
-                                : "none"
-                            }
-                          />
-                        </button>
-                      ))}
+                      {[1, 2, 3, 4, 5].map((n) => {
+                        const on = (revHover || revRating) >= n;
+                        return (
+                          <button
+                            key={n}
+                            type="button"
+                            role="radio"
+                            aria-checked={revRating === n}
+                            className={`od-rate-star${on ? " on" : ""}`}
+                            aria-label={`${n} star${n > 1 ? "s" : ""}`}
+                            onMouseEnter={() => setRevHover(n)}
+                            onClick={() => {
+                              setRevRating(n);
+                              setRevErr("");
+                            }}
+                          >
+                            <Star
+                              size={36}
+                              strokeWidth={1.6}
+                              fill={on ? "currentColor" : "none"}
+                            />
+                          </button>
+                        );
+                      })}
                     </div>
+                    <p className="od-rate-mood" aria-live="polite">
+                      {
+                        [
+                          "Tap a star to rate",
+                          "Poor 😞",
+                          "Could be better 😐",
+                          "Good 🙂",
+                          "Great 😄",
+                          "Loved it! 😍",
+                        ][revHover || revRating]
+                      }
+                    </p>
+
+                    <div className="od-rate-tags">
+                      {(revRating && revRating <= 3
+                        ? [
+                            "Delivery was slow",
+                            "Packaging issue",
+                            "Book condition",
+                            "Wrong item",
+                            "Support",
+                          ]
+                        : [
+                            "Fast delivery",
+                            "Great packaging",
+                            "Good price",
+                            "Book quality",
+                            "Helpful support",
+                          ]
+                      ).map((t) => {
+                        const sel = revTags.includes(t);
+                        return (
+                          <button
+                            key={t}
+                            type="button"
+                            className={`od-rate-tag${sel ? " on" : ""}`}
+                            aria-pressed={sel}
+                            onClick={() => {
+                              setRevTags((ts) =>
+                                sel ? ts.filter((x) => x !== t) : [...ts, t],
+                              );
+                              setRevErr("");
+                            }}
+                          >
+                            {sel && <Check size={12} strokeWidth={3} />}
+                            {t}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <label className="od-rate-lbl" htmlFor="od-rate-text">
+                      Tell us more <span>(optional)</span>
+                    </label>
                     <textarea
-                      className="od-review-input"
+                      id="od-rate-text"
+                      className="od-rate-input"
                       rows={3}
-                      placeholder="Tell us what you loved (or what we can improve)…"
+                      maxLength={500}
+                      placeholder="What did you love? What can we do better?"
                       value={revText}
                       onChange={(e) => {
                         setRevText(e.target.value);
                         setRevErr("");
                       }}
                     />
+                    <span className="od-rate-count">{revText.length}/500</span>
                     {revErr && (
-                      <span className="od-review-err">{revErr}</span>
+                      <span className="od-review-err" role="alert">
+                        {revErr}
+                      </span>
                     )}
                     <button
                       type="button"
-                      className="od-track-btn"
+                      className="od-rate-submit"
                       onClick={submitOrderReview}
-                      disabled={revBusy}
+                      disabled={revBusy || !revRating}
                     >
                       {revBusy ? (
                         <>
@@ -3690,12 +4541,14 @@ export default function OrderDetailPage() {
                 <span className="weight-600 font-16 flex items-center gap-8">
                   <Gift size={16} /> Refer &amp; win ₹50
                 </span>
-                <span
-                  className="cursor-pointer"
+                <button
+                  type="button"
+                  className="od-sheet-x"
+                  aria-label="Close"
                   onClick={() => setShowReferSheet(false)}
                 >
                   <X size={16} />
-                </span>
+                </button>
               </div>
               <div className="od-sheet-body od-sheet-body--refer">
                 <ReferAndEarn

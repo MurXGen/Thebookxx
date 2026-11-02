@@ -433,7 +433,6 @@ export const COST_BY_ID = {
   "bk-480": 120,
   "bk-481": 120,
   "bk-482": 3000,
-  "bk-483": 200,
   "bk-484": 190,
   "bk-485": 100,
   "bk-487": 90,
@@ -665,7 +664,7 @@ export const COST_BY_ID = {
   "bk-740": 70, // Geronimo Stilton #19 — My Name Is Stilton, Geronimo Stilton
   "bk-741": 70, // Geronimo Stilton #20 — Surf's Up, Geronimo!
   "bk-719": 1400, // Geronimo Stilton Collection (20-book set) — 20 × 70
-  "bk-720": 1500, // The Adventures of Tintin (collector's box set)
+  "bk-720": 2800, // The Adventures of Tintin (collector's box set)
   "bk-721": 700, // Solo Leveling Box Set (vol 1–10)
   "bk-722": 1699, // Demon Slayer Complete Box Set (vol 1–23)
 };

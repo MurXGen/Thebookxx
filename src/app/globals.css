@@ -61406,3 +61406,401 @@ h2.od-reco-title {
 .leaflet-tooltip.od-pin-tip::before {
   border-top-color: #1c1814;
 }
+
+/* ── Hero "Readers' top 3" podium — enhanced ─────────────────── */
+.hpz-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+.hpz-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #fff4e3;
+  border: 1px solid #fde1b8;
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.hpz-heading {
+  margin: 4px 0 0;
+  font-size: clamp(19px, 4.6vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #1c1814;
+}
+.hpz-sub {
+  margin: 0;
+  font-size: 13px;
+  color: #6b5f52;
+}
+.hero-podium {
+  gap: 10px;
+  padding-top: 26px;
+}
+.hpz-book {
+  position: relative;
+  gap: 4px;
+}
+.hpz-book:focus-visible {
+  outline: 2px solid var(--tertiary, #fb8500);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+.hpz-crown {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-8deg);
+  color: #f5b301;
+  filter: drop-shadow(0 2px 3px rgba(180, 120, 0, 0.45));
+  z-index: 7;
+}
+/* 3D book: spine shading on the left, page block on the right. */
+.hpz-cover {
+  border-radius: 3px 7px 7px 3px;
+  overflow: visible;
+  box-shadow:
+    0 18px 22px -14px rgba(0, 0, 0, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.12);
+}
+.hpz-cover img {
+  border-radius: 3px 7px 7px 3px;
+}
+.hpz-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 9px;
+  border-radius: 3px 0 0 3px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.32),
+    rgba(255, 255, 255, 0.18) 55%,
+    rgba(0, 0, 0, 0.08)
+  );
+  z-index: 1;
+}
+.hpz-cover::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  right: -4px;
+  width: 5px;
+  border-radius: 0 3px 3px 0;
+  background: repeating-linear-gradient(
+    180deg,
+    #fbf7ef 0 1px,
+    #e9e1d3 1px 2px
+  );
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.15);
+  z-index: -1;
+}
+/* Collectible bookmark: tucked in from the top, tassel above. */
+.hpz-bm {
+  display: none;
+}
+.hpz-mark {
+  position: absolute;
+  top: -18px;
+  right: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: rotate(4deg);
+  transform-origin: top center;
+}
+.hpz-mark-body {
+  position: relative;
+  width: 17px;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 3px 3px 1px 1px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22), transparent 40%),
+    linear-gradient(180deg, #ff9a1f 0%, #e8590c 60%, #c2410c 100%);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 236, 200, 0.75),
+    0 6px 10px -4px rgba(150, 55, 0, 0.55);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 90%, 0 100%);
+}
+.hpz-mark-hole {
+  width: 5px;
+  height: 5px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: #fff4e3;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.35);
+}
+.hpz-mark-txt {
+  margin-top: 5px;
+  writing-mode: vertical-rl;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  background: linear-gradient(180deg, #fff7d6, #ffd36b 50%, #fff2c2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hpz-mark-tassel {
+  position: relative;
+  width: 1.5px;
+  height: 14px;
+  margin-bottom: -4px;
+  background: #b45309;
+  transform-origin: bottom center;
+  animation: hpzTassel 2.8s ease-in-out infinite;
+  z-index: 1;
+}
+.hpz-mark-tassel::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 6px;
+  height: 10px;
+  transform: translateX(-50%);
+  border-radius: 3px 3px 4px 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    #d97706 0 1px,
+    #f59e0b 1px 2px
+  );
+  box-shadow: 0 -2px 0 0 #92400e;
+}
+@keyframes hpzTassel {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+.hpz-r1 .hpz-mark-body {
+  width: 20px;
+  height: 78px;
+}
+.hpz-r1 .hpz-mark-txt {
+  font-size: 8px;
+}
+/* Medal on the cover corner. */
+.hpz-medal {
+  position: absolute;
+  left: -8px;
+  bottom: -8px;
+  z-index: 5;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  box-shadow: 0 4px 10px -3px rgba(0, 0, 0, 0.4);
+}
+.hpz-medal-1 {
+  background: radial-gradient(circle at 30% 30%, #ffe680, #f5b301 55%, #c98a00);
+  color: #6b4500;
+}
+.hpz-medal-2 {
+  background: radial-gradient(circle at 30% 30%, #ffffff, #c7ced6 55%, #8e99a4);
+  color: #3b4148;
+}
+.hpz-medal-3 {
+  background: radial-gradient(circle at 30% 30%, #ffd2a8, #d98a4a 55%, #9c5a26);
+  color: #4a2a10;
+}
+.hpz-tick {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 5;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #16a34a;
+  color: #fff;
+  box-shadow: 0 0 0 2px #fff;
+}
+.hpz-title {
+  margin-top: 8px;
+  font-size: 12px;
+}
+.hpz-pricerow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 13px;
+}
+.hpz-pricerow b {
+  font-weight: 800;
+  color: #1c1814;
+}
+.hpz-pricerow s {
+  font-size: 11px;
+  color: #9ca3af;
+}
+.hpz-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1.5px solid #1c1814;
+  background: #fff;
+  color: #1c1814;
+  font-size: 11.5px;
+  font-weight: 800;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.hpz-book:hover .hpz-add:not(.in) {
+  background: #1c1814;
+  color: #fff;
+}
+.hpz-add.in {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  color: #15803d;
+}
+/* Podium steps: a lit top face + a warm solid body. */
+.hpz-pillar {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-radius: 14px 14px 4px 4px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0 8px, transparent 8px),
+    linear-gradient(180deg, #ffb347 0%, #fb8500 100%);
+  box-shadow:
+    inset 0 -10px 18px -10px rgba(150, 55, 0, 0.45),
+    0 12px 22px -14px rgba(194, 65, 12, 0.6);
+}
+.hpz-r2 .hpz-pillar {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0 8px, transparent 8px),
+    linear-gradient(180deg, #ffc977 0%, #f59e0b 100%);
+}
+.hpz-r3 .hpz-pillar {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0 8px, transparent 8px),
+    linear-gradient(180deg, #ffd9a0 0%, #f6b250 100%);
+}
+.hpz-rank {
+  font-size: 26px;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(150, 55, 0, 0.35);
+}
+.hpz-r1 .hpz-rank {
+  font-size: 32px;
+}
+.hpz-rank-lbl {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+.hpz-r1 .hpz-pillar {
+  height: 120px;
+}
+.hpz-r2 .hpz-pillar {
+  height: 88px;
+}
+.hpz-r3 .hpz-pillar {
+  height: 64px;
+}
+/* Add-all CTA with the bundle total. */
+.hero-picks-addall {
+  gap: 8px;
+  margin-top: 18px;
+  padding: 12px 10px 12px 18px;
+  text-decoration: none;
+}
+.hero-picks-sum {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fb8500;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+.hero-picks-addall.done {
+  padding: 12px 18px;
+  background: #16a34a;
+}
+.hpz-trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b5f52;
+}
+.hpz-trust svg {
+  color: #e36d00;
+}
+@media (min-width: 900px) {
+  .hpz-coverwrap {
+    width: 104px;
+    height: 140px;
+  }
+  .hpz-r1 .hpz-coverwrap {
+    width: 128px;
+    height: 172px;
+  }
+  .hpz-mark-body {
+    width: 20px;
+    height: 78px;
+  }
+  .hpz-r1 .hpz-mark-body {
+    width: 24px;
+    height: 96px;
+  }
+  .hpz-mark-txt,
+  .hpz-r1 .hpz-mark-txt {
+    font-size: 9px;
+  }
+  .hpz-title {
+    font-size: 14px;
+  }
+  .hpz-r1 .hpz-pillar {
+    height: 150px;
+  }
+  .hpz-r2 .hpz-pillar {
+    height: 108px;
+  }
+  .hpz-r3 .hpz-pillar {
+    height: 76px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hpz-mark-tassel {
+    animation: none;
+  }
+}

@@ -68,6 +68,7 @@ export default function SearchOverlay({
   open,
   onClose,
   initialSuggest = false,
+  initialQuery = "",
 }) {
   const inputRef = useRef(null);
   const { addQuickRead, isInQrCart } = useStore();
@@ -115,6 +116,25 @@ export default function SearchOverlay({
     }
   }, [open]);
 
+  // Seed the query from a deep-link (?q=) when the overlay opens so arriving
+  // with a search URL runs that search immediately.
+  useEffect(() => {
+    if (open && initialQuery) setQuery(initialQuery);
+  }, [open, initialQuery]);
+
+  // Keep the URL in sync with the active search so it's shareable and survives
+  // a reload. Uses replaceState so it doesn't spam the history stack or trigger
+  // a Next navigation/re-render.
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const term = debouncedQuery.trim();
+    if (term) url.searchParams.set("q", term);
+    else url.searchParams.delete("q");
+    url.searchParams.delete("search"); // normalize the ?search= alias to ?q=
+    window.history.replaceState(window.history.state, "", url);
+  }, [debouncedQuery, open]);
+
   // Open straight into the recommendation ("suggest") flow when requested.
   useEffect(() => {
     if (open && initialSuggest) setShowRecommendationModal(true);
@@ -159,12 +179,24 @@ export default function SearchOverlay({
   }, [open]);
 
   // Clean state when the modal closes, next open starts fresh
+  const wasOpenRef = useRef(false);
   useEffect(() => {
     if (!open) {
       setQuery("");
       setDebouncedQuery("");
       setIsSearching(false);
+      // Drop the search param only on a real open→close transition (not on the
+      // initial mount, which would strip a deep-link ?q= before it's read).
+      if (wasOpenRef.current && typeof window !== "undefined") {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has("q") || url.searchParams.has("search")) {
+          url.searchParams.delete("q");
+          url.searchParams.delete("search");
+          window.history.replaceState(window.history.state, "", url);
+        }
+      }
     }
+    wasOpenRef.current = open;
   }, [open]);
 
   // Filter uses the debounced query so it only runs after the user pauses typing

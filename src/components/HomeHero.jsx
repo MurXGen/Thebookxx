@@ -17,6 +17,8 @@ import {
   Plus,
   X,
   ChevronRight,
+  Crown,
+  ShoppingBag,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { books } from "@/utils/book";
@@ -518,7 +520,19 @@ export default function HomeHero() {
 
         {/* Readers' top-3 picks — right on desktop, stacked below on mobile */}
         {picks.length > 0 && (
-          <aside className="hero-picks">
+          <aside className="hero-picks" aria-labelledby="hpz-heading">
+            <div className="hpz-head">
+              <span className="hpz-eyebrow">
+                <Crown size={13} /> Readers&apos; top 3
+              </span>
+              <h2 id="hpz-heading" className="hpz-heading">
+                This week&apos;s most-loved books
+              </h2>
+              <p className="hpz-sub">
+                Each one ships with a free collectible TheBookX bookmark.
+              </p>
+            </div>
+
             {/* Winners' podium: #1 tallest in the centre, #2 right, #3 left.
               Rises into place when scrolled into view, retracts when past. */}
             <motion.div
@@ -526,6 +540,7 @@ export default function HomeHero() {
               initial="hide"
               whileInView="show"
               viewport={{ once: false, amount: 0.35 }}
+              role="list"
             >
               {/* tiny confetti */}
               <motion.span
@@ -546,11 +561,14 @@ export default function HomeHero() {
               ]
                 .filter((x) => x.b)
                 .map(({ b, rank }, idx) => {
-                  const url = `/books/${slugify(b.name)}`;
+                  const added = cart.some((it) => it.id === b.id);
+                  const mrp = Number(b.originalPrice) || 0;
+                  const price = Number(b.discountedPrice) || 0;
                   return (
                     <motion.div
-                      className={`hpz hpz-r${rank}`}
+                      className={`hpz hpz-r${rank}${added ? " added" : ""}`}
                       key={b.id}
+                      role="listitem"
                       variants={{
                         hide: { opacity: 0, y: 48 },
                         show: { opacity: 1, y: 0 },
@@ -564,54 +582,121 @@ export default function HomeHero() {
                       <button
                         type="button"
                         className="hpz-book"
-                        aria-label={`Add ${b.name} to bag`}
+                        aria-label={
+                          added
+                            ? `${b.name} is in your bag`
+                            : `Add ${b.name}, number ${rank}, to bag for ₹${price}`
+                        }
                         onClick={() => {
+                          if (added) return;
                           addToCart(b.id);
-                          showToast(
-                            `Added to your bag 🎉 “${b.name}”`,
-                            "success",
-                          );
+                          showToast(`Added “${b.name}” to your bag`, "success");
                         }}
                       >
+                        {rank === 1 && (
+                          <span className="hpz-crown" aria-hidden="true">
+                            <Crown size={18} strokeWidth={2.4} />
+                          </span>
+                        )}
                         <span className="hpz-coverwrap">
                           <span className="hpz-cover">
                             <img
                               src={b.image}
-                              alt={`${b.name}${b.author ? ` by ${b.author}` : ""} — buy online at ₹${b.discountedPrice} on TheBookX`}
+                              alt={`${b.name}${b.author ? ` by ${b.author}` : ""} — buy online at ₹${price} on TheBookX`}
                               loading="lazy"
                             />
                           </span>
+                          {/* Collectible bookmark tucked into the book. */}
+                          <span className="hpz-mark" aria-hidden="true">
+                            <span className="hpz-mark-tassel" />
+                            <span className="hpz-mark-body">
+                              <span className="hpz-mark-hole" />
+                              <span className="hpz-mark-txt">TheBookX</span>
+                            </span>
+                          </span>
                           <span
-                            className="hpz-bm hpz-bm-back"
-                            aria-hidden="true"
-                          />
-                          <span
-                            className="hpz-bm hpz-bm-front"
+                            className={`hpz-medal hpz-medal-${rank}`}
                             aria-hidden="true"
                           >
-                            <span className="hpz-bm-txt">BOOKMARK</span>
+                            {rank}
                           </span>
+                          {added && (
+                            <span className="hpz-tick" aria-hidden="true">
+                              <Check size={13} strokeWidth={3} />
+                            </span>
+                          )}
                         </span>
                         <span className="hpz-title">{b.name}</span>
+                        <span className="hpz-pricerow">
+                          <b>₹{price}</b>
+                          {mrp > price && <s>₹{mrp}</s>}
+                        </span>
+                        <span className={`hpz-add${added ? " in" : ""}`}>
+                          {added ? (
+                            <>
+                              <Check size={12} strokeWidth={3} /> In bag
+                            </>
+                          ) : (
+                            <>
+                              <Plus size={12} strokeWidth={3} /> Add
+                            </>
+                          )}
+                        </span>
                       </button>
                       <div className="hpz-pillar">
                         <span className="hpz-rank">{rank}</span>
+                        <span className="hpz-rank-lbl">
+                          {rank === 1
+                            ? "Most loved"
+                            : rank === 2
+                              ? "Runner-up"
+                              : "Rising pick"}
+                        </span>
                       </div>
                     </motion.div>
                   );
                 })}
             </motion.div>
 
-            <button
-              type="button"
-              className="hero-picks-addall"
-              onClick={() => {
-                picks.forEach((b) => addToCart(b.id));
-                showToast("Added all 3 picks to your bag 🎉", "success");
-              }}
-            >
-              <Plus size={16} /> Add all 3 to bag
-            </button>
+            {(() => {
+              const missing = picks.filter(
+                (b) => !cart.some((it) => it.id === b.id),
+              );
+              const sum = missing.reduce(
+                (s2, b) => s2 + (Number(b.discountedPrice) || 0),
+                0,
+              );
+              return missing.length === 0 ? (
+                <Link href="/bag" className="hero-picks-addall done">
+                  <Check size={16} strokeWidth={3} /> All 3 in your bag · View
+                  bag
+                  <ChevronRight size={16} />
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className="hero-picks-addall"
+                  onClick={() => {
+                    missing.forEach((b) => addToCart(b.id));
+                    showToast(
+                      missing.length === picks.length
+                        ? "Added all 3 picks to your bag"
+                        : `Added the other ${missing.length} to your bag`,
+                      "success",
+                    );
+                  }}
+                >
+                  <ShoppingBag size={16} />
+                  {missing.length === picks.length
+                    ? "Add all 3 to bag"
+                    : `Add the other ${missing.length}`}
+                  <span className="hero-picks-sum">₹{sum}</span>
+                </button>
+              );
+            })()}
+            <p className="hpz-trust">
+              <Gift size={13} /> Free bookmark · COD available · 7-day returns
+            </p>
           </aside>
         )}
       </div>

@@ -84,6 +84,10 @@ function RotatingTrust() {
 export default function Navbar() {
   const [index, setIndex] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
+  // When the page is opened with a ?q= (or ?search=) param, we auto-open the
+  // search overlay and seed it with that term so searches are shareable/deep
+  // linkable. Cleared when the user opens search manually.
+  const [searchInitialQuery, setSearchInitialQuery] = useState("");
   const [navHidden, setNavHidden] = useState(false);
   // Measure the fixed navbar's real height so the spacer below matches exactly.
   const navRef = useRef(null);
@@ -105,6 +109,17 @@ export default function Navbar() {
     };
   }, []);
   const { cart, qrCart } = useStore();
+
+  // Deep-link: open search pre-filled when the URL carries ?q= / ?search=.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const q = (params.get("q") || params.get("search") || "").trim();
+    if (q) {
+      setSearchInitialQuery(q);
+      setSearchOpen(true);
+    }
+  }, []);
 
   // Hide the navbar when scrolling DOWN, reveal it when scrolling UP.
   useEffect(() => {
@@ -195,6 +210,7 @@ export default function Navbar() {
             className="nav-search-inline"
             onClick={() => {
               trackEvent("search_opened", { source: "navbar_inline" });
+              setSearchInitialQuery("");
               setSearchOpen(true);
             }}
             aria-label="Search books"
@@ -251,7 +267,11 @@ export default function Navbar() {
         style={{ height: navH }}
       />
 
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        initialQuery={searchInitialQuery}
+      />
     </>
   );
 }

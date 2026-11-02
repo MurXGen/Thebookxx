@@ -134,18 +134,45 @@ export default function BillModal({
           </div>
         )}
 
-        {/* Delivery rows, hidden until user accepts shipping */}
-        {!hideDeliveryCharges && (
-          <>
-            {deliveryCharge > 0 && (
-              <div className="bill-row">
-                <span>
-                  {isFasterDelivery ? (
+        {/* Delivery rows, hidden until user accepts shipping. Handling & Care is
+            its own line — Standard delivery stays FREE and is never conflated
+            with the Handling & Care fee. */}
+        {!hideDeliveryCharges &&
+          (() => {
+            // For >₹1000 carts the standard charge is the Handling & Care fee —
+            // split it out so delivery reads FREE and Handling is separate.
+            const handlingAmt =
+              !isFasterDelivery && isHandling ? deliveryCharge : 0;
+            const stdDeliveryAmt =
+              handlingAmt > 0 ? 0 : isFasterDelivery ? 0 : deliveryCharge;
+            return (
+              <>
+                {isFasterDelivery ? (
+                  <div className="bill-row">
                     <span className="flex items-center gap-4">
                       <span> Faster Delivery</span>
                       <span className="font-10 orange">(2-5 days)</span>
                     </span>
-                  ) : isHandling ? (
+                    <span className="orange">+ ₹{deliveryCharge}</span>
+                  </div>
+                ) : (
+                  <div className="bill-row">
+                    <div className="flex flex-col">
+                      <span> Standard Delivery</span>
+                      <span className="dark-50 font-10">
+                        {stdDeliveryAmt > 0
+                          ? "Free on orders above ₹199"
+                          : "Delivered within 4–9 days"}
+                      </span>
+                    </div>
+                    <span className={stdDeliveryAmt > 0 ? "red" : "green"}>
+                      {stdDeliveryAmt > 0 ? `+ ₹${stdDeliveryAmt}` : "FREE"}
+                    </span>
+                  </div>
+                )}
+
+                {handlingAmt > 0 && (
+                  <div className="bill-row">
                     <span className="flex flex-col gap-4">
                       <span className="bill-handling-head">
                         Handling &amp; Care
@@ -170,45 +197,12 @@ export default function BillModal({
                         </span>
                       )}
                     </span>
-                  ) : deliveryCharge === 100 ? (
-                    <div className="flex flex-col">
-                      <span> Standard Delivery</span>
-                      <span className="dark-50 font-10">
-                        Books more than ₹399: Free Delivery
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col">
-                      <span> Standard Delivery</span>
-                      <span className="dark-50 font-10">
-                        Books above ₹199: Free Delivery
-                      </span>
-                    </div>
-                  )}
-                </span>
-
-                <span
-                  className={
-                    isFasterDelivery
-                      ? "orange"
-                      : deliveryCharge === 100
-                        ? "red"
-                        : "dark-50"
-                  }
-                >
-                  + ₹{deliveryCharge}
-                </span>
-              </div>
-            )}
-
-            {deliveryCharge === 0 && !isFasterDelivery && (
-              <div className="bill-row">
-                <span> Free Delivery</span>
-                <span className="green">FREE</span>
-              </div>
-            )}
-          </>
-        )}
+                    <span className="dark-50">+ ₹{handlingAmt}</span>
+                  </div>
+                )}
+              </>
+            );
+          })()}
 
         {/* Subtle hint when delivery is intentionally hidden */}
         {hideDeliveryCharges && (

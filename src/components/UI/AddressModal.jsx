@@ -586,7 +586,7 @@ export default function AddressModal({
               giftWrap: gw,
               bookmarks: bookmarkCharge,
               quickReads: qrAddOn,
-              offerDiscount,
+              offerDiscount: activeOfferDiscount,
               couponDiscount: appliedCoupon ? couponDiscount : 0,
               wallet: walletApplied,
               codFee: pay === "COD" ? codFeeAmount : 0,
@@ -684,6 +684,14 @@ export default function AddressModal({
   // Coins redemption: if the wallet balance is above ₹100 they can redeem up
   // to 50% of it; ₹100 or below can be used in full. The wallet coupon lifts
   // this to 100% of the balance.
+  // A coupon and the automatic cart-offer are MUTUALLY EXCLUSIVE — only one
+  // discount applies. When a (non-wallet) coupon is active we undo the cart
+  // offer so the coupon replaces it; the coupon then applies on the pre-offer
+  // bill. `basePayable` is the item bill before whichever discount is active.
+  const offerActive = !appliedCoupon || isWalletCoupon; // wallet coupon stacks
+  const activeOfferDiscount = offerActive ? offerDiscount : 0;
+  const basePayable = offerActive ? finalPayable : finalPayable + offerDiscount;
+
   const walletCapForOrder = isWalletCoupon
     ? walletBalance
     : walletBalance > 100
@@ -692,7 +700,7 @@ export default function AddressModal({
   const maxWalletUsable = Math.min(
     walletBalance,
     walletCapForOrder,
-    Math.max(0, finalPayable),
+    Math.max(0, basePayable),
   );
   const walletApplied =
     walletEnabled && walletBalance > 0 ? maxWalletUsable : 0;
@@ -705,7 +713,7 @@ export default function AddressModal({
   // Coupon applies to the ENTIRE pre-coupon bill (items after offer + QuickReads
   // + Pro add-on + delivery + gift/bookmark add-ons), not just the item subtotal.
   // Computed from the coupon's rule each render (so it's exactly 10% of the bill).
-  const _netNoCoupon = Math.max(0, finalPayable) + qrAddOn + proAddonCharge;
+  const _netNoCoupon = Math.max(0, basePayable) + qrAddOn + proAddonCharge;
   const _proFreeDeliv = proActive && _netNoCoupon > 400;
   const _delivForCoupon = _proFreeDeliv
     ? 0
@@ -734,7 +742,7 @@ export default function AddressModal({
   })();
 
   const netPayable =
-    Math.max(0, finalPayable - walletApplied - couponDiscount) +
+    Math.max(0, basePayable - walletApplied - couponDiscount) +
     qrAddOn +
     proAddonCharge;
 
@@ -1201,7 +1209,7 @@ export default function AddressModal({
         "Total MRP": String(n0(mrpTotal)),
         "Item Discount": String(n0(mrpTotal - totalDiscounted)),
         Subtotal: String(n0(totalDiscounted)),
-        "Offer Discount": String(n0(offerDiscount)),
+        "Offer Discount": String(n0(activeOfferDiscount)),
         "Coupon Discount": String(
           n0(appliedCoupon ? couponDiscount : 0),
         ),
@@ -1210,9 +1218,10 @@ export default function AddressModal({
         "Bookmark Charge": String(n0(bookmarkCharge)),
         "QuickReads Total": String(n0((quickReadItems || []).length * 19)),
         "COD Fee": String(n0(feeForThisOrder)),
-        // Handling & Care fee — the delivery charge on >₹499 carts (the 20% band).
+        // Handling & Care fee — applies on carts above ₹1000 (the 20% band) and
+        // only on Standard delivery (the express fee is not a handling charge).
         "Handling & Care": String(
-          netPayable > 499 ? n0(deliveryChargeForOrder) : 0,
+          !isFaster && totalDiscounted > 1000 ? n0(deliveryChargeForOrder) : 0,
         ),
         "Advance Amount": String(n0(advanceAmt)),
         "COD Collectible": String(n0(codCollectForOrder)),
@@ -1300,8 +1309,8 @@ export default function AddressModal({
         subtotal: totalDiscounted,
         finalPayable: netPayable,
         totalDiscounted,
-        offerDiscount,
-        offerLabel,
+        offerDiscount: activeOfferDiscount,
+        offerLabel: offerActive ? offerLabel : "",
         // Store the applied wallet amount on the row from the start so a later
         // server-side confirm (admin / Telegram button, no client present) can
         // deduct it. The server only debits once the order is confirmed, so the
@@ -2351,7 +2360,7 @@ export default function AddressModal({
 
               <div
                 className={`bill-row total addr-total-row${
-                  offerDiscount + couponDiscount > 0 ? " has-saved" : ""
+                  activeOfferDiscount + couponDiscount > 0 ? " has-saved" : ""
                 }`}
                 style={{ marginBottom: 0 }}
               >
@@ -2370,9 +2379,9 @@ export default function AddressModal({
                     <span className="font-20 weight-700 green">
                       ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
                     </span>
-                    {offerDiscount + couponDiscount > 0 && (
+                    {activeOfferDiscount + couponDiscount > 0 && (
                       <span className="addr-saved-abs">
-                        🎉 Saved ₹{offerDiscount + couponDiscount}
+                        🎉 Saved ₹{activeOfferDiscount + couponDiscount}
                       </span>
                     )}
                   </span>
@@ -2736,7 +2745,7 @@ export default function AddressModal({
 
                   <div
                     className={`ps-row ps-total addr-total-row${
-                      offerDiscount + couponDiscount > 0 ? " has-saved" : ""
+                      activeOfferDiscount + couponDiscount > 0 ? " has-saved" : ""
                     }`}
                   >
                     <span>Total payable</span>
@@ -2754,9 +2763,9 @@ export default function AddressModal({
                         <span>
                           ₹{paySel === "COD" ? codTotalWithFee : upiTotalForFlow}
                         </span>
-                        {offerDiscount + couponDiscount > 0 && (
+                        {activeOfferDiscount + couponDiscount > 0 && (
                           <span className="addr-saved-abs">
-                            🎉 Saved ₹{offerDiscount + couponDiscount}
+                            🎉 Saved ₹{activeOfferDiscount + couponDiscount}
                           </span>
                         )}
                       </span>
@@ -3066,51 +3075,99 @@ export default function AddressModal({
                 </span>
               </div>
               <div className="address-form-content flex flex-col gap-12">
-                <div className="pa-list">
-                  <button
-                    type="button"
-                    className={`pa-row${!fasterDelivery ? " on" : ""}`}
-                    onClick={() => setFasterDelivery(false)}
-                  >
-                    <span className="pa-row-ic">
-                      <Truck size={18} />
-                    </span>
-                    <span className="pa-row-main">
-                      <span className="pa-row-name">Standard delivery</span>
-                      <span className="pa-row-sub">
-                        4–9 days · Total ₹{Math.round(getTotalWithDelivery(false))}
-                      </span>
-                    </span>
-                    <span className="pa-row-price free">
-                      {standardDeliveryCharge > 0
-                        ? `₹${standardDeliveryCharge}`
-                        : "FREE"}
-                    </span>
-                    <span className={`pa-radio${!fasterDelivery ? " on" : ""}`}>
-                      {!fasterDelivery && <Check size={12} strokeWidth={3} />}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`pa-row${fasterDelivery ? " on" : ""}`}
-                    onClick={() => setFasterDelivery(true)}
-                  >
-                    <span className="pa-row-ic paid">
-                      <span className="pa-ripple" aria-hidden="true" />
-                      <Zap size={18} />
-                    </span>
-                    <span className="pa-row-main">
-                      <span className="pa-row-name">Faster delivery</span>
-                      <span className="pa-row-sub">
-                        1–5 days · Total ₹{Math.round(getTotalWithDelivery(true))}
-                      </span>
-                    </span>
-                    <span className="pa-row-price">+₹{fasterDeliveryCharge}</span>
-                    <span className={`pa-radio${fasterDelivery ? " on" : ""}`}>
-                      {fasterDelivery && <Check size={12} strokeWidth={3} />}
-                    </span>
-                  </button>
-                </div>
+                {(() => {
+                  // Standard delivery is always FREE. For >₹1000 carts the
+                  // "standard charge" is really the Handling & Care fee — show it
+                  // on its own line so delivery never looks chargeable.
+                  const handlingAmt =
+                    totalDiscounted > 1000 ? standardDeliveryCharge : 0;
+                  const stdDelivAmt = handlingAmt > 0 ? 0 : standardDeliveryCharge;
+                  return (
+                    <>
+                      <p className="dspick-lead">
+                        How soon would you like your books?
+                      </p>
+                      <div className="dspick-list">
+                        {/* Standard */}
+                        <button
+                          type="button"
+                          className={`dspick-opt${!fasterDelivery ? " on" : ""}`}
+                          onClick={() => setFasterDelivery(false)}
+                        >
+                          <span className="dspick-ic">
+                            <Truck size={20} />
+                          </span>
+                          <span className="dspick-main">
+                            <span className="dspick-top">
+                              <span className="dspick-name">
+                                Standard Delivery
+                              </span>
+                              <span
+                                className={`dspick-price${stdDelivAmt > 0 ? "" : " free"}`}
+                              >
+                                {stdDelivAmt > 0 ? `₹${stdDelivAmt}` : "FREE"}
+                              </span>
+                            </span>
+                            <span className="dspick-sub">Arrives in 4–9 days</span>
+                            {handlingAmt > 0 && (
+                              <span className="dspick-note">
+                                + Handling &amp; Care ₹{handlingAmt} · for orders
+                                above ₹1000
+                              </span>
+                            )}
+                          </span>
+                          <span
+                            className={`dspick-radio${!fasterDelivery ? " on" : ""}`}
+                          >
+                            {!fasterDelivery && (
+                              <Check size={13} strokeWidth={3} />
+                            )}
+                          </span>
+                        </button>
+
+                        {/* Faster */}
+                        <button
+                          type="button"
+                          className={`dspick-opt${fasterDelivery ? " on" : ""}`}
+                          onClick={() => setFasterDelivery(true)}
+                        >
+                          <span className="dspick-ic paid">
+                            <Zap size={20} />
+                          </span>
+                          <span className="dspick-main">
+                            <span className="dspick-top">
+                              <span className="dspick-name">
+                                Faster Delivery
+                                <span className="dspick-tag">Priority</span>
+                              </span>
+                              <span className="dspick-price">
+                                +₹{fasterDeliveryCharge}
+                              </span>
+                            </span>
+                            <span className="dspick-sub">
+                              Arrives in 1–5 days · jumps the queue
+                            </span>
+                          </span>
+                          <span
+                            className={`dspick-radio${fasterDelivery ? " on" : ""}`}
+                          >
+                            {fasterDelivery && <Check size={13} strokeWidth={3} />}
+                          </span>
+                        </button>
+                      </div>
+
+                      <div className="dspick-total">
+                        <span>Order total</span>
+                        <span className="dspick-total-amt">
+                          ₹
+                          {Math.round(
+                            getTotalWithDelivery(fasterDelivery),
+                          ).toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    </>
+                  );
+                })()}
                 <LoadingButton
                   className="pri-big-btn width100"
                   onClick={() => {
@@ -3780,7 +3837,50 @@ export default function AddressModal({
                 </span>
               </div>
 
+              {/* Cart-offer reward the shopper has already unlocked. Only ONE
+                  discount applies — a coupon replaces this reward. */}
+              {offerDiscount > 0 && (
+                <div
+                  className={`cp-reward${offerActive ? " on" : ""}`}
+                >
+                  <span className="cp-reward-ic">
+                    {offerActive ? (
+                      <Check size={16} strokeWidth={3} />
+                    ) : (
+                      <Gift size={16} />
+                    )}
+                  </span>
+                  <div className="cp-reward-tx">
+                    <span className="cp-reward-name">
+                      {offerLabel || `₹${offerDiscount} OFF`}
+                    </span>
+                    <span className="cp-reward-sub">
+                      {offerActive
+                        ? "🎉 Applied — you've unlocked this cart reward!"
+                        : "Your cart reward · replaced by the coupon below"}
+                    </span>
+                  </div>
+                  {offerActive ? (
+                    <span className="cp-reward-tick">Applied</span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="coupon-use-btn"
+                      onClick={removeCoupon}
+                    >
+                      Use this
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <div className="cp-note">
+                Only one offer can be used per order — applying a coupon replaces
+                your cart reward.
+              </div>
+
               {/* Available coupons */}
+              <span className="cp-list-lbl">Available coupons</span>
               <div className="coupon-list">
                 {couponLoading ? (
                   <div className="coupon-empty">Loading coupons…</div>
@@ -3789,15 +3889,20 @@ export default function AddressModal({
                 ) : (
                   coupons.map((c) => {
                     const expired = c.status !== "active" || !c.usable;
+                    const isApplied = appliedCoupon?.code === c.code;
                     return (
                       <div
-                        className={`coupon-card${expired ? " expired" : ""}`}
+                        className={`coupon-card${expired ? " expired" : ""}${isApplied ? " applied" : ""}`}
                         key={c.code}
                       >
                         <div className="coupon-card-l">
                           <span className="coupon-code">{c.code}</span>
                           <span className="coupon-title">{c.title}</span>
-                          {c.status !== "active" ? (
+                          {isApplied ? (
+                            <span className="coupon-badge ok">
+                              <Check size={11} strokeWidth={3} /> Applied
+                            </span>
+                          ) : c.status !== "active" ? (
                             <span className="coupon-badge exp">Expired</span>
                           ) : !c.usable && c.reason ? (
                             <span className="coupon-badge warn">{c.reason}</span>
@@ -3810,14 +3915,24 @@ export default function AddressModal({
                             </span>
                           )}
                         </div>
-                        <button
-                          type="button"
-                          className="coupon-use-btn"
-                          disabled={expired || couponApplying}
-                          onClick={() => applyCoupon(c.code)}
-                        >
-                          {expired ? "Expired" : "Apply"}
-                        </button>
+                        {isApplied ? (
+                          <button
+                            type="button"
+                            className="coupon-use-btn coupon-remove-btn"
+                            onClick={removeCoupon}
+                          >
+                            Remove
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="coupon-use-btn"
+                            disabled={expired || couponApplying}
+                            onClick={() => applyCoupon(c.code)}
+                          >
+                            {expired ? "Expired" : "Apply"}
+                          </button>
+                        )}
                       </div>
                     );
                   })

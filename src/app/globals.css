@@ -53270,6 +53270,119 @@ img[data-loaded="true"] {
   color: #9ca3af;
   cursor: default;
 }
+.coupon-remove-btn {
+  background: #fff;
+  color: #dc2626;
+  border: 1.5px solid rgba(220, 38, 38, 0.4);
+}
+
+/* Applied-coupon highlight in the list. */
+.coupon-card.applied {
+  border: 1.5px solid #16a34a;
+  background: linear-gradient(180deg, rgba(22, 163, 74, 0.06), #fff);
+  box-shadow: 0 2px 10px rgba(22, 163, 74, 0.1);
+}
+.coupon-card.applied .coupon-badge.ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #16a34a;
+  color: #fff;
+}
+
+/* Cart-offer reward the shopper has already unlocked. */
+.cp-reward {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  border: 1px dashed var(--dark-20, #d1d5db);
+  background: #fafafa;
+}
+.cp-reward.on {
+  border: 1.5px solid #16a34a;
+  background: linear-gradient(135deg, #e9faf0, #f3fff8);
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.14);
+}
+.cp-reward-ic {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(107, 114, 128, 0.14);
+  color: #6b7280;
+}
+.cp-reward.on .cp-reward-ic {
+  background: #16a34a;
+  color: #fff;
+  animation: cpPop 0.35s ease;
+}
+@keyframes cpPop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.cp-reward-tx {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cp-reward-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.cp-reward-sub {
+  font-size: 11.5px;
+  color: #15803d;
+  font-weight: 600;
+}
+.cp-reward.on .cp-reward-sub {
+  color: #15803d;
+}
+.cp-reward:not(.on) .cp-reward-sub {
+  color: var(--dark-50, #6b7280);
+  font-weight: 500;
+}
+.cp-reward-tick {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 800;
+  color: #15803d;
+  background: rgba(22, 163, 74, 0.14);
+  padding: 5px 11px;
+  border-radius: 999px;
+}
+.cp-note {
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+  line-height: 1.45;
+  margin-bottom: 12px;
+  padding: 0 2px;
+}
+.cp-list-lbl {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dark-50, #6b7280);
+  margin-bottom: 8px;
+}
 
 /* Loyalty celebration banner (3+ orders). */
 .od-loyalty {
@@ -60202,4 +60315,137 @@ img[data-loaded="true"] {
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* ── Delivery-speed picker (enhanced) ───────────────────────────────────── */
+.dspick-lead {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0 0 2px;
+}
+.dspick-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dspick-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  border: 1.5px solid #e8e9ee;
+  border-radius: 15px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.dspick-opt.on {
+  border-color: #fb8500;
+  background: #fff8f0;
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.12);
+}
+.dspick-ic {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #374151;
+}
+.dspick-ic.paid {
+  background: linear-gradient(135deg, #fb8500, #ff9e2c);
+  color: #fff;
+}
+.dspick-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.dspick-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.dspick-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #111827;
+}
+.dspick-tag {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #c2410c;
+  background: #ffedd5;
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+.dspick-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+}
+.dspick-price.free {
+  color: #16a34a;
+}
+.dspick-sub {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+.dspick-note {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #b45309;
+  background: #fff7ed;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin-top: 3px;
+  display: inline-block;
+}
+.dspick-radio {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.dspick-radio.on {
+  background: #fb8500;
+  border-color: #fb8500;
+}
+.dspick-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 13px;
+  background: #f7f8fa;
+  border: 1px solid #ececf1;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #374151;
+}
+.dspick-total-amt {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
 }

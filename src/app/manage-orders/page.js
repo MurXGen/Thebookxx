@@ -121,6 +121,7 @@ import {
 import { getDeliveryCharge, getCodFee } from "@/utils/cartOffers";
 import {
   classifyOrderProduct,
+  isMaharashtraOrder,
   SPEED_MAX_GRAMS,
   buildPreviewRow,
   downloadIpWorkbook,
@@ -18326,9 +18327,10 @@ export default function ManageOrdersPage() {
                                         </p>
                                       ) : (
                                         <p className="mo-sheet-note">
-                                          Under {SPEED_MAX_GRAMS} g → Speed. {SPEED_MAX_GRAMS} g
-                                          and over → Contractual, unless the customer
-                                          chose Speed.
+                                          Within Maharashtra → Speed (any weight).
+                                          Elsewhere: under {SPEED_MAX_GRAMS} g → Speed,
+                                          {SPEED_MAX_GRAMS} g and over → Contractual, unless
+                                          the customer chose Speed.
                                           {ipMissing > 0 &&
                                             ` ${ipMissing} order${ipMissing === 1 ? "" : "s"} still need weight & size.`}
                                         </p>
@@ -19240,9 +19242,10 @@ export default function ManageOrdersPage() {
                         />
                       </label>
 
-                      {/* Live India Post bucket — Express-opted orders are
-                          always Speed; otherwise under SPEED_MAX_GRAMS = Speed,
-                          at or over it = Standard (Contractual). */}
+                      {/* Live India Post bucket — Express-opted orders and
+                          within-Maharashtra orders are always Speed; otherwise
+                          under SPEED_MAX_GRAMS = Speed, at or over it = Standard
+                          (Contractual). */}
                       {(() => {
                         const faster =
                           /faster|express/i.test(
@@ -19251,6 +19254,7 @@ export default function ManageOrdersPage() {
                           /^e/i.test(
                             String(wsOrder.shippingId || "").trim(),
                           );
+                        const inMH = isMaharashtraOrder(wsOrder);
                         const w = parseInt(
                           String(wsWeight).replace(/[^\d]/g, ""),
                           10,
@@ -19261,6 +19265,9 @@ export default function ManageOrdersPage() {
                         if (faster) {
                           kind = "speed";
                           reason = "Express delivery opted";
+                        } else if (inMH) {
+                          kind = "speed";
+                          reason = "Within Maharashtra · intra-state";
                         } else if (hasW) {
                           kind = w < SPEED_MAX_GRAMS ? "speed" : "standard";
                           reason = `${w} g · ${w < SPEED_MAX_GRAMS ? "under" : "at or over"} ${SPEED_MAX_GRAMS} g`;

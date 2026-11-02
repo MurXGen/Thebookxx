@@ -250,6 +250,7 @@ export const SPEED_MAX_GRAMS = 150;
 
 // Product bucket for the India Post bulk file:
 //   • Faster-delivery orders          → SPEED (customer opted, any weight)
+//   • Orders delivered WITHIN Maharashtra → SPEED (intra-state, any weight)
 //   • Parcels UNDER 150 g              → SPEED
 //   • Parcels 150 g and OVER           → CONTRACTUAL (normal parcel)
 // Weight comes from the operator-entered "Weight(gm)" saved on the order; if
@@ -258,7 +259,11 @@ export function classifyOrderProduct(order) {
   // 1) Faster / express delivery always goes Speed.
   const deliv = String(order?.["Delivery Type"] || "");
   if (/faster|express/i.test(deliv)) return "speed";
-  // 2) Weight-based split (< 150 g = Speed, >= 150 g = Contractual).
+  // 2) Intra-state (Maharashtra) orders go Speed regardless of weight —
+  //    Speed Post is the economical choice for in-state delivery. The pincode
+  //    is authoritative; fall back to the stored State when it can't resolve.
+  if (isMaharashtraOrder(order)) return "speed";
+  // 3) Weight-based split (< 150 g = Speed, >= 150 g = Contractual).
   const saved = parseInt(
     String(order?.["Weight(gm)"] ?? order?.["Weight (gm)"] ?? "").replace(
       /[^\d]/g,
@@ -269,6 +274,15 @@ export function classifyOrderProduct(order) {
   const grams =
     Number.isFinite(saved) && saved > 0 ? saved : estimateWeight(order);
   return grams < SPEED_MAX_GRAMS ? "speed" : "contractual";
+}
+
+// True when the order ships WITHIN Maharashtra. Resolves the destination state
+// from the pincode first (India Post routes by it, so it overrides stale stored
+// values), then falls back to the stored "State" field.
+export function isMaharashtraOrder(order) {
+  const byPin = stateFromPincode(order?.["Pincode"] ?? order?.["pincode"]);
+  const resolved = byPin || String(order?.["State"] ?? order?.state ?? "");
+  return /maharashtra/i.test(resolved.trim());
 }
 
 // Best-guess parcel weight (g) from the catalogue. Weight is REQUIRED by the

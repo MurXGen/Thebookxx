@@ -21,6 +21,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { books } from "@/utils/book";
 import { getCartOffers } from "@/utils/cartOffers";
+import OfferTierList from "@/components/UI/OfferTierList";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
@@ -688,30 +689,11 @@ export default function HomeHero() {
               <p className="offer-sheet-sub">
                 Your cart: <b>₹{cartAmount}</b>
               </p>
-              <div className="offer-sheet-list">
-                {offers.map((o) => {
-                  const unlocked = cartAmount >= o.target;
-                  const left = Math.max(o.target - cartAmount, 0);
-                  return (
-                    <div
-                      key={`${o.type}-${o.target}`}
-                      className={`offer-tier${unlocked ? " unlocked" : ""}`}
-                    >
-                      <span className="offer-tier-ic">
-                        {unlocked ? <Check size={14} /> : <Lock size={13} />}
-                      </span>
-                      <span className="offer-tier-main">
-                        <span className="offer-tier-reward">{o.reward}</span>
-                        <span className="offer-tier-note">
-                          {unlocked
-                            ? "Unlocked"
-                            : `Add ₹${left} more (spend ₹${o.target})`}
-                        </span>
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+              <OfferTierList
+                offers={offers}
+                amount={cartAmount}
+                hasOneRupee={hasOneRupee}
+              />
             </motion.div>
           </motion.div>
         )}

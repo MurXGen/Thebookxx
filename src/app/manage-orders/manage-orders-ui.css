@@ -4597,7 +4597,7 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
   display: grid;
   grid-template-columns: repeat(14, minmax(0, 1fr));
   gap: 6px;
-  height: 104px;
+  height: 122px;
 }
 .my-orders-page.mo-glass .mo-daybar {
   display: flex;
@@ -4655,7 +4655,7 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
 @media (max-width: 720px) {
   .my-orders-page.mo-glass .mo-daybars-plot {
     gap: 3px;
-    height: 90px;
+    height: 106px;
   }
   .my-orders-page.mo-glass .mo-daybar-d {
     font-size: 9.5px;
@@ -4696,12 +4696,6 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
   border-color: rgba(251, 113, 133, 0.45);
 }
 /* A coloured top edge on cards that need different handling. */
-.my-orders-page.mo-glass .admin-order-card.mo-card.mo-card-speed {
-  box-shadow: inset 0 3px 0 #4f46e5, var(--g-shadow);
-}
-.my-orders-page.mo-glass .admin-order-card.mo-card.mo-card-gift:not(.mo-card-speed) {
-  box-shadow: inset 0 3px 0 #e11d48, var(--g-shadow);
-}
 .my-orders-page.mo-glass .mo-card-faster {
   display: none;
 }
@@ -4812,9 +4806,7 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
 
 /* Room at the top for the type tab on every card, tagged or not.
    !important: globals pins grid cards to "padding: 18px !important". */
-.my-orders-page.mo-glass .admin-orders-grid .admin-order-card.mo-card {
-  padding-top: 30px !important;
-}
+
 /* Order-type tag hangs from the top edge like a tab — it takes no height. */
 .my-orders-page.mo-glass .admin-order-card.mo-card > .mo2-ribbon {
   position: absolute;
@@ -6073,11 +6065,11 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
 
 /* Phase row: "All" + seven steps. */
 .my-orders-page.mo-glass .mo-phases {
-  grid-template-columns: repeat(8, minmax(112px, 1fr));
+  grid-template-columns: repeat(9, minmax(108px, 1fr));
 }
 @media (max-width: 720px) {
   .my-orders-page.mo-glass .mo-phases {
-    grid-template-columns: repeat(8, max-content);
+    grid-template-columns: repeat(9, max-content);
   }
 }
 
@@ -6168,5 +6160,453 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
   .my-orders-page.mo-glass .an2-closs-kpis > div + div {
     border-left: 0;
     border-top: 1px solid var(--g-hairline);
+  }
+}
+
+/* =========================================================================
+   35. Order card — minimal: who, what, how it's paid, what packing needs.
+   ========================================================================= */
+.my-orders-page.mo-glass .admin-orders-grid .admin-order-card.mo-card {
+  gap: 14px !important;
+}
+.my-orders-page.mo-glass .mo2-head {
+  min-height: 0;
+}
+.my-orders-page.mo-glass .mo2-sub {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-width: 0;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--g-ink-3);
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo2-sub .mo2-phone {
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.my-orders-page.mo-glass .mo2-sub .mo2-date {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.my-orders-page.mo-glass .mo2-sub .mo2-date {
+  max-width: 100%;
+  font-size: 12px;
+}
+
+/* Covers: just the covers — titles are on them, prices are in the bill. */
+.my-orders-page.mo-glass .mo2-covers {
+  min-height: 0;
+  gap: 10px;
+}
+.my-orders-page.mo-glass .mo2-cover-item,
+.my-orders-page.mo-glass .mo2-cover {
+  width: 72px;
+}
+.my-orders-page.mo-glass .mo2-cover {
+  height: 102px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo2-badges {
+  min-height: 0;
+}
+
+/* Slack sits above the details, so details + actions line up across a row. */
+.my-orders-page.mo-glass .admin-order-card.mo-card > .mo2-div:nth-last-child(4) {
+  margin-top: 0;
+}
+.my-orders-page.mo-glass .admin-order-card.mo-card > .mo2-div.mo2-push {
+  margin-top: auto;
+}
+
+.my-orders-page.mo-glass .mo2-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.my-orders-page.mo-glass .mo2-money {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.my-orders-page.mo-glass .mo2-money-l {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+.my-orders-page.mo-glass .mo2-pay {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo2-pay.paid {
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
+}
+.my-orders-page.mo-glass .mo2-pay.cod {
+  background: var(--g-sunken);
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass.mo-dark .mo2-pay.paid {
+  background: rgba(74, 222, 128, 0.12);
+  color: #86efac;
+}
+.my-orders-page.mo-glass .mo2-money-sub {
+  font-size: 12.5px;
+  color: var(--g-ink-3);
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo2-money-v {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 4px 4px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--g-ink);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo2-money-v svg {
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo2-money-v:hover {
+  background: var(--g-sunken);
+}
+
+.my-orders-page.mo-glass .mo2-ship {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+}
+.my-orders-page.mo-glass .mo2-ship-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  min-width: 0;
+  padding: 0 10px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 9px;
+  background: var(--g-surface-solid);
+  color: var(--g-ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo2-ship-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo2-ship-btn svg {
+  flex: 0 0 auto;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo2-ship-btn.todo {
+  border-style: dashed;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo2-ship-btn.ok svg {
+  color: #16a34a;
+}
+.my-orders-page.mo-glass .mo2-ship-btn:hover {
+  background: var(--g-sunken);
+  color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo2-note {
+  margin: 0;
+  min-height: 0;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--g-ink-2);
+}
+
+/* Bill: the shared sheet, sliding up from the bottom on every screen. */
+.mo-glass .mo-sheet.mo-sheet-up {
+  top: auto;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: min(560px, 100vw);
+  max-height: 88dvh;
+  margin: 0 auto;
+  padding: 0;
+  border-left: 0;
+  border-top: 1px solid var(--g-hairline);
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+}
+.mo-glass .mo-sheet.mo-sheet-up .mo-sheet-grip {
+  display: block;
+  width: 36px;
+  height: 4px;
+  margin: 8px auto 0;
+  border-radius: 99px;
+  background: var(--g-hairline-2, var(--g-hairline));
+}
+.mo-glass .mo-sheet.mo-bill .mo-sheet-head h3 {
+  margin: 0;
+}
+.mo-glass .mo-sheet.mo-bill .mo-bill-sub {
+  color: var(--g-ink-3);
+}
+.mo-glass .mo-sheet.mo-bill .mo-sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 18px calc(18px + env(safe-area-inset-bottom));
+}
+.mo-glass .mo-sheet.mo-bill .mo-bill-sec {
+  background: var(--g-surface-solid);
+  border-color: var(--g-hairline);
+}
+
+/* =========================================================================
+   36. Card-type art — Speed gets a live electric edge and a lightning bolt,
+   gifts get a ribbon, a bow and a few twinkles. All of it sits behind the
+   card content, clipped to the card, and stops for reduced motion.
+   ========================================================================= */
+.my-orders-page.mo-glass .admin-order-card.mo-card:has(> .mo-card-art) {
+  position: relative;
+  isolation: isolate;
+}
+.my-orders-page.mo-glass .mo-card-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ---- Speed: electric ---- */
+@property --mo-zap-ang {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.my-orders-page.mo-glass .admin-order-card.mo-card:has(> .mo-card-art .mo-art-zap) {
+  border-color: rgba(99, 102, 241, 0.45);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.12), 0 10px 30px -14px rgba(99, 102, 241, 0.55);
+}
+.my-orders-page.mo-glass .mo-art-zap {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 60% at 100% 0%, rgba(99, 102, 241, 0.1), transparent 60%);
+}
+/* A spark that runs around the card edge. */
+.my-orders-page.mo-glass .mo-art-ring {
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--mo-zap-ang),
+    transparent 0deg,
+    transparent 290deg,
+    rgba(129, 140, 248, 0.9) 330deg,
+    #facc15 352deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: moZapSpin 3.6s linear infinite;
+}
+@keyframes moZapSpin {
+  to {
+    --mo-zap-ang: 360deg;
+  }
+}
+/* Big bolt in the top-right corner that flickers like a strike. */
+.my-orders-page.mo-glass .mo-art-bolt {
+  position: absolute;
+  top: 18px;
+  right: -6px;
+  width: 92px;
+  height: 138px;
+  transform: rotate(12deg);
+  fill: rgba(99, 102, 241, 0.1);
+  stroke: rgba(129, 140, 248, 0.35);
+  stroke-width: 1.2;
+  animation: moZapFlicker 4.8s steps(1, end) infinite;
+}
+@keyframes moZapFlicker {
+  0%, 62%, 100% {
+    fill: rgba(99, 102, 241, 0.1);
+    filter: none;
+  }
+  64%, 68% {
+    fill: rgba(250, 204, 21, 0.5);
+    filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.7));
+  }
+  66% {
+    fill: rgba(99, 102, 241, 0.1);
+    filter: none;
+  }
+}
+.my-orders-page.mo-glass .mo-art-spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #facc15;
+  box-shadow: 0 0 6px 1px rgba(250, 204, 21, 0.8);
+  opacity: 0;
+  animation: moZapSpark 2.8s ease-out infinite;
+}
+.my-orders-page.mo-glass .mo-art-spark.s1 { top: 40px; right: 64px; }
+.my-orders-page.mo-glass .mo-art-spark.s2 { top: 96px; right: 22px; animation-delay: 0.9s; }
+.my-orders-page.mo-glass .mo-art-spark.s3 { top: 140px; right: 74px; animation-delay: 1.7s; }
+@keyframes moZapSpark {
+  0% { opacity: 0; transform: scale(0.4) translate(0, 0); }
+  12% { opacity: 1; transform: scale(1.2) translate(0, 0); }
+  40% { opacity: 0; transform: scale(0.4) translate(-10px, 8px); }
+  100% { opacity: 0; }
+}
+.my-orders-page.mo-glass .admin-order-card.mo-card.mo-card-speed {
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.12), 0 10px 30px -14px rgba(99, 102, 241, 0.55);
+}
+
+/* ---- Gift: wrapped ---- */
+.my-orders-page.mo-glass .admin-order-card.mo-card:has(> .mo-card-art .mo-art-gift) {
+  border-color: rgba(225, 29, 72, 0.35);
+}
+.my-orders-page.mo-glass .admin-order-card.mo-card.mo-card-gift:not(.mo-card-speed) {
+  box-shadow: 0 10px 30px -16px rgba(225, 29, 72, 0.45);
+}
+.my-orders-page.mo-glass .mo-art-gift {
+  position: absolute;
+  inset: 0;
+  /* Faint wrapping-paper dots. */
+  background-image: radial-gradient(rgba(225, 29, 72, 0.08) 1.2px, transparent 1.4px);
+  background-size: 16px 16px;
+}
+/* A bow beside the covers. */
+.my-orders-page.mo-glass .mo-art-bow {
+  position: absolute;
+  top: 118px;
+  right: 18px;
+  width: 84px;
+  height: 56px;
+  fill: #e11d48;
+  opacity: 0.85;
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 3px 6px rgba(225, 29, 72, 0.35));
+  animation: moBowWiggle 5s ease-in-out infinite;
+}
+.my-orders-page.mo-glass .mo-art-bow .tail {
+  fill: #be123c;
+}
+.my-orders-page.mo-glass .mo-art-bow circle {
+  fill: #9f1239;
+}
+@keyframes moBowWiggle {
+  0%, 82%, 100% { transform: rotate(0) scale(1); }
+  86% { transform: rotate(-7deg) scale(1.06); }
+  90% { transform: rotate(6deg) scale(1.06); }
+  94% { transform: rotate(-2deg) scale(1); }
+}
+.my-orders-page.mo-glass .mo-art-twinkle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #f59e0b;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  opacity: 0;
+  animation: moTwinkle 3.2s ease-in-out infinite;
+}
+.my-orders-page.mo-glass .mo-art-twinkle.t1 { top: 110px; right: 108px; }
+.my-orders-page.mo-glass .mo-art-twinkle.t2 { top: 184px; right: 16px; animation-delay: 1.1s; width: 8px; height: 8px; }
+.my-orders-page.mo-glass .mo-art-twinkle.t3 { top: 104px; right: 14px; animation-delay: 2.1s; width: 7px; height: 7px; }
+@keyframes moTwinkle {
+  0%, 100% { opacity: 0; transform: scale(0.4) rotate(0); }
+  50% { opacity: 0.9; transform: scale(1) rotate(45deg); }
+}
+.my-orders-page.mo-glass.mo-dark .mo-art-gift {
+  background-image: radial-gradient(rgba(251, 113, 133, 0.1) 1.2px, transparent 1.4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .my-orders-page.mo-glass .mo-card-art * {
+    animation: none !important;
+  }
+  .my-orders-page.mo-glass .mo-art-ring {
+    display: none;
+  }
+}
+
+/* 14-day chart: Speed / Gift counts in the legend and under each day. */
+.my-orders-page.mo-glass .mo-daybars-sep {
+  width: 1px;
+  height: 12px;
+  margin: 0 4px 0 8px;
+  background: var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo-daybars-tag {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo-daybars-tag.speed {
+  color: #6366f1;
+}
+.my-orders-page.mo-glass .mo-daybars-tag.gift {
+  margin-left: 6px;
+  color: #e11d48;
+}
+.my-orders-page.mo-glass.mo-dark .mo-daybars-tag.speed {
+  color: #a5b4fc;
+}
+.my-orders-page.mo-glass.mo-dark .mo-daybars-tag.gift {
+  color: #fda4af;
+}
+.my-orders-page.mo-glass .mo-daybar-tags {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  min-height: 14px;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 14px;
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo-daybar-tags i {
+  font-style: normal;
+}
+.my-orders-page.mo-glass .mo-daybar-tags .speed {
+  color: #6366f1;
+}
+.my-orders-page.mo-glass .mo-daybar-tags .gift {
+  color: #e11d48;
+}
+.my-orders-page.mo-glass.mo-dark .mo-daybar-tags .speed {
+  color: #a5b4fc;
+}
+.my-orders-page.mo-glass.mo-dark .mo-daybar-tags .gift {
+  color: #fda4af;
+}
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .mo-daybar-tags {
+    flex-direction: column;
+    gap: 0;
+    line-height: 11px;
+    font-size: 8.5px;
   }
 }

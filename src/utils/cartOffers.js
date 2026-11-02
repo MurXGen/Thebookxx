@@ -97,6 +97,31 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
 
 // Dynamic delivery charge based on order value and ₹1 item presence
 
+// ── Manual-apply cart rewards ──────────────────────────────────────────────
+// Flat ₹-off rewards are UNLOCKED by cart value but only count once the shopper
+// taps Apply. The applied reward is remembered by its value (e.g. 250) and
+// stays valid only while the cart still qualifies for it.
+export const getUnlockedFlatOffers = (amount = 0, hasOneRupeeItem = false) =>
+  getCartOffers(hasOneRupeeItem).filter(
+    (o) => o.type === "flat" && Number(amount) >= o.target,
+  );
+export const getBestUnlockedFlat = (amount = 0, hasOneRupeeItem = false) => {
+  const list = getUnlockedFlatOffers(amount, hasOneRupeeItem);
+  return list.length ? list[list.length - 1] : null;
+};
+export const resolveAppliedOffer = (
+  amount = 0,
+  hasOneRupeeItem = false,
+  appliedValue = 0,
+) => {
+  if (!appliedValue) return null;
+  return (
+    getUnlockedFlatOffers(amount, hasOneRupeeItem).find(
+      (o) => o.value === Number(appliedValue),
+    ) || null
+  );
+};
+
 export const getDeliveryCharge = (
   orderAmount,
   isFasterDelivery = false,
@@ -119,14 +144,12 @@ export const getDeliveryCharge = (
     standard = amt < 199 ? 69 : 0;
   }
 
-  // Faster / Express = flat priority fee by order value (independent of the
-  // standard charge): ₹49 below ₹499, ₹99 up to ₹1000, ₹149 up to ₹2000,
-  // ₹199 above ₹2000.
+  // Faster / Express = the standard charge (incl. any Handling & Care) PLUS a
+  // priority fee by order value: ₹49 below ₹499, ₹99 up to ₹1000, ₹149 up to
+  // ₹2000, ₹199 above ₹2000. Faster never costs less than Standard.
   if (isFasterDelivery) {
-    if (amt >= 2000) return 199;
-    if (amt >= 1000) return 149;
-    if (amt >= 499) return 99;
-    return 49;
+    const priority = amt >= 2000 ? 199 : amt >= 1000 ? 149 : amt >= 499 ? 99 : 49;
+    return standard + priority;
   }
   return standard;
 };
@@ -163,12 +186,12 @@ export const getDeliveryDescription = (
   hasOneRupeeItem = false,
 ) => {
   const amt = Number(orderAmount) || 0;
-  // Faster = priority dispatch, delivered in 1–5 days. Standard = 4–9 days.
+  // Faster = priority dispatch, delivered in 1–6 days. Standard = 5–9 days.
   if (isFasterDelivery) {
-    return "Priority dispatch — delivered within 1–5 days.";
+    return "Priority dispatch — delivered within 1–6 days.";
   }
 
-  const eta = " Delivered within 4–9 days.";
+  const eta = " Delivered within 5–9 days.";
 
   if (amt > 1000) {
     return hasOneRupeeItem

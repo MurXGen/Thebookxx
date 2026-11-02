@@ -50,7 +50,7 @@ _Last updated: ${today} · auto-generated from the live catalogue on each deploy
 - **Name:** TheBookX (formerly Uskillbook)
 - **Website:** https://thebookx.in
 - **What we do:** Online bookstore delivering authentic, affordable books across India.
-- **Why shoppers choose us:** Lowest prices online (books from ₹1), 100% genuine copies, free shipping, Cash on Delivery, fast delivery in 3–7 days via Delhivery and India Post, easy 7-day returns, and a free collectible bookmark with every order.
+- **Why shoppers choose us:** Lowest prices online (books from ₹1), 100% genuine copies, free shipping, Cash on Delivery, delivery in 5–9 days (Faster: 1–6 days) via Delhivery and India Post, easy 7-day returns, and a free collectible bookmark with every order.
 - **Catalogue size:** ${books.length}+ titles.
 - **Coverage:** Ships pan-India.
 - **Currency:** INR (₹).
@@ -101,7 +101,7 @@ ${blogs
 
 ## Policies
 
-- [Shipping Policy](${ORIGIN}/shipping): Free shipping across India; delivery in 3–7 business days via Delhivery and India Post.
+- [Shipping Policy](${ORIGIN}/shipping): Free shipping across India; delivery in 5–9 days (Faster: 1–6 days) via Delhivery and India Post.
 - [Refund & Returns](${ORIGIN}/refund): Easy 7-day returns for a full refund.
 - [Privacy Policy](${ORIGIN}/privacy)
 - [Terms & Conditions](${ORIGIN}/terms)

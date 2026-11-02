@@ -46,6 +46,24 @@ export function StoreProvider({ children }) {
     return [];
   });
 
+  // Cart reward the shopper has applied (₹ value of a flat offer, 0 = none).
+  // Rewards unlock by cart value but only count once applied.
+  const [appliedOfferValue, setAppliedOfferValue] = useState(0);
+  useEffect(() => {
+    try {
+      const v = parseInt(localStorage.getItem("tbx_applied_offer") || "0", 10);
+      if (v > 0) setAppliedOfferValue(v);
+    } catch {}
+  }, []);
+  const applyOffer = (value) => {
+    const v = Math.max(0, Number(value) || 0);
+    setAppliedOfferValue(v);
+    try {
+      localStorage.setItem("tbx_applied_offer", String(v));
+    } catch {}
+  };
+  const removeOffer = () => applyOffer(0);
+
   const [oneRupeeOffer, setOneRupeeOffer] = useState(null);
   const [isOneRupeeEnabled, setIsOneRupeeEnabled] = useState(false);
 
@@ -430,6 +448,9 @@ export function StoreProvider({ children }) {
         wishlist,
         cartTotal,
         hasOneRupeeItem, // Add this
+        appliedOfferValue,
+        applyOffer,
+        removeOffer,
         getMinCheckoutAmount, // Add this
         canCheckout, // Add this
         addToCart,

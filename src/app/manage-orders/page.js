@@ -278,7 +278,7 @@ const waMessages = (order) => {
     /faster|express/i.test(String(order?.["Delivery Type"] || "")) ||
     /^e/i.test(tracking);
   // Realistic India Post delivery window shown in the shipping messages.
-  const etaWindow = isFaster ? "1–5 days" : "4–9 days";
+  const etaWindow = isFaster ? "1–6 days" : "5–9 days";
 
   // Review page link (appended to the delivered/review message).
   const reviewLine = `\n⭐ *Leave a review:* ${REVIEW_URL}`;
@@ -469,7 +469,7 @@ const emailMessages = (order) => {
   const isFaster =
     /faster|express/i.test(String(order?.["Delivery Type"] || "")) ||
     /^e/i.test(tracking);
-  const etaWindow = isFaster ? "1–5 days" : "4–9 days";
+  const etaWindow = isFaster ? "1–6 days" : "5–9 days";
 
   const phone10 = String(order?.["Phone Number"] || "")
     .replace(/\D/g, "")
@@ -1359,6 +1359,21 @@ const TRACK_STATUS_OPTIONS = [
   HOLD_STATUS,
   "Cancelled",
 ];
+
+// Active = Getting Shipped OR Processing OR Confirmed OR In Transit without a
+// tracking ID — and never unconfirmed rows. The Orders tab's default view.
+const isActiveOrder = (order) => {
+  const s = order["Order Status"] || "";
+  const sl = s.toLowerCase();
+  if (/unconfirmed/.test(sl)) return false;
+  const hasTracking = String(order["Shipping ID"] || "").trim() !== "";
+  return (
+    sl.includes("processing") ||
+    sl.includes("getting shipped") ||
+    sl.includes("confirmed") ||
+    (s === "In Transit" && !hasTracking)
+  );
+};
 
 // The fulfilment flow, in order. Every order sits in exactly one phase, so
 // the Orders tab can show the pipeline as a stepper with live counts.
@@ -6276,20 +6291,24 @@ export default function ManageOrdersPage() {
     setDelivBusy(true);
     try {
       const rows = await parseTrackingStatusFile(file);
-      // Only true "Delivered" — exclude "Not Delivered" / "Undelivered" /
-      // "Item Delivered (Returned to Sender)" etc. which also contain "deliver".
+      // "Item Delivered (Returned to Sender)" / "Item Delivered(Sender)" — the
+      // parcel came back to us, so the order is returned → CANCELLED even
+      // though the file's Status says "Delivered". (Addressee = the customer.)
+      const RETURNED_RE =
+        /return(?:ed)?\s*to\s*sender|deliver(?:ed)?\s*\(\s*sender\s*\)/i;
+      const isReturned = (r) =>
+        RETURNED_RE.test(String(r.lastEvent || "")) ||
+        RETURNED_RE.test(String(r.status || ""));
+      // Only true "Delivered" — exclude "Not Delivered" / "Undelivered" and
+      // returned-to-sender, which also contain "deliver".
       const isDelivered = (s) => {
         const t = String(s || "")
           .trim()
           .toLowerCase();
         if (/not\s*deliver|un\s*deliver|return/i.test(t)) return false;
+        if (RETURNED_RE.test(t)) return false;
         return /deliver/i.test(t);
       };
-      // "Item Delivered (Returned to Sender)" — the parcel came back, so the
-      // order should be CANCELLED even though the file's Status is "Delivered".
-      const isReturned = (r) =>
-        /return(?:ed)?\s*to\s*sender/i.test(String(r.lastEvent || "")) ||
-        /return(?:ed)?\s*to\s*sender/i.test(String(r.status || ""));
       // "Item Kept on Hold" (or any hold event) — the parcel is sitting with
       // India Post, neither delivered nor lost.
       const isHold = (r) =>
@@ -6344,11 +6363,13 @@ export default function ManageOrdersPage() {
         });
       });
       // Reverse case: file NOT delivered, but order marked Delivered / Money
-      // Received → propose reverting to "In Transit".
+      // Received → propose reverting to "In Transit". Returned-to-sender rows
+      // aren't "wrongly delivered" — they go to Cancelled below, whatever the
+      // order's current status.
       const revSeen = new Set();
       const reverts = [];
       rows
-        .filter((r) => !isDelivered(r.status) && !isHold(r))
+        .filter((r) => !isDelivered(r.status) && !isHold(r) && !isReturned(r))
         .forEach((r) => {
           const o = findOrderForRow(r);
           if (!o) return;
@@ -6383,6 +6404,7 @@ export default function ManageOrdersPage() {
             article: r.article,
             currentStatus: cur || "—",
             lastEvent: r.lastEvent,
+            fileStatus: r.status,
           });
         });
 
@@ -6421,7 +6443,9 @@ export default function ManageOrdersPage() {
       setDelivSkipped({
         unmatched,
         already,
-        notDelivered: rows.length - delivered.length,
+        notDelivered:
+          rows.length - delivered.length - rows.filter((r) => isReturned(r)).length,
+        returned: rows.filter((r) => isReturned(r)).length,
       });
       if (!matches.length && !reverts.length && !cancels.length && !holds.length) {
         showToast(
@@ -6459,7 +6483,7 @@ export default function ManageOrdersPage() {
     setHoldMatches([]);
     setHoldSel([]);
     setDelivFileName("");
-    setDelivSkipped({ unmatched: 0, already: 0, notDelivered: 0 });
+    setDelivSkipped({ unmatched: 0, already: 0, notDelivered: 0, returned: 0 });
   };
   const toggleCancelSel = (oid) =>
     setCancelSel((prev) =>
@@ -7685,18 +7709,7 @@ export default function ManageOrdersPage() {
           !statusOnly.length || statusOnly.includes("all")
             ? true
             : statusOnly.some((f) => {
-                if (f === "active") {
-                  // Active = Getting Shipped OR Processing OR Confirmed
-                  // OR In Transit without a tracking ID — and never
-                  // includes unconfirmed rows (confirmed only).
-                  return (
-                    !isUnconfirmed &&
-                    (sl.includes("processing") ||
-                      sl.includes("getting shipped") ||
-                      sl.includes("confirmed") ||
-                      (s === "In Transit" && !hasTracking))
-                  );
-                }
+                if (f === "active") return isActiveOrder(order);
                 if (f === "intransit-notrack") {
                   return s === "In Transit" && !hasTracking;
                 }
@@ -7794,8 +7807,11 @@ export default function ManageOrdersPage() {
   // Live count per fulfilment phase (all real orders, ignoring list filters).
   const phaseCounts = useMemo(() => {
     const c = Object.fromEntries(ORDER_PHASES.map((p) => [p.key, 0]));
+    c.active = 0;
     orders.forEach((o) => {
-      if (String(o["Order ID"] || "").trim()) c[phaseOf(o)] += 1;
+      if (!String(o["Order ID"] || "").trim()) return;
+      c[phaseOf(o)] += 1;
+      if (isActiveOrder(o)) c.active += 1;
     });
     return c;
   }, [orders]);
@@ -9069,7 +9085,7 @@ export default function ManageOrdersPage() {
     const faster =
       /faster|express/i.test(String(order?.["Delivery Type"] || "")) ||
       /^e/i.test(String(order?.shippingId || order?.["Shipping ID"] || "").trim());
-    const eta = faster ? "1–5 days" : "4–9 days";
+    const eta = faster ? "1–6 days" : "5–9 days";
     // Dates from the order's own timestamp.
     const od = (() => {
       try {
@@ -11258,6 +11274,9 @@ export default function ManageOrdersPage() {
                             // order detail (deep-linked as ?order=ID).
                             onClick={(e) => {
                               if (selMode || longPressRef.current) return;
+                              // Portaled sheets (bill, menus) still bubble here
+                              // through React — only real taps on the card count.
+                              if (!e.currentTarget.contains(e.target)) return;
                               if (
                                 e.target.closest(
                                   "button, a, input, select, textarea, label, summary, details, [role='button']",
@@ -11279,8 +11298,8 @@ export default function ManageOrdersPage() {
                                 ))}
                               </span>
                             )}
-                            {/* Faster / Express delivery — speed-streak graphic +
-                                a small animated "Express" badge. */}
+                            {/* Faster / Express delivery and gift orders — the
+                                card itself carries the look (no tag on top). */}
                             {(() => {
                               const deliv = String(order["Delivery Type"] || "");
                               const fasterD =
@@ -11288,21 +11307,39 @@ export default function ManageOrdersPage() {
                                 /^e/i.test(String(order.shippingId || "").trim());
                               const giftO = isGiftOrder(order);
                               if (!fasterD && !giftO) return null;
-                              // Order-type strip: the first thing you read on
-                              // a card that needs different handling.
                               return (
-                                <div className="mo2-ribbon">
+                                <>
+                                {/* Card-type art, clipped to the card and kept
+                                    behind the content: lightning for Speed, a
+                                    ribbon + bow for gifts. */}
+                                <span className="mo-card-art" aria-hidden="true">
                                   {fasterD && (
-                                    <span className="mo2-tag speed">
-                                      <Truck size={12} /> Speed delivery
+                                    <span className="mo-art-zap">
+                                      <i className="mo-art-ring" />
+                                      <svg className="mo-art-bolt" viewBox="0 0 64 96">
+                                        <path d="M38 2 6 54h22l-6 40 36-56H34l10-36z" />
+                                      </svg>
+                                      <i className="mo-art-spark s1" />
+                                      <i className="mo-art-spark s2" />
+                                      <i className="mo-art-spark s3" />
                                     </span>
                                   )}
                                   {giftO && (
-                                    <span className="mo2-tag gift">
-                                      <Gift size={12} /> Gift order
+                                    <span className="mo-art-gift">
+                                      <svg className="mo-art-bow" viewBox="0 0 80 52">
+                                        <path d="M40 26C30 8 8 2 6 14s14 18 34 12z" />
+                                        <path d="M40 26C50 8 72 2 74 14S60 32 40 26z" />
+                                        <path className="tail" d="M38 28 26 50l8-2 4 4 2-24z" />
+                                        <path className="tail" d="M42 28l12 22-8-2-4 4-2-24z" />
+                                        <circle cx="40" cy="26" r="6" />
+                                      </svg>
+                                      <i className="mo-art-twinkle t1" />
+                                      <i className="mo-art-twinkle t2" />
+                                      <i className="mo-art-twinkle t3" />
                                     </span>
                                   )}
-                                </div>
+                                </span>
+                                </>
                               );
                             })()}
                             {/* Header — name + phone (left); status + date (right) */}
@@ -11334,21 +11371,37 @@ export default function ManageOrdersPage() {
                               )}
                               <div className="mo2-head-l">
                                 <span className="mo2-name" title={order["Customer Name"] || ""}>{order["Customer Name"] || "—"}</span>
-                                <button
-                                  type="button"
-                                  className="mo2-phone"
-                                  title="Tap to copy number"
-                                  onClick={() =>
-                                    copyToClipboard(String(order["Phone Number"] || ""), `phone-${idx}`)
-                                  }
-                                >
-                                  {order["Phone Number"] || "—"}
-                                  {copiedId === `phone-${idx}` && (
-                                    <span className="mo-phone-copied">
-                                      <Check size={11} /> Copied
+                                <span className="mo2-sub">
+                                  <button
+                                    type="button"
+                                    className="mo2-phone"
+                                    title="Tap to copy number"
+                                    onClick={() =>
+                                      copyToClipboard(String(order["Phone Number"] || ""), `phone-${idx}`)
+                                    }
+                                  >
+                                    {order["Phone Number"] || "—"}
+                                    {copiedId === `phone-${idx}` && (
+                                      <span className="mo-phone-copied">
+                                        <Check size={11} /> Copied
+                                      </span>
+                                    )}
+                                  </button>
+                                  {orderDate && (
+                                    <span className="mo2-date">
+                                      {orderDate.toLocaleDateString("en-IN", {
+                                        day: "numeric",
+                                        month: "short",
+                                      })}
+                                      {", "}
+                                      {orderDate.toLocaleTimeString("en-IN", {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      })}
                                     </span>
                                   )}
-                                </button>
+                                </span>
                               </div>
                               <div className="mo2-head-r">
                                 <div className="mo2-statusrow">
@@ -11396,19 +11449,6 @@ export default function ManageOrdersPage() {
                                       );
                                     })()}
                                 </div>
-                                <span className="mo2-date">
-                                  {orderDate
-                                    ? `${orderDate.toLocaleDateString("en-IN", {
-                                        day: "numeric",
-                                        month: "short",
-                                        year: "numeric",
-                                      })} | ${orderDate.toLocaleTimeString("en-IN", {
-                                        hour: "numeric",
-                                        minute: "2-digit",
-                                        hour12: true,
-                                      })}`
-                                    : "—"}
-                                </span>
                               </div>
                             </div>
 
@@ -11458,12 +11498,10 @@ export default function ManageOrdersPage() {
                               <div className="mo2-covers" onClick={(e) => e.stopPropagation()}>
                                 {books.map((b, ci) => {
                                   const img = getBookImage(b.name);
-                                  const price =
-                                    b.total > 0 ? b.total : b.price > 0 ? b.price : 0;
                                   const picked =
                                     !!pickChecked[bookKey(orderId, ci)];
                                   return (
-                                    <div className="mo2-cover-item" key={ci}>
+                                    <div className="mo2-cover-item" key={ci} title={b.name}>
                                       <div
                                         className={`mo2-cover mo2-cover-pick${picked ? " picked" : ""}`}
                                         onClick={(e) => {
@@ -11491,12 +11529,6 @@ export default function ManageOrdersPage() {
                                           </span>
                                         )}
                                       </div>
-                                      <span className="mo2-cover-name" title={b.name}>
-                                        {b.name}
-                                      </span>
-                                      <span className="mo2-cover-price">
-                                        {price > 0 ? `₹${price}` : "—"}
-                                      </span>
                                     </div>
                                   );
                                 })}
@@ -11516,31 +11548,22 @@ export default function ManageOrdersPage() {
                               );
                               const giftOn = addonsB.giftOn;
                               const bmQty = addonsB.bookmarkQty;
-                              const bookCount = books.reduce(
-                                (s, b) => s + (Number(b.quantity) || 1),
-                                0,
-                              );
+                              const liveTrack = String(order["Tracking detail"] || "")
+                                .split("||")[0]
+                                .trim();
+                              if (!liveTrack && !fasterD && !giftOn && !(bmQty > 0))
+                                return null;
                               return (
                                 <div
                                   className="mo2-badges"
                                   onClick={(e) => e.stopPropagation()}
                                 >
-                                  <span className="mo2-badge mo2-badge-count">
-                                    📚 {bookCount} book{bookCount === 1 ? "" : "s"}
-                                  </span>
-                                  {String(order["Tracking detail"] || "")
-                                    .split("||")[0]
-                                    .trim() && (
+                                  {liveTrack && (
                                     <span
                                       className="mo2-badge mo2-badge-track"
                                       title="Live India Post status"
                                     >
-                                      📍{" "}
-                                      {
-                                        String(order["Tracking detail"]).split(
-                                          "||",
-                                        )[0]
-                                      }
+                                      📍 {liveTrack}
                                     </span>
                                   )}
                                   {fasterD && (
@@ -11562,113 +11585,7 @@ export default function ManageOrdersPage() {
                               );
                             })()}
 
-                            <div className="mo2-div" />
-
-                            {/* Info grid — order/payment type + weight & tracking (edit via sheet) */}
-                            {(() => {
-                              const advancePaid = /^\s*yes/i.test(
-                                String(order["Advance Paid"] || ""),
-                              );
-                              // Payment type is now MERGED into one "Order"
-                              // field — type + payment state in a single badge.
-                              const orderLabel = advancePaid
-                                ? "COD · ₹99 advance paid"
-                                : isCOD
-                                  ? "Cash on delivery"
-                                  : "Online (UPI) · Paid";
-                              const num = (v) =>
-                                parseFloat(
-                                  String(v ?? "").replace(/[^\d.]/g, ""),
-                                ) || 0;
-                              const grandAmt = num(order["Total Amount"]);
-                              const advAmt = advancePaid
-                                ? num(order["Advance Amount"]) || 99
-                                : 0;
-                              const codCollect =
-                                num(order["COD Collectible"]) ||
-                                Math.max(0, grandAmt - advAmt);
-                              const w = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");
-                              const sz = String(order["Sizes(Lxbxh)"] || "")
-                                .trim()
-                                .replace(/[xX×*]/g, "x");
-                              const wsText =
-                                w || sz
-                                  ? `${w ? w + "gm" : ""}${w && sz ? " | " : ""}${sz}`
-                                  : "Add weight & size";
-                              const trk = String(
-                                order.shippingId || order["Shipping ID"] || "",
-                              ).trim();
-                              return (
-                                <div className="mo2-grid" onClick={(e) => e.stopPropagation()}>
-                                  <div className="mo2-cell">
-                                    <span className="mo2-cell-k">Order</span>
-                                    <span
-                                      className={`mo2-badge-pill ${isCOD && !advancePaid ? "mo2-badge-blue" : "mo2-badge-green"}`}
-                                    >
-                                      {orderLabel}
-                                    </span>
-                                  </div>
-                                  <div className="mo2-cell mo2-cell-r">
-                                    <span className="mo2-cell-k">
-                                      {isCOD ? "Collect at door" : "Payment"}
-                                    </span>
-                                    <span
-                                      className={`mo2-cell-v${isCOD ? "" : " mo2-v-green"}`}
-                                    >
-                                      {isCOD
-                                        ? `₹${codCollect.toLocaleString("en-IN")}`
-                                        : grandAmt
-                                          ? `Paid ₹${grandAmt.toLocaleString("en-IN")}`
-                                          : "Paid"}
-                                    </span>
-                                  </div>
-                                  <div className="mo2-cell">
-                                    <span className="mo2-cell-k">Weight &amp; Size</span>
-                                    <button
-                                      type="button"
-                                      className="mo2-cell-v mo2-cell-edit mo2-v-ul"
-                                      onClick={() => openShipEdit(order)}
-                                    >
-                                      {wsText} <Pencil size={12} />
-                                    </button>
-                                  </div>
-                                  <div className="mo2-cell mo2-cell-r">
-                                    <span className="mo2-cell-k">Tracking id</span>
-                                    <button
-                                      type="button"
-                                      className={`mo2-cell-v mo2-cell-edit${trk ? " mo2-v-green" : ""}`}
-                                      onClick={() => openShipEdit(order)}
-                                    >
-                                      {trk || "Add"} <Pencil size={12} />
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-
-                            {/* Note — shown on EVERY card for a consistent
-                                layout. Only the customer's own note is shown
-                                here; a dash when they didn't add one. (The
-                                strict delivery instruction lives on the printed
-                                address label, not on the card.) */}
-                            {(() => {
-                              const custNote = isGiftOrder(order)
-                                ? ""
-                                : cleanNote(
-                                    orderNotes[orderId] ||
-                                      order["Order Comment"],
-                                  );
-                              return (
-                                <div className="mo2-note">
-                                  <span className="mo2-note-k">Note :</span>
-                                  <span className="mo2-note-v">
-                                    {custNote || "—"}
-                                  </span>
-                                </div>
-                              );
-                            })()}
-
-                            <div className="mo2-div" />
+                            <div className="mo2-div mo2-push" />
 
                             {/* Return/refund request for this order, if any */}
                             {returnsByOrder[orderId] && (
@@ -11707,18 +11624,104 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
-                            {/* Total order value */}
-                            <div className="mo2-total" onClick={(e) => e.stopPropagation()}>
-                              <span className="mo2-total-k">Total order value</span>
-                              <button
-                                type="button"
-                                className="mo2-total-v"
-                                onClick={() => setBillOrderId(orderId)}
-                                title="Tap for bill"
-                              >
-                                ₹{Number(order.revenue || 0).toLocaleString("en-IN")}
-                              </button>
-                            </div>
+                            {/* Key details: how it's paid + what it's worth (tap for the
+                                bill), then the two things packing needs — weight & size
+                                and tracking. The customer's note only when there is one. */}
+                            {(() => {
+                              const advancePaid = /^\s*yes/i.test(
+                                String(order["Advance Paid"] || ""),
+                              );
+                              const payLabel = advancePaid
+                                ? "COD · ₹99 paid"
+                                : isCOD
+                                  ? "Cash on delivery"
+                                  : "Paid online";
+                              const num = (v) =>
+                                parseFloat(
+                                  String(v ?? "").replace(/[^\d.]/g, ""),
+                                ) || 0;
+                              const grandAmt = num(order["Total Amount"]);
+                              const advAmt = advancePaid
+                                ? num(order["Advance Amount"]) || 99
+                                : 0;
+                              const codCollect =
+                                num(order["COD Collectible"]) ||
+                                Math.max(0, grandAmt - advAmt);
+                              const bookCount = books.reduce(
+                                (t, b) => t + (Number(b.quantity) || 1),
+                                0,
+                              );
+                              const w = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");
+                              const sz = String(order["Sizes(Lxbxh)"] || "")
+                                .trim()
+                                .replace(/[xX×*]/g, "×");
+                              const trk = String(
+                                order.shippingId || order["Shipping ID"] || "",
+                              ).trim();
+                              const custNote = isGiftOrder(order)
+                                ? ""
+                                : cleanNote(
+                                    orderNotes[orderId] ||
+                                      order["Order Comment"],
+                                  );
+                              return (
+                                <div className="mo2-keys" onClick={(e) => e.stopPropagation()}>
+                                  <div className="mo2-money">
+                                    <div className="mo2-money-l">
+                                      <span
+                                        className={`mo2-pay ${isCOD && !advancePaid ? "cod" : "paid"}`}
+                                      >
+                                        {payLabel}
+                                      </span>
+                                      <span className="mo2-money-sub">
+                                        {bookCount} book{bookCount === 1 ? "" : "s"}
+                                        {isCOD
+                                          ? ` · collect ₹${codCollect.toLocaleString("en-IN")}`
+                                          : ""}
+                                      </span>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      className="mo2-money-v"
+                                      onClick={() => setBillOrderId(orderId)}
+                                      title="View bill"
+                                    >
+                                      ₹{Number(order.revenue || 0).toLocaleString("en-IN")}
+                                      <ChevronRight size={15} />
+                                    </button>
+                                  </div>
+                                  <div className="mo2-ship">
+                                    <button
+                                      type="button"
+                                      className={`mo2-ship-btn${w || sz ? "" : " todo"}`}
+                                      onClick={() => openShipEdit(order)}
+                                      title="Edit weight & size"
+                                    >
+                                      <Package size={13} />
+                                      <span>
+                                        {w || sz
+                                          ? [w && `${w} g`, sz].filter(Boolean).join(" · ")
+                                          : "Add weight & size"}
+                                      </span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className={`mo2-ship-btn${trk ? " ok" : " todo"}`}
+                                      onClick={() => openShipEdit(order)}
+                                      title="Edit tracking id"
+                                    >
+                                      <Truck size={13} />
+                                      <span>{trk || "Add tracking"}</span>
+                                    </button>
+                                  </div>
+                                  {custNote && (
+                                    <p className="mo2-note" title={custNote}>
+                                      “{custNote}”
+                                    </p>
+                                  )}
+                                </div>
+                              );
+                            })()}
 
                             <div className="mo2-div" />
 
@@ -11924,35 +11927,43 @@ export default function ManageOrdersPage() {
                             {billOrderId === orderId &&
                               typeof document !== "undefined" &&
                               createPortal(
-                                <div
-                                  className="bill-modal-overlay"
-                                  onClick={() => setBillOrderId(null)}
-                                >
+                                // Bill — the same slide-up sheet as Filters / Actions.
+                                <>
                                   <motion.div
-                                    className="bill-modal mo-bill"
-                                    initial={{ opacity: 0, y: 24, scale: 0.98 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    transition={{ duration: 0.24, ease: EASE_OUT }}
-                                    onClick={(e) => e.stopPropagation()}
+                                    className="mo-sheet-backdrop"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.2 }}
+                                    onClick={() => setBillOrderId(null)}
+                                  />
+                                  <motion.aside
+                                    className="mo-sheet mo-sheet-up mo-bill"
+                                    role="dialog"
+                                    aria-modal="true"
+                                    aria-label="Order bill"
+                                    initial={{ y: "100%" }}
+                                    animate={{ y: 0 }}
+                                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                   >
-                                    <div className="bill-header">
+                                    <span className="mo-sheet-grip" aria-hidden="true" />
+                                    <div className="mo-sheet-head">
                                       <div className="mo-bill-head-l">
-                                        <span className="mo-bill-title">
-                                          Order bill
-                                        </span>
+                                        <h3>Order bill</h3>
                                         <span className="mo-bill-sub">
                                           {order["Customer Name"] || "Customer"}{" "}
                                           · #{oidStr.slice(-6)}
                                         </span>
                                       </div>
-                                      <span
-                                        className="mo-bill-x"
+                                      <button
+                                        type="button"
+                                        className="mo-sheet-x"
                                         onClick={() => setBillOrderId(null)}
+                                        aria-label="Close"
                                       >
                                         <X size={18} />
-                                      </span>
+                                      </button>
                                     </div>
-                                    <div className="mo-bill-body">
+                                    <div className="mo-sheet-body mo-bill-body">
                                       {books.length > 0 && (
                                         <div className="mo-bill-sec">
                                           <div className="mo-bill-sec-t">
@@ -12596,8 +12607,8 @@ export default function ManageOrdersPage() {
                                       </button>
                                     </div>
                                     </div>
-                                  </motion.div>
-                                </div>,
+                                  </motion.aside>
+                                </>,
                                 moPortalTarget(),
                               )}
                           </motion.div>
@@ -14199,6 +14210,29 @@ export default function ManageOrdersPage() {
         {activeTab === "orders" && (
           <nav className="mo-phases" aria-label="Order phases">
             {(() => {
+              // "Active" — the default working view (confirmed, not yet shipped).
+              const on =
+                Array.isArray(statusFilter) &&
+                statusFilter.length === 1 &&
+                statusFilter[0] === "active";
+              return (
+                <button
+                  type="button"
+                  className={`mo-phase mo-phase-all mo-phase-active${on ? " on" : ""}${phaseCounts.active ? "" : " empty"}`}
+                  onClick={() => setStatusFilter(["active"])}
+                  aria-pressed={on}
+                  title="Confirmed orders still being worked on"
+                >
+                  <span className="mo-phase-top">
+                    <span className="mo-phase-step">●</span>
+                    <span className="mo-phase-n">{phaseCounts.active.toLocaleString()}</span>
+                  </span>
+                  <span className="mo-phase-label">Active</span>
+                  <span className="mo-phase-hint">Confirmed · in progress</span>
+                </button>
+              );
+            })()}
+            {(() => {
               // "All" — every order across the flow; tap again for Active.
               const on =
                 Array.isArray(statusFilter) &&
@@ -14486,7 +14520,7 @@ export default function ManageOrdersPage() {
                     const days = Array.from({ length: DAYS }, (_, i) => {
                       const d = new Date(today);
                       d.setDate(d.getDate() - (DAYS - 1 - i));
-                      return { d, k: dayKey(d), upi: 0, adv: 0, cod: 0 };
+                      return { d, k: dayKey(d), upi: 0, adv: 0, cod: 0, speed: 0, gift: 0 };
                     });
                     const idx = Object.fromEntries(days.map((x, i) => [x.k, i]));
                     chartBaseOrders.forEach((o) => {
@@ -14498,12 +14532,26 @@ export default function ManageOrdersPage() {
                       if (mode === "advance") days[i].adv += 1;
                       else if (mode === "cod") days[i].cod += 1;
                       else days[i].upi += 1;
+                      // Same rule as the card art: Speed = faster/express
+                      // delivery or a Speed Post (E…) article.
+                      if (
+                        /faster|express/i.test(String(o["Delivery Type"] || "")) ||
+                        /^e/i.test(String(o.shippingId || o["Shipping ID"] || "").trim())
+                      )
+                        days[i].speed += 1;
+                      if (isGiftOrder(o)) days[i].gift += 1;
                     });
                     const tot = (x) => x.upi + x.adv + x.cod;
                     const max = Math.max(1, ...days.map(tot));
                     const sum = days.reduce(
-                      (a, x) => ({ upi: a.upi + x.upi, adv: a.adv + x.adv, cod: a.cod + x.cod }),
-                      { upi: 0, adv: 0, cod: 0 },
+                      (a, x) => ({
+                        upi: a.upi + x.upi,
+                        adv: a.adv + x.adv,
+                        cod: a.cod + x.cod,
+                        speed: a.speed + x.speed,
+                        gift: a.gift + x.gift,
+                      }),
+                      { upi: 0, adv: 0, cod: 0, speed: 0, gift: 0 },
                     );
                     return (
                       <div className="mo-daybars">
@@ -14522,6 +14570,9 @@ export default function ManageOrdersPage() {
                             <i className="upi" /> Online {sum.upi}
                             <i className="adv" /> ₹99 advance {sum.adv}
                             <i className="cod" /> COD {sum.cod}
+                            <span className="mo-daybars-sep" aria-hidden="true" />
+                            <b className="mo-daybars-tag speed">⚡ Speed {sum.speed}</b>
+                            <b className="mo-daybars-tag gift">🎁 Gift {sum.gift}</b>
                           </span>
                         </button>
                         <AnimatePresence initial={false}>
@@ -14538,7 +14589,7 @@ export default function ManageOrdersPage() {
                                 type="button"
                                 className={`mo-daybar${on ? " on" : ""}${selectedDate && !on ? " dim" : ""}`}
                                 onClick={() => setSelectedDate(on ? "" : x.k)}
-                                title={`${x.d.toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · ${t} orders — Online ${x.upi}, ₹99 ${x.adv}, COD ${x.cod}`}
+                                title={`${x.d.toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · ${t} orders — Online ${x.upi}, ₹99 ${x.adv}, COD ${x.cod} · Speed ${x.speed}, Gift ${x.gift}`}
                                 aria-pressed={on}
                               >
                                 <span className="mo-daybar-n">{t || ""}</span>
@@ -14546,6 +14597,10 @@ export default function ManageOrdersPage() {
                                   {x.cod > 0 && <span className="cod" style={{ flexGrow: x.cod }} />}
                                   {x.adv > 0 && <span className="adv" style={{ flexGrow: x.adv }} />}
                                   {x.upi > 0 && <span className="upi" style={{ flexGrow: x.upi }} />}
+                                </span>
+                                <span className="mo-daybar-tags">
+                                  {x.speed > 0 && <i className="speed">⚡{x.speed}</i>}
+                                  {x.gift > 0 && <i className="gift">🎁{x.gift}</i>}
                                 </span>
                                 <span className="mo-daybar-d">
                                   {isToday ? "Today" : x.d.getDate()}
@@ -17166,6 +17221,12 @@ export default function ManageOrdersPage() {
                       {delivSkipped.notDelivered} not delivered yet
                     </span>
                   )}
+                  {delivSkipped.returned > 0 && (
+                    <span className="mo-deliv-chip warn">
+                      <RotateCcw size={12} /> {delivSkipped.returned} returned
+                      to sender
+                    </span>
+                  )}
                   {delivSkipped.already > 0 && (
                     <span className="mo-deliv-chip">
                       {delivSkipped.already} already set (will re-apply)
@@ -17180,6 +17241,81 @@ export default function ManageOrdersPage() {
                 </div>
               )}
 
+              {/* Returned to sender → cancel the order. */}
+              {cancelMatches.length > 0 && (
+                <>
+                  <div className="mo-deliv-bar mo-deliv-bar-cancel">
+                    <label className="mo-deliv-all">
+                      <input
+                        type="checkbox"
+                        checked={cancelSel.length === cancelMatches.length}
+                        onChange={(e) =>
+                          setCancelSel(
+                            e.target.checked
+                              ? cancelMatches.map((m) => m.order["Order ID"])
+                              : [],
+                          )
+                        }
+                      />
+                      Returned to sender — cancel ({cancelSel.length}/
+                      {cancelMatches.length})
+                    </label>
+                    <button
+                      type="button"
+                      className="mo-deliv-cancel-push"
+                      onClick={pushCancelUpdates}
+                      disabled={delivBusy || cancelSel.length === 0}
+                    >
+                      {delivBusy ? (
+                        <Loader2 size={15} className="mo-spin" />
+                      ) : (
+                        <X size={15} />
+                      )}
+                      Cancel {cancelSel.length} order
+                      {cancelSel.length === 1 ? "" : "s"}
+                    </button>
+                  </div>
+                  <div className="mo-deliv-list">
+                    {cancelMatches.map((m) => {
+                      const oid = m.order["Order ID"];
+                      const on = cancelSel.includes(oid);
+                      return (
+                        <div
+                          key={oid}
+                          className={`mo-deliv-row${on ? " on" : ""}`}
+                          onClick={() => toggleCancelSel(oid)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={on}
+                            onChange={() => toggleCancelSel(oid)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <div className="mo-deliv-row-main">
+                            <span className="mo-deliv-row-name">
+                              {m.order["Customer Name"] || "—"}
+                              <span className="mo-deliv-row-oid">{oid}</span>
+                            </span>
+                            <span className="mo-deliv-row-art">
+                              {m.article} · {m.fileStatus || m.lastEvent || "Returned to sender"}
+                            </span>
+                          </div>
+                          <div className="mo-deliv-row-flow">
+                            <span className="mo-deliv-cur">
+                              {m.currentStatus}
+                            </span>
+                            <ArrowRight size={13} />
+                            <span className="mo-deliv-new cancel">
+                              <X size={11} />
+                              Cancelled
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
               {delivMatches.length > 0 && (
                 <>
                   <div className="mo-deliv-bar">
@@ -17494,81 +17630,6 @@ export default function ManageOrdersPage() {
                 </>
               )}
 
-              {/* Returned to sender → cancel the order. */}
-              {cancelMatches.length > 0 && (
-                <>
-                  <div className="mo-deliv-bar mo-deliv-bar-cancel">
-                    <label className="mo-deliv-all">
-                      <input
-                        type="checkbox"
-                        checked={cancelSel.length === cancelMatches.length}
-                        onChange={(e) =>
-                          setCancelSel(
-                            e.target.checked
-                              ? cancelMatches.map((m) => m.order["Order ID"])
-                              : [],
-                          )
-                        }
-                      />
-                      Returned to sender — cancel ({cancelSel.length}/
-                      {cancelMatches.length})
-                    </label>
-                    <button
-                      type="button"
-                      className="mo-deliv-cancel-push"
-                      onClick={pushCancelUpdates}
-                      disabled={delivBusy || cancelSel.length === 0}
-                    >
-                      {delivBusy ? (
-                        <Loader2 size={15} className="mo-spin" />
-                      ) : (
-                        <X size={15} />
-                      )}
-                      Cancel {cancelSel.length} order
-                      {cancelSel.length === 1 ? "" : "s"}
-                    </button>
-                  </div>
-                  <div className="mo-deliv-list">
-                    {cancelMatches.map((m) => {
-                      const oid = m.order["Order ID"];
-                      const on = cancelSel.includes(oid);
-                      return (
-                        <div
-                          key={oid}
-                          className={`mo-deliv-row${on ? " on" : ""}`}
-                          onClick={() => toggleCancelSel(oid)}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={on}
-                            onChange={() => toggleCancelSel(oid)}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <div className="mo-deliv-row-main">
-                            <span className="mo-deliv-row-name">
-                              {m.order["Customer Name"] || "—"}
-                              <span className="mo-deliv-row-oid">{oid}</span>
-                            </span>
-                            <span className="mo-deliv-row-art">
-                              {m.article} · returned to sender
-                            </span>
-                          </div>
-                          <div className="mo-deliv-row-flow">
-                            <span className="mo-deliv-cur">
-                              {m.currentStatus}
-                            </span>
-                            <ArrowRight size={13} />
-                            <span className="mo-deliv-new cancel">
-                              <X size={11} />
-                              Cancelled
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
               </>
               )}
             </div>

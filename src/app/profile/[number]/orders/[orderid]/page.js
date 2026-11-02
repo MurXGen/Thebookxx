@@ -2020,7 +2020,7 @@ export default function OrderDetailPage() {
     order["Order Status"] || "",
   );
   // Placed-on date + estimated arrival window (calendar dates, not a static
-  // "4–9 days" that never counts down).
+  // "5–9 days" that never counts down).
   const orderDate = parseSheetDate(
     order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
   );
@@ -2271,7 +2271,7 @@ export default function OrderDetailPage() {
   const progressPct = Math.round(computeProgress(order) * 100);
 
   // Delivery window (min/max days) — used for the support sheet ETA copy.
-  const [etaMin, etaMax] = isFaster ? [1, 5] : [4, 9];
+  const [etaMin, etaMax] = isFaster ? [1, 6] : [5, 9];
   const etaText = (() => {
     if (!orderDate) return `Reaching you in ${etaMin}–${etaMax} days`;
     const from = new Date(orderDate.getTime() + etaMin * 86400000);
@@ -3315,7 +3315,7 @@ export default function OrderDetailPage() {
                     <strong>Air mode dispatch</strong>
                     <span>
                       Your parcel ships by <b>air</b> on priority — arriving in{" "}
-                      <b>1–5 days</b> instead of {etaMin}–{etaMax} days.
+                      <b>1–6 days</b> instead of {etaMin}–{etaMax} days.
                     </span>
                   </div>
                 </div>
@@ -3326,7 +3326,7 @@ export default function OrderDetailPage() {
                     first
                   </div>
                   <div className="fdu-benefit">
-                    <Truck size={15} /> Faster transit: 1–5 days delivery window
+                    <Truck size={15} /> Faster transit: 1–6 days delivery window
                   </div>
                   <div className="fdu-benefit">
                     <ShieldCheck size={15} /> Same safe, tracked handling — end to

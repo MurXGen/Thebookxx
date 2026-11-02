@@ -451,7 +451,7 @@ export default function BookDetailsModal({ book }) {
     },
     {
       q: `Is ${book.name} available with Cash on Delivery (COD)?`,
-      a: `Yes. ${book.name} can be ordered with Cash on Delivery or fast UPI, and ships free in 3 to 7 days via Delhivery and India Post.`,
+      a: `Yes. ${book.name} can be ordered with Cash on Delivery or fast UPI, and ships free in 5 to 9 days via Delhivery and India Post.`,
     },
     {
       q: `Is this a genuine, original copy of ${book.name}?`,
@@ -687,8 +687,8 @@ export default function BookDetailsModal({ book }) {
                   },
                   transitTime: {
                     "@type": "QuantitativeValue",
-                    minValue: 3,
-                    maxValue: 7,
+                    minValue: 5,
+                    maxValue: 9,
                     unitCode: "DAY",
                   },
                 },
@@ -1027,7 +1027,7 @@ export default function BookDetailsModal({ book }) {
                           className="bd-stock-icon-success"
                         />
                         <span className="bd-stock-text bd-text-success">
-                          In stock, delivers in 3-7 days
+                          In stock, delivers in 5–9 days
                         </span>
                       </>
                     )}
@@ -1412,7 +1412,7 @@ export default function BookDetailsModal({ book }) {
               , with <strong>free delivery</strong>,{" "}
               <strong>Cash on Delivery (COD)</strong> and fast UPI checkout
               available across India. Every copy is 100% genuine and ships in
-              secure, protective packaging within 3–7 days via Delhivery and
+              secure, protective packaging within 5–9 days via Delhivery and
               India Post.
             </p>
             <p className="bd-seo-text">

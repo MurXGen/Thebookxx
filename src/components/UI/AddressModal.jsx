@@ -41,6 +41,7 @@ import {
   CreditCard,
   TrendingDown,
   Banknote,
+  Receipt,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -151,6 +152,8 @@ export default function AddressModal({
   cartBooks = [],
   offerDiscount = 0,
   offerLabel = "",
+  unlockedOffer = null,
+  onApplyOffer,
   generateViewBagLinkWithDetails,
   shortenUrl,
   codHandlingFee = 29, // NEW
@@ -820,6 +823,45 @@ export default function AddressModal({
   const getDeliveryCharge = (isFaster) =>
     proFreeDelivery ? 0 : isFaster ? fasterDeliveryCharge : standardDeliveryCharge;
 
+  // Payment-step micro-interactions: light haptics + a bookmark that pops out
+  // of (or tucks back into) the Bookmarks card on each +/−.
+  const buzz = (ms) => {
+    try {
+      navigator.vibrate?.(ms);
+    } catch {}
+  };
+  const [bmFx, setBmFx] = useState(null); // { k, dir: "up" | "down" }
+
+  // "More below" hints: true while a sheet's scroll area has hidden content
+  // further down. Polled lightly while open so expanding sections count too.
+  const paySelRef = useRef(null);
+  const addrBodyRef = useRef(null);
+  const [payMore, setPayMore] = useState(false);
+  const [addrMore, setAddrMore] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    // Only when a meaningful amount is hidden (not a stray line or margin).
+    const more = (el) =>
+      !!el && el.scrollHeight - el.scrollTop - el.clientHeight > 64;
+    const run = () => {
+      setPayMore(more(paySelRef.current));
+      setAddrMore(more(addrBodyRef.current));
+    };
+    run();
+    const id = setInterval(run, 350);
+    return () => clearInterval(id);
+  }, [open]);
+  const scrollMore = (ref) => {
+    const el = ref.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  };
+
+  // What Faster costs on top of Standard (the priority fee).
+  const fasterExtra = Math.max(
+    0,
+    (fasterDeliveryCharge || 0) - (standardDeliveryCharge || 0),
+  );
+
   const getTotalWithDelivery = (isFaster) =>
     netPayable + getDeliveryCharge(isFaster);
 
@@ -1118,6 +1160,60 @@ export default function AddressModal({
   // user's delivery-speed choice, because `setFasterDelivery` is async and
   // reading from `fasterDelivery` state inside this function can return the
   // pre-selection default. The default arg falls back to state for safety.
+  // One bill snapshot for notifications (Telegram / WhatsApp), computed with
+  // exactly the same rules as the order row written below — so alerts always
+  // match the order. Handling & Care and the Faster priority fee are separate.
+  const buildBillSnapshot = (
+    paymentType,
+    isFaster = fasterDelivery,
+    advance = false,
+    paymentLabel = "",
+  ) => {
+    const n0 = (v) => Math.max(0, Math.round(Number(v) || 0));
+    const mrp = (cartBooks || []).reduce((sum, b) => {
+      const q = Number(b?.qty ?? b?.quantity ?? 1) || 1;
+      const unit = Number(
+        b?.originalPrice ?? b?.mrp ?? b?.price ?? b?.discountedPrice ?? 0,
+      );
+      return sum + unit * q;
+    }, 0);
+    const big = totalDiscounted > 1000;
+    const handling = proFreeDelivery ? 0 : big ? standardDeliveryCharge : 0;
+    const deliveryStd = proFreeDelivery ? 0 : big ? 0 : standardDeliveryCharge;
+    const priority = proFreeDelivery || !isFaster ? 0 : fasterExtra;
+    const gift = giftWrap || giftWrapSelected ? giftWrapCharge : 0;
+    const codFee = advance ? 0 : paymentType === "COD" ? codFeeAmount : 0;
+    const raw =
+      netPayable + getDeliveryCharge(isFaster) + gift + bookmarkCharge + codFee;
+    const extraWallet = couponWalletExtra(raw);
+    const total = Math.max(0, raw - extraWallet);
+    const advanceAmt = advance ? 99 : 0;
+    return {
+      mrp: n0(mrp),
+      subtotal: n0(totalDiscounted),
+      itemDiscount: n0(mrp - totalDiscounted),
+      offerLabel: offerActive ? offerLabel : "",
+      offer: n0(activeOfferDiscount),
+      coupon: appliedCoupon?.code || "",
+      couponDiscount: n0(appliedCoupon ? couponDiscount : 0),
+      wallet: n0((walletApplied || 0) + extraWallet),
+      deliveryStd: n0(deliveryStd),
+      handling: n0(handling),
+      priority: n0(priority),
+      faster: !!isFaster,
+      gift: n0(gift),
+      bookmarkQty: n0(bookmarkQty),
+      bookmarkCharge: n0(bookmarkCharge),
+      codFee: n0(codFee),
+      total: n0(total),
+      advance: n0(advanceAmt),
+      codCollect:
+        paymentType === "COD" || advance ? n0(total - advanceAmt) : 0,
+      paymentLabel,
+      note: resellNote || "",
+    };
+  };
+
   const submitToGoogleForm = async (
     paymentType,
     isFaster = fasterDelivery,
@@ -1221,7 +1317,9 @@ export default function AddressModal({
         // Handling & Care fee — applies on carts above ₹1000 (the 20% band) and
         // only on Standard delivery (the express fee is not a handling charge).
         "Handling & Care": String(
-          !isFaster && totalDiscounted > 1000 ? n0(deliveryChargeForOrder) : 0,
+          !proFreeDelivery && totalDiscounted > 1000
+            ? n0(standardDeliveryCharge)
+            : 0,
         ),
         "Advance Amount": String(n0(advanceAmt)),
         "COD Collectible": String(n0(codCollectForOrder)),
@@ -1431,6 +1529,9 @@ export default function AddressModal({
           fasterDelivery,
           giftWrap,
           orderId: placedOrderId || upiOrderRef,
+          bill: advanceMode
+            ? buildBillSnapshot("COD", fasterDelivery, true)
+            : buildBillSnapshot("UPI", fasterDelivery),
         },
         fasterDelivery,
         giftWrap,
@@ -1477,6 +1578,8 @@ export default function AddressModal({
         area,
         fasterDelivery: isFaster,
         giftWrap,
+        orderId: codConfirmRef.current?.oid || placedOrderId || "",
+        bill: buildBillSnapshot("COD", isFaster),
       };
       let shortLink = "";
       if (generateViewBagLinkWithDetails && shortenUrl) {
@@ -1517,6 +1620,9 @@ export default function AddressModal({
         fasterDelivery,
         giftWrap,
         orderId: oid,
+        bill: advanceMode
+          ? buildBillSnapshot("COD", fasterDelivery, true)
+          : buildBillSnapshot("UPI", fasterDelivery),
       };
       await notifyTelegram(
         addressData,
@@ -1561,6 +1667,7 @@ export default function AddressModal({
           fasterDelivery,
           giftWrap,
           orderId: placedOrderId,
+          bill: buildBillSnapshot("COD", fasterDelivery),
         },
         fasterDelivery,
         giftWrap,
@@ -1689,12 +1796,58 @@ export default function AddressModal({
     chooseUpiApp(app);
   };
 
+  // Nothing left to pay (wallet / coupon covers it all) → place the order as
+  // confirmed right away — no QR, no payment step.
+  const isZeroPayable = upiTotalForFlow <= 0;
+  const placeZeroOrder = () => {
+    const label = "Wallet (fully paid)";
+    try {
+      trackPurchase({
+        cartItems: cartBooks,
+        totalAmount: 0,
+        paymentId: `WALLET-${Date.now()}`,
+      });
+    } catch (_) {}
+    const oid = ensureCheckoutOid();
+    submitToGoogleForm("Wallet", fasterDelivery, true, oid, label);
+    if (notifyTelegram) {
+      notifyTelegram(
+        {
+          name,
+          phone,
+          city,
+          pincode,
+          address: fullAddress,
+          district,
+          area,
+          fasterDelivery,
+          giftWrap,
+          orderId: oid,
+          bill: buildBillSnapshot("UPI", fasterDelivery, false, label),
+        },
+        "Wallet",
+        fasterDelivery,
+        giftWrap,
+        "",
+      ).catch?.(() => {});
+    }
+    setShowPayMethod(false);
+    persistLogin();
+    setSuccessPayment("UPI");
+    setSuccessPaymentLabel(label);
+    finishToSuccess(oid, "UPI");
+  };
+
   const beginPayment = (method) => {
     if (!isFormValid()) {
       showToast(validationMessage(), "error");
       return;
     }
     setShowPaySelect(false);
+    if (isZeroPayable && method !== "WhatsApp") {
+      placeZeroOrder();
+      return;
+    }
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method,
       cart_total: finalPayable,
@@ -1755,6 +1908,7 @@ export default function AddressModal({
           fasterDelivery,
           giftWrap,
           orderId,
+          bill: buildBillSnapshot("WhatsApp", fasterDelivery),
         },
         fasterDelivery,
         giftWrap,
@@ -1778,12 +1932,15 @@ export default function AddressModal({
   // Specific reason the checkout can't proceed, shown as a toast on click.
   const validationMessage = () => {
     if (pincode.length !== 6) return "Please enter a valid 6-digit pincode";
-    if (!flatNo.trim()) return "Please add your flat / house number";
-    if (!address.trim()) return "Please add your area / locality address";
     if (!city.trim()) return "Please enter your city";
-    if (!name.trim()) return "Please enter your name";
-    if (phone.replace(/\D/g, "").length !== 10)
-      return "Please enter a valid 10-digit phone number";
+    if (!state.trim()) return "Please select your state";
+    if (address.trim().length < 12)
+      return "Please add your full address — house no., street and area";
+    if (name.trim().length < 3) return "Please enter the receiver's full name";
+    if (!/^[6-9]\d{9}$/.test(phone))
+      return "Please enter a valid 10-digit mobile number";
+    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
+      return "Please check your email address";
     return "Please complete your details to proceed";
   };
 
@@ -2025,9 +2182,58 @@ export default function AddressModal({
   const pincodeReady = pincode.length === 6 && isValidPincode;
   const contactReady = name.trim().length > 0 && phone.length === 10;
 
+  // Accuracy rules for the delivery form (shown inline once a field is left).
+  const nameOk =
+    name.trim().length >= 3 && /^[A-Za-z][A-Za-z .']+$/.test(name.trim());
+  const phoneOk = /^[6-9]\d{9}$/.test(phone);
+  const addrTrim = address.trim();
+  const addrHasNumber = /\d/.test(addrTrim);
+  const addrHasArea =
+    addrTrim.split(/[\s,]+/).filter((w) => w.length > 1).length >= 3;
+  const addrHasLandmark =
+    /\b(near|opp|opposite|behind|beside|next to|above|landmark)\b/i.test(addrTrim);
+  const addrOk = addrTrim.length >= 12 && addrHasArea;
+  const emailOk =
+    !email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const [touched, setTouched] = useState({});
+  const touch = (k) => setTouched((t) => (t[k] ? t : { ...t, [k]: true }));
+  const fieldErr = {
+    address:
+      touched.address && !addrOk
+        ? "Add house/flat no., street and area (at least 12 characters)"
+        : "",
+    name:
+      touched.name && !nameOk
+        ? "Enter the receiver's full name (letters only)"
+        : "",
+    phone:
+      touched.phone && !phoneOk
+        ? phone.length < 10
+          ? `${10 - phone.length} more digit${10 - phone.length === 1 ? "" : "s"} needed`
+          : "Indian mobile numbers start with 6, 7, 8 or 9"
+        : "",
+    email: touched.email && !emailOk ? "That email doesn't look right" : "",
+  };
+  // Form completion for the progress bar: location, address, name, phone.
+  const formSteps = [
+    pincodeReady && !!state && !!city,
+    addrOk,
+    nameOk,
+    phoneOk,
+  ];
+  const formPct = Math.round(
+    (formSteps.filter(Boolean).length / formSteps.length) * 100,
+  );
+
   const isFormValid = () =>
     Boolean(
-      pincode.length === 6 && name && phone.length === 10 && isAddressValid(),
+      pincode.length === 6 &&
+        state &&
+        nameOk &&
+        phoneOk &&
+        emailOk &&
+        city &&
+        addrOk,
     );
 
   const phoneError =
@@ -2056,14 +2262,41 @@ export default function AddressModal({
                 <span className="weight-600 font-16">Delivery Details</span>
                 <span className="ps-step-badge">Step 1/2</span>
               </span>
-              <span className="cursor-pointer" onClick={onClose}>
-                <X size={16} />
-              </span>
+              <button
+                type="button"
+                className="bm2-x"
+                aria-label="Close"
+                onClick={onClose}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            {/* Live completion bar — fills as each detail is entered correctly. */}
+            <div
+              className="dd-progress"
+              role="progressbar"
+              aria-label="Delivery details completed"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={formPct}
+            >
+              <motion.span
+                className="dd-progress-fill"
+                initial={false}
+                animate={{ width: `${Math.max(formPct, 4)}%` }}
+                transition={{ type: "spring", stiffness: 120, damping: 20 }}
+              />
             </div>
 
-            <div className="address-form-content">
+            <div className="address-form-content" ref={addrBodyRef}>
               {/* Location + address — grouped into one white card. */}
               <div className="af-card">
+              <div className="dd-sec-title">
+                <span className="dd-sec-ic">
+                  <MapPin size={15} />
+                </span>
+                Where should we deliver?
+              </div>
               {/* Pincode → City → State on one equal-width row. City & State
                   stay collapsed until a valid 6-digit pincode, then glide in. */}
               <div className={`addr-loc-row${pincodeReady ? " ready" : ""}`}>
@@ -2137,8 +2370,32 @@ export default function AddressModal({
               </div>
 
               {isFetchingLocation && (
-                <span className="addr-hint">Fetching location…</span>
+                <span className="addr-hint dd-fetching">
+                  <Loader2 size={13} className="lb-spinner" /> Finding your
+                  area…
+                </span>
               )}
+              <AnimatePresence>
+                {pincodeReady && city && state && !isFetchingLocation && (
+                  <motion.div
+                    className="dd-route"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <span className="dd-route-road" aria-hidden="true">
+                      <span className="dd-route-truck">
+                        <Truck size={16} />
+                      </span>
+                    </span>
+                    <span className="dd-route-txt">
+                      Delivering to <b>{city}</b> {pincode} ·{" "}
+                      {fasterDelivery ? "1–6" : "5–9"} days
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {pincodeReady && !state && (
                 <span className="addr-hint">
                   Please select your state for smooth delivery.
@@ -2154,13 +2411,40 @@ export default function AddressModal({
                   </label>
                 </div>
                 <textarea
-                  className="sec-mid-btn textarea"
+                  className={`sec-mid-btn textarea${fieldErr.address ? " error-border" : ""}${addrOk ? " dd-ok" : ""}`}
                   placeholder="e.g. 12/A, Green Residency, 2nd floor, MG Road, near City Mall"
                   value={address}
+                  autoComplete="street-address"
+                  aria-invalid={!!fieldErr.address}
                   onChange={(e) => setAddress(e.target.value)}
-                  onBlur={handleAddressBlur}
+                  onBlur={() => {
+                    handleAddressBlur();
+                    touch("address");
+                  }}
                   rows={3}
                 />
+                {/* Address checklist — chips tick on as the address improves. */}
+                <div className="dd-checks" aria-live="polite">
+                  {[
+                    { ok: addrHasNumber, l: "House / flat no." },
+                    { ok: addrHasArea, l: "Street & area" },
+                    { ok: addrHasLandmark, l: "Landmark", opt: true },
+                  ].map((c) => (
+                    <span
+                      key={c.l}
+                      className={`dd-check${c.ok ? " on" : ""}${c.opt ? " opt" : ""}`}
+                    >
+                      <span className="dd-check-dot">
+                        {c.ok && <Check size={10} strokeWidth={3.5} />}
+                      </span>
+                      {c.l}
+                      {c.opt && !c.ok ? " (helps)" : ""}
+                    </span>
+                  ))}
+                </div>
+                {fieldErr.address && (
+                  <span className="dd-err">{fieldErr.address}</span>
+                )}
               </div>
               )}
               </div>
@@ -2175,18 +2459,47 @@ export default function AddressModal({
                     exit={{ opacity: 0, height: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
                   >
+                    <div className="dd-sec-title">
+                      <span className="dd-sec-ic">
+                        <User size={15} />
+                      </span>
+                      Who&apos;s receiving it?
+                    </div>
                     <div className="flex flex-row justify-between gap-12 addr-contact-row">
                       <div className="input-group">
                         <label className="flex flex-row gap-4 flex-center items-center">
                           <User size={14} />
                           Name <span className="red">*</span>
                         </label>
-                        <input
-                          className="sec-mid-btn width100"
-                          placeholder="Enter your full name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                        />
+                        <span className="dd-field">
+                          <input
+                            className={`sec-mid-btn width100${fieldErr.name ? " error-border" : ""}`}
+                            placeholder="Receiver's full name"
+                            value={name}
+                            autoComplete="name"
+                            autoCapitalize="words"
+                            aria-invalid={!!fieldErr.name}
+                            onChange={(e) =>
+                              setName(e.target.value.replace(/[^A-Za-z .']/g, ""))
+                            }
+                            onBlur={() => touch("name")}
+                          />
+                          <AnimatePresence>
+                            {nameOk && (
+                              <motion.span
+                                className="dd-tick"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                              >
+                                <Check size={12} strokeWidth={3.5} />
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                        </span>
+                        {fieldErr.name && (
+                          <span className="dd-err">{fieldErr.name}</span>
+                        )}
                       </div>
 
                       <div className="input-group">
@@ -2194,17 +2507,42 @@ export default function AddressModal({
                           <Phone size={14} />
                           Phone Number <span className="red">*</span>
                         </label>
-                        <input
-                          className="sec-mid-btn width100"
-                          placeholder="10-digit mobile number"
-                          value={phone}
-                          maxLength={15}
-                          inputMode="tel"
-                          onChange={handlePhoneChange}
-                          onPaste={handlePhonePaste}
-                        />
-                        {phoneError && (
-                          <span className="font-10 red mt-4">{phoneError}</span>
+                        <span className="dd-field dd-field-phone">
+                          <span className="dd-prefix" aria-hidden="true">
+                            +91
+                          </span>
+                          <input
+                            className={`sec-mid-btn width100${fieldErr.phone ? " error-border" : ""}`}
+                            placeholder="10-digit mobile"
+                            value={phone}
+                            maxLength={15}
+                            inputMode="tel"
+                            autoComplete="tel-national"
+                            aria-invalid={!!fieldErr.phone}
+                            onChange={handlePhoneChange}
+                            onPaste={handlePhonePaste}
+                            onBlur={() => touch("phone")}
+                          />
+                          <AnimatePresence>
+                            {phoneOk && (
+                              <motion.span
+                                className="dd-tick"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                              >
+                                <Check size={12} strokeWidth={3.5} />
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                        </span>
+                        {fieldErr.phone ? (
+                          <span className="dd-err">{fieldErr.phone}</span>
+                        ) : (
+                          !phoneOk &&
+                          phoneError && (
+                            <span className="dd-hint">{phoneError}</span>
+                          )
                         )}
                         {/* Alternate number — opens a slide-up modal. */}
                         {altPhone && altPhone.length === 10 ? (
@@ -2237,19 +2575,25 @@ export default function AddressModal({
                           <span className="font-10 gray-500">(optional)</span>
                         </label>
                         <input
-                          className="sec-mid-btn width100"
+                          className={`sec-mid-btn width100${fieldErr.email ? " error-border" : ""}`}
                           type="email"
                           placeholder="you@example.com"
                           value={email}
                           inputMode="email"
+                          autoComplete="email"
                           autoCapitalize="off"
                           autoCorrect="off"
+                          aria-invalid={!!fieldErr.email}
                           onChange={(e) => setEmail(e.target.value)}
+                          onBlur={() => touch("email")}
                         />
-                        <span className="font-10 gray-500 mt-4">
-                          Used for order tracking &amp; further communications
-                          only.
-                        </span>
+                        {fieldErr.email ? (
+                          <span className="dd-err">{fieldErr.email}</span>
+                        ) : (
+                          <span className="font-10 gray-500 mt-4">
+                            For order updates &amp; tracking only — no spam.
+                          </span>
+                        )}
                       </div>
                     )}
                   </motion.div>
@@ -2337,6 +2681,21 @@ export default function AddressModal({
 
             {/* Fixed footer — total + proceed stay pinned, form scrolls above */}
             <div className="addr-footer">
+              <AnimatePresence>
+                {addrMore && (
+                  <motion.button
+                    type="button"
+                    className="scroll-more"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    onClick={() => scrollMore(addrBodyRef)}
+                    aria-label="Scroll to the bottom"
+                  >
+                    <ChevronDown size={18} strokeWidth={2.6} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
               {!pincodeReady && (
                 <div className="addr-warn addr-warn-orange">
                   <AlertCircle size={13} />
@@ -2351,48 +2710,39 @@ export default function AddressModal({
                 </div>
               )}
 
-              {pincodeReady && isAddressValid() && !contactReady && (
-                <div className="addr-warn addr-warn-red">
-                  <AlertCircle size={13} />
-                  <span>Enter your name and a valid 10-digit phone</span>
-                </div>
-              )}
-
-              <div
-                className={`bill-row total addr-total-row${
-                  activeOfferDiscount + couponDiscount > 0 ? " has-saved" : ""
-                }`}
-                style={{ marginBottom: 0 }}
-              >
-                <span className="font-16 weight-600">Total Payable</span>
-                <span className="addr-total-right">
+              <div className="ps-foot-total">
+                <span className="ps-foot-total-l">
+                  <small>Total payable</small>
+                  <b>₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}</b>
                   {onViewBill && (
                     <button
                       type="button"
-                      className="ps-viewbill addr-viewbill-inline"
+                      className="ps-foot-bill"
                       onClick={onViewBill}
                     >
-                      View bill
+                      <Receipt size={14} /> View bill
+                      <ChevronRight size={14} />
                     </button>
                   )}
-                  <span className="addr-total-pricewrap">
-                    <span className="font-20 weight-700 green">
-                      ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
-                    </span>
-                    {activeOfferDiscount + couponDiscount > 0 && (
-                      <span className="addr-saved-abs">
-                        🎉 Saved ₹{activeOfferDiscount + couponDiscount}
-                      </span>
-                    )}
-                  </span>
                 </span>
+                {activeOfferDiscount + couponDiscount > 0 && (
+                  <span className="ps-foot-saved">
+                    You save ₹{activeOfferDiscount + couponDiscount}
+                  </span>
+                )}
               </div>
 
-              {contactReady && (
+              {pincodeReady && (
                 <LoadingButton
                   className="pri-big-btn width100"
                   onClick={() => {
                     if (!isFormValid()) {
+                      setTouched({
+                        address: true,
+                        name: true,
+                        phone: true,
+                        email: true,
+                      });
                       showToast(validationMessage(), "error");
                       return;
                     }
@@ -2402,7 +2752,7 @@ export default function AddressModal({
                   }}
                 >
                   <span className="flex flex-row items-center justify-center gap-6">
-                    Submit
+                    {isFormValid() ? "Continue to delivery speed" : "Continue"}
                     <ArrowRight size={18} strokeWidth={2.5} />
                   </span>
                 </LoadingButton>
@@ -2515,8 +2865,8 @@ export default function AddressModal({
                       <span className="ac-row-lbl">Delivery speed</span>
                       <span className="ac-row-val">
                         {fasterDelivery
-                          ? "Faster delivery · 1–5 days"
-                          : "Standard delivery · 4–9 days"}
+                          ? "Faster delivery · 1–6 days"
+                          : "Standard delivery · 5–9 days"}
                       </span>
                     </span>
                   </div>
@@ -2595,6 +2945,42 @@ export default function AddressModal({
               transition={{ duration: 0.4, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Gift wrap on → a light confetti shower; fades out when off. */}
+              <AnimatePresence>
+                {giftWrap && (
+                  <motion.div
+                    className="gw-confetti"
+                    aria-hidden="true"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, transition: { duration: 0.25 } }}
+                    exit={{ opacity: 0, transition: { duration: 0.6 } }}
+                  >
+                    {/* Continuous, gentle fall: staggered start times
+                        and varied speeds so it streams instead of bursting. */}
+                    {Array.from({ length: 24 }).map((_, i) => (
+                      <i
+                        key={i}
+                        style={{
+                          left: `${(i * 37) % 100}%`,
+                          animationDelay: `${((i * 0.43) % 5).toFixed(2)}s`,
+                          animationDuration: `${5 + ((i * 7) % 10) / 3}s`,
+                          background: [
+                            "#fb8500",
+                            "#ffb703",
+                            "#16a34a",
+                            "#e11d48",
+                            "#3b82f6",
+                            "#a855f7",
+                          ][i % 6],
+                          "--rot": `${(i * 53) % 360}deg`,
+                          "--drift": `${((i % 5) - 2) * 14}px`,
+                        }}
+                        className={i % 3 === 0 ? "round" : ""}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <div className="bill-header">
                 <span className="flex items-center gap-8">
                   <button
@@ -2621,195 +3007,24 @@ export default function AddressModal({
                 </span>
               </div>
 
-              <div className="pay-sel">
-                {/* Add-ons only — no book summary / address here. */}
-                <div className="pay-sel-bill">
-                  {/* Add-ons — toggle (checkbox) */}
-                  <div className="pay-addon-block">
-                    <span className="deliv-addon-head">Add-ons</span>
-                    <div className="pa-list">
-                      <button
-                        type="button"
-                        className={`pa-row${giftWrap ? " on" : ""}`}
-                        onClick={() => setGiftWrap((v) => !v)}
-                      >
-                        <span className="pa-row-ic paid">
-                          <span className="pa-ripple" aria-hidden="true" />
-                          <Gift size={18} />
-                        </span>
-                        <span className="pa-row-main">
-                          <span className="pa-row-name">Gift wrap</span>
-                        </span>
-                        <span className="pa-row-price">+₹{giftWrapCharge}</span>
-                        <span className={`pa-check${giftWrap ? " on" : ""}`}>
-                          {giftWrap && <Check size={12} strokeWidth={3} />}
-                        </span>
-                      </button>
-                      <div
-                        className={`pa-row pa-row-static${bookmarkQty > 0 ? " on" : ""}`}
-                      >
-                        <span className="pa-row-ic">
-                          <Bookmark size={18} />
-                        </span>
-                        <span className="pa-row-main">
-                          <span className="pa-row-name">Bookmarks</span>
-                          <span className="pa-row-sub free">
-                            {freeBookmarks} free
-                            {bookmarkExtra > 0
-                              ? ` · +₹${BOOKMARK_UNIT} × ${bookmarkExtra} extra`
-                              : ` · +₹${BOOKMARK_UNIT} each beyond`}
-                          </span>
-                        </span>
-                        <span
-                          className={`pa-row-price${bookmarkCharge > 0 ? "" : " free"}`}
-                        >
-                          {bookmarkCharge > 0 ? `+₹${bookmarkCharge}` : "FREE"}
-                        </span>
-                        <span className="pa-stepper">
-                          <button
-                            type="button"
-                            className="pa-step-btn"
-                            onClick={() =>
-                              setBookmarkQty((q) => Math.max(0, q - 1))
-                            }
-                            disabled={bookmarkQty === 0}
-                            aria-label="Remove a bookmark"
-                          >
-                            −
-                          </button>
-                          <span className="pa-step-n">{bookmarkQty}</span>
-                          <button
-                            type="button"
-                            className="pa-step-btn"
-                            onClick={() =>
-                              setBookmarkQty((q) => Math.min(20, q + 1))
-                            }
-                            aria-label="Add a bookmark"
-                          >
-                            +
-                          </button>
-                        </span>
-                      </div>
-
-                      {/* TheBookX Exclusive add-on removed — no longer offered. */}
-                    </div>
-                  </div>
-
-                  {/* Apply coupon */}
-                  <div className="pay-addon-block">
-                    <span className="deliv-addon-head">Coupon</span>
-                    <div className="pa-list">
-                      {appliedCoupon ? (
-                        <div className="pa-row pa-row-static on">
-                          <span className="pa-row-ic paid">
-                            <Tag size={18} />
-                          </span>
-                          <span className="pa-row-main">
-                            <span className="pa-row-name">
-                              {appliedCoupon.code} applied
-                            </span>
-                            <span className="pa-row-sub free">
-                              {isWalletCoupon
-                                ? `Full wallet unlocked · ₹${walletAppliedTotal} applied`
-                                : `You saved ₹${couponDiscount}`}
-                            </span>
-                          </span>
-                          <button
-                            type="button"
-                            className="paymeth-coupon-remove"
-                            onClick={removeCoupon}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          className="pa-row"
-                          onClick={openCouponSheet}
-                        >
-                          <span className="pa-row-ic">
-                            <Tag size={18} />
-                          </span>
-                          <span className="pa-row-main">
-                            <span className="pa-row-name">Apply coupon</span>
-                            <span className="pa-row-sub">
-                              Have a code? Save more on this order
-                            </span>
-                          </span>
-                          <ChevronRight size={16} className="paymeth-row-chev" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div
-                    className={`ps-row ps-total addr-total-row${
-                      activeOfferDiscount + couponDiscount > 0 ? " has-saved" : ""
-                    }`}
-                  >
-                    <span>Total payable</span>
-                    <span className="addr-total-right">
-                      {onViewBill && (
-                        <button
-                          type="button"
-                          className="ps-viewbill addr-viewbill-inline"
-                          onClick={onViewBill}
-                        >
-                          View bill
-                        </button>
-                      )}
-                      <span className="addr-total-pricewrap">
-                        <span>
-                          ₹{paySel === "COD" ? codTotalWithFee : upiTotalForFlow}
-                        </span>
-                        {activeOfferDiscount + couponDiscount > 0 && (
-                          <span className="addr-saved-abs">
-                            🎉 Saved ₹{activeOfferDiscount + couponDiscount}
-                          </span>
-                        )}
+              <div className="pay-sel" ref={paySelRef}>
+                {isZeroPayable && (
+                  <div className="pay-zero">
+                    <span className="pay-zero-ic">
+                      <CheckCircle2 size={22} />
+                    </span>
+                    <span className="pay-zero-txt">
+                      <strong>Nothing to pay — you&apos;re all covered</strong>
+                      <span>
+                        Your wallet{appliedCoupon ? " and coupon" : ""} cover
+                        this whole order. Tap Place order to confirm it.
                       </span>
                     </span>
                   </div>
-                </div>
-
-                {/* Coins toggle (default off) */}
-                {walletBalance > 0 && (
-                  <label className="pay-sel-coins">
-                    <span className="wc-icon">
-                      <Wallet size={16} />
-                    </span>
-                    <span className="wc-apply-txt">
-                      <span className="wc-bal">
-                        Use wallet balance · ₹{walletBalance}
-                      </span>
-                      <span className="wc-apply-note">
-                        {isWalletCoupon
-                          ? `Full wallet unlocked — applying ₹${walletAppliedTotal}, rest payable`
-                          : walletEnabled
-                            ? `Applying ₹${walletApplied} to this order`
-                            : `You can use up to ₹${maxWalletUsable} on this order`}
-                      </span>
-                    </span>
-                    <span
-                      className={`wc-switch${walletEnabled ? " on" : ""}`}
-                      aria-hidden="true"
-                    >
-                      <span className="wc-knob">
-                        {walletEnabled && <Check size={11} strokeWidth={3} />}
-                      </span>
-                    </span>
-                    <input
-                      type="checkbox"
-                      className="wc-switch-input"
-                      checked={walletEnabled}
-                      onChange={(e) => setWalletEnabled(e.target.checked)}
-                    />
-                  </label>
                 )}
 
                 {/* Payment methods — full-width selectable cards. */}
-                <div className="pay-methods">
+                <div className="pay-methods" hidden={isZeroPayable}>
                   <span className="deliv-addon-head pay-methods-head">
                     Payment method
                   </span>
@@ -2889,6 +3104,7 @@ export default function AddressModal({
                         {paySel === "ADV" && <Check size={13} strokeWidth={3} />}
                       </span>
                     </button>
+                    {paySel === "ADV" && (
                     <div
                       className="pay-split-row"
                       onClick={() => setPaySel("ADV")}
@@ -2913,6 +3129,7 @@ export default function AddressModal({
                         </span>
                       </div>
                     </div>
+                    )}
                   </div>
 
                   {/* Cash on Delivery — unavailable with Faster delivery */}
@@ -2970,39 +3187,306 @@ export default function AddressModal({
                   </button>
                 </div>
 
-                {/* Reselling the order? — add a margin, saved to the invoice. */}
-                <button
-                  type="button"
-                  className="resell-row"
-                  onClick={() => setResellOpen(true)}
-                >
-                  <span className="resell-row-l">
-                    <Tag size={15} />
-                    <span>
-                      <span className="resell-row-title">
-                        Reselling the order?
-                      </span>
-                      {resellNote ? (
-                        <span className="resell-row-sub on">{resellNote}</span>
-                      ) : (
-                        <span className="resell-row-sub">
-                          Add your margin — printed on the invoice
-                        </span>
-                      )}
+                {/* Coins toggle (default off) */}
+                {walletBalance > 0 && (
+                  <label className="pay-sel-coins">
+                    <span className="wc-icon">
+                      <Wallet size={16} />
                     </span>
-                  </span>
-                  <ChevronRight size={18} />
-                </button>
+                    <span className="wc-apply-txt">
+                      <span className="wc-bal">
+                        Use wallet balance · ₹{walletBalance}
+                      </span>
+                      <span className="wc-apply-note">
+                        {isWalletCoupon
+                          ? `Full wallet unlocked — applying ₹${walletAppliedTotal}, rest payable`
+                          : walletEnabled
+                            ? `Applying ₹${walletApplied} to this order`
+                            : `You can use up to ₹${maxWalletUsable} on this order`}
+                      </span>
+                    </span>
+                    <span
+                      className={`wc-switch${walletEnabled ? " on" : ""}`}
+                      aria-hidden="true"
+                    >
+                      <span className="wc-knob">
+                        {walletEnabled && <Check size={11} strokeWidth={3} />}
+                      </span>
+                    </span>
+                    <input
+                      type="checkbox"
+                      className="wc-switch-input"
+                      checked={walletEnabled}
+                      onChange={(e) => setWalletEnabled(e.target.checked)}
+                    />
+                  </label>
+                )}
+
+
+                {/* Add-ons — 2×2 grid of dashed cards (solid when active). */}
+                <div className="pa-grid-block">
+                  <span className="deliv-addon-head">Make it special</span>
+                  <div className="pa-grid">
+                    <button
+                      type="button"
+                      className={`pa-card${giftWrap ? " on" : ""}`}
+                      onClick={() => {
+                        buzz(giftWrap ? 8 : [12, 40, 12]);
+                        setGiftWrap((v) => !v);
+                      }}
+                      aria-pressed={giftWrap}
+                    >
+                      <span className="pa-card-top">
+                        <span className="pa-card-ic">
+                          <Gift size={18} />
+                        </span>
+                        <span className={`pa-check${giftWrap ? " on" : ""}`}>
+                          {giftWrap && <Check size={12} strokeWidth={3} />}
+                        </span>
+                      </span>
+                      <span className="pa-card-name">Gift wrap</span>
+                      <span className="pa-card-sub">Wrapped with a note</span>
+                      <span className="pa-card-price">+₹{giftWrapCharge}</span>
+                    </button>
+
+                    <div
+                      className={`pa-card pa-card-static${bookmarkQty > 0 ? " on" : ""}`}
+                    >
+                      <span className="pa-card-top">
+                        <span className="pa-card-ic">
+                          <Bookmark size={18} />
+                        </span>
+                        <span
+                          className={`pa-card-price${bookmarkCharge > 0 ? "" : " free"}`}
+                        >
+                          {bookmarkCharge > 0 ? `+₹${bookmarkCharge}` : "FREE"}
+                        </span>
+                      </span>
+                      <span className="pa-card-name">Bookmarks</span>
+                      <span className="pa-card-sub">
+                        {freeBookmarks} free · ₹{BOOKMARK_UNIT} each after
+                      </span>
+                      <AnimatePresence>
+                        {bmFx && (
+                          <motion.span
+                            key={bmFx.k}
+                            className="bm-fly"
+                            aria-hidden="true"
+                            initial={
+                              bmFx.dir === "up"
+                                ? { y: 18, opacity: 0, scale: 0.5, rotate: -14 }
+                                : { y: -44, opacity: 1, scale: 1, rotate: 10 }
+                            }
+                            animate={
+                              bmFx.dir === "up"
+                                ? {
+                                    y: [18, -48, -40],
+                                    opacity: [0, 1, 0],
+                                    scale: [0.5, 1.1, 1],
+                                    rotate: [-14, 8, 4],
+                                  }
+                                : { y: 14, opacity: 0, scale: 0.4, rotate: -8 }
+                            }
+                            transition={{ duration: 0.75, ease: "easeOut" }}
+                            onAnimationComplete={() =>
+                              setBmFx((f) => (f && f.k === bmFx.k ? null : f))
+                            }
+                          >
+                            <span className="bm-fly-tassel" />
+                            <span className="bm-fly-body" />
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                      <span className="pa-stepper pa-card-stepper">
+                        <button
+                          type="button"
+                          className="pa-step-btn"
+                          onClick={() => {
+                            if (bookmarkQty === 0) return;
+                            buzz(6);
+                            setBmFx({ k: Date.now(), dir: "down" });
+                            setBookmarkQty((q) => Math.max(0, q - 1));
+                          }}
+                          disabled={bookmarkQty === 0}
+                          aria-label="Remove a bookmark"
+                        >
+                          −
+                        </button>
+                        <motion.span
+                          key={bookmarkQty}
+                          className="pa-step-n"
+                          initial={{ scale: 1.7, color: "#fb8500" }}
+                          animate={{ scale: 1, color: "#1c1814" }}
+                          transition={{ type: "spring", stiffness: 500, damping: 16 }}
+                          aria-live="polite"
+                        >
+                          {bookmarkQty}
+                        </motion.span>
+                        <button
+                          type="button"
+                          className="pa-step-btn"
+                          onClick={() => {
+                            if (bookmarkQty >= 20) return;
+                            buzz(12);
+                            setBmFx({ k: Date.now(), dir: "up" });
+                            setBookmarkQty((q) => Math.min(20, q + 1));
+                          }}
+                          aria-label="Add a bookmark"
+                        >
+                          +
+                        </button>
+                      </span>
+                    </div>
+
+                    {appliedCoupon ? (
+                      <div className="pa-card pa-card-static on">
+                        <span className="pa-card-top">
+                          <span className="pa-card-ic">
+                            <Tag size={18} />
+                          </span>
+                          <button
+                            type="button"
+                            className="pa-card-link"
+                            onClick={removeCoupon}
+                          >
+                            Remove
+                          </button>
+                        </span>
+                        <span className="pa-card-name">{appliedCoupon.code}</span>
+                        <span className="pa-card-sub pa-card-save">
+                          {isWalletCoupon
+                            ? `Wallet unlocked · ₹${walletAppliedTotal}`
+                            : `You saved ₹${couponDiscount}`}
+                        </span>
+                      </div>
+                    ) : unlockedOffer && onApplyOffer ? (
+                      <button
+                        type="button"
+                        className="pa-card pa-card-unlock"
+                        onClick={() => {
+                          buzz(12);
+                          onApplyOffer(unlockedOffer);
+                        }}
+                      >
+                        <span className="pa-card-top">
+                          <span className="pa-card-ic">🎁</span>
+                          <span className="pa-card-apply">Apply</span>
+                        </span>
+                        <span className="pa-card-name">
+                          {unlockedOffer.reward} unlocked
+                        </span>
+                        <span className="pa-card-sub pa-card-save">
+                          Tap to save ₹{unlockedOffer.value}
+                        </span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className={`pa-card${activeOfferDiscount > 0 ? " on pa-card-applied" : ""}`}
+                        onClick={openCouponSheet}
+                      >
+                        <span className="pa-card-top">
+                          <span className="pa-card-ic">
+                            {activeOfferDiscount > 0 ? (
+                              <Check size={18} strokeWidth={3} />
+                            ) : (
+                              <Tag size={18} />
+                            )}
+                          </span>
+                          <ChevronRight size={16} className="pa-card-chev" />
+                        </span>
+                        {activeOfferDiscount > 0 ? (
+                          <>
+                            <span className="pa-card-name">
+                              {offerLabel || `₹${activeOfferDiscount} OFF`}{" "}
+                              applied
+                            </span>
+                            <span className="pa-card-sub pa-card-save">
+                              Cart reward · tap to try a coupon
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="pa-card-name">Apply coupon</span>
+                            <span className="pa-card-sub">
+                              Have a code? Save more
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      className={`pa-card${resellNote ? " on" : ""}`}
+                      onClick={() => setResellOpen(true)}
+                    >
+                      <span className="pa-card-top">
+                        <span className="pa-card-ic">
+                          <Receipt size={18} />
+                        </span>
+                        <ChevronRight size={16} className="pa-card-chev" />
+                      </span>
+                      <span className="pa-card-name">Reselling?</span>
+                      <span className="pa-card-sub">
+                        {resellNote || "Add your margin to the invoice"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Fixed footer — pay button (full width) + WhatsApp order */}
               <div className="pay-sel-footer">
+                <AnimatePresence>
+                  {payMore && (
+                    <motion.button
+                      type="button"
+                      className="scroll-more"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 6 }}
+                      onClick={() => scrollMore(paySelRef)}
+                      aria-label="Scroll to the bottom"
+                    >
+                      <ChevronDown size={18} strokeWidth={2.6} />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
                 {tooManyOneRupee && (
                   <div className="onerupee-limit-note">
                     Only 1 book at ₹1 is allowed per order. Please remove the
                     extra ₹1 book{oneRupeeQty > 2 ? "s" : ""} to continue.
                   </div>
                 )}
+                <div className="ps-foot-total">
+                  <span className="ps-foot-total-l">
+                    <small>Total payable</small>
+                    <b>
+                      ₹
+                      {isZeroPayable
+                        ? 0
+                        : paySel === "COD"
+                          ? codTotalWithFee
+                          : upiTotalForFlow}
+                    </b>
+                    {onViewBill && (
+                      <button
+                        type="button"
+                        className="ps-foot-bill"
+                        onClick={onViewBill}
+                      >
+                        <Receipt size={14} /> View bill
+                        <ChevronRight size={14} />
+                      </button>
+                    )}
+                  </span>
+                  {activeOfferDiscount + couponDiscount > 0 && (
+                    <span className="ps-foot-saved">
+                      You save ₹{activeOfferDiscount + couponDiscount}
+                    </span>
+                  )}
+                </div>
                 <div className="pay-sel-footer-row">
                   <button
                     type="button"
@@ -3016,22 +3500,26 @@ export default function AddressModal({
                   <button
                     type="button"
                     className="pri-big-btn pay-confirm-btn"
-                    disabled={!paySel || tooManyOneRupee}
+                    disabled={(!paySel && !isZeroPayable) || tooManyOneRupee}
                     onClick={() =>
-                      paySel && !tooManyOneRupee && beginPayment(paySel)
+                      (paySel || isZeroPayable) &&
+                      !tooManyOneRupee &&
+                      beginPayment(paySel || "UPI")
                     }
                   >
                     <span className="flex flex-row items-center justify-center gap-6">
                       {tooManyOneRupee
                         ? "Remove extra ₹1 book to continue"
-                        : paySel === "UPI"
+                        : isZeroPayable
+                          ? "Place order · ₹0"
+                          : paySel === "UPI"
                           ? `Pay & save ₹${codFeeAmount}`
                           : paySel === "ADV"
                             ? `Pay ₹${codAdvanceAmount} advance`
                             : paySel === "COD"
                               ? "Cash on Delivery"
                               : "Select a payment method"}
-                      {paySel && !tooManyOneRupee && (
+                      {(paySel || isZeroPayable) && !tooManyOneRupee && (
                         <ArrowRight size={18} strokeWidth={2.5} />
                       )}
                     </span>
@@ -3103,11 +3591,7 @@ export default function AddressModal({
                                 Standard Delivery
                               </span>
                             </span>
-                            <span className="dspick-sub">Arrives in 4–9 days</span>
-                            <span className="dspick-note">
-                              Our regular service — carefully packed and shipped
-                              to your doorstep.
-                            </span>
+                            <span className="dspick-sub">Arrives in 5–9 days</span>
                           </span>
                           <span
                             className={`dspick-radio${!fasterDelivery ? " on" : ""}`}
@@ -3134,11 +3618,12 @@ export default function AddressModal({
                                 <span className="dspick-tag">Priority</span>
                               </span>
                               <span className="dspick-price">
-                                +₹{fasterDeliveryCharge}
+                                +₹
+                                {fasterExtra}
                               </span>
                             </span>
                             <span className="dspick-sub">
-                              Arrives in 1–5 days · jumps the queue
+                              Arrives in 1–6 days · jumps the queue
                             </span>
                           </span>
                           <span
@@ -3238,7 +3723,7 @@ export default function AddressModal({
                         </span>
                       )}
                     </span>
-                    <span className="ds-sub">Arrives in 5–7 business days</span>
+                    <span className="ds-sub">Arrives in 5–9 days</span>
                     <span className="ds-tags">
                       <span className="ds-tag green">
                         <ShieldCheck size={12} /> Free tracking
@@ -3264,10 +3749,10 @@ export default function AddressModal({
                     <span className="ds-row">
                       <span className="ds-title">Faster Delivery</span>
                       <span className="ds-price add">
-                        +₹{fasterDeliveryCharge}
+                        +₹{fasterExtra}
                       </span>
                     </span>
-                    <span className="ds-sub">Arrives in 2–5 business days</span>
+                    <span className="ds-sub">Arrives in 1–6 days</span>
                     <span className="ds-tags">
                       <span className="ds-tag orange">
                         <Truck size={12} /> Priority shipping
@@ -3289,7 +3774,7 @@ export default function AddressModal({
                   }
                 >
                   {deliverySel === "faster"
-                    ? `Continue with Faster · +₹${fasterDeliveryCharge}`
+                    ? `Continue with Faster · +₹${fasterExtra}`
                     : isCartBelow399
                       ? "Continue with Standard"
                       : "Continue with Standard · FREE"}
@@ -3497,8 +3982,8 @@ export default function AddressModal({
                       🗓️ Please be available within{" "}
                       <b>
                         {codConfirmRef.current.isFaster
-                          ? "1–5 days"
-                          : "4–12 days"}
+                          ? "1–6 days"
+                          : "5–9 days"}
                       </b>{" "}
                       for delivery.
                     </li>
@@ -3864,6 +4349,28 @@ export default function AddressModal({
                       Use this
                     </button>
                   )}
+                </div>
+              )}
+              {unlockedOffer && onApplyOffer && !appliedCoupon && (
+                <div className="cp-reward">
+                  <span className="cp-reward-ic">
+                    <Gift size={16} />
+                  </span>
+                  <div className="cp-reward-tx">
+                    <span className="cp-reward-name">
+                      {unlockedOffer.reward} unlocked
+                    </span>
+                    <span className="cp-reward-sub">
+                      🎁 Tap Apply to save ₹{unlockedOffer.value} on this order
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="coupon-use-btn"
+                    onClick={() => onApplyOffer(unlockedOffer)}
+                  >
+                    Apply
+                  </button>
                 </div>
               )}
 
@@ -4440,10 +4947,10 @@ export function CODSuccessModal({
   const [downloading, setDownloading] = useState(false);
   const rcptRef = useRef(null);
 
-  // Delivery windows: Faster = 1–5 days, Standard = 4–12 days.
-  const winStart = localFaster ? 1 : 4;
-  const winEnd = localFaster ? 5 : 12;
-  const deliveryWindow = `${winStart}-${winEnd} business days`;
+  // Delivery windows: Faster = 1–6 days, Standard = 5–9 days.
+  const winStart = localFaster ? 1 : 5;
+  const winEnd = localFaster ? 6 : 9;
+  const deliveryWindow = `${winStart}-${winEnd} days`;
 
   // Estimated arrival date (end of the delivery window).
   const deliveryByDate = (() => {
@@ -4853,7 +5360,7 @@ export function CODSuccessModal({
                           <div className="ok-upgrade">
                             <span className="ok-upgrade-txt">
                               <Zap size={13} /> Faster by{" "}
-                              <b>{fasterRangeStr}</b> · 1–5 days
+                              <b>{fasterRangeStr}</b> · 1–6 days
                             </span>
                             <button
                               type="button"

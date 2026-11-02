@@ -23,12 +23,12 @@ const CANCEL_FEE = 99;
 // "How can we help?" bottom-sheet — pick a reason, then reach us on WhatsApp
 // or by email. The same reason message is prefilled into whichever channel is
 // chosen. Shared by the profile, orders list and order detail pages.
-// `eta` (e.g. "4–9") + `onDetail` enable instant auto-answers for the two
+// `eta` (e.g. "5–9") + `onDetail` enable instant auto-answers for the two
 // tracking-style reasons so the customer doesn't need to message at all.
 export default function SupportSheet({
   phone = "",
   orderId = "",
-  eta = "4–9",
+  eta = "5–9",
   onDetail = false,
   order = null,
   onClose,

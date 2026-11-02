@@ -112,8 +112,8 @@ function buildJsonLd() {
                 },
                 transitTime: {
                   "@type": "QuantitativeValue",
-                  minValue: 2,
-                  maxValue: 7,
+                  minValue: 5,
+                  maxValue: 9,
                   unitCode: "DAY",
                 },
               },

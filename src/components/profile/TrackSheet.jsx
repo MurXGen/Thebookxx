@@ -73,7 +73,7 @@ export default function TrackSheet({
 
   const DAY_MS = 24 * 60 * 60 * 1000;
   const orderDate = parseSheetDate(getOrderDateValue(trackOrder));
-  const [minDays, maxDays] = isFaster ? [1, 5] : [4, 12];
+  const [minDays, maxDays] = isFaster ? [1, 6] : [5, 9];
   const estFrom = orderDate
     ? new Date(orderDate.getTime() + minDays * DAY_MS)
     : null;

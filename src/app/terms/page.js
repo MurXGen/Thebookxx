@@ -264,9 +264,9 @@ export default function TermsAndConditions() {
         <p>
           Shipping is offered across India through partner courier services
           including India Post, Delhivery, and other reputable logistics
-          providers. Standard delivery typically takes 3-7 business days
+          providers. Standard delivery typically takes 5-9 days
           depending on your location and product availability. Express delivery,
-          where available, takes 2-5 business days.
+          where available, takes 1-6 days.
         </p>
         <p>
           Delivery timelines are estimates and not guarantees. We are not liable

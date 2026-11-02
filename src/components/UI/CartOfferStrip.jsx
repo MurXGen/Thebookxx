@@ -2,7 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import CartConfetti from "@/components/UI/Confetti";
-import { getCartOffers } from "@/utils/cartOffers";
+import {
+  getCartOffers,
+  getBestUnlockedFlat,
+  resolveAppliedOffer,
+} from "@/utils/cartOffers";
+import OfferTierList from "@/components/UI/OfferTierList";
+import { showToast } from "@/context/ToastContext";
 import { motion, animate, AnimatePresence } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book"; // needed to map id image
@@ -11,7 +17,7 @@ import { ArrowRight, Check, Lock, Gift, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function CartOfferStrip({ discountedAmount }) {
-  const { cart } = useStore(); // FIX: real cart connection
+  const { cart, appliedOfferValue, applyOffer } = useStore(); // FIX: real cart connection
   const pathname = usePathname();
 
   const isBagPage = pathname === "/bag";
@@ -63,6 +69,19 @@ export default function CartOfferStrip({ discountedAmount }) {
   const availedChips = [];
   if (freeDeliveryAvailed) availedChips.push("Free delivery");
   if (flatAvailed) availedChips.push(flatAvailed.reward);
+
+  /* Manual-apply rewards: best unlocked vs the one actually applied */
+  const bestUnlocked = getBestUnlockedFlat(discountedAmount, hasOneRupeeItem);
+  const appliedFlat = resolveAppliedOffer(
+    discountedAmount,
+    hasOneRupeeItem,
+    appliedOfferValue,
+  );
+  const canApply =
+    bestUnlocked && (!appliedFlat || bestUnlocked.value > appliedFlat.value);
+  const freeShipDone = CART_OFFERS.some(
+    (o) => o.type === "free_shipping" && discountedAmount >= o.target,
+  );
 
   /* Smooth progress */
   const [progress, setProgress] = useState(0);
@@ -174,7 +193,23 @@ export default function CartOfferStrip({ discountedAmount }) {
       <div className="offer-left">
         <div className="offer-msg-row">
           <div className="offer-message">{message}</div>
-          <span className="offer-see-all">See all offers</span>
+          {/* Achieved reward replaces "See all offers"; tapping the strip
+              opens the sheet, where flat rewards are applied by hand. */}
+          {canApply ? (
+            <span className="offer-see-all offer-see-done">
+              <Check size={11} strokeWidth={3} /> Avail {bestUnlocked.reward}
+            </span>
+          ) : appliedFlat ? (
+            <span className="offer-see-all offer-see-done">
+              <Check size={11} strokeWidth={3} /> {appliedFlat.reward} applied
+            </span>
+          ) : freeShipDone ? (
+            <span className="offer-see-all offer-see-done">
+              <Check size={11} strokeWidth={3} /> Free delivery
+            </span>
+          ) : (
+            <span className="offer-see-all">See all offers</span>
+          )}
         </div>
 
         <div className="progress-bar">
@@ -261,30 +296,11 @@ export default function CartOfferStrip({ discountedAmount }) {
               <p className="offer-sheet-sub">
                 Your cart: <b>₹{discountedAmount}</b>
               </p>
-              <div className="offer-sheet-list">
-                {CART_OFFERS.map((o) => {
-                  const unlocked = discountedAmount >= o.target;
-                  const left = Math.max(o.target - discountedAmount, 0);
-                  return (
-                    <div
-                      key={`${o.type}-${o.target}`}
-                      className={`offer-tier${unlocked ? " unlocked" : ""}`}
-                    >
-                      <span className="offer-tier-ic">
-                        {unlocked ? <Check size={14} /> : <Lock size={13} />}
-                      </span>
-                      <span className="offer-tier-main">
-                        <span className="offer-tier-reward">{o.reward}</span>
-                        <span className="offer-tier-note">
-                          {unlocked
-                            ? "Unlocked "
-                            : `Add ₹${left} more (spend ₹${o.target})`}
-                        </span>
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+              <OfferTierList
+                offers={CART_OFFERS}
+                amount={discountedAmount}
+                hasOneRupee={hasOneRupeeItem}
+              />
               <Link
                 href="/books"
                 className="pri-big-btn width100 offer-sheet-cta"

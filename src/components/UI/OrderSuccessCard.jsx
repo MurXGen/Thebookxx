@@ -13,7 +13,12 @@ import {
   ArrowRight,
   BookOpen,
   ShoppingBag,
+  Package,
+  CalendarDays,
+  ChevronRight,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
+import CommunityJoin from "@/components/CommunityJoin";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { updateOrderRow } from "@/utils/googleFormOrder";
@@ -28,6 +33,7 @@ const slugify = (t) =>
     .replace(/(^-|-$)/g, "");
 
 const ADD_DISCOUNT = 0.3; // flat 30% off books added from this modal
+const SUPPORT_WHATSAPP = "917710892108";
 
 const NOTE_CHIPS = [
   "Call before delivery",
@@ -255,6 +261,40 @@ export default function OrderSuccessCard({
     }
   };
 
+  // Latest expected arrival (Standard 5–9 days, Faster 1–6 days).
+  const arriveBy = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + (isFaster ? 6 : 9));
+    return d.toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
+  })();
+  // WhatsApp help with the order details pre-filled.
+  const helpLink = (() => {
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://www.thebookx.in";
+    const msg = [
+      `Hi TheBookX 👋 I have a question about my order.`,
+      ``,
+      `Order: ${orderId || "—"}`,
+      `Name: ${name || "—"} · +91 ${digits}`,
+      `Total: ₹${total}${isFaster ? " · Faster delivery" : ""}`,
+      ``,
+      `Books:`,
+      buildBooksList(orderBooks),
+      digits && orderId
+        ? `\nOrder link: ${origin}/profile/${digits}/orders/${encodeURIComponent(orderId)}`
+        : "",
+    ]
+      .filter((l) => l !== undefined)
+      .join("\n");
+    return `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  })();
+
   const addrLine = [addrView.address, addrView.city, addrView.state, addrView.pincode]
     .filter(Boolean)
     .join(", ");
@@ -356,6 +396,20 @@ export default function OrderSuccessCard({
             {orderId ? `Order ${orderId}` : "Thank you for your order"} · we're
             getting it ready
           </p>
+          {/* At-a-glance summary: what, how much, when. */}
+          <div className="osc-sum">
+            <span className="osc-sum-item">
+              <Package size={14} />
+              {orderBooks.reduce((n, b) => n + (b.qty || 1), 0)} book
+              {orderBooks.reduce((n, b) => n + (b.qty || 1), 0) === 1 ? "" : "s"}
+            </span>
+            <span className="osc-sum-item">
+              <b>₹{total}</b>
+            </span>
+            <span className="osc-sum-item">
+              <CalendarDays size={14} /> By {arriveBy}
+            </span>
+          </div>
         </div>
 
         {/* ── Middle: scrollable content ── */}
@@ -408,7 +462,7 @@ export default function OrderSuccessCard({
                   Get it faster — add ₹{upgradeExtra}
                 </span>
                 <span className="osc-up-sub">
-                  <b>1–5 days</b> instead of 4–9 · priority dispatch by air ·
+                  <b>1–6 days</b> instead of 5–9 · priority dispatch by air ·
                   same books, sooner.
                 </span>
               </div>
@@ -428,7 +482,7 @@ export default function OrderSuccessCard({
               </div>
               <div className="osc-up-main">
                 <span className="osc-up-title">Faster delivery added ⚡</span>
-                <span className="osc-up-sub">Arriving in 1–5 days.</span>
+                <span className="osc-up-sub">Arriving in 1–6 days.</span>
               </div>
             </div>
           ) : null}
@@ -465,7 +519,7 @@ export default function OrderSuccessCard({
           {bmQty !== committedBm && (
             <button
               type="button"
-              className="osc-pack-btn"
+              className="osc-pack-btn osc-pack-btn-bm"
               disabled={savingKey === "bm"}
               onClick={packBookmarks}
             >
@@ -476,6 +530,24 @@ export default function OrderSuccessCard({
                   }`}
             </button>
           )}
+
+          {/* Help + community — always one tap away after ordering. */}
+          <a
+            className="osc-help"
+            href={helpLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="osc-help-ic">
+              <FaWhatsapp size={20} />
+            </span>
+            <span className="osc-help-txt">
+              <strong>Any questions? Ask us</strong>
+              <span>We reply on WhatsApp — your order details are sent along</span>
+            </span>
+            <ChevronRight size={18} className="osc-help-arrow" />
+          </a>
+          <CommunityJoin variant="card" className="osc-community" />
 
           {/* Bestseller upsell */}
           {bestsellers.length > 0 && (
@@ -551,10 +623,18 @@ export default function OrderSuccessCard({
 
         {/* ── Bottom: two CTAs ── */}
         <div className="osc-foot">
-          <button type="button" className="osc-foot-ghost" onClick={onClose}>
+          <button
+            type="button"
+            className="sec-big-btn osc-foot-ghost"
+            onClick={onClose}
+          >
             <ShoppingBag size={16} /> Keep shopping
           </button>
-          <button type="button" className="osc-foot-cta" onClick={onTrack}>
+          <button
+            type="button"
+            className="pri-big-btn osc-foot-cta"
+            onClick={onTrack}
+          >
             Track my order <ArrowRight size={17} />
           </button>
         </div>

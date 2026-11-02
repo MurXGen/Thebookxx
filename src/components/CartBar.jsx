@@ -3,7 +3,10 @@
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
 import { QUICKREAD_PRICE } from "@/data/quickreadsMeta";
-import { getCartOffers } from "@/utils/cartOffers";
+import {
+  getCartOffers,
+  resolveAppliedOffer,
+} from "@/utils/cartOffers";
 import { useRouter } from "next/navigation";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import LoadingButton from "./UI/LoadingButton";
@@ -38,7 +41,14 @@ import UnlockChip from "./UI/UnlockChip";
 import OneRupeeModal from "./OneRupeeModal";
 
 export default function CartBar({ tab = "books" }) {
-  const { cart, cartTotal, qrCart, hasOneRupeeItem } = useStore();
+  const {
+    cart,
+    cartTotal,
+    qrCart,
+    hasOneRupeeItem,
+    appliedOfferValue,
+    removeOffer,
+  } = useStore();
   const router = useRouter();
   const isQuickReads = tab === "quickreads";
   const qrCount = qrCart?.length || 0;
@@ -129,24 +139,22 @@ export default function CartBar({ tab = "books" }) {
   // flat ₹50/₹100 discounts (they follow the ₹1 offer ladder instead), so the
   // strip + total here stay consistent with the bag & bill modal.
   const activeOffers = getCartOffers(hasOneRupeeItem);
-  const appliedOffer =
-    [...activeOffers].reverse().find((o) => discountedAmount >= o.target) ||
-    null;
+  // Flat ₹-off rewards are never auto-applied: they unlock by cart value and
+  // the shopper taps Apply (strip, rewards sheet, bill or checkout).
+  const appliedOffer = resolveAppliedOffer(
+    discountedAmount,
+    hasOneRupeeItem,
+    appliedOfferValue,
+  );
 
-  let offerDiscount = 0;
-  let offerLabel = null;
+  // Cart dropped below the applied reward → forget it, so it never comes back
+  // on its own when the cart grows again (it must be re-applied by tap).
+  useEffect(() => {
+    if (appliedOfferValue && cart.length > 0 && !appliedOffer) removeOffer();
+  }, [appliedOfferValue, cart.length, appliedOffer, removeOffer]);
 
-  if (appliedOffer) {
-    if (appliedOffer.type === "flat") {
-      offerDiscount = appliedOffer.value;
-      offerLabel = `₹${appliedOffer.value} OFF availed`;
-    }
-
-    if (appliedOffer.type === "percentage") {
-      offerDiscount = Math.round((discountedAmount * appliedOffer.value) / 100);
-      offerLabel = `Free shipping availed`;
-    }
-  }
+  const offerDiscount = appliedOffer ? appliedOffer.value : 0;
+  const offerLabel = appliedOffer ? `₹${appliedOffer.value} OFF applied` : null;
 
   const finalPayable = discountedAmount - offerDiscount;
 

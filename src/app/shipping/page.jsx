@@ -151,24 +151,16 @@ export default function ShippingDeliveryPolicy() {
           </thead>
           <tbody>
             <tr>
-              <td>Standard Delivery (Metro cities)</td>
-              <td>3-5 days</td>
+              <td>Standard Delivery</td>
+              <td>5-9 days</td>
             </tr>
             <tr>
-              <td>Standard Delivery (Non-Metro cities)</td>
-              <td>5-7 days</td>
+              <td>Faster Delivery</td>
+              <td>1-6 days</td>
             </tr>
             <tr>
-              <td>Standard Delivery (Remote / North-East / J&amp;K)</td>
-              <td>7-12 days</td>
-            </tr>
-            <tr>
-              <td>Express Delivery (where available)</td>
-              <td>2-5 days</td>
-            </tr>
-            <tr>
-              <td>Cash on Delivery</td>
-              <td>5-10 days</td>
+              <td>Cash on Delivery (Standard only)</td>
+              <td>5-9 days</td>
             </tr>
           </tbody>
         </table>

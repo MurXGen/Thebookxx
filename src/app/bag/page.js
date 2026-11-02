@@ -33,6 +33,8 @@ import { books } from "@/utils/book";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   getCartOffers,
+  getBestUnlockedFlat,
+  resolveAppliedOffer,
   getDeliveryCharge,
   getDeliveryLabel,
   getDeliveryDescription,
@@ -90,6 +92,9 @@ function BagContent() {
     removeQuickRead,
     clearQrCart,
     markCartConverted,
+    appliedOfferValue,
+    applyOffer,
+    removeOffer,
   } = useStore();
   // QuickReads rail lazy-load (reveal more as the rail scrolls).
   const qrScrollRef = useRef(null);
@@ -561,24 +566,34 @@ function BagContent() {
     }
   }, [totalDiscounted, hasOneRupeeItem]);
 
-  const getAppliedOffer = (amount) => {
-    return [...cartOffers].reverse().find((o) => amount >= o.target) || null;
+  // Flat ₹-off rewards unlock by cart value but only count once the shopper
+  // taps Apply (stored in StoreContext). The best unlocked-but-unapplied one is
+  // offered to the bill and checkout as a one-tap Apply.
+  const appliedOffer = resolveAppliedOffer(
+    totalDiscounted,
+    hasOneRupeeItem,
+    appliedOfferValue,
+  );
+  const bestUnlockedOffer = getBestUnlockedFlat(
+    totalDiscounted,
+    hasOneRupeeItem,
+  );
+  const unlockedOffer =
+    bestUnlockedOffer &&
+    (!appliedOffer || bestUnlockedOffer.value > appliedOffer.value)
+      ? bestUnlockedOffer
+      : null;
+  let offerDiscount = appliedOffer ? appliedOffer.value : 0;
+  let offerLabel = appliedOffer ? `₹${appliedOffer.value} OFF` : null;
+  // Cart fell below the applied reward → forget it (must be re-applied by tap).
+  useEffect(() => {
+    if (appliedOfferValue && cartBooks.length > 0 && !appliedOffer)
+      removeOffer();
+  }, [appliedOfferValue, cartBooks.length, appliedOffer, removeOffer]);
+  const handleApplyOffer = (o) => {
+    applyOffer(o.value);
+    showToast(`${o.reward} applied 🎉 You save ₹${o.value}`, "success");
   };
-
-  const appliedOffer = getAppliedOffer(totalDiscounted);
-  let offerDiscount = 0;
-  let offerLabel = null;
-
-  if (appliedOffer) {
-    if (appliedOffer.type === "flat") {
-      offerDiscount = appliedOffer.value;
-      offerLabel = `₹${appliedOffer.value} OFF`;
-    }
-    if (appliedOffer.type === "percentage") {
-      offerDiscount = Math.round((totalDiscounted * appliedOffer.value) / 100);
-      offerLabel = `Free delivery`;
-    }
-  }
 
   // NOTE: the TheBookX Exclusive "flat 20% off" member discount is disabled for
   // now (members still get free delivery / no COD fee). Re-enable by restoring
@@ -647,6 +662,43 @@ function BagContent() {
   // Returns the COD fee amount only when paymentType is COD
   const getCodFeeForPayment = (paymentType) =>
     paymentType === "COD" ? COD_HANDLING_FEE : 0;
+
+  // Bill lines from checkout's snapshot (same numbers as the saved order row).
+  const billLinesFromSnapshot = (b) => {
+    const out = [];
+    out.push(`MRP ₹${b.mrp} · You pay for books ₹${b.subtotal}`);
+    if (b.offer > 0) out.push(`${b.offerLabel || "Offer"}: -₹${b.offer}`);
+    if (b.couponDiscount > 0)
+      out.push(`Coupon${b.coupon ? ` (${b.coupon})` : ""}: -₹${b.couponDiscount}`);
+    if (b.wallet > 0) out.push(`Wallet used: -₹${b.wallet}`);
+    out.push(
+      `Delivery (${b.faster ? "Faster 1–6 days" : "Standard 5–9 days"}): ${
+        b.deliveryStd > 0 ? `+₹${b.deliveryStd}` : "FREE"
+      }`,
+    );
+    if (b.handling > 0) out.push(`Handling & Care: +₹${b.handling}`);
+    if (b.priority > 0) out.push(`Faster priority: +₹${b.priority}`);
+    if (b.gift > 0) out.push(`Gift wrap: +₹${b.gift}`);
+    if (b.bookmarkQty > 0)
+      out.push(
+        `Bookmarks ×${b.bookmarkQty}: ${
+          b.bookmarkCharge > 0 ? `+₹${b.bookmarkCharge}` : "FREE"
+        }`,
+      );
+    if (b.codFee > 0) out.push(`COD fee: +₹${b.codFee}`);
+    if (bundledQrTotal > 0) out.push(`QuickReads: +₹${bundledQrTotal}`);
+    return out;
+  };
+  const snapshotPayLine = (b, paymentType) =>
+    b.paymentLabel
+      ? b.paymentLabel
+      : b.advance > 0
+        ? `₹${b.advance} advance online · ₹${b.codCollect} cash at delivery`
+        : paymentType === "COD"
+          ? `Cash on Delivery · collect ₹${b.codCollect}`
+          : paymentType === "WhatsApp"
+            ? "Confirming on WhatsApp"
+            : "Paid online (UPI)";
 
   const generateWhatsAppMessage = (
     addressData,
@@ -740,10 +792,21 @@ ${deliveryInfo}
 ${itemsBlock}${qrBlock}
 
 *Bill*
-Subtotal: ₹${totalDiscounted}${offerDiscount > 0 ? `\nOffer discount: -₹${offerDiscount}` : ""}
-Delivery: ${deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}${giftWrapSelected ? `\nGift wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\nCOD handling fee: +₹${codFee}` : ""}
-*Total: ₹${totalWithDelivery}*
-Payment: ${paymentType === "COD" ? "Cash on Delivery" : paymentType === "WhatsApp" ? "Confirming on WhatsApp" : "UPI Payment"}
+${
+  addressData.bill
+    ? billLinesFromSnapshot(addressData.bill).join("\n")
+    : `Subtotal: ₹${totalDiscounted}${offerDiscount > 0 ? `\nOffer discount: -₹${offerDiscount}` : ""}\nDelivery: ${deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}${giftWrapSelected ? `\nGift wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\nCOD handling fee: +₹${codFee}` : ""}`
+}
+*Total: ₹${addressData.bill ? addressData.bill.total + bundledQrTotal : totalWithDelivery}*
+Payment: ${
+  addressData.bill
+    ? snapshotPayLine(addressData.bill, paymentType)
+    : paymentType === "COD"
+      ? "Cash on Delivery"
+      : paymentType === "WhatsApp"
+        ? "Confirming on WhatsApp"
+        : "UPI Payment"
+}
 ${orderLink ? `\n*Order details:* ${orderLink}` : ""}
 *My orders & tracking:* ${profileLink}${merchantLink ? `\n\n_(Merchant use) Confirm & set payment:_ ${merchantLink}` : ""}
 
@@ -802,7 +865,30 @@ Thank you!
       .filter(Boolean)
       .join(", ");
 
-    const orderMessage = `🛒 *New order · TheBookX*
+    const snap = addressData.bill || null;
+    const grandTotal = snap ? snap.total + bundledQrTotal : totalWithDelivery;
+    const orderMessage = snap
+      ? `🛒 *New order · TheBookX*
+
+👤 *${addressData.name || "Customer"}*
+📞 ${addressData.phone || "—"}
+📍 ${addrLine || "—"}
+
+📚 *Items (${cartBooks.reduce((n, b) => n + (b.qty || 1), 0)})*
+${itemsBlock}${qrLines}
+
+🧾 *Bill*
+${billLinesFromSnapshot(snap)
+  .map((l) => `• ${l}`)
+  .join("\n")}
+💰 *Total: ₹${grandTotal}*
+💳 ${snapshotPayLine(snap, paymentType)}${
+          snap.codCollect > 0 ? `\n💵 *Collect at door: ₹${snap.codCollect}*` : ""
+        }
+🚚 ${snap.faster ? "Faster · 1–6 days" : "Standard · 5–9 days"}${
+          snap.note ? `\n📝 ${snap.note}` : ""
+        }${orderId ? `\n\n🆔 ${orderId}` : ""}`
+      : `🛒 *New order · TheBookX*
 
 👤 *${addressData.name || "Customer"}*  ·  ${payLine}
 📞 ${addressData.phone || "—"}
@@ -820,9 +906,9 @@ ${itemsBlock}${qrLines}
       orderDetails: orderMessage,
       customerName: addressData.name,
       customerPhone: addressData.phone,
-      totalAmount: totalWithDelivery,
+      totalAmount: grandTotal,
       paymentMethod: paymentType,
-      codHandlingFee: codFee,
+      codHandlingFee: snap ? snap.codFee : codFee,
       // When the shopper reaches the UPI QR screen we ask the journalx bot to
       // attach "✅ Passed / ❌ Failed" inline buttons for this order. journalx
       // (which owns the bot + webhook) reads `actionButtons` + `orderId` and
@@ -1489,7 +1575,7 @@ ${itemsBlock}${qrLines}
 
                     {appliedOffer && (
                       <span className="font-14 green weight-600">
-                        {offerLabel}
+                        {offerLabel} applied
                       </span>
                     )}
                   </div>
@@ -1746,6 +1832,8 @@ ${itemsBlock}${qrLines}
         shortenUrl={shortenUrl}
         offerLabel={offerLabel}
         offerDiscount={offerDiscount}
+        unlockedOffer={unlockedOffer}
+        onApplyOffer={handleApplyOffer}
         codHandlingFee={COD_HANDLING_FEE}
         onUpsellAccept={() => setUpsellAccepted(true)}
         quickReadItems={hasBundledQr ? qrItems : []}
@@ -1763,6 +1851,8 @@ ${itemsBlock}${qrLines}
         totalDiscounted={totalDiscounted}
         offerDiscount={offerDiscount}
         offerLabel={offerLabel}
+        unlockedOffer={unlockedOffer}
+        onApplyOffer={handleApplyOffer}
         standardDeliveryCharge={standardDeliveryCharge}
         standardDeliveryLabel={standardDeliveryLabel}
         fasterDeliveryCharge={fasterDeliveryCharge}

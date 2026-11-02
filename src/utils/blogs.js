@@ -4,6 +4,176 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "childrens-day-2026-14-november-books-to-gift-kids-india": {
+    "id": "blog-097",
+    "title": "Children's Day 2026 (14 November): Best Books to Gift Kids and Teens in India",
+    "slug": "childrens-day-2026-14-november-books-to-gift-kids-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-02",
+    "lastModified": "2026-11-02",
+    "excerpt": "Children's Day is 14 November 2026. Age-wise book gifts for kids and teens, from Geronimo Stilton to Wings of Fire, with free delivery and Cash on Delivery.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Children's Day falls on Saturday, 14 November 2026, the birth anniversary of Jawaharlal Nehru, and it is the one day of the year when India agrees that children come first. Nehru was born in 1889, and the day has been observed on 14 November since 1964, the year he died. For most families it means school events, a holiday mood and, increasingly, a gift. This guide is about making that gift a book: how to match a title to a child's age, which series hook reluctant readers, and which books are worth giving even when the child is a teenager or the \"child\" is you."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Children's Day 2026 at a glance",
+        "content": "Date: Saturday, 14 November 2026. It falls six days after Diwali, so many families will already have a stack of festival gifts. A book is the gift that is still being used in January. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India, and gift wrapping at +₹25 per book."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why a Book Is the Right Children's Day Gift"
+      },
+      {
+        "type": "paragraph",
+        "content": "Toys are outgrown in a season. A book that lands at the right age is reread for years, and research on reading for pleasure consistently links it with stronger vocabulary and school performance. The practical point is simpler: a child who reads for fun finds every other subject easier. Children's Day is a natural moment to start that habit, because a gift carries a message, and the message \"I think you are ready for this story\" is a good one."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Ages 6 to 9: Stories Read Aloud and Read Alone"
+      },
+      {
+        "type": "paragraph",
+        "content": "At this age the best books work twice, once when an adult reads them aloud and once when the child rereads them alone. <a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> and <a href=\"/books/grandparents-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandparents' Bag of Stories</a> by Sudha Murty are short, warm, Indian tales that fit a bedtime routine exactly. If your family has a grandparent in the house, let them do the reading."
+      },
+      {
+        "type": "paragraph",
+        "content": "For a child who wants action and giggles, the <a href=\"/books/geronimo-stilton-collection-20-book-set\" style=\"color:#fb8500;font-weight:600\">Geronimo Stilton Collection (20-Book Set)</a> is a good bulk buy: short chapters, playful typography and a mouse-journalist hero that turns reluctant readers into series readers. One book leads to the next, which is exactly what a reading habit needs."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Ages 9 to 12: The Series That Make Readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "This is the age where a child either becomes a reader or decides books are homework. Series are the answer, because the second book costs the child no effort to start. <a href=\"/books/diary-of-a-wimpy-kid-series-set\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid Series Set</a> is funny, illustrated and relatable to anyone who has survived middle school. <a href=\"/books/percy-jackson-ultimate-collection\" style=\"color:#fb8500;font-weight:600\">Percy Jackson Ultimate Collection</a> by Rick Riordan wraps Greek myths in a fast adventure, and children who finish it often go looking for the real myths."
+      },
+      {
+        "type": "paragraph",
+        "content": "The <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set (Books 1-7)</a> remains the safest long-term gift for this age group. Seven books give a child months of reading, and the early volumes suit a confident eight-year-old as easily as a twelve-year-old. If you want a smaller start, the <a href=\"/books/harry-potter-set\" style=\"color:#fb8500;font-weight:600\">Harry Potter Set</a> works as an entry point."
+      },
+      {
+        "type": "paragraph",
+        "content": "For a child who likes India's own stories, <a href=\"/books/mahagatha-100-tales-from-the-puranas\" style=\"color:#fb8500;font-weight:600\">Mahagatha: 100 Tales from the Puranas</a> and <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita: For Children</a> make heritage readable without feeling like a lesson. The illustrated retellings <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya</a> and <a href=\"/books/sita-an-illustrated-retelling-of-the-ramayana\" style=\"color:#fb8500;font-weight:600\">Sita</a> suit older children who are ready for a longer, richer telling."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "A simple rule for choosing",
+        "content": "Pick a book slightly below the child's reading level, not above it. Confidence builds readers; difficulty loses them. Whatever you choose, let the child see you reading too."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Ages 12 to 16: Books That Grow Up With Them"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> is the autobiography of A. P. J. Abdul Kalam and a Children's Day staple in Indian homes for good reason: it shows a boy from Rameswaram becoming a scientist and a President, and it makes ambition feel earned rather than inherited. <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> by Anne Frank is a heavier read, but for a thoughtful teenager it is one of the most direct ways to understand history through a single honest voice."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R. K. Narayan is a classic collection of short stories set in a small South Indian town. The stories are brief, gentle and wry, which makes them ideal for a teenager who thinks classics are boring. And <a href=\"/books/the-boy-the-mole-the-fox-and-the-horse\" style=\"color:#fb8500;font-weight:600\">The Boy, the Mole, the Fox and the Horse</a> is a quiet, illustrated book about kindness and belonging that readers of almost any age, including parents, tend to keep on the shelf."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The Parent's Shelf: Books for the Adults Raising Them"
+      },
+      {
+        "type": "paragraph",
+        "content": "Children's Day is also a good day to look after the people who run it. Reading aloud and building a household reading culture is easier when adults have a book on the go too. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is the practical guide to building a daily twenty-minute reading routine for the whole family. And <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, useful book on decluttering your mind and making decisions without noise, a good companion for any parent juggling school runs, exams and festivals."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to Build a Reading Habit After Children's Day"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Let the child choose one of the books themselves. Ownership matters more than the title.",
+          "Fix a daily fifteen-minute slot, ideally before bed, and keep screens out of it.",
+          "Read aloud together for the first chapter, then let the child continue alone.",
+          "Start a shared shelf at home and mark each finished book with a date.",
+          "Gift the next book in the series on a small occasion, such as a good report card, rather than as a reward for marks."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting Tips: Wrapping, Budget and Delivery"
+      },
+      {
+        "type": "paragraph",
+        "content": "A single well-chosen book is a better gift than a pile of ten. If you are buying for a class or a cousins' group, pick one title per child and match it to the age bands above. Gift wrapping at +₹25 per book keeps the presentation simple, and with free delivery and Cash on Delivery across India, you can send a gift to a child in another city without any payment hassle. Order a few days ahead, because the week after Diwali is busy for couriers."
+      },
+      {
+        "type": "blockquote",
+        "content": "A child who owns a book is one story away from becoming a reader."
+      },
+      {
+        "type": "paragraph",
+        "content": "This Children's Day, choose one book and hand it over with a few words about why you thought of them. That is the part they will remember."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/childrens-day-2026-14-november-books-to-gift-kids-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/childrens-day-2026-14-november-books-to-gift-kids-india.jpeg",
+        "alt": "A young girl smiling as she opens a gift-wrapped book at a sunlit table, with a small stack of unmarked children's books beside her",
+        "caption": "Children's Day 2026 falls on Saturday, 14 November",
+        "category": "Gift Guides"
+      }
+    ],
+    "keywords": [
+      "children's day 2026",
+      "children's day books to gift",
+      "best books for kids india",
+      "14 november children's day",
+      "books for teenagers india",
+      "gift books for children online india",
+      "geronimo stilton india",
+      "wings of fire kalam",
+      "bal diwas 2026 gift ideas",
+      "TheBookX"
+    ],
+    "categories": [
+      "Gift Guides",
+      "Children's Books",
+      "Reading Culture"
+    ],
+    "faqs": [
+      {
+        "question": "When is Children's Day in India in 2026?",
+        "answer": "Children's Day is observed on 14 November every year, the birth anniversary of Jawaharlal Nehru. In 2026 it falls on a Saturday."
+      },
+      {
+        "question": "What is the best book to gift a child on Children's Day?",
+        "answer": "It depends on age. For ages 6 to 9, Sudha Murty's story collections and the Geronimo Stilton series work well. For ages 9 to 12, Diary of a Wimpy Kid, Percy Jackson and Harry Potter are reliable. For teenagers, Wings of Fire and Malgudi Days are good choices."
+      },
+      {
+        "question": "Can I get gift wrapping and Cash on Delivery for books?",
+        "answer": "Yes. TheBookX offers gift wrapping at +₹25 per book, free delivery and Cash on Delivery across India, with books starting from ₹1."
+      },
+      {
+        "question": "How do I get a reluctant reader interested in books?",
+        "answer": "Start with a funny or illustrated series, let the child choose the title, keep reading sessions short, and read alongside them. A series removes the effort of choosing the next book."
+      }
+    ]
+  },
   "booker-prize-2026-winner-9-november-how-to-read-the-shortlist-india": {
     "id": "blog-096",
     "title": "Booker Prize 2026 Winner on 9 November: Six Shortlisted Books and What to Read Before the Result",

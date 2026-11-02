@@ -3102,19 +3102,12 @@ export default function AddressModal({
                               <span className="dspick-name">
                                 Standard Delivery
                               </span>
-                              <span
-                                className={`dspick-price${stdDelivAmt > 0 ? "" : " free"}`}
-                              >
-                                {stdDelivAmt > 0 ? `₹${stdDelivAmt}` : "FREE"}
-                              </span>
                             </span>
                             <span className="dspick-sub">Arrives in 4–9 days</span>
-                            {handlingAmt > 0 && (
-                              <span className="dspick-note">
-                                + Handling &amp; Care ₹{handlingAmt} · for orders
-                                above ₹1000
-                              </span>
-                            )}
+                            <span className="dspick-note">
+                              Our regular service — carefully packed and shipped
+                              to your doorstep.
+                            </span>
                           </span>
                           <span
                             className={`dspick-radio${!fasterDelivery ? " on" : ""}`}

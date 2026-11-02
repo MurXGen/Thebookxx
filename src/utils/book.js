@@ -11330,4 +11330,22 @@ export const books = [
     weight: 230,
     rating: 4.5,
   },
+  {
+    id: "bk-744",
+    name: "Fake Skating",
+    image: bookImages["fake-skating"],
+    description:
+      "Buy Fake Skating online at the lowest price on TheBookX.in. A fast-paced, feel-good read packed with heart, rivalry and romance on and off the ice. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "TheBookX",
+    authorSlug: "thebookx",
+    pages: "300-360",
+    language: "English",
+    size: "Paperback",
+    stock: 22,
+    catalogue: ["fiction", "romance", "bestseller"],
+    originalPrice: calculateOriginalPrice(189),
+    discountedPrice: 189,
+    weight: 240,
+    rating: 4.5,
+  },
 ];

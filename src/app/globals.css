@@ -64594,3 +64594,103 @@ h2.od-reco-title {
 .hero-night .dn-border-line { box-shadow: 0 0 8px rgba(245, 158, 11, 0.35); }
 .hero-night .dn-border::before,
 .hero-night .dn-border::after { background-image: radial-gradient(circle, #f59e0b 0 1.6px, transparent 2px); }
+
+/* --- Lanterns stay visible: the sale card no longer spans under them --- */
+.hero-night .hero-festive-flat {
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* Tablets / small laptops: keep only the outer pair, card sits between them */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .dn-kandil:nth-of-type(2), .dn-kandil:nth-of-type(3) { display: none; }
+  .hero-night .hero-festive-flat { max-width: min(560px, calc(100% - 160px)); }
+}
+/* Phones: bigger outer lanterns hanging in clear gutters beside the card */
+@media (max-width: 767px) {
+  .dn-kandil { --sc: 0.8 !important; top: 14px; }
+  .dn-kandil-l { left: 10px !important; }
+  .dn-kandil-r { right: 10px !important; }
+  .dn-string { height: 10px !important; }
+  .hero-night .hero-festive-flat {
+    max-width: calc(100% - 76px);
+    padding: 10px 12px;
+  }
+  .hero-night .hff-kicker { font-size: 10.5px; letter-spacing: 0.08em; }
+}
+@media (max-width: 359px) {
+  .dn-kandil { --sc: 0.66 !important; }
+  .dn-kandil-l { left: 6px !important; }
+  .dn-kandil-r { right: 6px !important; }
+  .hero-night .hero-festive-flat { max-width: calc(100% - 56px); }
+}
+
+/* =====================================================================
+   Checkout sheets — Faster checkout label, serviceable strip, MRP badge
+   ===================================================================== */
+.addr-modal .bill-header {
+  padding: 6px 16px 12px;
+  border-bottom: 1px solid #f3ede5;
+}
+.addr-modal .bill-header > span:first-child {
+  flex-wrap: wrap;
+  row-gap: 6px;
+  min-width: 0;
+}
+.fc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px 3px 6px;
+  border-radius: 999px;
+  border: 1px solid #bbf7d0;
+  background: #ecfdf3;
+  color: #15803d;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.fc-badge svg { fill: #22c55e; color: #16a34a; }
+
+/* Pincode confirmed: serviceable + what comes with the order */
+.dd-route {
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+.dd-ok-ic { flex-shrink: 0; display: inline-flex; color: #16a34a; margin-top: 1px; }
+.dd-ok-body { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.dd-ok-body .dd-route-txt { font-size: 13px; font-weight: 600; }
+.dd-ok-perks { display: flex; flex-wrap: wrap; gap: 6px; }
+.dd-ok-perks span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #c8f0d6;
+  color: #166534;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.dd-ok-perks svg { color: #16a34a; }
+
+/* Footer: MRP savings badge when no offer/coupon saving is shown */
+.ps-foot-total > .ps-foot-saved.ps-foot-mrp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ps-foot-mrp small { font-size: 11px; font-weight: 600; opacity: 0.8; }
+.addr-modal .dd-route { margin-bottom: 14px; }
+/* keep titles + step pill on one line; the Faster checkout label wraps below */
+.addr-modal .bill-header > span:first-child,
+.pay-sel-modal .bill-header > span:first-child { flex: 1; flex-wrap: wrap; row-gap: 6px; min-width: 0; }
+.addr-modal .bill-header > span:first-child > *,
+.pay-sel-modal .bill-header > span:first-child > * { flex-shrink: 0; white-space: nowrap; }
+.pay-sel-modal .bill-header { border-bottom: 1px solid #f3ede5; }

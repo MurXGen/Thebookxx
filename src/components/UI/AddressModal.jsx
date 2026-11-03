@@ -132,6 +132,16 @@ function normalizePhone(raw = "") {
 // order. Balance is read via the /api/wallet server route (by phone).
 const WALLET_MAX_PER_ORDER = 399;
 
+// Full address just needs to be longer than this (no format checks).
+const ADDRESS_MIN_CHARS = 30;
+
+// "Faster checkout" reassurance label shown in every checkout step header.
+const FastCheckout = () => (
+  <span className="fc-badge">
+    <Zap size={11} strokeWidth={2.6} /> Faster checkout
+  </span>
+);
+
 export default function AddressModal({
   open,
   onClose,
@@ -1934,8 +1944,8 @@ export default function AddressModal({
     if (pincode.length !== 6) return "Please enter a valid 6-digit pincode";
     if (!city.trim()) return "Please enter your city";
     if (!state.trim()) return "Please select your state";
-    if (address.trim().length < 12)
-      return "Please add your full address — house no., street and area";
+    if (address.trim().length <= ADDRESS_MIN_CHARS)
+      return `Please enter your full address (more than ${ADDRESS_MIN_CHARS} characters)`;
     if (name.trim().length < 3) return "Please enter the receiver's full name";
     if (!/^[6-9]\d{9}$/.test(phone))
       return "Please enter a valid 10-digit mobile number";
@@ -2177,7 +2187,8 @@ export default function AddressModal({
       .trim();
     if (a !== address) setAddress(a);
   };
-  const isAddressValid = () => Boolean(city && address.trim());
+  const isAddressValid = () =>
+    Boolean(city && address.trim().length > ADDRESS_MIN_CHARS);
   // Progressive reveal: pincode first → address+contact → add-ons + CTA.
   const pincodeReady = pincode.length === 6 && isValidPincode;
   const contactReady = name.trim().length > 0 && phone.length === 10;
@@ -2186,13 +2197,9 @@ export default function AddressModal({
   const nameOk =
     name.trim().length >= 3 && /^[A-Za-z][A-Za-z .']+$/.test(name.trim());
   const phoneOk = /^[6-9]\d{9}$/.test(phone);
-  const addrTrim = address.trim();
-  const addrHasNumber = /\d/.test(addrTrim);
-  const addrHasArea =
-    addrTrim.split(/[\s,]+/).filter((w) => w.length > 1).length >= 3;
-  const addrHasLandmark =
-    /\b(near|opp|opposite|behind|beside|next to|above|landmark)\b/i.test(addrTrim);
-  const addrOk = addrTrim.length >= 12 && addrHasArea;
+  // Address: one simple rule — more than ADDRESS_MIN_CHARS characters.
+  const addrLen = address.trim().length;
+  const addrOk = addrLen > ADDRESS_MIN_CHARS;
   const emailOk =
     !email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const [touched, setTouched] = useState({});
@@ -2200,7 +2207,7 @@ export default function AddressModal({
   const fieldErr = {
     address:
       touched.address && !addrOk
-        ? "Add house/flat no., street and area (at least 12 characters)"
+        ? `Address should be more than ${ADDRESS_MIN_CHARS} characters (${ADDRESS_MIN_CHARS + 1 - addrLen} more needed)`
         : "",
     name:
       touched.name && !nameOk
@@ -2214,16 +2221,21 @@ export default function AddressModal({
         : "",
     email: touched.email && !emailOk ? "That email doesn't look right" : "",
   };
-  // Form completion for the progress bar: location, address, name, phone.
-  const formSteps = [
-    pincodeReady && !!state && !!city,
-    addrOk,
-    nameOk,
-    phoneOk,
-  ];
-  const formPct = Math.round(
-    (formSteps.filter(Boolean).length / formSteps.length) * 100,
+  // What the shopper saves against MRP — shown in the footer when no
+  // offer/coupon saving badge is there to show.
+  const mrpSaving = Math.max(
+    0,
+    Math.round(
+      (cartBooks || []).reduce((sum, b) => {
+        const q = Number(b?.qty ?? b?.quantity ?? 1) || 1;
+        const unit = Number(
+          b?.originalPrice ?? b?.mrp ?? b?.price ?? b?.discountedPrice ?? 0,
+        );
+        return sum + unit * q;
+      }, 0) - (Number(totalDiscounted) || 0),
+    ),
   );
+  const offerSaving = activeOfferDiscount + couponDiscount;
 
   const isFormValid = () =>
     Boolean(
@@ -2261,6 +2273,7 @@ export default function AddressModal({
               <span className="flex items-center gap-8">
                 <span className="weight-600 font-16">Delivery Details</span>
                 <span className="ps-step-badge">Step 1/2</span>
+                <FastCheckout />
               </span>
               <button
                 type="button"
@@ -2270,22 +2283,6 @@ export default function AddressModal({
               >
                 <X size={18} />
               </button>
-            </div>
-            {/* Live completion bar — fills as each detail is entered correctly. */}
-            <div
-              className="dd-progress"
-              role="progressbar"
-              aria-label="Delivery details completed"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={formPct}
-            >
-              <motion.span
-                className="dd-progress-fill"
-                initial={false}
-                animate={{ width: `${Math.max(formPct, 4)}%` }}
-                transition={{ type: "spring", stiffness: 120, damping: 20 }}
-              />
             </div>
 
             <div className="address-form-content" ref={addrBodyRef}>
@@ -2384,14 +2381,24 @@ export default function AddressModal({
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <span className="dd-route-road" aria-hidden="true">
-                      <span className="dd-route-truck">
-                        <Truck size={16} />
-                      </span>
+                    <span className="dd-ok-ic" aria-hidden="true">
+                      <CheckCircle2 size={18} />
                     </span>
-                    <span className="dd-route-txt">
-                      Delivering to <b>{city}</b> {pincode} ·{" "}
-                      {fasterDelivery ? "1–6" : "5–9"} days
+                    <span className="dd-ok-body">
+                      <span className="dd-route-txt">
+                        Great, we deliver to <b>{city}</b> ({pincode})
+                      </span>
+                      <span className="dd-ok-perks">
+                        <span>
+                          <Banknote size={12} /> Cash on Delivery
+                        </span>
+                        <span>
+                          <Truck size={12} /> Tracked shipping
+                        </span>
+                        <span>
+                          <RefreshCw size={12} /> 7-day returns
+                        </span>
+                      </span>
                     </span>
                   </motion.div>
                 )}
@@ -2423,25 +2430,6 @@ export default function AddressModal({
                   }}
                   rows={3}
                 />
-                {/* Address checklist — chips tick on as the address improves. */}
-                <div className="dd-checks" aria-live="polite">
-                  {[
-                    { ok: addrHasNumber, l: "House / flat no." },
-                    { ok: addrHasArea, l: "Street & area" },
-                    { ok: addrHasLandmark, l: "Landmark", opt: true },
-                  ].map((c) => (
-                    <span
-                      key={c.l}
-                      className={`dd-check${c.ok ? " on" : ""}${c.opt ? " opt" : ""}`}
-                    >
-                      <span className="dd-check-dot">
-                        {c.ok && <Check size={10} strokeWidth={3.5} />}
-                      </span>
-                      {c.l}
-                      {c.opt && !c.ok ? " (helps)" : ""}
-                    </span>
-                  ))}
-                </div>
                 {fieldErr.address && (
                   <span className="dd-err">{fieldErr.address}</span>
                 )}
@@ -2725,10 +2713,17 @@ export default function AddressModal({
                     </button>
                   )}
                 </span>
-                {activeOfferDiscount + couponDiscount > 0 && (
+                {offerSaving > 0 ? (
                   <span className="ps-foot-saved">
-                    You save ₹{activeOfferDiscount + couponDiscount}
+                    You save ₹{offerSaving}
                   </span>
+                ) : (
+                  mrpSaving > 0 && (
+                    <span className="ps-foot-saved ps-foot-mrp">
+                      <TrendingDown size={13} /> ₹{mrpSaving} saved
+                      <small>on MRP</small>
+                    </span>
+                  )
                 )}
               </div>
 
@@ -2995,6 +2990,7 @@ export default function AddressModal({
                     Choose payment method
                   </span>
                   <span className="ps-step-badge">Step 2/2</span>
+                  <FastCheckout />
                 </span>
                 <span
                   className="cursor-pointer"
@@ -3461,10 +3457,17 @@ export default function AddressModal({
                       </button>
                     )}
                   </span>
-                  {activeOfferDiscount + couponDiscount > 0 && (
+                  {offerSaving > 0 ? (
                     <span className="ps-foot-saved">
-                      You save ₹{activeOfferDiscount + couponDiscount}
+                      You save ₹{offerSaving}
                     </span>
+                  ) : (
+                    mrpSaving > 0 && (
+                      <span className="ps-foot-saved ps-foot-mrp">
+                        <TrendingDown size={13} /> ₹{mrpSaving} saved
+                        <small>on MRP</small>
+                      </span>
+                    )
                   )}
                 </div>
                 <div className="pay-sel-footer-row">
@@ -3534,6 +3537,7 @@ export default function AddressModal({
                 <span className="flex items-center gap-8">
                   <span className="weight-600 font-16">Delivery speed</span>
                   <span className="ps-step-badge">Step 2/2</span>
+                  <FastCheckout />
                 </span>
                 <span
                   className="cursor-pointer"

@@ -14,6 +14,13 @@ import {
   Plus,
   BookmarkCheck,
   ShoppingCart,
+  Zap,
+  Smartphone,
+  Layers,
+  Bookmark,
+  Play,
+  ChevronRight,
+  Gift,
 } from "lucide-react";
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
@@ -23,6 +30,8 @@ import {
   quickReadFrameCount,
   QUICKREAD_PRICE,
   QUICKREAD_MRP,
+  QUICKREAD_FREE_FRAMES,
+  SUB_MONTHLY_PRICE,
 } from "@/data/quickreadsMeta";
 import {
   getQuickReadProfileForPhone,
@@ -30,9 +39,12 @@ import {
   getLocalSubscription,
   grantBookAccess,
   getSavedPhone,
+  getReadProgress,
+  getSavedReads,
 } from "@/lib/quickreads";
 import QuickReadsReader from "@/components/quickreads/QuickReadsReader";
 import QuickReadsPlans from "@/components/quickreads/QuickReadsPlans";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const dedupe = (list) => {
   const seen = new Set();
@@ -46,6 +58,13 @@ const dedupe = (list) => {
 
 const BATCH = 8; // lazy-load step for the browse list
 
+// Insights read so far for a book (progress stores the last frame index).
+const readCount = (progress, b) => {
+  const idx = progress[b.id] || 0;
+  const total = quickReadFrameCount(b.id);
+  return idx > 0 ? Math.min(idx + 1, total) : 0;
+};
+
 export default function MyQuickReadsPage() {
   const router = useRouter();
   const { qrCart, addQuickRead, isInQrCart } = useStore();
@@ -58,12 +77,26 @@ export default function MyQuickReadsPage() {
   const [openBook, setOpenBook] = useState(null);
   const [showPlans, setShowPlans] = useState(false);
   const [visible, setVisible] = useState(BATCH); // how many browse cards shown
+  const [progress, setProgress] = useState({}); // { [bookId]: lastFrameIndex }
+  const [savedCount, setSavedCount] = useState(0);
+  const [lapsed, setLapsed] = useState(null);
 
   const allQr = dedupe(
     quickReadBookIds()
       .map((id) => books.find((b) => b.id === id))
       .filter(Boolean),
   );
+
+  // Reading progress + saved insights live in this browser only.
+  const refreshLocal = () => {
+    const map = {};
+    allQr.forEach((b) => {
+      const v = getReadProgress(b.id);
+      if (v > 0) map[b.id] = v;
+    });
+    setProgress(map);
+    setSavedCount(getSavedReads().length);
+  };
 
   const load = async (p) => {
     const digits = String(p || "").replace(/\D/g, "").slice(-10);
@@ -93,7 +126,11 @@ export default function MyQuickReadsPage() {
         ),
       );
       setSub(s || { active: false });
+      // A lapsed subscription (cached plan whose period ended) → offer renew.
+      const local = getLocalSubscription();
+      setLapsed(!s?.active && local && Date.now() >= local.expiresAt ? local : null);
     } catch {}
+    refreshLocal();
     setLoading(false);
   };
 
@@ -102,12 +139,14 @@ export default function MyQuickReadsPage() {
     try {
       p = localStorage.getItem("track_orders_phone") || getSavedPhone() || "";
     } catch {}
+    refreshLocal();
     if (p) {
       setPhone(p);
       load(p);
     } else {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const subActive = !!sub?.active;
@@ -118,15 +157,30 @@ export default function MyQuickReadsPage() {
         year: "numeric",
       })
     : "";
-  // A lapsed subscription (cached plan whose period ended) → offer renew.
-  const lapsed = (() => {
-    if (subActive) return null;
-    const s = getLocalSubscription();
-    return s && Date.now() >= s.expiresAt ? s : null;
-  })();
+  const planName = sub?.plan === "yearly" ? "Yearly" : "Monthly";
 
   const ownedIds = new Set(verified.map((b) => b.id));
   const activeBooks = subActive ? allQr : verified;
+  const hasLibrary = subActive || verified.length > 0 || pending.length > 0;
+
+  // Books with reading started but not finished → "Continue reading".
+  const inProgress = activeBooks
+    .filter((b) => {
+      const r = readCount(progress, b);
+      return r > 0 && r < quickReadFrameCount(b.id);
+    })
+    .slice(0, 6);
+  const insightsTotal = activeBooks.reduce(
+    (s, b) => s + quickReadFrameCount(b.id),
+    0,
+  );
+  const insightsRead = activeBooks.reduce((s, b) => s + readCount(progress, b), 0);
+  const avgInsights = allQr.length
+    ? Math.round(
+        allQr.reduce((s, b) => s + quickReadFrameCount(b.id), 0) / allQr.length,
+      )
+    : 0;
+
   // Every QuickRead the shopper hasn't unlocked — browse + add to cart, lazy-loaded.
   const browseAll = allQr.filter((b) => !ownedIds.has(b.id));
   const browse = browseAll.slice(0, visible);
@@ -156,8 +210,15 @@ export default function MyQuickReadsPage() {
     load(d);
   };
 
+  const scrollToBrowse = () =>
+    document
+      .getElementById("mqr-browse")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+
   const Card = ({ b, owned }) => {
     const inCart = isInQrCart(b.id);
+    const total = quickReadFrameCount(b.id);
+    const done = owned ? readCount(progress, b) : 0;
     return (
       <div className="mqr-card">
         <button
@@ -176,14 +237,26 @@ export default function MyQuickReadsPage() {
             <span className="mqr-card-name">{b.name}</span>
             <span className="mqr-card-meta">
               {owned ? (
-                <>
-                  <Crown size={12} /> {quickReadFrameCount(b.id)} insights ·
-                  Unlocked
-                </>
+                done > 0 ? (
+                  <>
+                    {done}/{total} insights read
+                  </>
+                ) : (
+                  <>
+                    <Crown size={12} /> {total} insights · Unlocked
+                  </>
+                )
               ) : (
-                <>{quickReadFrameCount(b.id)} insights · ₹{QUICKREAD_PRICE}</>
+                <>
+                  {total} insights · ₹{QUICKREAD_PRICE}
+                </>
               )}
             </span>
+            {owned && done > 0 && (
+              <span className="mqx-bar" aria-hidden="true">
+                <span style={{ width: `${Math.round((done / total) * 100)}%` }} />
+              </span>
+            )}
           </span>
         </button>
         {owned ? (
@@ -192,7 +265,7 @@ export default function MyQuickReadsPage() {
             className="mqr-card-cta read"
             onClick={() => setOpenBook(b)}
           >
-            Read
+            {done > 0 && done < total ? "Resume" : "Read"}
           </button>
         ) : inCart ? (
           <Link href="/bag?tab=quickreads" className="mqr-card-cta incart">
@@ -214,13 +287,119 @@ export default function MyQuickReadsPage() {
     );
   };
 
+  // Intro for shoppers who don't own any QuickReads yet.
+  const renderHero = () => (
+    <section className="mqx-hero" aria-labelledby="mqx-hero-title">
+      <div className="mqx-hero-covers" aria-hidden="true">
+        {allQr.slice(0, 5).map((b, i) => (
+          <span key={b.id} className={`mqx-hero-cover c${i}`}>
+            {b.image && <img src={b.image} alt="" />}
+          </span>
+        ))}
+      </div>
+      <span className="mqx-kicker">
+        <Zap size={13} /> QuickReads by TheBookX
+      </span>
+      <h2 id="mqx-hero-title" className="mqx-hero-title">
+        The big ideas of a book, in minutes
+      </h2>
+      <p className="mqx-hero-sub">
+        Each QuickRead turns a bestseller into short insight cards: the key
+        lessons, frameworks and takeaways, ready to read on your phone.
+      </p>
+      <div className="mqx-facts">
+        <span>
+          <b>{allQr.length}</b> books
+        </span>
+        <span>
+          <b>~{avgInsights}</b> insights each
+        </span>
+        <span>
+          <b>₹{QUICKREAD_PRICE}</b> <s>₹{QUICKREAD_MRP}</s> per book
+        </span>
+      </div>
+      <div className="mqx-hero-ctas">
+        <button type="button" className="pri-big-btn" onClick={scrollToBrowse}>
+          Browse QuickReads <ChevronRight size={18} />
+        </button>
+        <button
+          type="button"
+          className="mqx-ghost"
+          onClick={() => setShowPlans(true)}
+        >
+          <Crown size={16} /> Unlimited · ₹{SUB_MONTHLY_PRICE}/mo
+        </button>
+      </div>
+      <ol className="mqx-steps">
+        <li>
+          <span className="mqx-step-ic">
+            <Layers size={16} />
+          </span>
+          <span>
+            <b>Pick a book</b>
+            <small>First {QUICKREAD_FREE_FRAMES} insights are free to try</small>
+          </span>
+        </li>
+        <li>
+          <span className="mqx-step-ic">
+            <Gift size={16} />
+          </span>
+          <span>
+            <b>Unlock it for ₹{QUICKREAD_PRICE}</b>
+            <small>Or read every book with Unlimited</small>
+          </span>
+        </li>
+        <li>
+          <span className="mqx-step-ic">
+            <Smartphone size={16} />
+          </span>
+          <span>
+            <b>Read anytime</b>
+            <small>Pick up where you left off, save the best insights</small>
+          </span>
+        </li>
+      </ol>
+    </section>
+  );
+
+  const renderPhoneLookup = () => (
+    <div className="mqr-login mqx-lookup">
+      <p className="mqr-login-lbl">
+        Already bought QuickReads? Enter the number you used
+      </p>
+      <div className="mqr-login-row">
+        <span className="rapido-cc">+91</span>
+        <input
+          type="tel"
+          inputMode="numeric"
+          maxLength={10}
+          className="phone-card-input"
+          placeholder="10-digit mobile number"
+          value={phoneInput}
+          onChange={(e) =>
+            setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 10))
+          }
+          onKeyDown={(e) => e.key === "Enter" && submitPhone()}
+        />
+      </div>
+      <button
+        type="button"
+        className="pri-big-btn"
+        disabled={phoneInput.length !== 10}
+        onClick={submitPhone}
+      >
+        View my library
+      </button>
+    </div>
+  );
+
   return (
     <main className="mqr-page">
       <header className="ord-head">
         <button
           type="button"
           className="ord-back"
-          onClick={() => router.push("/profile")}
+          onClick={() => router.push("/")}
           aria-label="Back"
         >
           <ArrowLeft size={20} />
@@ -230,53 +409,49 @@ export default function MyQuickReadsPage() {
         </div>
       </header>
 
-      {!phone ? (
-        <div className="mqr-login">
-          <p className="mqr-login-lbl">
-            Enter the number you used for QuickReads
-          </p>
-          <div className="mqr-login-row">
-            <span className="rapido-cc">+91</span>
-            <input
-              type="tel"
-              inputMode="numeric"
-              maxLength={10}
-              className="phone-card-input"
-              placeholder="10-digit mobile number"
-              value={phoneInput}
-              onChange={(e) =>
-                setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 10))
-              }
-              onKeyDown={(e) => e.key === "Enter" && submitPhone()}
-            />
-          </div>
-          <button
-            type="button"
-            className="pri-big-btn"
-            disabled={phoneInput.length !== 10}
-            onClick={submitPhone}
-          >
-            View my library
-          </button>
-        </div>
-      ) : loading ? (
+      {loading ? (
         <div className="mqr-loading">
           <RefreshCw size={18} className="cpo-spin" /> Loading your library…
         </div>
-      ) : (
+      ) : !hasLibrary ? (
         <>
-          {/* Subscription banner */}
-          {subActive ? (
-            <div className="mqr-sub-banner active">
+          {renderHero()}
+          {!phone && renderPhoneLookup()}
+          {lapsed && (
+            <div className="mqr-sub-banner lapsed">
               <span className="mqr-sub-ic">
-                <Crown size={20} />
+                <Lock size={18} />
               </span>
               <div className="mqr-sub-txt">
-                <strong>Unlimited active</strong>
-                <small>
-                  Every QuickRead is unlocked · Renews {renewalDate}
-                </small>
+                <strong>Your Unlimited plan expired</strong>
+                <small>Renew to unlock every QuickRead again.</small>
               </div>
+              <button
+                type="button"
+                className="mqr-sub-renew"
+                onClick={() => setShowPlans(true)}
+              >
+                Renew
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          {/* Plan status */}
+          {subActive ? (
+            <div className="mqx-plan">
+              <span className="mqx-plan-ic">
+                <Crown size={20} />
+              </span>
+              <span className="mqx-plan-txt">
+                <span className="mqx-plan-tag">Active</span>
+                <strong>Unlimited · {planName}</strong>
+                <small>
+                  All {allQr.length} QuickReads unlocked
+                  {renewalDate ? ` · Valid till ${renewalDate}` : ""}
+                </small>
+              </span>
             </div>
           ) : lapsed ? (
             <div className="mqr-sub-banner lapsed">
@@ -301,18 +476,82 @@ export default function MyQuickReadsPage() {
               className="mqr-go-unlimited"
               onClick={() => setShowPlans(true)}
             >
-              <Crown size={16} /> Go Unlimited — read every book from ₹99/mo
+              <Crown size={16} /> Go Unlimited · read every book for ₹
+              {SUB_MONTHLY_PRICE}/mo
             </button>
           )}
 
-          {/* Active / purchased */}
+          {/* At a glance */}
+          <div className="mqx-stats">
+            <span>
+              <b>{activeBooks.length}</b>
+              <small>{subActive ? "Books unlocked" : "Books owned"}</small>
+            </span>
+            <span>
+              <b>{insightsTotal}</b>
+              <small>Insights unlocked</small>
+            </span>
+            <span>
+              <b>{insightsRead}</b>
+              <small>Insights read</small>
+            </span>
+            <span>
+              <b>{savedCount}</b>
+              <small>
+                <Bookmark size={10} /> Saved
+              </small>
+            </span>
+          </div>
+
+          {/* Continue reading */}
+          {inProgress.length > 0 && (
+            <section className="mqr-section">
+              <h2 className="mqr-section-title">Continue reading</h2>
+              <div className="mqx-resume-row">
+                {inProgress.map((b) => {
+                  const total = quickReadFrameCount(b.id);
+                  const done = readCount(progress, b);
+                  return (
+                    <button
+                      key={b.id}
+                      type="button"
+                      className="mqx-resume"
+                      onClick={() => setOpenBook(b)}
+                    >
+                      <span className="mqx-resume-cover">
+                        {b.image ? (
+                          <img src={b.image} alt="" loading="lazy" />
+                        ) : (
+                          <BookOpen size={20} />
+                        )}
+                        <span className="mqx-resume-play">
+                          <Play size={14} />
+                        </span>
+                      </span>
+                      <span className="mqx-resume-name">{b.name}</span>
+                      <span className="mqx-bar" aria-hidden="true">
+                        <span
+                          style={{ width: `${Math.round((done / total) * 100)}%` }}
+                        />
+                      </span>
+                      <span className="mqx-resume-meta">
+                        {done}/{total} insights
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* Library */}
           <section className="mqr-section">
             <h2 className="mqr-section-title">
-              {subActive ? "All QuickReads (Unlimited)" : "Your books"}
+              {subActive ? "All QuickReads (Unlimited)" : "Your library"}
             </h2>
             {activeBooks.length === 0 ? (
               <p className="mqr-empty">
-                No QuickReads yet. Unlock any book below to start reading.
+                Your QuickReads appear here as soon as your payment is confirmed.
               </p>
             ) : (
               <div className="mqr-grid">
@@ -336,24 +575,29 @@ export default function MyQuickReadsPage() {
               </div>
             </section>
           )}
-
-          {/* Browse every QuickRead — add to cart (lazy-loaded) */}
-          {!subActive && browseAll.length > 0 && (
-            <section className="mqr-section">
-              <h2 className="mqr-section-title">All QuickReads</h2>
-              <div className="mqr-grid">
-                {browse.map((b) => (
-                  <Card key={b.id} b={b} owned={false} />
-                ))}
-              </div>
-              {hasMore && (
-                <div className="mqr-more">
-                  <RefreshCw size={15} className="cpo-spin" /> Loading more…
-                </div>
-              )}
-            </section>
-          )}
         </>
+      )}
+
+      {/* Browse every QuickRead — add to cart (lazy-loaded) */}
+      {!loading && !subActive && browseAll.length > 0 && (
+        <section className="mqr-section" id="mqr-browse">
+          <h2 className="mqr-section-title">
+            {hasLibrary ? "More QuickReads" : "All QuickReads"}
+          </h2>
+          <p className="mqx-browse-note">
+            Tap any book to read its first {QUICKREAD_FREE_FRAMES} insights free.
+          </p>
+          <div className="mqr-grid">
+            {browse.map((b) => (
+              <Card key={b.id} b={b} owned={false} />
+            ))}
+          </div>
+          {hasMore && (
+            <div className="mqr-more">
+              <RefreshCw size={15} className="cpo-spin" /> Loading more…
+            </div>
+          )}
+        </section>
       )}
 
       {/* Sticky checkout bar — matches the main cart checkout bottom bar */}
@@ -389,6 +633,7 @@ export default function MyQuickReadsPage() {
             resume
             onClose={() => {
               setOpenBook(null);
+              refreshLocal();
               if (phone) load(phone);
             }}
           />
@@ -412,6 +657,8 @@ export default function MyQuickReadsPage() {
           />
         )}
       </AnimatePresence>
+
+      <MobileBottomNav />
     </main>
   );
 }

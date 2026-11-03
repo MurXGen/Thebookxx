@@ -136,7 +136,7 @@ const WALLET_MAX_PER_ORDER = 399;
 const ADDRESS_MIN_CHARS = 30;
 
 // "Faster checkout" reassurance label shown in every checkout step header.
-const FastCheckout = () => (
+export const FastCheckout = () => (
   <span className="fc-badge">
     <Zap size={11} strokeWidth={2.6} /> Faster checkout
   </span>
@@ -5776,7 +5776,7 @@ export function CODSuccessModal({
 // =====================================================================
 // ============== Sub-component: UPIPaymentModal =======================
 // =====================================================================
-function UPIPaymentModal({
+export function UPIPaymentModal({
   finalPayable,
   fasterDelivery,
   fasterDeliveryCharge,

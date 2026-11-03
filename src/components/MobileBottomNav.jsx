@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, LayoutGrid, Package } from "lucide-react";
+import { Home, LayoutGrid, Package, Zap } from "lucide-react";
 import { readProfileCache } from "@/utils/profileCache";
 
 /**
  * Fixed mobile-only bottom navigation for the storefront.
- * Tabs: Home · Categories · Orders (count badge). Hidden on tablets/desktop
+ * Tabs: Home · Categories · QuickReads · Orders (count badge). Hidden on tablets/desktop
  * (>=768px). The floating Checkout bar (CartBar) stacks just above this nav —
  * handled in CSS via `body.has-bottom-nav`.
  */
@@ -89,6 +89,7 @@ export default function MobileBottomNav() {
   const tabs = [
     { key: "home", label: "Home", Icon: Home, href: "/" },
     { key: "categories", label: "Categories", Icon: LayoutGrid, href: "/books" },
+    { key: "quickreads", label: "QuickReads", Icon: Zap, href: "/my-quickreads" },
     {
       key: "orders",
       label: "Orders",

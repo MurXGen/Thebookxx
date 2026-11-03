@@ -64474,3 +64474,123 @@ h2.od-reco-title {
 @media (prefers-reduced-motion: reduce) {
   .hn-sky > .hero-scratch-band, .sc-bolt { animation: none !important; }
 }
+
+/* =====================================================================
+   Diwali hero — LIGHT theme (warm white sky, saffron + gold accents).
+   Overrides the night palette above; layout and motion stay the same.
+   ===================================================================== */
+.hn-sky { color: #1c1917; }
+.hn-sky::before {
+  background:
+    radial-gradient(70% 38% at 50% 0%, rgba(253, 230, 138, 0.38) 0%, rgba(253, 230, 138, 0) 70%),
+    radial-gradient(120% 55% at 50% 100%, rgba(251, 133, 0, 0.1) 0%, rgba(251, 133, 0, 0) 62%),
+    linear-gradient(180deg, #fffaf2 0%, #ffffff 55%, #fff8ee 100%);
+}
+/* decorative layer, tuned for a light background */
+.hero-night .dn-stars { opacity: 0.5; }
+.hero-night .dn-star { background: #f59e0b; box-shadow: none; }
+.hero-night .dn-rangoli { opacity: 0.1; filter: none; }
+.hero-night .dn-kandil-svg { filter: drop-shadow(0 6px 10px rgba(194, 65, 12, 0.22)); }
+.hero-night .dn-halo { fill: rgba(253, 186, 116, 0.35); }
+.hero-night .dn-flame { filter: drop-shadow(0 0 4px rgba(251, 146, 60, 0.6)); }
+.hero-night .dn-diya-row::after { background: radial-gradient(closest-side, rgba(251, 146, 60, 0.22), rgba(251, 146, 60, 0)); }
+
+/* sale card */
+.hero-night .hero-festive-flat {
+  background: #fff;
+  border: 1px solid #fde4c4;
+  box-shadow: 0 10px 28px rgba(251, 133, 0, 0.1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.hero-night .hff-kicker { color: #c2410c; }
+.hero-night .hff-amt { color: #1c1917; }
+.hero-night .hff-amt b { background-image: linear-gradient(90deg, #fb8500, #c2410c, #fb8500); background-size: 200% 100%; }
+.hero-night .hff-hint { color: #78716c; }
+
+/* greeting */
+.dn-greet { color: #d97706; }
+.dn-greet-txt {
+  background-image: linear-gradient(90deg, #b45309, #fb8500 40%, #c2410c 70%, #b45309);
+  background-size: 200% 100%;
+  filter: none;
+}
+.dn-greet-sub { color: #78716c; }
+.dn-greet-sub span { color: #f59e0b; }
+
+/* offers marquee */
+.hero-night .hero-offer-chip {
+  background: #fff;
+  color: #292524;
+  border: 1px solid #f1e4d2;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.05);
+}
+.hero-night .hero-offer-chip .hero-offer-ic { color: #fb8500; }
+
+/* headline + copy */
+.hero-night .home-hero-title { color: #0a0a0a; text-shadow: none; }
+.hero-night .home-hero-accent {
+  background-image: linear-gradient(100deg, #fb8500 0%, #f97316 50%, #c2410c 100%);
+  filter: none;
+}
+.hero-night .home-hero-sub { color: #57534e; }
+.hero-night .home-hero-stat { color: #44403c; }
+.hero-night .home-hero-stat-icon { color: #fb8500; }
+
+/* CTAs */
+.hero-night .hero-search-btn { box-shadow: 0 8px 20px rgba(251, 133, 0, 0.28); }
+.hero-night .hero-suggest-btn { background: #fff; color: #0a0a0a; border: 1.5px solid #e7e5e4; }
+.hero-night .hero-suggest-btn:hover { border-color: #0a0a0a; }
+.hero-night .hx-btn { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+.hero-night .hx-btn:hover { background: #ffedd5; border-color: #fb923c; }
+.hero-night .hx-btn svg { color: #fb8500; }
+
+/* perk badges: soft tinted pills with dark text */
+.hero-night .hb-fast { color: #854d0e; background: linear-gradient(90deg, #fef9c3, #fffdf0); border: 1px solid #fde68a; }
+.hero-night .hb-bolt svg { fill: #eab308; filter: drop-shadow(0 0 3px rgba(234, 179, 8, 0.5)); }
+.hero-night .hb-speed i { background: linear-gradient(90deg, transparent, #eab308); }
+.hero-night .hb-mark { color: #166534; background: linear-gradient(90deg, #dcfce7, #f7fef9); border: 1px solid #bbf7d0; }
+.hero-night .hb-ribbon { filter: drop-shadow(0 2px 2px rgba(28, 25, 23, 0.18)); }
+.hero-night .hb-rate { color: #92400e; background: linear-gradient(90deg, #fef3c7, #fffbeb); border: 1px solid #fde68a; }
+.hero-night .hb-stars svg { fill: #f59e0b; filter: none; }
+.hero-night .hb-titles { color: #3730a3; background: linear-gradient(90deg, #e0e7ff, #f5f7ff); border: 1px solid #c7d2fe; }
+.hero-night .hb-shelf { border-bottom-color: #818cf8; }
+.hero-night .hb-ret { color: #155e75; background: linear-gradient(90deg, #cffafe, #f0fdff); border: 1px solid #a5f3fc; }
+.hero-night .hb-cycle svg { stroke: #0891b2; }
+.hero-night .hb-cycle b { color: #155e75; }
+
+/* live activity card */
+.hn-sky > .la {
+  background: #fff;
+  border: 1px solid #f1e4d2;
+  box-shadow: 0 12px 32px rgba(28, 25, 23, 0.06);
+}
+.hero-night .la-label { color: #1c1917; }
+.hero-night .la-slot { background: #faf7f2; }
+.hero-night .la-line { color: #1c1917; }
+.hero-night .la-city { color: #78716c; }
+.hero-night .la-what { color: #57534e; }
+.hero-night .la-time { color: #a8a29e; }
+.hero-night .la-stars { color: #f59e0b; }
+.hero-night .la-ic-order { color: #ea580c; background: #fff1e6; }
+.hero-night .la-ic-fast { color: #ca8a04; background: #fef9c3; }
+.hero-night .la-ic-cart { color: #4f46e5; background: #eef2ff; }
+.hero-night .la-ic-review { color: #d97706; background: #fef3c7; }
+
+/* Scratch & win: cream card, same animated gold border */
+.hn-sky > .hero-scratch-band {
+  background:
+    linear-gradient(120deg, #fff7ed, #fffcf7) padding-box,
+    conic-gradient(from var(--sc-ang), #d97706, #fde047 8%, #d97706 16%, #f59e0b 30%, #fbbf24 46%, #fff3c4 50%, #fbbf24 54%, #f59e0b 70%, #d97706 84%, #fde047 92%, #d97706) border-box;
+  box-shadow: 0 8px 24px rgba(251, 133, 0, 0.12);
+}
+.hn-sky > .hero-scratch-band .hero-scratch-kicker { color: #c2410c; }
+.hn-sky > .hero-scratch-band .hero-scratch-amt { color: #1c1917; }
+.hn-sky > .hero-scratch-band .hero-scratch-amt-big { color: #fb8500; }
+.hn-sky > .hero-scratch-band .hero-scratch-sub { color: #78716c; }
+.hero-night .sc-bolt { fill: #f59e0b; filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.6)); }
+
+/* gold diamond border: softer glow on white */
+.hero-night .dn-border-line { box-shadow: 0 0 8px rgba(245, 158, 11, 0.35); }
+.hero-night .dn-border::before,
+.hero-night .dn-border::after { background-image: radial-gradient(circle, #f59e0b 0 1.6px, transparent 2px); }

@@ -73,6 +73,7 @@ import {
   clearProfileCache,
 } from "@/utils/profileCache";
 import { books as ALL_BOOKS } from "@/utils/book";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 // Match an order-item name to its book cover (order items come from the sheet,
 // so names may vary slightly — try exact then partial match).
@@ -3586,6 +3587,7 @@ Please cancel this order. Thank you `;
           />
         )}
       </AnimatePresence>
+      <MobileBottomNav />
     </div>
   );
 }

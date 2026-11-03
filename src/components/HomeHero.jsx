@@ -39,6 +39,9 @@ const slugify = (t) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
+// Readers' top-3 podium under the hero; hidden for now.
+const SHOW_PODIUM = false;
+
 export default function HomeHero() {
   const titleCount = Math.max(100, Math.floor(books.length / 100) * 100);
   const { cart, addToCart } = useStore();
@@ -517,8 +520,8 @@ export default function HomeHero() {
           <LiveOrdersStrip />
         </div>
 
-        {/* Readers' top-3 picks — right on desktop, stacked below on mobile */}
-        {picks.length > 0 && (
+        {/* Readers' top-3 picks podium — hidden for now (flip SHOW_PODIUM). */}
+        {SHOW_PODIUM && picks.length > 0 && (
           <aside className="hero-picks">
             {/* Winners' podium: #1 tallest in the centre, #2 right, #3 left.
               Rises into place when scrolled into view, retracts when past. */}

@@ -1,93 +1,90 @@
 // src/components/CatalogueSection.jsx
 "use client";
 
-import { useState, useEffect } from "react";
-import CatalogueCard from "./UI/CatalogueCard";
-import LabelDivider from "./UI/LineDivider";
-import { getCatalogueData, getBooksByCategory } from "@/utils/catalogueUtils";
-import { ChevronRight } from "lucide-react";
+import { useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { ChevronRight, LayoutGrid } from "lucide-react";
+import { getCatalogueData, getBooksByCategory } from "@/utils/catalogueUtils";
 import { books as ALL_BOOKS } from "@/utils/book";
 
+const coversOf = (list) =>
+  list
+    .filter((b) => b.image)
+    .slice(0, 2)
+    .map((b) => (typeof b.image === "string" ? b.image : b.image?.src));
+
+// "Shop by category" — one swipeable row right under the hero. Real <a> links
+// (not router.push buttons) so every category page is crawlable.
 export default function CatalogueSection() {
-  const router = useRouter();
-  const [catalogueData, setCatalogueData] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const data = getCatalogueData();
-    // Show ALL categories, each enriched with a few real book covers
-    const enriched = data.map((cat) => ({
-      ...cat,
-      covers: getBooksByCategory(cat.key)
-        .filter((b) => b.image)
-        .slice(0, 2)
-        .map((b) => b.image),
-    }));
-    setCatalogueData(enriched);
-    setLoading(false);
-  }, []);
-
-  const handleCategoryClick = (categoryKey) => {
-    router.push(`/category/${categoryKey}`);
-  };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-12 section-1200">
-        <LabelDivider label="Explore Categories" />
-        <div className="catalogue-grid">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse bg-gray-200 h-24 rounded-xl"
-            ></div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const categories = useMemo(
+    () => [
+      {
+        key: "all",
+        label: "All books",
+        count: ALL_BOOKS.length,
+        href: "/books",
+        color: "#fd6b01",
+        covers: coversOf(ALL_BOOKS),
+      },
+      ...getCatalogueData().map((cat) => ({
+        key: cat.key,
+        label: cat.label,
+        count: cat.count,
+        href: `/category/${cat.key}`,
+        color: cat.color,
+        covers: coversOf(getBooksByCategory(cat.key)),
+      })),
+    ],
+    [],
+  );
 
   return (
-    <div className="catalogue-section-wrapper">
-      <div className="section-1200 flex flex-col gap-12">
-        <LabelDivider label="Explore Categories" />
-
-        {/* Horizontally scrollable 3D category cards (books pop out) */}
-        <div className="catalogue-scroll">
-          {/* All books — jump straight to the full catalogue */}
-          <CatalogueCard
-            label="All books"
-            count={ALL_BOOKS.length}
-            covers={ALL_BOOKS.filter((b) => b.image)
-              .slice(0, 2)
-              .map((b) => b.image)}
-            onClick={() => router.push("/books")}
-            color="#fef3e2"
-          />
-
-          {catalogueData.map((cat) => (
-            <CatalogueCard
-              key={cat.key}
-              label={cat.label}
-              count={cat.count}
-              covers={cat.covers}
-              onClick={() => handleCategoryClick(cat.key)}
-              color={cat.color}
-            />
-          ))}
-
-          {/* View-all card pinned at the end of the strip */}
-          <Link href="/category" className="cat3d-viewall" aria-label="View all categories">
-            <span className="cat3d-viewall-icon">
-              <ChevronRight size={22} />
-            </span>
-            <span className="cat3d-viewall-label">View all</span>
-            <span className="cat3d-viewall-sub">categories</span>
-          </Link>
-        </div>
+    <section className="catrow section-1200" aria-labelledby="catrow-title">
+      <div className="catrow-head">
+        <h2 id="catrow-title" className="catrow-title">
+          Shop by category
+        </h2>
+        <Link href="/category" className="catrow-all">
+          See all <ChevronRight size={14} />
+        </Link>
       </div>
-    </div>
+
+      <nav className="catrow-scroll" aria-label="Book categories">
+        {categories.map((cat) => (
+          <Link
+            key={cat.key}
+            href={cat.href}
+            className="catrow-item"
+            style={{ "--cat": cat.color }}
+            aria-label={`${cat.label} books (${cat.count})`}
+          >
+            <span className="catrow-tile">
+              {cat.covers.length ? (
+                cat.covers.map((src, i) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt=""
+                    loading="lazy"
+                    className={`catrow-cover catrow-cover-${i}`}
+                  />
+                ))
+              ) : (
+                <LayoutGrid size={20} />
+              )}
+            </span>
+            <span className="catrow-label">{cat.label}</span>
+            <span className="catrow-count">{cat.count} books</span>
+          </Link>
+        ))}
+        <Link href="/category" className="catrow-item catrow-more">
+          <span className="catrow-tile">
+            <ChevronRight size={22} />
+          </span>
+          <span className="catrow-label">View all</span>
+          <span className="catrow-count">categories</span>
+        </Link>
+      </nav>
+    </section>
   );
 }

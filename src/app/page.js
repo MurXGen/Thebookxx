@@ -66,7 +66,7 @@ const RecommendationModal = lazy(
 );
 const OffersGift = lazy(() => import("@/components/OffersGift"));
 // eslint-disable-next-line no-unused-vars
-const CatalogueSection = lazy(() => import("@/components/CatalogueSection"));
+import CatalogueSection from "@/components/CatalogueSection";
 const ComboDeals = lazy(() => import("@/components/ComboDeals"));
 // Kept for reference — the old ₹1 rail, now replaced by <OneRupeeGrid /> above.
 // eslint-disable-next-line no-unused-vars
@@ -198,16 +198,32 @@ export default function HomePage() {
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <HomeHero />
 
+      {/* Shop by category — one swipeable row right under the hero. */}
+      <CatalogueSection />
+
+      {/* Then: trending, the ₹1 store, and everything else below. */}
+      <RailBlock
+        id="rail-trending"
+        icon={TrendingUp}
+        badge="TRENDING NOW"
+        title="What everyone's reading"
+        subtitle="Loved by readers this week — grab yours before they're gone."
+        books={RAIL_TRENDING}
+      />
+
+      <RailBlock
+        id="rail-rupee"
+        icon={Tag}
+        badge="JUST ₹1"
+        title="Bestselling books from just ₹1"
+        subtitle="Hand-picked reads at an unbeatable price — one ₹1 book per order."
+        pill="Lowest price"
+        books={RAIL_ONE_RUPEE}
+      />
+
       {/* Review-photo trust gallery — replaces the Bestseller carousel */}
       <ReviewGallery />
 
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<BooksSkeleton />}>
-          <SmoothAppear delay={0.2}>
-            <CatalogueSection />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
 
       {/* Compact 2-row ₹1 books rail — above the review gallery. */}
       {/* <OneRupeeGrid /> */}
@@ -265,24 +281,7 @@ export default function HomePage() {
 
       {/* BookCard rails (same UI as All Books) — above Recently viewed:
           ₹1 store, Trending, Bestsellers, New arrivals. */}
-      <RailBlock
-        id="rail-rupee"
-        icon={Tag}
-        badge="JUST ₹1"
-        title="Bestselling books from just ₹1"
-        subtitle="Hand-picked reads at an unbeatable price — one ₹1 book per order."
-        pill="Lowest price"
-        books={RAIL_ONE_RUPEE}
-      />
 
-      <RailBlock
-        id="rail-trending"
-        icon={TrendingUp}
-        badge="TRENDING NOW"
-        title="What everyone's reading"
-        subtitle="Loved by readers this week — grab yours before they're gone."
-        books={RAIL_TRENDING}
-      />
 
       <RailBlock
         id="rail-fiction"

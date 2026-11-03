@@ -1,6 +1,10 @@
 "use client";
 
-import DiwaliNight, { DiyaRow } from "@/components/UI/DiwaliNight";
+import LiveActivity from "@/components/LiveActivity";
+import DiwaliNight, {
+  DiyaRow,
+  DiwaliGreeting,
+} from "@/components/UI/DiwaliNight";
 import { useRef, useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,7 +30,6 @@ import { getCartOffers } from "@/utils/cartOffers";
 import OfferTierList from "@/components/UI/OfferTierList";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
-import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import ScratchTeaserCard from "@/components/ScratchTeaserCard";
 import SearchOverlay from "@/components/SearchOverlay";
 import RecommendationModal from "@/components/RecommendationModal";
@@ -447,6 +450,9 @@ export default function HomeHero() {
             <span className="hff-hint">Tap for a surprise 🎉</span>
           </button>
 
+          {/* Happy Diwali greeting under the sale card */}
+          <DiwaliGreeting />
+
           {/* Offers marquee — auto-scrolls; tap any chip to see all reward tiers */}
           <div className="hero-offers-row" role="list">
             <div className="hero-offers-track">
@@ -478,16 +484,65 @@ export default function HomeHero() {
             shipping, Cash on Delivery &amp; easy 7-day returns across India.
           </p>
 
-          <div className="home-hero-stats">
-            {stats.map(({ icon: Icon, label, highlight }) => (
-              <div
-                key={label}
-                className={`home-hero-stat${highlight ? " highlight" : ""}`}
-              >
-                <Icon size={15} className="home-hero-stat-icon" />
-                <span>{label}</span>
-              </div>
-            ))}
+          <div className="hb-perks hb-perks-top">
+            {/* Rating — five stars filling in */}
+            <span className="hb-perk hb-rate">
+              <span className="hb-stars" aria-hidden="true">
+                {[0, 1, 2, 3, 4].map((k) => (
+                  <svg key={k} viewBox="0 0 24 24" style={{ animationDelay: `${k * 0.12}s` }}>
+                    <path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" />
+                  </svg>
+                ))}
+              </span>
+              4.4 rating
+            </span>
+            {/* Titles — a little shelf of book spines */}
+            <span className="hb-perk hb-titles">
+              <span className="hb-shelf" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+                <i />
+              </span>
+              {titleCount}+ titles
+            </span>
+            {/* Returns — circular arrow turning */}
+            <span className="hb-perk hb-ret">
+              <span className="hb-cycle" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M20 12a8 8 0 1 1-2.34-5.66" />
+                  <path d="M20 4v5h-5" />
+                </svg>
+                <b>7</b>
+              </span>
+              7-day returns
+            </span>
+            <span className="hb-perk hb-fast">
+              <span className="hb-bolt" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M13.5 2 4 13.5h6.5L9.5 22 20 9.5h-6.6L13.5 2Z" />
+                </svg>
+              </span>
+              <span className="hb-speed" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              Faster delivery
+            </span>
+            <span className="hb-perk hb-mark">
+              <span className="hb-ribbons" aria-hidden="true">
+                <svg viewBox="0 0 14 26" className="hb-ribbon r1">
+                  <path d="M1 0h12v26l-6-5-6 5Z" />
+                  <circle cx="7" cy="7" r="2" />
+                </svg>
+                <svg viewBox="0 0 14 26" className="hb-ribbon r2">
+                  <path d="M1 0h12v26l-6-5-6 5Z" />
+                  <circle cx="7" cy="7" r="2" />
+                </svg>
+              </span>
+              Free bookmark
+            </span>
           </div>
 
           {/* Primary actions — Search + Suggest */}
@@ -518,8 +573,6 @@ export default function HomeHero() {
             <ChevronRight size={15} />
           </button>
 
-          {/* Live-order social-proof ticker */}
-          <LiveOrdersStrip />
         </div>
 
         {/* Readers' top-3 picks podium — hidden for now (flip SHOW_PODIUM). */}
@@ -651,9 +704,21 @@ export default function HomeHero() {
         </span>
       </div>
 
+      {/* Live activity: orders, Faster picks, bag adds, reviews */}
+      <LiveActivity />
+
       {/* Lit diyas at the foot of the night sky, fading into the page */}
       <DiyaRow />
-      <div className="dn-fade" aria-hidden="true" />
+      {/* Gold diamond border where the night sky meets the page */}
+      <div className="dn-border" aria-hidden="true">
+        <span className="dn-border-line" />
+        <span className="dn-border-gems">
+          <i />
+          <i className="big" />
+          <i />
+        </span>
+        <span className="dn-border-line" />
+      </div>
       </div>
 
       {/* Search modal (existing overlay) */}

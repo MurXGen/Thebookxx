@@ -238,6 +238,14 @@ export function DiyaRow() {
           </span>
         ))}
       </div>
+    </div>
+  );
+}
+
+// "Happy Diwali" greeting with gold flourishes — sits under the sale card.
+export function DiwaliGreeting() {
+  return (
+    <div className="dn-greet-wrap">
       <div className="dn-greet">
         <Flourish />
         <p className={`dn-greet-txt ${script.className}`}>Happy Diwali</p>

@@ -1,5 +1,6 @@
 "use client";
 
+import DiwaliNight, { DiyaRow } from "@/components/UI/DiwaliNight";
 import { useRef, useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +18,7 @@ import {
   Plus,
   X,
   ChevronRight,
+  BookOpen,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { books } from "@/utils/book";
@@ -149,7 +151,7 @@ export default function HomeHero() {
   // SSR and client markup identical (no hydration mismatch).
   const petals = useMemo(() => {
     const COLORS = ["#fb8500", "#ffb703", "#ffd23f", "#ff8c42", "#e85d04", "#f48c06"];
-    return Array.from({ length: 22 }).map((_, i) => ({
+    return Array.from({ length: 10 }).map((_, i) => ({
       i,
       left: (i * 97) % 100,
       delay: ((i * 53) % 70) / 10, // 0–7s
@@ -261,7 +263,7 @@ export default function HomeHero() {
 
   return (
     <section
-      className="home-hero"
+      className="home-hero hero-night"
       ref={heroRef}
       onPointerDown={spawnBurst}
       style={{ position: "relative" }}
@@ -297,6 +299,11 @@ export default function HomeHero() {
           </li>
         </ul>
       </div>
+      {/* Night sky: everything up to the diya fade sits on the dark band */}
+      <div className="hn-sky">
+      {/* Diwali night: stars, rangoli and swinging lanterns */}
+      <DiwaliNight />
+
       {/* Diwali marigold garland (toran) strung across the top */}
       <div className="hero-toran" aria-hidden="true">
         {toran.map((f) => (
@@ -501,19 +508,14 @@ export default function HomeHero() {
             </button>
           </div>
 
-          {/* First-time helper — opens the book-suggestion flow */}
+          {/* First-time helper — short CTA into the book-suggestion quiz */}
           <button
             type="button"
-            className="hero-expert-cta"
+            className="hx-btn"
             onClick={() => setSuggestOpen(true)}
           >
-            <span className="hero-expert-ic">
-              <FaWhatsapp size={18} />
-            </span>
-            <span className="hero-expert-txt">
-              <strong>First time here?</strong> Talk with an expert for support
-            </span>
-            <ChevronRight size={16} className="hero-expert-arrow" />
+            <BookOpen size={16} /> First time here? Help me choose
+            <ChevronRight size={15} />
           </button>
 
           {/* Live-order social-proof ticker */}
@@ -647,6 +649,11 @@ export default function HomeHero() {
         <span className="hero-scratch-teaser" aria-hidden="true">
           <ScratchTeaserCard visualOnly />
         </span>
+      </div>
+
+      {/* Lit diyas at the foot of the night sky, fading into the page */}
+      <DiyaRow />
+      <div className="dn-fade" aria-hidden="true" />
       </div>
 
       {/* Search modal (existing overlay) */}

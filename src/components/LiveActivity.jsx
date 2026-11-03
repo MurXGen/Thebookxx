@@ -61,14 +61,14 @@ export default function LiveActivity() {
           const { Icon, cls } = ICONS[e.type] || ICONS.order;
           return (
             <li key={slot} className="la-slot">
-              <AnimatePresence initial={false}>
+              <AnimatePresence initial={false} mode="wait">
                 <motion.div
                   key={e.key}
                   className="la-item"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.6, ease: "easeInOut", delay: slot * 0.08 }}
+                  transition={{ duration: 0.35, ease: "easeInOut", delay: slot * 0.1 }}
                 >
                   <span className={`la-ic ${cls}`}>
                     <Icon size={15} />

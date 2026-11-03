@@ -675,6 +675,9 @@ export default function HomeHero() {
         )}
       </div>
 
+      {/* Live activity: orders, Faster picks, bag adds, reviews */}
+      <LiveActivity />
+
       {/* Scratch & win band — reuses the homepage scratch flow (opens the
           number modal + wallet reward via the tbx:open-scratch event). */}
       <div
@@ -686,6 +689,17 @@ export default function HomeHero() {
         aria-label="Scratch to win cashback"
       >
         <span className="hero-scratch-deco" aria-hidden="true" />
+        {/* Lightning sparks that flash around the card on hover / tap */}
+        {["tl", "tr", "bl", "br"].map((pos) => (
+          <svg
+            key={pos}
+            viewBox="0 0 24 24"
+            className={`sc-bolt sc-bolt-${pos}`}
+            aria-hidden="true"
+          >
+            <path d="M13.5 2 4 13.5h6.5L9.5 22 20 9.5h-6.6L13.5 2Z" />
+          </svg>
+        ))}
 
         <div className="hero-scratch-copy">
           <span className="hero-scratch-kicker">
@@ -695,7 +709,7 @@ export default function HomeHero() {
             Cashback upto <span className="hero-scratch-amt-big">₹100</span>
           </span>
           <span className="hero-scratch-sub">
-            <Sparkles size={13} /> Every order wins — tap the card to reveal
+            Every order wins. Tap the card to reveal.
           </span>
         </div>
 
@@ -703,9 +717,6 @@ export default function HomeHero() {
           <ScratchTeaserCard visualOnly />
         </span>
       </div>
-
-      {/* Live activity: orders, Faster picks, bag adds, reviews */}
-      <LiveActivity />
 
       {/* Lit diyas at the foot of the night sky, fading into the page */}
       <DiyaRow />

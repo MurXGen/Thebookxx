@@ -63220,19 +63220,6 @@ h2.od-reco-title {
   font-weight: 700;
 }
 
-.pa-card.pa-card-unlock {
-  border-color: rgba(253, 107, 1, 0.6);
-  background: linear-gradient(135deg, #fff4e8, #fffaf5);
-}
-.pa-card-unlock .pa-card-ic { font-size: 18px; background: #fff; }
-.pa-card-apply {
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: var(--primary, #fd6b01);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-}
 @media (prefers-reduced-motion: reduce) {
   .otl-ready .offer-tier-ic, .offer-apply-chip, .bm2-apply-emoji { animation: none; }
 }

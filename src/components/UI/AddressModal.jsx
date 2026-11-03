@@ -3359,26 +3359,6 @@ export default function AddressModal({
                             : `You saved ₹${couponDiscount}`}
                         </span>
                       </div>
-                    ) : unlockedOffer && onApplyOffer ? (
-                      <button
-                        type="button"
-                        className="pa-card pa-card-unlock"
-                        onClick={() => {
-                          buzz(12);
-                          onApplyOffer(unlockedOffer);
-                        }}
-                      >
-                        <span className="pa-card-top">
-                          <span className="pa-card-ic">🎁</span>
-                          <span className="pa-card-apply">Apply</span>
-                        </span>
-                        <span className="pa-card-name">
-                          {unlockedOffer.reward} unlocked
-                        </span>
-                        <span className="pa-card-sub pa-card-save">
-                          Tap to save ₹{unlockedOffer.value}
-                        </span>
-                      </button>
                     ) : (
                       <button
                         type="button"

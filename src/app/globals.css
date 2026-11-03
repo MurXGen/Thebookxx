@@ -64350,3 +64350,48 @@ h2.od-reco-title {
 @media (prefers-reduced-motion: reduce) {
   .dn-border-line, .dn-border-gems i { animation: none; }
 }
+
+/* --- Full-bleed night sky on wide screens (beyond the 1200px shell) --- */
+/* Only wider than the 1200px shell does the sky need to escape it. */
+@media (min-width: 1201px) {
+  html:has(.hero-night) { overflow-x: clip; }
+  .app-shell:has(.hero-night),
+  .home-hero.hero-night { overflow-x: visible; }
+}
+.hn-sky::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: -1;
+  background:
+    radial-gradient(120% 60% at 50% 100%, rgba(251, 146, 60, 0.22) 0%, rgba(251, 146, 60, 0) 60%),
+    radial-gradient(80% 40% at 50% 0%, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #050505 0%, #0d0d0d 45%, #1a1a1a 100%);
+}
+.hn-sky .dn-border {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: 0;
+}
+
+/* Label: "Readers loving" white, "TheBookX" brand-orange gradient */
+.la-label { color: #fff; }
+.la-label b {
+  background: linear-gradient(90deg, #fdba74, #fb8500 55%, #f97316);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+}
+
+/* Feed: fixed slots that crossfade (no layout jump / flicker) */
+.la-feed { min-height: 0; }
+.la-slot { position: relative; height: 58px; border-radius: 12px; background: rgba(0, 0, 0, 0.25); overflow: hidden; }
+.la-slot .la-item { position: absolute; inset: 0; background: none; }
+.hn-sky { background: none; }
+.app-shell:has(.hero-night) .rg2-wrapper, .app-shell:has(.hero-night) .hero-offers-row { overflow-x: clip; }
+.hero-night .hero-offers-row { width: 100%; max-width: 100%; }

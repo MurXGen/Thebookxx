@@ -2550,31 +2550,72 @@ export function downloadGiftLabelsPDF(dataArray, filename) {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    B&W LABELS — 4 per landscape A4 page in a 2×2 grid.
-   Drawn in pure black on white (no greys, no decor) so they print crisp on any
-   printer. Every label is the same fixed size; long names / addresses shrink
-   or clamp instead of growing the label. Variants: standard, Speed, Gift.
+   Black text on white with only light grey tints (no solid black fills), so
+   they print clean and never smudge. Three dedicated templates:
+     standard — Poppins, plain tint header
+     speed    — italic Poppins, hatched header, speed lines, priority callout
+     gift     — Playfair Display + script, wrapping-paper header, gift tag
+   Every label is the same fixed size; long names / addresses shrink or clamp.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const BW_W = 1100; // label size in canvas px (rendered at 2×)
 const BW_H = 770;
-const BW_INK = "#000000";
+const BW_INK = "#111111";
+const BW_SOFT = "#4a4a4a"; // secondary text
+const BW_TINT = "#efefef"; // the only fills: light greys
 const BW_FONT = "Poppins, 'Helvetica Neue', Arial, sans-serif";
+const BW_SERIF = "'Playfair Display', Georgia, 'Times New Roman', serif";
+const BW_SCRIPT = "'Dancing Script', 'Brush Script MT', cursive";
+const BW_EMOJI = "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif";
+
+// Load the label fonts once (Poppins is global; the gift faces are added here).
+let bwFontsReady = null;
+function ensureBwFonts() {
+  if (bwFontsReady) return bwFontsReady;
+  const linkLoaded = new Promise((resolve) => {
+    if (document.getElementById("bw-label-fonts")) return resolve();
+    const link = document.createElement("link");
+    link.id = "bw-label-fonts";
+    link.rel = "stylesheet";
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700;1,800&family=Dancing+Script:wght@700&display=swap";
+    link.onload = () => resolve();
+    link.onerror = () => resolve();
+    document.head.appendChild(link);
+  });
+  const faces = [
+    `500 20px Poppins`,
+    `700 20px Poppins`,
+    `800 20px Poppins`,
+    `italic 800 20px Poppins`,
+    `italic 700 20px Poppins`,
+    `800 20px 'Playfair Display'`,
+    `italic 800 20px 'Playfair Display'`,
+    `700 20px 'Dancing Script'`,
+  ];
+  bwFontsReady = Promise.race([
+    linkLoaded.then(() => Promise.all(faces.map((f) => document.fonts.load(f).catch(() => null)))),
+    new Promise((r) => setTimeout(r, 5000)), // offline → fall back to system fonts
+  ]);
+  return bwFontsReady;
+}
 
 // Fill `str` on one line, shrinking from `size` down to `min` to fit `maxW`;
 // adds an ellipsis if it still doesn't fit.
-function bwFitText(ctx, str, x, y, maxW, { size, min, weight = "bold", align = "left", color = BW_INK }) {
+function bwFitText(ctx, str, x, y, maxW, { size, min, weight = "bold", align = "left", color = BW_INK, family = BW_FONT, style = "" }) {
   let s = size;
   let t = String(str || "");
+  const f = (px) => `${style} ${weight} ${px}px ${family}`.trim();
   ctx.textAlign = align;
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = color;
   for (; s >= min; s -= 1) {
-    ctx.font = `${weight} ${s}px ${BW_FONT}`;
+    ctx.font = f(s);
     if (ctx.measureText(t).width <= maxW) break;
   }
   if (s < min) {
     s = min;
-    ctx.font = `${weight} ${s}px ${BW_FONT}`;
+    ctx.font = f(s);
     while (t.length > 1 && ctx.measureText(`${t}…`).width > maxW) t = t.slice(0, -1);
     t = `${t.trimEnd()}…`;
   }
@@ -2620,8 +2661,7 @@ function bwRoundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-// Small line icons, drawn so they print as solid black at any size.
-function bwBolt(ctx, x, y, h, color) {
+function bwBolt(ctx, x, y, h, color = BW_INK) {
   const k = h / 66;
   ctx.save();
   ctx.fillStyle = color;
@@ -2636,39 +2676,117 @@ function bwBolt(ctx, x, y, h, color) {
   ctx.fill();
   ctx.restore();
 }
-function bwGiftIcon(ctx, x, y, s, color) {
+
+// Emoji + text on one baseline. Emojis are drawn in greyscale so the label
+// stays black & white in print. align: left | center | right. Returns width.
+function bwLead(ctx, emoji, text, x, y, { font, size, color = BW_INK, align = "left", gap = 0.35 }) {
   ctx.save();
-  ctx.strokeStyle = color;
+  ctx.textBaseline = "alphabetic";
+  ctx.textAlign = "left";
+  ctx.font = `${size}px ${BW_EMOJI}`;
+  const ew = emoji ? ctx.measureText(emoji).width : 0;
+  const g = emoji ? size * gap : 0;
+  ctx.font = font;
+  const tw = ctx.measureText(text).width;
+  const total = ew + g + tw;
+  let sx = x;
+  if (align === "center") sx = x - total / 2;
+  if (align === "right") sx = x - total;
+  if (emoji === "⚡") {
+    // Yellow bolt fades to near-white in greyscale — draw it as solid ink.
+    bwBolt(ctx, sx, y - size * 0.86, size * 0.95, color);
+  } else if (emoji) {
+    ctx.font = `${size}px ${BW_EMOJI}`;
+    if ("filter" in ctx) ctx.filter = "grayscale(1) brightness(0.85) contrast(1.35)";
+    ctx.fillText(emoji, sx, y);
+    ctx.filter = "none";
+  }
+  ctx.font = font;
   ctx.fillStyle = color;
-  ctx.lineWidth = s * 0.09;
-  ctx.lineJoin = "round";
-  ctx.strokeRect(x + s * 0.08, y + s * 0.42, s * 0.84, s * 0.54); // box
-  ctx.fillRect(x, y + s * 0.26, s, s * 0.18); // lid
-  ctx.fillRect(x + s * 0.44, y + s * 0.26, s * 0.12, s * 0.7); // ribbon
-  ctx.beginPath(); // bow
-  ctx.ellipse(x + s * 0.32, y + s * 0.15, s * 0.16, s * 0.1, -0.5, 0, Math.PI * 2);
-  ctx.ellipse(x + s * 0.68, y + s * 0.15, s * 0.16, s * 0.1, 0.5, 0, Math.PI * 2);
-  ctx.stroke();
+  ctx.fillText(text, sx + ew + g, y);
   ctx.restore();
+  return total;
 }
-function bwPhoneIcon(ctx, x, y, s, color) {
+
+// Header backgrounds — all light tints.
+function bwHeaderBg(ctx, variant, x, y, w, h) {
   ctx.save();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = s * 0.12;
-  bwRoundRect(ctx, x + s * 0.22, y, s * 0.56, s, s * 0.12);
-  ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(x + s * 0.42, y + s * 0.84);
-  ctx.lineTo(x + s * 0.58, y + s * 0.84);
-  ctx.stroke();
+  ctx.rect(x, y, w, h);
+  ctx.clip();
+  if (variant === "speed") {
+    // Diagonal racing hatch.
+    ctx.fillStyle = "#f4f4f4";
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = "#e2e2e2";
+    ctx.lineWidth = 12;
+    for (let i = -h; i < w + h; i += 30) {
+      ctx.beginPath();
+      ctx.moveTo(x + i, y + h);
+      ctx.lineTo(x + i + h, y);
+      ctx.stroke();
+    }
+  } else if (variant === "gift") {
+    // Wrapping-paper dots + a ribbon running down the band.
+    ctx.fillStyle = "#f6f6f6";
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = "#dcdcdc";
+    for (let row = 0, yy = y + 10; yy < y + h; yy += 20, row++) {
+      for (let xx = x + (row % 2 ? 20 : 10); xx < x + w; xx += 20) {
+        ctx.beginPath();
+        ctx.arc(xx, yy, 2.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  } else {
+    ctx.fillStyle = BW_TINT;
+    ctx.fillRect(x, y, w, h);
+  }
   ctx.restore();
 }
+
+const BW_TEMPLATES = {
+  normal: {
+    frame: 3,
+    brand: `800 40px ${BW_FONT}`,
+    tagEmoji: "📚",
+    tagline: "Books, delivered with care",
+    tagFont: `600 17px ${BW_FONT}`,
+    chipEmoji: "📦",
+    chip: "SHIPPING LABEL",
+    chipFont: `800 21px ${BW_FONT}`,
+    name: { family: BW_FONT, style: "", weight: "800" },
+  },
+  speed: {
+    frame: 5,
+    brand: `italic 800 40px ${BW_FONT}`,
+    tagEmoji: "🚀",
+    tagline: "Priority parcel",
+    tagFont: `italic 700 18px ${BW_FONT}`,
+    chipEmoji: "⚡",
+    chip: "SPEED POST",
+    chipFont: `italic 800 23px ${BW_FONT}`,
+    name: { family: BW_FONT, style: "italic", weight: "800" },
+  },
+  gift: {
+    frame: 3,
+    brand: `italic 800 42px ${BW_SERIF}`,
+    tagEmoji: "🎀",
+    tagline: "A little surprise inside",
+    tagFont: `700 27px ${BW_SCRIPT}`,
+    chipEmoji: "🎁",
+    chip: "GIFT PARCEL",
+    chipFont: `800 22px ${BW_SERIF}`,
+    name: { family: BW_SERIF, style: "", weight: "800" },
+  },
+};
 
 function drawBwLabel(ctx, data) {
   const W = BW_W;
   const H = BW_H;
   const isCOD = !!data.isCOD;
   const variant = data.isGift ? "gift" : data.isFaster ? "speed" : "normal";
+  const T = BW_TEMPLATES[variant];
   const M = 10; // frame inset
   const PAD = 34; // content padding inside the frame
   const L = M + PAD;
@@ -2677,63 +2795,91 @@ function drawBwLabel(ctx, data) {
   ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, W, H);
 
-  // Frame
-  ctx.save();
-  ctx.strokeStyle = BW_INK;
-  ctx.lineWidth = 3;
-  bwRoundRect(ctx, M, M, W - 2 * M, H - 2 * M, 18);
-  ctx.stroke();
-  ctx.restore();
-
-  // ── Header: solid black band, brand left, label type right ──
+  // ── Header band (light tint, clipped to the rounded frame) ──
   const HB = 92;
   ctx.save();
   bwRoundRect(ctx, M, M, W - 2 * M, H - 2 * M, 18);
   ctx.clip();
+  bwHeaderBg(ctx, variant, M, M, W - 2 * M, HB);
   ctx.fillStyle = BW_INK;
-  ctx.fillRect(M, M, W - 2 * M, HB);
+  ctx.fillRect(M, M + HB - 1, W - 2 * M, 2);
   ctx.restore();
-  ctx.fillStyle = "#fff";
-  ctx.font = `800 40px ${BW_FONT}`;
-  ctx.textAlign = "left";
-  ctx.fillText("TheBookX", L, M + 60);
-  const brandW = (() => {
-    ctx.font = `800 40px ${BW_FONT}`;
-    return ctx.measureText("TheBookX").width;
-  })();
-  ctx.font = `600 17px ${BW_FONT}`;
-  ctx.fillText("Books, delivered with care", L + brandW + 18, M + 58);
 
-  // Type chip (white pill on the black band)
-  const chip = {
-    speed: { text: "SPEED POST", sub: "Deliver first" },
-    gift: { text: "GIFT PARCEL", sub: "Handle with care" },
-    normal: { text: "SHIPPING LABEL", sub: "" },
-  }[variant];
-  ctx.font = `800 22px ${BW_FONT}`;
-  const chipTextW = ctx.measureText(chip.text).width;
-  const iconW = variant === "normal" ? 0 : 34;
-  const chipW = chipTextW + iconW + 36;
-  const chipH = 50;
+  // Frame (gift gets an inner dashed "gift tag" line)
+  ctx.save();
+  ctx.strokeStyle = BW_INK;
+  ctx.lineWidth = T.frame;
+  bwRoundRect(ctx, M, M, W - 2 * M, H - 2 * M, 18);
+  ctx.stroke();
+  if (variant === "gift") {
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "#8a8a8a";
+    ctx.setLineDash([8, 6]);
+    bwRoundRect(ctx, M + 9, M + HB + 9, W - 2 * M - 18, H - 2 * M - HB - 18, 12);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Brand + tagline
+  ctx.save();
+  ctx.fillStyle = BW_INK;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  ctx.font = T.brand;
+  ctx.fillText("TheBookX", L, M + 60);
+  const brandW = ctx.measureText("TheBookX").width;
+  ctx.restore();
+  bwLead(ctx, T.tagEmoji, T.tagline, L + brandW + 20, M + 58, {
+    font: T.tagFont,
+    size: 20,
+    color: variant === "gift" ? "#2a2a2a" : BW_SOFT,
+  });
+
+  // Type chip (white pill, black outline)
+  ctx.save();
+  ctx.font = T.chipFont;
+  const chipTextW = ctx.measureText(T.chip).width;
+  ctx.font = `26px ${BW_EMOJI}`;
+  const chipEmojiW = ctx.measureText(T.chipEmoji).width;
+  ctx.restore();
+  const chipW = chipEmojiW + 10 + chipTextW + 40;
+  const chipH = 52;
   const chipX = R - chipW;
   const chipY = M + (HB - chipH) / 2;
+  ctx.save();
   ctx.fillStyle = "#fff";
+  ctx.strokeStyle = BW_INK;
+  ctx.lineWidth = 2.5;
   bwRoundRect(ctx, chipX, chipY, chipW, chipH, chipH / 2);
   ctx.fill();
-  if (variant === "speed") bwBolt(ctx, chipX + 16, chipY + 10, 30, BW_INK);
-  if (variant === "gift") bwGiftIcon(ctx, chipX + 14, chipY + 11, 28, BW_INK);
-  ctx.fillStyle = BW_INK;
-  ctx.textAlign = "left";
-  ctx.fillText(chip.text, chipX + 18 + iconW, chipY + 33);
+  ctx.stroke();
+  ctx.restore();
+  bwLead(ctx, T.chipEmoji, T.chip, chipX + 20, chipY + 35, { font: T.chipFont, size: 26, gap: 0.38 });
+
+  // Speed lines trailing into the chip.
+  if (variant === "speed") {
+    ctx.save();
+    ctx.strokeStyle = "#7a7a7a";
+    ctx.lineCap = "round";
+    [[0, 70, 3], [12, 46, 2.5], [-12, 46, 2.5]].forEach(([dy, len, lw]) => {
+      ctx.lineWidth = lw;
+      ctx.beginPath();
+      ctx.moveTo(chipX - 14 - len, chipY + chipH / 2 + dy);
+      ctx.lineTo(chipX - 14, chipY + chipH / 2 + dy);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
 
   // ── Right column: review QR ──
-  const qSize = 196;
+  const qSize = 192;
   const qx = R - qSize;
-  let y = M + HB + 42;
-  ctx.font = `800 15px ${BW_FONT}`;
-  ctx.textAlign = "center";
-  ctx.fillStyle = BW_INK;
-  ctx.fillText("SCAN & RATE US", qx + qSize / 2, y);
+  const y = M + HB + 44;
+  bwLead(ctx, "⭐", "SCAN & RATE US", qx + qSize / 2, y, {
+    font: `800 15px ${BW_FONT}`,
+    size: 16,
+    align: "center",
+  });
   ctx.save();
   ctx.strokeStyle = BW_INK;
   ctx.lineWidth = 2;
@@ -2742,21 +2888,26 @@ function drawBwLabel(ctx, data) {
   ctx.restore();
   drawQrCode(ctx, REVIEW_URL, qx, y + 18, qSize);
   const starY = y + 18 + qSize + 34;
-  const sr = 13;
+  const sr = 12;
   const sGap = 9;
   let sx = qx + (qSize - (5 * sr * 2 + 4 * sGap)) / 2 + sr;
   for (let i = 0; i < 5; i++) {
-    drawStarOutline(ctx, sx, starY, sr, BW_INK, 2.2);
+    drawStarOutline(ctx, sx, starY, sr, BW_INK, 2);
     sx += sr * 2 + sGap;
   }
 
   // ── Left column: DELIVER TO ──
   const colW = qx - 36 - L;
-  ctx.font = `800 16px ${BW_FONT}`;
-  ctx.textAlign = "left";
-  ctx.fillStyle = BW_INK;
-  ctx.fillText("DELIVER TO", L, y);
-  bwFitText(ctx, data.customerName || "—", L, y + 52, colW, { size: 48, min: 30, weight: "800" });
+  bwLead(ctx, "📍", variant === "gift" ? "A GIFT FOR" : "DELIVER TO", L, y, {
+    font: `800 16px ${BW_FONT}`,
+    size: 17,
+    color: BW_SOFT,
+  });
+  bwFitText(ctx, data.customerName || "—", L, y + 54, colW, {
+    size: variant === "gift" ? 50 : 48,
+    min: 30,
+    ...T.name,
+  });
 
   const cleanAddress = String(data.customerAddress || "")
     .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/i, "")
@@ -2768,115 +2919,156 @@ function drawBwLabel(ctx, data) {
   const addr = [cleanAddress];
   if (city && !lc.includes(city.toLowerCase())) addr.push(city);
   if (state && !lc.includes(state.toLowerCase())) addr.push(state);
-  let ay = bwWrap(ctx, addr.filter(Boolean).join(", "), L, y + 94, colW, 30, 3, `500 23px ${BW_FONT}`);
+  let ay = bwWrap(ctx, addr.filter(Boolean).join(", "), L, y + 96, colW, 30, 3, `500 23px ${BW_FONT}`, "#222");
 
   // City, State — PIN on one bold line (the PIN is what sorting offices read).
   ay += 50;
   const pin = String(data.customerPincode || "").trim();
   const cityState = [city, state].filter(Boolean).join(", ");
   const placeLine = [cityState, pin].filter(Boolean).join(" — ");
-  if (placeLine)
-    bwFitText(ctx, placeLine, L, ay, colW, { size: 30, min: 20, weight: "800" });
+  if (placeLine) bwFitText(ctx, placeLine, L, ay, colW, { size: 30, min: 20, weight: "800" });
 
   // Phone(s)
   const fmtPh = (p) => {
     const d = String(p || "").replace(/\D/g, "").slice(-10);
     return d ? `+91 ${d.slice(0, 5)} ${d.slice(5)}` : "";
   };
-  const phones = [fmtPh(data.customerPhone), fmtPh(data.customerAltPhone)]
-    .filter(Boolean)
-    .join("  /  ");
+  const phones = [fmtPh(data.customerPhone), fmtPh(data.customerAltPhone)].filter(Boolean).join("  /  ");
   if (phones) {
-    const py = ay + 52;
-    bwPhoneIcon(ctx, L, py - 26, 30, BW_INK);
+    const py = ay + 50;
+    ctx.save();
+    ctx.font = `24px ${BW_EMOJI}`;
+    if ("filter" in ctx) ctx.filter = "grayscale(1) brightness(0.85) contrast(1.35)";
+    ctx.textAlign = "left";
+    ctx.fillText("📞", L, py - 2);
+    ctx.restore();
     bwFitText(ctx, phones, L + 38, py, colW - 38, { size: 28, min: 20, weight: "800" });
   }
 
-  // ── Payment strip (full width) ──
+  // ── Payment strip (full width): light tint for COD, outline for prepaid ──
   const payY = 486;
   const payH = 104;
   const payW = R - L;
   ctx.save();
+  ctx.strokeStyle = BW_INK;
+  ctx.lineWidth = isCOD ? 3.5 : 2.5;
+  bwRoundRect(ctx, L, payY, payW, payH, 14);
+  ctx.fillStyle = isCOD ? "#ebebeb" : "#fff";
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
   if (isCOD) {
+    bwLead(ctx, "💵", "COLLECT ON DELIVERY", L + 26, payY + 36, { font: `800 17px ${BW_FONT}`, size: 19 });
+    ctx.save();
     ctx.fillStyle = BW_INK;
-    bwRoundRect(ctx, L, payY, payW, payH, 14);
-    ctx.fill();
-    ctx.fillStyle = "#fff";
-    ctx.font = `800 17px ${BW_FONT}`;
     ctx.textAlign = "left";
-    ctx.fillText("COLLECT ON DELIVERY", L + 26, payY + 36);
     ctx.font = `800 46px ${BW_FONT}`;
-    ctx.fillText(`₹ ${Number(data.codAmount || 0).toLocaleString("en-IN")} /-`, L + 26, payY + 84);
-    ctx.font = `700 19px ${BW_FONT}`;
+    ctx.fillText(`₹ ${Number(data.codAmount || 0).toLocaleString("en-IN")} /-`, L + 26, payY + 86);
     ctx.textAlign = "right";
+    ctx.font = `700 19px ${BW_FONT}`;
     ctx.fillText("Cash or UPI", R - 26, payY + 46);
     ctx.font = `500 17px ${BW_FONT}`;
+    ctx.fillStyle = BW_SOFT;
     ctx.fillText("to the delivery agent", R - 26, payY + 72);
+    ctx.restore();
   } else {
-    ctx.strokeStyle = BW_INK;
-    ctx.lineWidth = 3;
-    bwRoundRect(ctx, L, payY, payW, payH, 14);
-    ctx.stroke();
+    bwLead(ctx, "✅", "PAYMENT", L + 26, payY + 36, { font: `800 17px ${BW_FONT}`, size: 19, color: BW_SOFT });
+    ctx.save();
     ctx.fillStyle = BW_INK;
-    ctx.font = `800 17px ${BW_FONT}`;
     ctx.textAlign = "left";
-    ctx.fillText("PAYMENT", L + 26, payY + 36);
     ctx.font = `800 40px ${BW_FONT}`;
-    ctx.fillText("PREPAID", L + 26, payY + 80);
-    ctx.font = `800 21px ${BW_FONT}`;
+    ctx.fillText("PREPAID", L + 26, payY + 82);
     ctx.textAlign = "right";
+    ctx.font = `800 22px ${BW_FONT}`;
     ctx.fillText("DO NOT COLLECT", R - 26, payY + 46);
     ctx.font = `500 17px ${BW_FONT}`;
+    ctx.fillStyle = BW_SOFT;
     ctx.fillText("Already paid online", R - 26, payY + 72);
+    ctx.restore();
   }
-  ctx.restore();
 
-  // ── Note ──
-  let note;
-  if (variant === "gift") {
-    note = "A gift for you — happy reading! Please deliver with care.";
+  // ── Note row: template-specific ──
+  const nY = payY + payH + 14;
+  const nH = 58;
+  const dn = deliveryNoteFor(data.note);
+  if (variant === "speed") {
+    // Hatched priority callout.
+    ctx.save();
+    bwRoundRect(ctx, L, nY, payW, nH, 12);
+    ctx.clip();
+    bwHeaderBg(ctx, "speed", L, nY, payW, nH);
+    ctx.restore();
+    ctx.save();
+    ctx.strokeStyle = BW_INK;
+    ctx.lineWidth = 2;
+    bwRoundRect(ctx, L, nY, payW, nH, 12);
+    ctx.stroke();
+    ctx.restore();
+    const msg = dn.isCustomer
+      ? `PRIORITY · Note: ${dn.text}`
+      : "PRIORITY — deliver first. Do not return. प्राथमिकता से डिलीवर करें।";
+    bwBolt(ctx, L + 18, nY + 12, 34);
+    bwFitText(ctx, msg, L + 56, nY + 37, payW - 72, { size: 19, min: 13, weight: "800", style: "italic" });
+  } else if (variant === "gift") {
+    bwLead(ctx, "🎁", "A gift for you — happy reading!", L + 6, nY + 34, {
+      font: `700 30px ${BW_SCRIPT}`,
+      size: 24,
+    });
+    bwLead(ctx, "🤲", "Handle with care", R - 6, nY + 34, {
+      font: `italic 800 18px ${BW_SERIF}`,
+      size: 20,
+      align: "right",
+      color: BW_SOFT,
+    });
   } else {
-    const dn = deliveryNoteFor(data.note);
-    note = dn.isCustomer
+    const msg = dn.isCustomer
       ? `Note: ${dn.text}`
       : "Deliver to the customer — do not return. ग्राहक को ही डिलीवर करें, वापस न लौटाएँ।";
+    ctx.save();
+    ctx.font = `20px ${BW_EMOJI}`;
+    if ("filter" in ctx) ctx.filter = "grayscale(1) brightness(0.85) contrast(1.35)";
+    ctx.fillText(dn.isCustomer ? "📝" : "🙏", L, nY + 26);
+    ctx.restore();
+    bwWrap(ctx, msg, L + 32, nY + 26, payW - 32, 24, 2, `700 18px ${BW_FONT}`);
   }
-  bwWrap(ctx, note, L, payY + payH + 40, payW, 24, 2, `700 18px ${BW_FONT}`);
 
   // ── Footer: FROM (left) · Order ID (right) ──
   const fy = H - M - 62;
   ctx.save();
-  ctx.strokeStyle = BW_INK;
+  ctx.strokeStyle = "#8a8a8a";
   ctx.lineWidth = 1.5;
   ctx.setLineDash([6, 6]);
   ctx.beginPath();
-  ctx.moveTo(L, fy - 26);
-  ctx.lineTo(R, fy - 26);
+  ctx.moveTo(L, fy - 24);
+  ctx.lineTo(R, fy - 24);
   ctx.stroke();
   ctx.restore();
   const oid = String(data.orderId || "—");
+  ctx.save();
   ctx.font = `800 17px ${BW_FONT}`;
   const oidW = ctx.measureText(oid).width;
   ctx.textAlign = "right";
-  ctx.fillStyle = BW_INK;
+  ctx.fillStyle = BW_SOFT;
   ctx.font = `700 13px ${BW_FONT}`;
   ctx.fillText("ORDER ID", R, fy);
+  ctx.fillStyle = BW_INK;
   ctx.font = `800 17px ${BW_FONT}`;
   ctx.fillText(oid, R, fy + 26);
+  ctx.restore();
   const fromW = R - L - oidW - 40;
+  ctx.save();
   ctx.textAlign = "left";
+  ctx.fillStyle = BW_SOFT;
   ctx.font = `800 13px ${BW_FONT}`;
   ctx.fillText("FROM", L, fy);
+  ctx.restore();
   bwFitText(ctx, `TheBookX · ${SENDER.addressLines.join(", ")}`, L + 52, fy, fromW - 52, {
     size: 15,
     min: 11,
     weight: "500",
+    color: "#222",
   });
-  bwFitText(ctx, `Seller help: ${SENDER.mobile}`, L, fy + 26, fromW, {
-    size: 15,
-    min: 11,
-    weight: "700",
-  });
+  bwLead(ctx, "☎️", `Seller help: ${SENDER.mobile}`, L, fy + 26, { font: `700 15px ${BW_FONT}`, size: 14, gap: 0.3 });
 }
 
 function buildBwLabelCanvas(data) {
@@ -2931,7 +3123,8 @@ function buildBwSheetCanvas(group) {
   return out;
 }
 
-export function downloadBwLabelGridPDF(dataArray, filename) {
+export async function downloadBwLabelGridPDF(dataArray, filename) {
+  await ensureBwFonts();
   const pages = [];
   for (let i = 0; i < dataArray.length; i += 4) {
     const cv = buildBwSheetCanvas(dataArray.slice(i, i + 4));

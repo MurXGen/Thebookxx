@@ -88,6 +88,9 @@ import {
   Radar,
   PanelLeft,
   PanelLeftClose,
+  Printer,
+  Palette,
+  Images,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
@@ -3759,6 +3762,7 @@ export default function ManageOrdersPage() {
   const [dispatchSel, setDispatchSel] = useState([]);
   // Share the dispatch queue as a link (encodes the queued order IDs).
   const [dispShareOpen, setDispShareOpen] = useState(false);
+  const [dispSheetOpen, setDispSheetOpen] = useState(false);
   const [dispPaste, setDispPaste] = useState("");
   const [dispLinkCopied, setDispLinkCopied] = useState(false);
   useEffect(() => {
@@ -14972,17 +14976,15 @@ export default function ManageOrdersPage() {
                         >
                           <Share2 size={14} /> Share
                         </button>
-                        {dOrders.length > 0 && (
+                        {dOrders.length > 0 && selN === 0 && (
                           <button
                             type="button"
                             className="mo-dispatch-mini"
                             onClick={() =>
-                              setDispatchSel(
-                                allSel ? [] : dOrders.map((o) => o["Order ID"]),
-                              )
+                              setDispatchSel(dOrders.map((o) => o["Order ID"]))
                             }
                           >
-                            {allSel ? "Clear" : "Select all"}
+                            Select all
                           </button>
                         )}
                         {dOrders.length > 0 && (
@@ -14999,63 +15001,6 @@ export default function ManageOrdersPage() {
                         )}
                       </div>
                     </div>
-                    {/* Selection toolbar — actions appear next to the header the
-                        moment one or more orders are selected. */}
-                    {selN > 0 && (
-                      <div className="mo-dispatch-selbar">
-                        <span className="mo-dispatch-selcount">
-                          {selN} selected
-                        </span>
-                        <div className="mo-dispatch-selactions">
-                          <button
-                            type="button"
-                            className="mo-dispatch-act"
-                            onClick={() => downloadCoversPNG("all", scope)}
-                          >
-                            📚 Covers
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-dispatch-act color"
-                            onClick={() => dl(false)}
-                          >
-                            🎨 Colored PDF
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-dispatch-act bw"
-                            onClick={() => dl(true)}
-                          >
-                            🖨️ B&amp;W PDF
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-dispatch-act"
-                            disabled={!speedN}
-                            onClick={() => openIpBulkForOrders("speed", scope)}
-                          >
-                            🚚 Speed ({speedN})
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-dispatch-act"
-                            disabled={!contractN}
-                            onClick={() =>
-                              openIpBulkForOrders("contractual", scope)
-                            }
-                          >
-                            📦 Contractual ({contractN})
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-dispatch-mini"
-                            onClick={() => setDispatchSel([])}
-                          >
-                            Clear
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   {dOrders.length === 0 ? (
@@ -15108,12 +15053,232 @@ export default function ManageOrdersPage() {
                       {selN === 0 && (
                         <p className="mo-dispatch-hint">
                           Select orders (tap a card’s checkbox, or{" "}
-                          <b>Select all</b>) — label &amp; India Post actions
-                          appear in the header above.
+                          <b>Select all</b>) — a selection bar opens at the bottom
+                          with label &amp; India Post actions.
                         </p>
                       )}
                     </>
                   )}
+
+                  {/* Selection bar + Actions sheet — the same components as the
+                      Orders tab, so selecting works identically in both places. */}
+                  {selN > 0 &&
+                    typeof document !== "undefined" &&
+                    createPortal(
+                      <motion.div
+                        className={`mo-selbar${railCollapsed ? " rail-collapsed" : ""}`}
+                        role="toolbar"
+                        aria-label="Selected dispatch orders"
+                        initial={{ y: 24, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <button
+                          type="button"
+                          className="mo-selbar-x"
+                          onClick={() => {
+                            setDispatchSel([]);
+                            setDispSheetOpen(false);
+                          }}
+                          aria-label="Clear selection"
+                        >
+                          <X size={18} />
+                        </button>
+                        <span className="mo-selbar-count">
+                          <b>{selN}</b> selected
+                        </span>
+                        <button
+                          type="button"
+                          className="mo-selbar-link"
+                          onClick={() =>
+                            setDispatchSel(
+                              allSel ? [] : dOrders.map((o) => o["Order ID"]),
+                            )
+                          }
+                        >
+                          {allSel ? "Clear" : `Select all ${dOrders.length}`}
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-selbar-primary"
+                          onClick={() => setDispSheetOpen(true)}
+                          aria-haspopup="dialog"
+                        >
+                          Actions <ChevronUp size={16} />
+                        </button>
+                      </motion.div>,
+                      moPortalTarget(),
+                    )}
+
+                  {typeof document !== "undefined" &&
+                    createPortal(
+                      <AnimatePresence>
+                        {selN > 0 &&
+                          dispSheetOpen &&
+                          (() => {
+                            const phone =
+                              window.matchMedia("(max-width: 720px)").matches;
+                            const off = phone ? { y: "100%" } : { x: "100%" };
+                            const close = () => setDispSheetOpen(false);
+                            const ipMissing = scope.length - ipPool.length;
+                            return (
+                              <>
+                                <motion.div
+                                  key="mo-disp-bg"
+                                  className="mo-sheet-backdrop"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  onClick={close}
+                                />
+                                <motion.aside
+                                  key="mo-disp"
+                                  className="mo-sheet"
+                                  role="dialog"
+                                  aria-modal="true"
+                                  aria-label="Actions for selected dispatch orders"
+                                  initial={off}
+                                  animate={{ x: 0, y: 0 }}
+                                  exit={off}
+                                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                >
+                                  <span className="mo-sheet-grip" aria-hidden="true" />
+                                  <div className="mo-sheet-head">
+                                    <h3>
+                                      {selN} order{selN === 1 ? "" : "s"} selected
+                                    </h3>
+                                    <button
+                                      type="button"
+                                      className="mo-sheet-x"
+                                      onClick={close}
+                                      aria-label="Close"
+                                    >
+                                      <X size={18} />
+                                    </button>
+                                  </div>
+                                  <div className="mo-sheet-body">
+                                    <section className="mo-sheet-sec">
+                                      <h4>Print · {selN} selected</h4>
+                                      <div className="mo-sheet-list">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            dl(true);
+                                            close();
+                                          }}
+                                        >
+                                          <Printer size={17} />
+                                          <span>
+                                            Labels · black &amp; white
+                                            <em>4 per landscape page · best for printing</em>
+                                          </span>
+                                          <b>{scope.length}</b>
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            dl(false);
+                                            close();
+                                          }}
+                                        >
+                                          <Palette size={17} />
+                                          <span>
+                                            Labels · colour
+                                            <em>3 per page</em>
+                                          </span>
+                                          <b>{scope.length}</b>
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            downloadCoversPNG("all", scope);
+                                            close();
+                                          }}
+                                        >
+                                          <Images size={17} />
+                                          <span>
+                                            Book covers
+                                            <em>One image of every cover, to pick books</em>
+                                          </span>
+                                          <b>{scope.length}</b>
+                                        </button>
+                                      </div>
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>India Post booking · {selN} selected</h4>
+                                      <p className="mo-sheet-note">
+                                        Split by weight and the customer’s choice.
+                                        {ipMissing > 0 &&
+                                          ` ${ipMissing} without weight & size will be skipped.`}
+                                      </p>
+                                      <div className="mo-sheet-list">
+                                        <button
+                                          type="button"
+                                          disabled={!speedN}
+                                          onClick={() => {
+                                            openIpBulkForOrders("speed", scope);
+                                            close();
+                                          }}
+                                        >
+                                          <Truck size={17} />
+                                          <span>
+                                            Speed Post
+                                            <em>Under {SPEED_MAX_GRAMS} g, or the customer chose Speed</em>
+                                          </span>
+                                          <b>{speedN}</b>
+                                        </button>
+                                        <button
+                                          type="button"
+                                          disabled={!contractN}
+                                          onClick={() => {
+                                            openIpBulkForOrders("contractual", scope);
+                                            close();
+                                          }}
+                                        >
+                                          <Package size={17} />
+                                          <span>
+                                            Contractual · normal parcel
+                                            <em>{SPEED_MAX_GRAMS} g and over, Speed not chosen</em>
+                                          </span>
+                                          <b>{contractN}</b>
+                                        </button>
+                                      </div>
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>Queue</h4>
+                                      <div className="mo-sheet-list">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            persistDispatch(
+                                              dispatchIds.filter(
+                                                (id) => !dispatchSel.includes(id),
+                                              ),
+                                            );
+                                            setDispatchSel([]);
+                                            close();
+                                          }}
+                                        >
+                                          <Trash2 size={17} />
+                                          <span>
+                                            Remove from queue
+                                            <em>The orders stay as they are in Orders</em>
+                                          </span>
+                                          <b>{selN}</b>
+                                        </button>
+                                      </div>
+                                    </section>
+                                  </div>
+                                </motion.aside>
+                              </>
+                            );
+                          })()}
+                      </AnimatePresence>,
+                      moPortalTarget(),
+                    )}
 
                   {/* Share the queue as a link. */}
                   <AnimatePresence>

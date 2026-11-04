@@ -11033,17 +11033,37 @@ export default function ManageOrdersPage() {
           <span className="mo-compact-status">{status}</span>
         </div>
         <div className="mo-compact-bottom">
-          {/* Names instead of cover thumbnails (cuts image requests). */}
-          <div className="mo-compact-names">
-            {books.slice(0, 3).map((b, i) => (
-              <span className="mo-compact-nametag" key={i} title={b.name}>
-                {b.name}
-                {b.quantity > 1 ? ` ×${b.quantity}` : ""}
-              </span>
-            ))}
-            {books.length > 3 && (
-              <span className="mo-compact-nametag mo-compact-more">
-                +{books.length - 3} more
+          {/* Static cover thumbnails (served from /public, no CDN optimisation). */}
+          <div className="mo-compact-covers">
+            {books.slice(0, 5).map((b, i) => {
+              const img = getBookImage(b.name);
+              return img ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={i}
+                  src={img}
+                  alt={b.name}
+                  loading="lazy"
+                  className="mo-compact-cover"
+                  title={b.name}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setViewerImg({ src: img, name: b.name });
+                  }}
+                />
+              ) : (
+                <span
+                  key={i}
+                  className="mo-compact-cover mo-compact-cover-ph"
+                  title={b.name}
+                >
+                  <Package size={12} />
+                </span>
+              );
+            })}
+            {books.length > 5 && (
+              <span className="mo-compact-cover mo-compact-more">
+                +{books.length - 5}
               </span>
             )}
           </div>
@@ -11477,37 +11497,45 @@ export default function ManageOrdersPage() {
 
                             <div className="mo2-div" />
 
-                            {/* Book names — tappable pick chips (covers removed
-                                to cut image requests). Click a name to mark it
-                                picked/packed, same as before. */}
+                            {/* Covers — static <img> (served from /public, no
+                                CDN optimisation). Tap to mark picked/packed. */}
                             {books.length > 0 && (
-                              <div className="mo2-names" onClick={(e) => e.stopPropagation()}>
+                              <div className="mo2-covers" onClick={(e) => e.stopPropagation()}>
                                 {books.map((b, ci) => {
+                                  const img = getBookImage(b.name);
                                   const picked =
                                     !!pickChecked[bookKey(orderId, ci)];
                                   return (
-                                    <button
-                                      type="button"
-                                      key={ci}
-                                      className={`mo2-namechip${picked ? " picked" : ""}`}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        toggleBook(orderId, ci);
-                                      }}
-                                      title={
-                                        picked
-                                          ? "Picked — click to unmark"
-                                          : "Click to mark picked"
-                                      }
-                                    >
-                                      {picked && (
-                                        <Check size={13} strokeWidth={3} className="mo2-namechip-tick" />
-                                      )}
-                                      <span className="mo2-namechip-txt">{b.name}</span>
-                                      {b.quantity > 1 && (
-                                        <span className="mo2-namechip-qty">×{b.quantity}</span>
-                                      )}
-                                    </button>
+                                    <div className="mo2-cover-item" key={ci} title={b.name}>
+                                      <div
+                                        className={`mo2-cover mo2-cover-pick${picked ? " picked" : ""}`}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleBook(orderId, ci);
+                                        }}
+                                        title={
+                                          picked
+                                            ? "Picked — click to unmark"
+                                            : "Click to mark picked"
+                                        }
+                                      >
+                                        <BookCoverImg
+                                          src={img}
+                                          name={b.name}
+                                          author={b.author}
+                                          loading="lazy"
+                                        />
+                                        {b.quantity > 1 && (
+                                          <span className="mo-cover-qty">×{b.quantity}</span>
+                                        )}
+                                        {picked && (
+                                          <span className="mo2-cover-tick">
+                                            <Check size={16} strokeWidth={3} />
+                                          </span>
+                                        )}
+                                      </div>
+                                      <span className="mo2-cover-name">{b.name}</span>
+                                    </div>
                                   );
                                 })}
                               </div>
@@ -11955,13 +11983,25 @@ export default function ManageOrdersPage() {
                                                   : b.price > 0
                                                     ? b.price
                                                     : 0;
+                                              const bimg = getBookImage(
+                                                b.name,
+                                              );
                                               return (
                                                 <div
                                                   className="mo-bill-item"
                                                   key={bi}
                                                 >
                                                   <span className="mo-bill-item-thumb">
-                                                    <Package size={16} />
+                                                    {bimg ? (
+                                                      // eslint-disable-next-line @next/next/no-img-element
+                                                      <img
+                                                        src={bimg}
+                                                        alt={b.name}
+                                                        loading="lazy"
+                                                      />
+                                                    ) : (
+                                                      <Package size={16} />
+                                                    )}
                                                   </span>
                                                   <span className="mo-bill-item-nm">
                                                     {b.name}

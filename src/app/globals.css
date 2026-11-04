@@ -31132,6 +31132,20 @@ img[data-loaded="true"] {
 .mo2-covers::-webkit-scrollbar {
   display: none;
 }
+/* Title under each cover tile in the order card. */
+.mo2-cover-name {
+  font-size: 10.5px;
+  line-height: 1.25;
+  color: var(--dark-60, #52525b);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: center;
+}
+.mo-dark .mo2-cover-name {
+  color: #b4b9c2;
+}
 
 /* Book-name pick chips (replace cover thumbnails in order cards). Tap to mark
    a title picked/packed — same behaviour as the old cover tiles. */

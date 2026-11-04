@@ -65318,3 +65318,5 @@ h2.od-reco-title {
   font-size: 12px;
   font-weight: 800;
 }
+.od-ready:not(.od-ready--warn) .od-ready-badge { background: #16a34a; }
+.od-ready:not(.od-ready--warn) .od-ready-badge svg { fill: #fff; }

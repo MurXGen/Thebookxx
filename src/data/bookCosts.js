@@ -639,6 +639,10 @@ export const COST_BY_ID = {
   "bk-744": 90, // Fake Skating
   "bk-745": 80, // The Dinner Party — Freida McFadden
   "bk-746": 80, // U n Me... It's Complicated — Aditya Nighhot
+  "bk-747": 90, // Lights Out — Navessa Allen
+  "bk-748": 90, // Caught Up — Navessa Allen
+  "bk-749": 90, // Game On — Navessa Allen
+  "bk-750": 270, // Into Darkness Trilogy combo (3 × 90)
   // ── Box sets & singles (Oct 2026) ──
   "bk-713": 280, // The Housemaid Series (3-book set)
   "bk-714": 100, // The Girl in the Glass Case

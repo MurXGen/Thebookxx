@@ -2679,52 +2679,10 @@ export default function OrderDetailPage() {
               {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
             </span>
           </div>
-          {/* Delivery readiness — address, alternate number, email. A slim
-              stripe while the address is still editable and something's missing. */}
-          {showReady && (
-            <button
-              type="button"
-              className={`od-ready${addrNeedsWork ? " od-ready--warn" : ""}`}
-              onClick={() => {
-                const next = readyItems.find((i) => !i.done);
-                openAddrEdit();
-                setTimeout(
-                  () => document.getElementById(next?.focus)?.focus(),
-                  380,
-                );
-              }}
-            >
-              <span className="od-ready-badge">
-                <AlertCircle size={12} />
-                {addrNeedsWork ? "Action needed" : "Almost there"}
-              </span>
-              <span className="od-ready-txt">
-                <span className="od-ready-long">
-                  {readyItems.length - readyDone === 1
-                    ? `Add ${readyItems.find((i) => !i.done).short}`
-                    : "Complete delivery details"}
-                </span>
-                <span className="od-ready-short">
-                  {readyItems.length - readyDone === 1
-                    ? `Add ${readyItems.find((i) => !i.done).tiny}`
-                    : "Add details"}
-                </span>
-              </span>
-              <span className="od-ready-count">
-                {readyDone}/{readyItems.length}
-              </span>
-              <span className="od-ready-segs" aria-label={`${readyDone} of ${readyItems.length} done`}>
-                {readyItems.map((i) => (
-                  <i key={i.key} className={i.done ? "on" : ""} />
-                ))}
-              </span>
-              <ChevronRight size={15} className="od-ready-go" />
-            </button>
-          )}
 
           {/* Alternate number — shown when set; otherwise an "Add" prompt while
               the address is still editable (it's saved via the Edit sheet). */}
-          {(altPhone || (canEditAddress && !showReady)) && (
+          {(altPhone || canEditAddress) && (
             <div className="od-email-row od-email-readonly">
               <Phone size={15} />
               {altPhone ? (
@@ -2751,7 +2709,6 @@ export default function OrderDetailPage() {
           )}
 
           {/* Email — read-only; edit via the Edit sheet (near name/address). */}
-          {(orderEmail || !showReady) && (
           <div className="od-email-row od-email-readonly">
             <Mail size={15} />
             {orderEmail ? (
@@ -2769,6 +2726,47 @@ export default function OrderDetailPage() {
               </button>
             )}
           </div>
+          {/* Delivery readiness — address, alternate number, email. A slim
+              stripe while the address is still editable and something's missing. */}
+          {showReady && (
+            <button
+              type="button"
+              className={`od-ready${addrNeedsWork ? " od-ready--warn" : ""}`}
+              onClick={() => {
+                const next = readyItems.find((i) => !i.done);
+                openAddrEdit();
+                setTimeout(
+                  () => document.getElementById(next?.focus)?.focus(),
+                  380,
+                );
+              }}
+            >
+              <span className="od-ready-badge">
+                {addrNeedsWork ? <AlertCircle size={12} /> : <Zap size={12} />}
+                {addrNeedsWork ? "Action needed" : "Quick fill"}
+              </span>
+              <span className="od-ready-txt">
+                <span className="od-ready-long">
+                  {readyItems.length - readyDone === 1
+                    ? `Add ${readyItems.find((i) => !i.done).short} · takes 10 sec`
+                    : `Fill ${readyItems.length - readyDone} details in under a minute`}
+                </span>
+                <span className="od-ready-short">
+                  {readyItems.length - readyDone === 1
+                    ? `Add ${readyItems.find((i) => !i.done).tiny} · 10 sec`
+                    : "Fill in 1 min"}
+                </span>
+              </span>
+              <span className="od-ready-count">
+                {readyDone}/{readyItems.length}
+              </span>
+              <span className="od-ready-segs" aria-label={`${readyDone} of ${readyItems.length} done`}>
+                {readyItems.map((i) => (
+                  <i key={i.key} className={i.done ? "on" : ""} />
+                ))}
+              </span>
+              <ChevronRight size={15} className="od-ready-go" />
+            </button>
           )}
         </section>
       )}

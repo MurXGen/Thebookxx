@@ -4,6 +4,183 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "sharjah-international-book-fair-2026-45th-edition-books-to-read-india": {
+    "id": "blog-098",
+    "title": "Sharjah International Book Fair 2026 Opens 4 November: What Indian Readers Should Know and Read",
+    "slug": "sharjah-international-book-fair-2026-45th-edition-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-04",
+    "lastModified": "2026-11-04",
+    "excerpt": "The 45th Sharjah International Book Fair opens 4 November 2026 under the theme Made of Stories. Key facts, Indian guests, and a reading list to order from India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The 45th Sharjah International Book Fair opens today, 4 November 2026, at Expo Centre Sharjah and runs through 15 November. Under the theme \"Made of Stories\", it brings together 2,673 publishers and exhibitors from 124 countries, 106 writers, artists and intellectuals from 25 countries, and about 1,500 cultural and creative events. Oman is the Guest of Honour, with 50 participants including 41 writers and poets. For Indian readers, the fair matters for a simple reason: an estimated 4.5 million Indian expatriates live in the UAE, most of them from Kerala, and many make the trip every year. Here is what to know about the fair, and how to build a reading list from India without boarding a flight."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Sharjah International Book Fair 2026: key facts",
+        "content": "Edition: 45th. Dates: 4 to 15 November 2026. Venue: Expo Centre Sharjah. Theme: Made of Stories. Guest of Honour: Oman. Scale: 2,673 publishers and exhibitors from 124 countries and about 1,500 events. Kerala Chief Minister V.D. Satheesan is expected to attend on his first UAE visit since taking office; his session time had not been announced at the time of writing."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why the Sharjah Book Fair matters to Indian readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "Sharjah is one of the largest book fairs in the world, and India has had a visible presence there for years. The fair's audience includes a large Malayali and wider Indian community, so Indian authors, translators and publishers tend to find a ready readership. This year, Indian actress, writer and content creator Shenaz Treasurywala is among the featured guests, and Kerala's Chief Minister is expected to attend, which has put the fair in Indian news cycles."
+      },
+      {
+        "type": "paragraph",
+        "content": "Alongside them is an international line-up that includes Nigerian-American author Nnedi Okorafor, British crime novelist Clare Mackintosh, Chinese novelist Liu Zhenyun, Filipino historian Ambeth R. Ocampo, American translator Daisy Rockwell and Canadian-American author John Vaillant. Individual session schedules are being announced by the organisers, so check the official programme before you plan a visit."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What \"Made of Stories\" means for your own reading"
+      },
+      {
+        "type": "paragraph",
+        "content": "A book fair theme is only worth following if it changes what you pick up next. \"Made of Stories\" is a good prompt for a reading list built around how stories shape people, families and nations. A few ways to read along from India:"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Read a story that made a place real. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy is the most famous Kerala novel in English, and <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan builds an entire small town out of short stories.",
+          "Read a story retold. <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni hands the Mahabharata to Draupadi, a reminder of why translators and retellers like Daisy Rockwell are celebrated at fairs like Sharjah.",
+          "Read a story about leaving home. <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini and <a href=\"/books/the-room-on-the-roof\" style=\"color:#fb8500;font-weight:600\">The Room on the Roof</a> by Ruskin Bond sit at opposite ends of the experience of belonging, exile and growing up.",
+          "Read a story that stretches time. <a href=\"/books/the-first-fifteen-lives-of-harry-august\" style=\"color:#fb8500;font-weight:600\">The First Fifteen Lives of Harry August</a> by Claire North and <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig turn second chances into the plot."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A Sharjah-inspired reading list you can order in India"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Fiction and novels"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> remains the book most often mentioned when people talk about Kerala and the Booker Prize; Arundhati Roy won in 1997 for this debut. <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> is an accessible entry point to the Mahabharata for readers who find the epic daunting. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is a gentle, funny collection that works for any age. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho is the kind of fable that travels across languages, which is exactly what a global book fair celebrates."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you enjoy imaginative fiction in the spirit of Nnedi Okorafor's guest slot, <a href=\"/books/the-first-fifteen-lives-of-harry-august\" style=\"color:#fb8500;font-weight:600\">The First Fifteen Lives of Harry August</a> and <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> are strong starting points. <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> is a good match for anyone who followed the fair's focus on voices from across the Arab and wider world."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Non-fiction and ideas"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari tells the story of our species as a story we tell ourselves, which fits the fair's theme neatly. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl is a short, serious read about meaning, and <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam remains one of the most inspiring Indian autobiographies, often gifted to students and young professionals."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Self-improvement and money"
+      },
+      {
+        "type": "paragraph",
+        "content": "Book fairs are also where business and self-help titles do well. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel are the two most-recommended books for building better habits and better money decisions. And for anyone who thinks the fair's best sessions are about expression, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to thinking and communicating more clearly, written for readers who want to say what they mean."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to get the fair's best experience at home"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one theme from the fair, such as stories of place, retellings, or stories of leaving home.",
+          "Choose one novel and one non-fiction book on that theme so you get both the story and the idea behind it.",
+          "Set a small daily target. Fifteen to twenty pages a day finishes most books in three weeks.",
+          "Keep a notes page of lines you want to remember; it turns reading into something you can use.",
+          "Share one book with a friend or family member. Fairs are social, and reading can be too."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Reading list pricing and delivery",
+        "content": "TheBookX has books from ₹1, free delivery and Cash on Delivery across India. Add gift wrapping for +₹25 if you are picking a book for someone who is travelling to or returning from the UAE this month."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Planning to visit Sharjah? A few practical notes"
+      },
+      {
+        "type": "paragraph",
+        "content": "Check the official fair site for the programme, ticketing and visiting hours, and confirm the sessions you care about, since several speaker schedules were still to be announced. Expect large crowds at weekends, and plan your day around two or three sessions rather than trying to see everything. If you are travelling from India, carry a small notebook; the best finds at a fair are often the books you did not plan to buy."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The takeaway"
+      },
+      {
+        "type": "paragraph",
+        "content": "Whether or not you can be in Sharjah before 15 November, a book fair is a useful reminder that reading is a shared habit. Pick a story, pick an idea, and give yourself a deadline. If you are shopping from India, our catalogue has the titles above ready to ship."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/sharjah-international-book-fair-2026-45th-edition-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/sharjah-international-book-fair-2026-45th-edition-books-to-read-india.jpeg",
+        "alt": "A cheerful young woman browsing shelves of unmarked books at a bright book fair, soft natural light, candid documentary style",
+        "caption": "The 45th Sharjah International Book Fair runs from 4 to 15 November 2026",
+        "category": "Book Fairs"
+      }
+    ],
+    "keywords": [
+      "sharjah international book fair 2026",
+      "sharjah book fair 2026 dates",
+      "45th sharjah international book fair",
+      "sharjah book fair made of stories",
+      "sharjah book fair india",
+      "sharjah book fair kerala",
+      "book fair books to read",
+      "buy books online india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Book Fairs",
+      "Reading Culture",
+      "Book Lists"
+    ],
+    "faqs": [
+      {
+        "question": "When is the Sharjah International Book Fair 2026?",
+        "answer": "The 45th Sharjah International Book Fair runs from 4 to 15 November 2026 at Expo Centre Sharjah, under the theme Made of Stories."
+      },
+      {
+        "question": "Which country is the Guest of Honour at Sharjah Book Fair 2026?",
+        "answer": "Oman is the Guest of Honour, bringing 50 participants including 41 writers and poets to showcase its literary and cultural scene."
+      },
+      {
+        "question": "How big is the Sharjah International Book Fair 2026?",
+        "answer": "Organisers report 2,673 publishers and exhibitors from 124 countries, 106 writers, artists and intellectuals from 25 countries, and about 1,500 cultural and creative events."
+      },
+      {
+        "question": "Can I buy books from the Sharjah-inspired reading list in India?",
+        "answer": "Yes. TheBookX stocks the titles in this list, with books from ₹1, free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "childrens-day-2026-14-november-books-to-gift-kids-india": {
     "id": "blog-097",
     "title": "Children's Day 2026 (14 November): Best Books to Gift Kids and Teens in India",

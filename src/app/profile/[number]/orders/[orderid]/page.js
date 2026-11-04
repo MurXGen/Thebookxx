@@ -81,6 +81,7 @@ import {
 // TheBookX dispatch origin (Matunga, Mumbai).
 const SENDER = { lat: 19.0272, lng: 72.8562, label: "TheBookX · Matunga, Mumbai" };
 const SUPPORT_WHATSAPP = "917710892108";
+const ADDRESS_MIN_CHARS = 30; // same rule as checkout
 
 const slugify = (t) =>
   String(t || "")
@@ -964,7 +965,7 @@ export default function OrderDetailPage() {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [order?.["Shipping ID"]]);
   const [trackCopied, setTrackCopied] = useState(false);
-  const [itemsOpen, setItemsOpen] = useState(false);
+  const [itemsOpen, setItemsOpen] = useState(true);
   const [mapFull, setMapFull] = useState(false);
   // Map tools: viewer-resizable height (remembered per device), base layer,
   // and route distances for the info chip / journey panel.
@@ -2066,6 +2067,66 @@ export default function OrderDetailPage() {
     "",
   ).trim();
 
+  const addrNeedsWork =
+    cleanAddr.trim().length <= ADDRESS_MIN_CHARS ||
+    !String(order["City"] || "").trim() ||
+    !/^\d{6}$/.test(String(order["Pincode"] || "").trim());
+  const readyItems = [
+    {
+      key: "addr",
+      done: !addrNeedsWork,
+      label: "Complete delivery address",
+      short: "full address",
+      tiny: "address",
+      hint: "Add house/flat no., street and a landmark",
+      doneHint: "Courier has everything to find you",
+      cta: "Fix",
+      focus: "od-addr-line",
+    },
+    {
+      key: "alt",
+      done: !!altPhone,
+      label: "Alternate number",
+      short: "alternate number",
+      tiny: "alt. number",
+      hint: "In case the courier can't reach your main number",
+      doneHint: `+91 ${altPhone}`,
+      cta: "Add",
+      focus: "od-alt-input",
+    },
+    {
+      key: "email",
+      done: !!String(order["Email"] || "").trim(),
+      label: "Email for updates",
+      short: "email",
+      tiny: "email",
+      hint: "Get tracking and delivery updates",
+      doneHint: String(order["Email"] || "").trim(),
+      cta: "Add",
+      focus: "od-addr-email",
+    },
+  ];
+  const readyDone = readyItems.filter((i) => i.done).length;
+  const showReady = canEditAddress && readyDone < readyItems.length;
+  const addrOk =
+    !!addrForm && addrForm.address.trim().length > ADDRESS_MIN_CHARS;
+  // Live hints while typing (same chips as checkout); the save rule stays
+  // "more than ADDRESS_MIN_CHARS characters".
+  const addrDraft = addrForm ? addrForm.address.trim() : "";
+  const addrChecks = [
+    { ok: /\d/.test(addrDraft), l: "House / flat no." },
+    {
+      ok: addrDraft.split(/[\s,]+/).filter((w) => w.length > 1).length >= 3,
+      l: "Street & area",
+    },
+    {
+      ok: /\b(near|opp|opposite|behind|beside|next to|above|landmark)\b/i.test(
+        addrDraft,
+      ),
+      l: "Landmark",
+      opt: true,
+    },
+  ];
   const openAddrEdit = () => {
     setAddrErr({});
     setAddrForm({
@@ -2156,8 +2217,12 @@ export default function OrderDetailPage() {
     const em = String(addrForm.email || "").trim();
     const alt = String(addrForm.altPhone || "");
     const errs = {};
-    if (!addrForm.address.trim()) errs.address = "Please enter your address.";
-    if (addrForm.pincode && !/^\d{6}$/.test(addrForm.pincode))
+    const aLen = addrForm.address.trim().length;
+    if (aLen <= ADDRESS_MIN_CHARS)
+      errs.address = `Address should be more than ${ADDRESS_MIN_CHARS} characters (${ADDRESS_MIN_CHARS + 1 - aLen} more needed)`;
+    if (!addrForm.city.trim()) errs.city = "Enter your city.";
+    if (!addrForm.state.trim()) errs.state = "Enter your state.";
+    if (!/^\d{6}$/.test(addrForm.pincode))
       errs.pincode = "Pincode should be 6 digits.";
     if (alt && !/^[6-9]\d{9}$/.test(alt))
       errs.altPhone = "Enter a valid 10-digit mobile number.";
@@ -2614,10 +2679,52 @@ export default function OrderDetailPage() {
               {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
             </span>
           </div>
+          {/* Delivery readiness — address, alternate number, email. A slim
+              stripe while the address is still editable and something's missing. */}
+          {showReady && (
+            <button
+              type="button"
+              className={`od-ready${addrNeedsWork ? " od-ready--warn" : ""}`}
+              onClick={() => {
+                const next = readyItems.find((i) => !i.done);
+                openAddrEdit();
+                setTimeout(
+                  () => document.getElementById(next?.focus)?.focus(),
+                  380,
+                );
+              }}
+            >
+              <span className="od-ready-badge">
+                <AlertCircle size={12} />
+                {addrNeedsWork ? "Action needed" : "Almost there"}
+              </span>
+              <span className="od-ready-txt">
+                <span className="od-ready-long">
+                  {readyItems.length - readyDone === 1
+                    ? `Add ${readyItems.find((i) => !i.done).short}`
+                    : "Complete delivery details"}
+                </span>
+                <span className="od-ready-short">
+                  {readyItems.length - readyDone === 1
+                    ? `Add ${readyItems.find((i) => !i.done).tiny}`
+                    : "Add details"}
+                </span>
+              </span>
+              <span className="od-ready-count">
+                {readyDone}/{readyItems.length}
+              </span>
+              <span className="od-ready-segs" aria-label={`${readyDone} of ${readyItems.length} done`}>
+                {readyItems.map((i) => (
+                  <i key={i.key} className={i.done ? "on" : ""} />
+                ))}
+              </span>
+              <ChevronRight size={15} className="od-ready-go" />
+            </button>
+          )}
 
           {/* Alternate number — shown when set; otherwise an "Add" prompt while
               the address is still editable (it's saved via the Edit sheet). */}
-          {(altPhone || canEditAddress) && (
+          {(altPhone || (canEditAddress && !showReady)) && (
             <div className="od-email-row od-email-readonly">
               <Phone size={15} />
               {altPhone ? (
@@ -2644,6 +2751,7 @@ export default function OrderDetailPage() {
           )}
 
           {/* Email — read-only; edit via the Edit sheet (near name/address). */}
+          {(orderEmail || !showReady) && (
           <div className="od-email-row od-email-readonly">
             <Mail size={15} />
             {orderEmail ? (
@@ -2661,6 +2769,7 @@ export default function OrderDetailPage() {
               </button>
             )}
           </div>
+          )}
         </section>
       )}
 
@@ -2951,20 +3060,9 @@ export default function OrderDetailPage() {
                     </div>
                   </div>
 
-                  {/* Distance chip + legend. */}
+                  {/* Map legend. */}
                   {routeInfo && (
-                    <div className="od-map-info" aria-live="polite">
-                      <strong>
-                        {delivered
-                          ? `Delivered · ${Math.round(routeInfo.totalKm)} km journey`
-                          : `≈ ${Math.max(1, Math.round(routeInfo.leftKm))} km to go`}
-                      </strong>
-                      {!delivered && (
-                        <span>
-                          of {Math.round(routeInfo.totalKm)} km
-                          {liveLatLng ? " · last scan" : " · estimated"}
-                        </span>
-                      )}
+                    <div className="od-map-info od-map-info--legend">
                       <span className="od-map-legend">
                         <i className="lg-hub" /> Hub
                         {!delivered && (
@@ -3015,39 +3113,6 @@ export default function OrderDetailPage() {
                   <span className="od-jr-end od-jr-end-r">
                     <i className="lg-home" />
                     <b>{String(order["City"] || "You").trim() || "You"}</b>
-                  </span>
-                </div>
-                <div className="od-jr-facts">
-                  <span>
-                    <small>Distance</small>
-                    <b>
-                      {routeInfo ? `${Math.round(routeInfo.totalKm)} km` : "—"}
-                    </b>
-                  </span>
-                  <span>
-                    <small>{delivered ? "Status" : "To go"}</small>
-                    <b>
-                      {delivered
-                        ? "Delivered"
-                        : routeInfo
-                          ? `≈ ${Math.max(1, Math.round(routeInfo.leftKm))} km`
-                          : "—"}
-                    </b>
-                  </span>
-                  <span>
-                    <small>{delivered ? "Ordered" : "Mode"}</small>
-                    <b>
-                      {delivered
-                        ? orderDate
-                          ? orderDate.toLocaleDateString("en-IN", {
-                              day: "numeric",
-                              month: "short",
-                            })
-                          : "—"
-                        : isFaster
-                          ? "Express"
-                          : "Standard"}
-                    </b>
                   </span>
                 </div>
                 {(liveEvent?.lastEvent?.event || trackDetail) && (
@@ -3430,7 +3495,7 @@ export default function OrderDetailPage() {
       </AnimatePresence>
 
 
-      {/* Items summary strip (Flipkart "Total N items" + thumbnails) */}
+      {/* Books in this order — numbered list with prices, open by default */}
       <section className="od-block od-items-block">
         <button
           type="button"
@@ -3450,20 +3515,6 @@ export default function OrderDetailPage() {
           </span>
         </button>
 
-        {!itemsOpen && (
-          <div className="od-thumbs-row">
-            {books.map((b, i) => (
-              // Covers dropped to cut image requests — a book icon stands in;
-              // full titles are listed below and in the expanded view.
-              <span className="od-thumb" key={i}>
-                <span className="od-thumb-ph">
-                  <Package size={16} />
-                </span>
-                {b.qty > 1 && <span className="od-thumb-qty">×{b.qty}</span>}
-              </span>
-            ))}
-          </div>
-        )}
         {!itemsOpen && books[0]?.name && (
           <p className="od-items-names">
             {books[0].name}
@@ -3477,11 +3528,7 @@ export default function OrderDetailPage() {
               {books.map((b, i) => {
                 return (
                   <div className="od-line" key={i}>
-                    <span className="od-line-cover">
-                      <span className="od-line-ph">
-                        <Package size={16} />
-                      </span>
-                    </span>
+                    <span className="od-line-no">{i + 1}</span>
                     <span className="od-line-info">
                       <span className="od-line-name">{b.name}</span>
                       <span className="od-line-meta">
@@ -4005,19 +4052,44 @@ export default function OrderDetailPage() {
                     <Home size={14} /> Delivery address
                   </h3>
                   <label className="od-field-lbl" htmlFor="od-addr-line">
-                    House / street / area
+                    Full address — House no, Street, Landmark{" "}
+                    <em className="od-req">*</em>
                   </label>
                   <textarea
                     id="od-addr-line"
-                    className={`od-field-input od-field-area${addrErr.address ? " err" : ""}`}
+                    className={`od-field-input od-field-area${addrErr.address ? " err" : ""}${addrOk ? " ok" : ""}`}
                     rows={3}
-                    placeholder="Flat, building, street, landmark"
+                    autoComplete="street-address"
+                    placeholder="e.g. 12/A, Green Residency, 2nd floor, MG Road, near City Mall"
+                    aria-invalid={!!addrErr.address}
                     value={addrForm.address}
                     onChange={(e) => {
                       setAddrForm((f) => ({ ...f, address: e.target.value }));
                       setAddrErr((x) => ({ ...x, address: "" }));
                     }}
+                    onBlur={() => {
+                      const n = addrForm.address.trim().length;
+                      if (n > 0 && n <= ADDRESS_MIN_CHARS)
+                        setAddrErr((x) => ({
+                          ...x,
+                          address: `Address should be more than ${ADDRESS_MIN_CHARS} characters (${ADDRESS_MIN_CHARS + 1 - n} more needed)`,
+                        }));
+                    }}
                   />
+                  <div className="dd-checks" aria-live="polite">
+                    {addrChecks.map((c) => (
+                      <span
+                        key={c.l}
+                        className={`dd-check${c.ok ? " on" : ""}${c.opt ? " opt" : ""}`}
+                      >
+                        <span className="dd-check-dot">
+                          {c.ok && <Check size={10} strokeWidth={3.5} />}
+                        </span>
+                        {c.l}
+                        {c.opt && !c.ok ? " (helps)" : ""}
+                      </span>
+                    ))}
+                  </div>
                   {addrErr.address && (
                     <span className="od-field-err">{addrErr.address}</span>
                   )}
@@ -4028,12 +4100,13 @@ export default function OrderDetailPage() {
                       </label>
                       <input
                         id="od-addr-city"
-                        className="od-field-input"
+                        className={`od-field-input${addrErr.city ? " err" : ""}`}
                         autoComplete="address-level2"
                         value={addrForm.city}
-                        onChange={(e) =>
-                          setAddrForm((f) => ({ ...f, city: e.target.value }))
-                        }
+                        onChange={(e) => {
+                          setAddrForm((f) => ({ ...f, city: e.target.value }));
+                          setAddrErr((x) => ({ ...x, city: "" }));
+                        }}
                       />
                     </div>
                     <div>
@@ -4042,12 +4115,13 @@ export default function OrderDetailPage() {
                       </label>
                       <input
                         id="od-addr-state"
-                        className="od-field-input"
+                        className={`od-field-input${addrErr.state ? " err" : ""}`}
                         autoComplete="address-level1"
                         value={addrForm.state}
-                        onChange={(e) =>
-                          setAddrForm((f) => ({ ...f, state: e.target.value }))
-                        }
+                        onChange={(e) => {
+                          setAddrForm((f) => ({ ...f, state: e.target.value }));
+                          setAddrErr((x) => ({ ...x, state: "" }));
+                        }}
                       />
                     </div>
                     <div>
@@ -4073,8 +4147,10 @@ export default function OrderDetailPage() {
                       />
                     </div>
                   </div>
-                  {addrErr.pincode && (
-                    <span className="od-field-err">{addrErr.pincode}</span>
+                  {(addrErr.city || addrErr.state || addrErr.pincode) && (
+                    <span className="od-field-err">
+                      {addrErr.city || addrErr.state || addrErr.pincode}
+                    </span>
                   )}
                 </section>
 

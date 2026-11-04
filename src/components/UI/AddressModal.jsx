@@ -2381,24 +2381,9 @@ export default function AddressModal({
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <span className="dd-ok-ic" aria-hidden="true">
-                      <CheckCircle2 size={18} />
-                    </span>
-                    <span className="dd-ok-body">
-                      <span className="dd-route-txt">
-                        Great, we deliver to <b>{city}</b> ({pincode})
-                      </span>
-                      <span className="dd-ok-perks">
-                        <span>
-                          <Banknote size={12} /> Cash on Delivery
-                        </span>
-                        <span>
-                          <Truck size={12} /> Tracked shipping
-                        </span>
-                        <span>
-                          <RefreshCw size={12} /> 7-day returns
-                        </span>
-                      </span>
+                    <CheckCircle2 size={14} aria-hidden="true" />
+                    <span className="dd-route-txt">
+                      Delivers to <b>{city}</b> · Cash on Delivery available
                     </span>
                   </motion.div>
                 )}

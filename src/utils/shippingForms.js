@@ -2124,10 +2124,12 @@ export function buildAddressLabelSheetCanvas(group, opts = {}) {
 
 // Many address labels → ONE ordered PDF, three labels per page, no CDF.
 export function downloadAddressLabelsPDF(dataArray, filename, opts = {}) {
-  if (opts.mono) {
-    downloadBwLabelGridPDF(dataArray, filename);
-    return;
-  }
+  // Every label PDF is now 4 per A4 landscape page (2×2), colour or B&W.
+  return downloadLabelGridPDF(dataArray, filename, { mono: !!opts.mono });
+}
+
+// Old 3-per-page portrait stack (kept for reference / PNG sheets).
+export function downloadAddressLabelsStackPDF(dataArray, filename, opts = {}) {
   const labels = dataArray.map((d) => buildAddressLabelCanvas(d, opts));
   const pages = packLabelPages(labels).map((group) => {
     const cv = stackLabelCanvases(group);
@@ -2141,8 +2143,8 @@ export function downloadAddressLabelsPDF(dataArray, filename, opts = {}) {
   );
 }
 
-// Decorated (confetti + flowers) address-label PDF — same 3-per-page layout,
-// identical label size. `mono:true` renders black & white.
+// Address-label PDF from the Dispatch queue — 4 per A4 landscape page (2×2).
+// `mono:true` renders black & white.
 export function downloadDecoratedAddressLabelsPDF(
   dataArray,
   filename,
@@ -2531,7 +2533,17 @@ export function buildGiftLabelSheetCanvas(group) {
 }
 
 // Colorful gift labels → ONE PDF, three per page (same footprint as address PDF).
-export function downloadGiftLabelsPDF(dataArray, filename) {
+export function downloadGiftLabelsPDF(dataArray, filename, { mono = false } = {}) {
+  if (!dataArray || !dataArray.length) return;
+  return downloadLabelGridPDF(
+    dataArray.map((d) => ({ ...d, variant: "gift" })),
+    filename || `gift_labels_${new Date().toISOString().slice(0, 10)}.pdf`,
+    { mono },
+  );
+}
+
+// Old 3-per-page festive gift stack.
+export function downloadGiftLabelsStackPDF(dataArray, filename) {
   if (!dataArray || !dataArray.length) return;
   const pages = [];
   for (let i = 0; i < dataArray.length; i += LABELS_PER_PAGE) {
@@ -2549,24 +2561,50 @@ export function downloadGiftLabelsPDF(dataArray, filename) {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   B&W LABELS — 4 per landscape A4 page in a 2×2 grid.
-   Black text on white with only light grey tints (no solid black fills), so
-   they print clean and never smudge. Three dedicated templates:
+   LABEL GRID — 4 labels per A4 landscape page (2×2), in colour or B&W.
+   Each page is drawn on an exact A4 canvas (300 dpi) so the PDF page is A4
+   edge to edge and the four labels are the same size every time.
+   Three dedicated templates:
      standard — Poppins, plain tint header
      speed    — italic Poppins, hatched header, speed lines, priority callout
-     gift     — Playfair Display + script, wrapping-paper header, gift tag
-   Every label is the same fixed size; long names / addresses shrink or clamp.
+     gift     — Playfair Display + script, confetti, a "surprise" note
+   B&W uses black text and light grey tints only (no solid fills), so it
+   prints clean. Long names / addresses shrink or clamp, never grow the label.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const BW_W = 1100; // label size in canvas px (rendered at 2×)
+const BW_W = 1100; // label size in design px
 const BW_H = 770;
 const BW_INK = "#111111";
 const BW_SOFT = "#4a4a4a"; // secondary text
-const BW_TINT = "#efefef"; // the only fills: light greys
 const BW_FONT = "Poppins, 'Helvetica Neue', Arial, sans-serif";
 const BW_SERIF = "'Playfair Display', Georgia, 'Times New Roman', serif";
 const BW_SCRIPT = "'Dancing Script', 'Brush Script MT', cursive";
 const BW_EMOJI = "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif";
+const BW_EMOJI_GREY = "grayscale(1) brightness(0.85) contrast(1.35)";
+
+// Per-template colours. `accent` is the frame / chip / highlight colour.
+const GRID_PAL = {
+  mono: {
+    normal: { accent: BW_INK, headA: "#efefef", headB: "#efefef" },
+    speed: { accent: BW_INK, headA: "#f4f4f4", headB: "#e2e2e2" },
+    gift: { accent: BW_INK, headA: "#f6f6f6", headB: "#dcdcdc" },
+    bolt: BW_INK,
+    cod: { fill: "#ebebeb", line: BW_INK, text: BW_INK },
+    paid: { line: BW_INK, text: BW_INK },
+    confetti: ["#c4c4c4", "#a8a8a8", "#d6d6d6", "#8f8f8f"],
+    noteTint: "#f4f4f4",
+  },
+  color: {
+    normal: { accent: "#3730a3", headA: "#eef2ff", headB: "#eef2ff" },
+    speed: { accent: "#c2410c", headA: "#fff7ed", headB: "#fed7aa" },
+    gift: { accent: "#be185d", headA: "#fdf2f8", headB: "#f9a8d4" },
+    bolt: "#f59e0b",
+    cod: { fill: "#fef3c7", line: "#b45309", text: "#78350f" },
+    paid: { line: "#15803d", text: "#14532d" },
+    confetti: ["#f43f5e", "#f59e0b", "#10b981", "#3b82f6", "#a855f7", "#ec4899"],
+    noteTint: "#fdf2f8",
+  },
+};
 
 // Load the label fonts once (Poppins is global; the gift faces are added here).
 let bwFontsReady = null;
@@ -2674,11 +2712,27 @@ function bwBolt(ctx, x, y, h, color = BW_INK) {
   ctx.lineTo(x + 21 * k, y + 26 * k);
   ctx.closePath();
   ctx.fill();
+  if (color !== BW_INK) {
+    ctx.strokeStyle = "#92400e";
+    ctx.lineWidth = 1.5;
+    ctx.lineJoin = "round";
+    ctx.stroke();
+  }
   ctx.restore();
 }
 
-// Emoji + text on one baseline. Emojis are drawn in greyscale so the label
-// stays black & white in print. align: left | center | right. Returns width.
+// One emoji glyph — greyscale on B&W labels (ctx.__mono), full colour otherwise.
+function bwEmoji(ctx, ch, x, y, size) {
+  ctx.save();
+  ctx.font = `${size}px ${BW_EMOJI}`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  if (ctx.__mono && "filter" in ctx) ctx.filter = BW_EMOJI_GREY;
+  ctx.fillText(ch, x, y);
+  ctx.restore();
+}
+
+// Emoji + text on one baseline. align: left | center | right. Returns width.
 function bwLead(ctx, emoji, text, x, y, { font, size, color = BW_INK, align = "left", gap = 0.35 }) {
   ctx.save();
   ctx.textBaseline = "alphabetic";
@@ -2693,13 +2747,10 @@ function bwLead(ctx, emoji, text, x, y, { font, size, color = BW_INK, align = "l
   if (align === "center") sx = x - total / 2;
   if (align === "right") sx = x - total;
   if (emoji === "⚡") {
-    // Yellow bolt fades to near-white in greyscale — draw it as solid ink.
-    bwBolt(ctx, sx, y - size * 0.86, size * 0.95, color);
+    // Yellow bolt fades to near-white in greyscale — draw it as a solid shape.
+    bwBolt(ctx, sx, y - size * 0.86, size * 0.95, ctx.__mono ? color : "#f59e0b");
   } else if (emoji) {
-    ctx.font = `${size}px ${BW_EMOJI}`;
-    if ("filter" in ctx) ctx.filter = "grayscale(1) brightness(0.85) contrast(1.35)";
-    ctx.fillText(emoji, sx, y);
-    ctx.filter = "none";
+    bwEmoji(ctx, emoji, sx, y, size);
   }
   ctx.font = font;
   ctx.fillStyle = color;
@@ -2708,17 +2759,73 @@ function bwLead(ctx, emoji, text, x, y, { font, size, color = BW_INK, align = "l
   return total;
 }
 
-// Header backgrounds — all light tints.
-function bwHeaderBg(ctx, variant, x, y, w, h) {
+// Seeded confetti (same order → same pattern): ribbons, dots, stars, squiggles.
+function drawGridConfetti(ctx, x, y, w, h, n, colors, seed = 7) {
+  let s = Math.abs(seed) % 233280 || 7;
+  const rnd = () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
   ctx.save();
   ctx.beginPath();
   ctx.rect(x, y, w, h);
   ctx.clip();
+  for (let i = 0; i < n; i++) {
+    const px = x + rnd() * w;
+    const py = y + rnd() * h;
+    const c = colors[Math.floor(rnd() * colors.length)];
+    const rot = rnd() * Math.PI;
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.rotate(rot);
+    ctx.fillStyle = c;
+    ctx.strokeStyle = c;
+    const kind = i % 4;
+    if (kind === 0) {
+      ctx.fillRect(-7, -3, 14, 6);
+    } else if (kind === 1) {
+      ctx.beginPath();
+      ctx.arc(0, 0, 3.6, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (kind === 2) {
+      ctx.beginPath();
+      for (let k = 0; k < 10; k++) {
+        const r = k % 2 ? 2.6 : 6.5;
+        const a = (Math.PI * k) / 5;
+        ctx[k ? "lineTo" : "moveTo"](Math.cos(a) * r, Math.sin(a) * r);
+      }
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-9, 0);
+      ctx.quadraticCurveTo(-4.5, -6, 0, 0);
+      ctx.quadraticCurveTo(4.5, 6, 9, 0);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+const seedOf = (str) =>
+  String(str || "").split("").reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) % 233280, 17);
+
+// Header backgrounds — light tints only.
+function bwHeaderBg(ctx, variant, x, y, w, h, P, seed) {
+  const tone = P[variant];
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, w, h);
+  ctx.clip();
+  ctx.fillStyle = tone.headA;
+  ctx.fillRect(x, y, w, h);
   if (variant === "speed") {
     // Diagonal racing hatch.
-    ctx.fillStyle = "#f4f4f4";
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = "#e2e2e2";
+    ctx.strokeStyle = tone.headB;
+    ctx.globalAlpha = ctx.__mono ? 1 : 0.55;
     ctx.lineWidth = 12;
     for (let i = -h; i < w + h; i += 30) {
       ctx.beginPath();
@@ -2726,26 +2833,41 @@ function bwHeaderBg(ctx, variant, x, y, w, h) {
       ctx.lineTo(x + i + h, y);
       ctx.stroke();
     }
-  } else if (variant === "gift") {
-    // Wrapping-paper dots + a ribbon running down the band.
-    ctx.fillStyle = "#f6f6f6";
-    ctx.fillRect(x, y, w, h);
-    ctx.fillStyle = "#dcdcdc";
-    for (let row = 0, yy = y + 10; yy < y + h; yy += 20, row++) {
-      for (let xx = x + (row % 2 ? 20 : 10); xx < x + w; xx += 20) {
-        ctx.beginPath();
-        ctx.arc(xx, yy, 2.4, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-  } else {
-    ctx.fillStyle = BW_TINT;
-    ctx.fillRect(x, y, w, h);
   }
   ctx.restore();
 }
 
-const BW_TEMPLATES = {
+// Bunting garland: a drooping string with little triangle flags.
+function drawBunting(ctx, x, y, w, colors, mono) {
+  const n = Math.max(6, Math.floor(w / 46));
+  const sag = 14;
+  const at = (t) => [x + t * w, y + Math.sin(t * Math.PI) * sag];
+  ctx.save();
+  ctx.strokeStyle = mono ? "#9a9a9a" : "#d4a5b8";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  for (let i = 0; i <= 40; i++) {
+    const [px, py] = at(i / 40);
+    ctx[i ? "lineTo" : "moveTo"](px, py);
+  }
+  ctx.stroke();
+  for (let i = 0; i < n; i++) {
+    const t0 = (i + 0.15) / n;
+    const t1 = (i + 0.85) / n;
+    const [ax, ay] = at(t0);
+    const [bx, by] = at(t1);
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(bx, by);
+    ctx.lineTo((ax + bx) / 2, (ay + by) / 2 + 22);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+const GRID_TEMPLATES = {
   normal: {
     frame: 3,
     brand: `800 40px ${BW_FONT}`,
@@ -2764,8 +2886,8 @@ const BW_TEMPLATES = {
     tagline: "Priority parcel",
     tagFont: `italic 700 18px ${BW_FONT}`,
     chipEmoji: "⚡",
-    chip: "SPEED POST",
-    chipFont: `italic 800 23px ${BW_FONT}`,
+    chip: "EXPRESS · SPEED POST",
+    chipFont: `italic 800 21px ${BW_FONT}`,
     name: { family: BW_FONT, style: "italic", weight: "800" },
   },
   gift: {
@@ -2781,12 +2903,27 @@ const BW_TEMPLATES = {
   },
 };
 
-function drawBwLabel(ctx, data) {
+// The template a label uses: data.variant forces one ("gift" / "speed"),
+// otherwise gift → speed → standard.
+const labelVariant = (data) =>
+  data.variant === "gift" || data.variant === "speed"
+    ? data.variant
+    : data.isGift
+      ? "gift"
+      : data.isFaster
+        ? "speed"
+        : "normal";
+
+function drawGridLabel(ctx, data, { mono = true } = {}) {
   const W = BW_W;
   const H = BW_H;
+  const P = mono ? GRID_PAL.mono : GRID_PAL.color;
+  ctx.__mono = mono;
   const isCOD = !!data.isCOD;
-  const variant = data.isGift ? "gift" : data.isFaster ? "speed" : "normal";
-  const T = BW_TEMPLATES[variant];
+  const variant = labelVariant(data);
+  const T = GRID_TEMPLATES[variant];
+  const A = P[variant].accent;
+  const seed = seedOf(data.orderId);
   const M = 10; // frame inset
   const PAD = 34; // content padding inside the frame
   const L = M + PAD;
@@ -2800,20 +2937,20 @@ function drawBwLabel(ctx, data) {
   ctx.save();
   bwRoundRect(ctx, M, M, W - 2 * M, H - 2 * M, 18);
   ctx.clip();
-  bwHeaderBg(ctx, variant, M, M, W - 2 * M, HB);
-  ctx.fillStyle = BW_INK;
+  bwHeaderBg(ctx, variant, M, M, W - 2 * M, HB, P, seed);
+  ctx.fillStyle = A;
   ctx.fillRect(M, M + HB - 1, W - 2 * M, 2);
   ctx.restore();
 
   // Frame (gift gets an inner dashed "gift tag" line)
   ctx.save();
-  ctx.strokeStyle = BW_INK;
+  ctx.strokeStyle = A;
   ctx.lineWidth = T.frame;
   bwRoundRect(ctx, M, M, W - 2 * M, H - 2 * M, 18);
   ctx.stroke();
   if (variant === "gift") {
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = "#8a8a8a";
+    ctx.strokeStyle = mono ? "#8a8a8a" : "#f472b6";
     ctx.setLineDash([8, 6]);
     bwRoundRect(ctx, M + 9, M + HB + 9, W - 2 * M - 18, H - 2 * M - HB - 18, 12);
     ctx.stroke();
@@ -2832,10 +2969,10 @@ function drawBwLabel(ctx, data) {
   bwLead(ctx, T.tagEmoji, T.tagline, L + brandW + 20, M + 58, {
     font: T.tagFont,
     size: 20,
-    color: variant === "gift" ? "#2a2a2a" : BW_SOFT,
+    color: variant === "gift" ? (mono ? "#2a2a2a" : A) : BW_SOFT,
   });
 
-  // Type chip (white pill, black outline)
+  // Type chip (white pill, accent outline)
   ctx.save();
   ctx.font = T.chipFont;
   const chipTextW = ctx.measureText(T.chip).width;
@@ -2848,18 +2985,34 @@ function drawBwLabel(ctx, data) {
   const chipY = M + (HB - chipH) / 2;
   ctx.save();
   ctx.fillStyle = "#fff";
-  ctx.strokeStyle = BW_INK;
+  ctx.strokeStyle = A;
   ctx.lineWidth = 2.5;
   bwRoundRect(ctx, chipX, chipY, chipW, chipH, chipH / 2);
   ctx.fill();
   ctx.stroke();
   ctx.restore();
-  bwLead(ctx, T.chipEmoji, T.chip, chipX + 20, chipY + 35, { font: T.chipFont, size: 26, gap: 0.38 });
+  bwLead(ctx, T.chipEmoji, T.chip, chipX + 20, chipY + 35, { font: T.chipFont, size: 26, gap: 0.38, color: A });
+
+  // Gift: confetti burst in the free space between the tagline and the chip.
+  if (variant === "gift") {
+    ctx.save();
+    ctx.font = T.tagFont;
+    const tagEnd = L + brandW + 20 + 30 + ctx.measureText(T.tagline).width;
+    ctx.restore();
+    const gx = tagEnd + 16;
+    const gw = chipX - 16 - gx;
+    if (gw > 40) {
+      ctx.save();
+      ctx.globalAlpha = mono ? 1 : 0.85;
+      drawGridConfetti(ctx, gx, M + 8, gw, HB - 16, Math.round(gw / 9), P.confetti, seed);
+      ctx.restore();
+    }
+  }
 
   // Speed lines trailing into the chip.
   if (variant === "speed") {
     ctx.save();
-    ctx.strokeStyle = "#7a7a7a";
+    ctx.strokeStyle = mono ? "#7a7a7a" : "#fb923c";
     ctx.lineCap = "round";
     [[0, 70, 3], [12, 46, 2.5], [-12, 46, 2.5]].forEach(([dy, len, lw]) => {
       ctx.lineWidth = lw;
@@ -2871,29 +3024,40 @@ function drawBwLabel(ctx, data) {
     ctx.restore();
   }
 
-  // ── Right column: review QR ──
+  // ── Right column: QR (gift → unwrap the message; else → rate us) ──
+  const giftQr = variant === "gift" && data.giftQrUrl;
   const qSize = 192;
   const qx = R - qSize;
   const y = M + HB + 44;
-  bwLead(ctx, "⭐", "SCAN & RATE US", qx + qSize / 2, y, {
+  bwLead(ctx, giftQr ? "💌" : "⭐", giftQr ? "SCAN TO UNWRAP" : "SCAN & RATE US", qx + qSize / 2, y, {
     font: `800 15px ${BW_FONT}`,
     size: 16,
     align: "center",
+    color: giftQr ? A : BW_INK,
   });
   ctx.save();
-  ctx.strokeStyle = BW_INK;
+  ctx.strokeStyle = giftQr ? A : BW_INK;
   ctx.lineWidth = 2;
   bwRoundRect(ctx, qx - 8, y + 10, qSize + 16, qSize + 16, 10);
   ctx.stroke();
   ctx.restore();
-  drawQrCode(ctx, REVIEW_URL, qx, y + 18, qSize);
+  drawQrCode(ctx, giftQr ? data.giftQrUrl : REVIEW_URL, qx, y + 18, qSize);
   const starY = y + 18 + qSize + 34;
-  const sr = 12;
-  const sGap = 9;
-  let sx = qx + (qSize - (5 * sr * 2 + 4 * sGap)) / 2 + sr;
-  for (let i = 0; i < 5; i++) {
-    drawStarOutline(ctx, sx, starY, sr, BW_INK, 2);
-    sx += sr * 2 + sGap;
+  if (giftQr) {
+    bwLead(ctx, "✨", "a message awaits", qx + qSize / 2, starY + 6, {
+      font: `700 24px ${BW_SCRIPT}`,
+      size: 18,
+      align: "center",
+      color: mono ? "#2a2a2a" : A,
+    });
+  } else {
+    const sr = 12;
+    const sGap = 9;
+    let sx = qx + (qSize - (5 * sr * 2 + 4 * sGap)) / 2 + sr;
+    for (let i = 0; i < 5; i++) {
+      drawStarOutline(ctx, sx, starY, sr, mono ? BW_INK : "#f59e0b", 2);
+      sx += sr * 2 + sGap;
+    }
   }
 
   // ── Left column: DELIVER TO ──
@@ -2936,31 +3100,33 @@ function drawBwLabel(ctx, data) {
   const phones = [fmtPh(data.customerPhone), fmtPh(data.customerAltPhone)].filter(Boolean).join("  /  ");
   if (phones) {
     const py = ay + 50;
-    ctx.save();
-    ctx.font = `24px ${BW_EMOJI}`;
-    if ("filter" in ctx) ctx.filter = "grayscale(1) brightness(0.85) contrast(1.35)";
-    ctx.textAlign = "left";
-    ctx.fillText("📞", L, py - 2);
-    ctx.restore();
+    bwEmoji(ctx, "📞", L, py - 2, 24);
     bwFitText(ctx, phones, L + 38, py, colW - 38, { size: 28, min: 20, weight: "800" });
   }
 
-  // ── Payment strip (full width): light tint for COD, outline for prepaid ──
   const payY = 486;
+  // Gift: a bunting garland in the space above the payment strip.
+  if (variant === "gift") {
+    const bTop = (phones ? ay + 50 : ay) + 26;
+    if (bTop + 40 < payY) drawBunting(ctx, L, bTop, colW, P.confetti, mono);
+  }
+
+  // ── Payment strip (full width): tint for COD, outline for prepaid ──
   const payH = 104;
   const payW = R - L;
+  const pay = isCOD ? P.cod : P.paid;
   ctx.save();
-  ctx.strokeStyle = BW_INK;
+  ctx.strokeStyle = pay.line;
   ctx.lineWidth = isCOD ? 3.5 : 2.5;
   bwRoundRect(ctx, L, payY, payW, payH, 14);
-  ctx.fillStyle = isCOD ? "#ebebeb" : "#fff";
+  ctx.fillStyle = isCOD ? P.cod.fill : "#fff";
   ctx.fill();
   ctx.stroke();
   ctx.restore();
   if (isCOD) {
-    bwLead(ctx, "💵", "COLLECT ON DELIVERY", L + 26, payY + 36, { font: `800 17px ${BW_FONT}`, size: 19 });
+    bwLead(ctx, "💵", "COLLECT ON DELIVERY", L + 26, payY + 36, { font: `800 17px ${BW_FONT}`, size: 19, color: pay.text });
     ctx.save();
-    ctx.fillStyle = BW_INK;
+    ctx.fillStyle = pay.text;
     ctx.textAlign = "left";
     ctx.font = `800 46px ${BW_FONT}`;
     ctx.fillText(`₹ ${Number(data.codAmount || 0).toLocaleString("en-IN")} /-`, L + 26, payY + 86);
@@ -2974,7 +3140,7 @@ function drawBwLabel(ctx, data) {
   } else {
     bwLead(ctx, "✅", "PAYMENT", L + 26, payY + 36, { font: `800 17px ${BW_FONT}`, size: 19, color: BW_SOFT });
     ctx.save();
-    ctx.fillStyle = BW_INK;
+    ctx.fillStyle = pay.text;
     ctx.textAlign = "left";
     ctx.font = `800 40px ${BW_FONT}`;
     ctx.fillText("PREPAID", L + 26, payY + 82);
@@ -2996,10 +3162,10 @@ function drawBwLabel(ctx, data) {
     ctx.save();
     bwRoundRect(ctx, L, nY, payW, nH, 12);
     ctx.clip();
-    bwHeaderBg(ctx, "speed", L, nY, payW, nH);
+    bwHeaderBg(ctx, "speed", L, nY, payW, nH, P, seed);
     ctx.restore();
     ctx.save();
-    ctx.strokeStyle = BW_INK;
+    ctx.strokeStyle = A;
     ctx.lineWidth = 2;
     bwRoundRect(ctx, L, nY, payW, nH, 12);
     ctx.stroke();
@@ -3007,28 +3173,47 @@ function drawBwLabel(ctx, data) {
     const msg = dn.isCustomer
       ? `PRIORITY · Note: ${dn.text}`
       : "PRIORITY — deliver first. Do not return. प्राथमिकता से डिलीवर करें।";
-    bwBolt(ctx, L + 18, nY + 12, 34);
-    bwFitText(ctx, msg, L + 56, nY + 37, payW - 72, { size: 19, min: 13, weight: "800", style: "italic" });
+    bwBolt(ctx, L + 18, nY + 12, 34, mono ? BW_INK : P.bolt);
+    bwFitText(ctx, msg, L + 56, nY + 37, payW - 72, { size: 19, min: 13, weight: "800", style: "italic", color: mono ? BW_INK : "#7c2d12" });
   } else if (variant === "gift") {
-    bwLead(ctx, "🎁", "A gift for you — happy reading!", L + 6, nY + 34, {
-      font: `700 30px ${BW_SCRIPT}`,
+    // Celebration strip: tinted box sprinkled with confetti behind the note.
+    ctx.save();
+    bwRoundRect(ctx, L, nY, payW, nH, 12);
+    ctx.clip();
+    ctx.fillStyle = P.noteTint;
+    ctx.fillRect(L, nY, payW, nH);
+    ctx.restore();
+    ctx.save();
+    ctx.strokeStyle = mono ? "#9a9a9a" : "#f472b6";
+    ctx.lineWidth = 1.5;
+    bwRoundRect(ctx, L, nY, payW, nH, 12);
+    ctx.stroke();
+    ctx.restore();
+    const left = bwLead(ctx, "🎉", "Surprise! A story picked just for you", L + 16, nY + 39, {
+      font: `700 29px ${BW_SCRIPT}`,
       size: 24,
+      color: mono ? BW_INK : "#831843",
     });
-    bwLead(ctx, "🤲", "Handle with care", R - 6, nY + 34, {
-      font: `italic 800 18px ${BW_SERIF}`,
-      size: 20,
+    bwLead(ctx, "🎊", "", L + 16 + left + 10, nY + 39, { font: `700 29px ${BW_SCRIPT}`, size: 24, gap: 0 });
+    const right = bwLead(ctx, "🤲", "Handle with care", R - 16, nY + 37, {
+      font: `italic 800 17px ${BW_SERIF}`,
+      size: 19,
       align: "right",
       color: BW_SOFT,
     });
+    const cx0 = L + 16 + left + 52;
+    const cw0 = R - 16 - right - 18 - cx0;
+    if (cw0 > 30) {
+      ctx.save();
+      ctx.globalAlpha = mono ? 1 : 0.8;
+      drawGridConfetti(ctx, cx0, nY + 6, cw0, nH - 12, Math.round(cw0 / 10), P.confetti, seed + 99);
+      ctx.restore();
+    }
   } else {
     const msg = dn.isCustomer
       ? `Note: ${dn.text}`
       : "Deliver to the customer — do not return. ग्राहक को ही डिलीवर करें, वापस न लौटाएँ।";
-    ctx.save();
-    ctx.font = `20px ${BW_EMOJI}`;
-    if ("filter" in ctx) ctx.filter = "grayscale(1) brightness(0.85) contrast(1.35)";
-    ctx.fillText(dn.isCustomer ? "📝" : "🙏", L, nY + 26);
-    ctx.restore();
+    bwEmoji(ctx, dn.isCustomer ? "📝" : "🙏", L, nY + 26, 20);
     bwWrap(ctx, msg, L + 32, nY + 26, payW - 32, 24, 2, `700 18px ${BW_FONT}`);
   }
 
@@ -3071,69 +3256,73 @@ function drawBwLabel(ctx, data) {
   bwLead(ctx, "☎️", `Seller help: ${SENDER.mobile}`, L, fy + 26, { font: `700 15px ${BW_FONT}`, size: 14, gap: 0.3 });
 }
 
-function buildBwLabelCanvas(data) {
-  const cv = document.createElement("canvas");
-  cv.width = BW_W * 2;
-  cv.height = BW_H * 2;
-  const ctx = cv.getContext("2d");
-  ctx.scale(2, 2);
-  drawBwLabel(ctx, data);
-  return cv;
-}
-
-// Four labels on one landscape sheet, 2×2, with dashed cut lines between.
-const BW_GAP = 56; // px at 2× between cells and round the edge
-function buildBwSheetCanvas(group) {
-  const cw = BW_W * 2;
-  const ch = BW_H * 2;
+// One A4 landscape page at 300 dpi: 4 labels, 2×2, 8 mm margins and gutters,
+// dashed cut lines only between labels that are on the page.
+const A4_W = 3508;
+const A4_H = 2480;
+const A4_PAD = 94; // 8 mm
+function buildLabelGridPage(group, { mono }) {
   const out = document.createElement("canvas");
-  out.width = cw * 2 + BW_GAP * 3;
-  out.height = ch * 2 + BW_GAP * 3;
+  out.width = A4_W;
+  out.height = A4_H;
   const ctx = out.getContext("2d");
   ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, out.width, out.height);
+  ctx.fillRect(0, 0, A4_W, A4_H);
+  const cellW = (A4_W - A4_PAD * 3) / 2;
+  const cellH = (A4_H - A4_PAD * 3) / 2;
+  const k = Math.min(cellW / BW_W, cellH / BW_H);
+  const lw = BW_W * k;
+  const lh = BW_H * k;
   group.forEach((d, i) => {
     const col = i % 2;
     const row = Math.floor(i / 2);
-    ctx.drawImage(
-      buildBwLabelCanvas(d),
-      BW_GAP + col * (cw + BW_GAP),
-      BW_GAP + row * (ch + BW_GAP),
-    );
+    const x = A4_PAD + col * (cellW + A4_PAD) + (cellW - lw) / 2;
+    const yy = A4_PAD + row * (cellH + A4_PAD) + (cellH - lh) / 2;
+    ctx.save();
+    ctx.translate(x, yy);
+    ctx.scale(k, k);
+    drawGridLabel(ctx, d, { mono });
+    ctx.restore();
   });
   ctx.save();
-  ctx.strokeStyle = "#000";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([16, 12]);
-  const midX = BW_GAP * 1.5 + cw;
-  const midY = BW_GAP * 1.5 + ch;
-  // Only cut between labels that are actually on the page.
+  ctx.strokeStyle = "#9a9a9a";
+  ctx.lineWidth = 3;
+  ctx.setLineDash([20, 14]);
+  const midX = A4_W / 2;
+  const midY = A4_H / 2;
   const rows = Math.ceil(group.length / 2);
   ctx.beginPath();
   if (group.length > 1) {
-    ctx.moveTo(midX, 12);
-    ctx.lineTo(midX, rows > 1 ? out.height - 12 : midY);
+    ctx.moveTo(midX, 24);
+    ctx.lineTo(midX, rows > 1 ? A4_H - 24 : midY);
   }
   if (rows > 1) {
-    ctx.moveTo(12, midY);
-    ctx.lineTo(group.length > 3 ? out.width - 12 : midX, midY);
+    ctx.moveTo(24, midY);
+    ctx.lineTo(group.length > 3 ? A4_W - 24 : midX, midY);
   }
   ctx.stroke();
   ctx.restore();
   return out;
 }
 
-export async function downloadBwLabelGridPDF(dataArray, filename) {
+// Labels → ONE A4-landscape PDF, 4 per page (2×2). `mono` for black & white.
+export async function downloadLabelGridPDF(dataArray, filename, { mono = false } = {}) {
+  if (!dataArray || !dataArray.length) return;
   await ensureBwFonts();
   const pages = [];
   for (let i = 0; i < dataArray.length; i += 4) {
-    const cv = buildBwSheetCanvas(dataArray.slice(i, i + 4));
-    const url = cv.toDataURL("image/jpeg", 0.95);
+    const cv = buildLabelGridPage(dataArray.slice(i, i + 4), { mono });
+    const url = cv.toDataURL("image/jpeg", 0.92);
     pages.push({ data: dataUrlToBytes(url), w: cv.width, h: cv.height });
   }
-  const blob = jpegPagesToPdf(pages, 12, { landscape: true });
+  // Margin 0: the page image is already exactly A4, margins included.
+  const blob = jpegPagesToPdf(pages, 0, { landscape: true });
   triggerDownload(
     blob,
-    filename || `labels_bw_${new Date().toISOString().slice(0, 10)}.pdf`,
+    filename || `labels_${mono ? "bw" : "color"}_${new Date().toISOString().slice(0, 10)}.pdf`,
   );
+}
+
+export function downloadBwLabelGridPDF(dataArray, filename) {
+  return downloadLabelGridPDF(dataArray, filename, { mono: true });
 }

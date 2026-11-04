@@ -18,6 +18,7 @@ import {
   downloadAddressLabelsPDF,
   downloadDecoratedAddressLabelsPDF,
   downloadGiftLabelsPDF,
+  downloadLabelGridPDF,
 } from "@/utils/shippingForms";
 import {
   Search,
@@ -7336,6 +7337,33 @@ export default function ManageOrdersPage() {
     downloadGiftLabelsPDF(
       gifts.map(orderFormData),
       `gift_labels_${new Date().toISOString().slice(0, 10)}.pdf`,
+    );
+  };
+
+  // Template label sets: "gift" → gift-wrap orders, "speed" → express /
+  // Speed Post orders. Printed 4 per A4 landscape page in colour or B&W.
+  const labelSetOf = (list, kind) =>
+    kind === "gift"
+      ? list.filter(isGiftOrder)
+      : kind === "speed"
+        ? list.filter((o) => orderFormData(o).isFaster)
+        : list;
+  const downloadLabelSet = (list, kind, mono) => {
+    const pick = labelSetOf(list, kind);
+    if (!pick.length) {
+      showToast(
+        `No ${kind === "gift" ? "gift" : "express"} orders in this selection.`,
+        "info",
+      );
+      return;
+    }
+    downloadLabelGridPDF(
+      pick.map((o) => ({
+        ...orderFormData(o),
+        variant: kind === "all" ? undefined : kind,
+      })),
+      `${kind === "speed" ? "express" : kind}_labels_${mono ? "bw" : "color"}_${new Date().toISOString().slice(0, 10)}.pdf`,
+      { mono },
     );
   };
 
@@ -14932,7 +14960,7 @@ export default function ManageOrdersPage() {
             </div>
             {/* Dispatch queue — orders moved here from the Orders cards (any
                 status). Select rows, then download decorated address labels
-                (colored: 3 per page; B&W: 4 per landscape page, 2×2). */}
+                (colour or B&W, 4 per A4 landscape page, 2×2). */}
             {bookSubTab === "queue" && (() => {
               const dOrders = orders.filter((o) =>
                 dispatchIds.includes(o["Order ID"]),
@@ -15171,7 +15199,7 @@ export default function ManageOrdersPage() {
                                           <Printer size={17} />
                                           <span>
                                             Labels · black &amp; white
-                                            <em>4 per landscape page · best for printing</em>
+                                            <em>4 per A4 landscape page · best for printing</em>
                                           </span>
                                           <b>{scope.length}</b>
                                         </button>
@@ -15185,7 +15213,7 @@ export default function ManageOrdersPage() {
                                           <Palette size={17} />
                                           <span>
                                             Labels · colour
-                                            <em>3 per page</em>
+                                            <em>4 per A4 landscape page</em>
                                           </span>
                                           <b>{scope.length}</b>
                                         </button>
@@ -15203,6 +15231,36 @@ export default function ManageOrdersPage() {
                                           </span>
                                           <b>{scope.length}</b>
                                         </button>
+                                      </div>
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>Template labels · 4 per A4 page</h4>
+                                      <div className="mo-sheet-list">
+                                        {[
+                                          { kind: "gift", Icon: Gift, title: "Gift labels", em: "Confetti, surprise note & unwrap QR" },
+                                          { kind: "speed", Icon: Truck, title: "Express labels", em: "Priority Speed Post template" },
+                                        ].flatMap(({ kind, Icon, title, em }) => {
+                                          const cnt = labelSetOf(scope, kind).length;
+                                          return [false, true].map((mono) => (
+                                            <button
+                                              key={`${kind}-${mono}`}
+                                              type="button"
+                                              disabled={!cnt}
+                                              onClick={() => {
+                                                downloadLabelSet(scope, kind, mono);
+                                                close();
+                                              }}
+                                            >
+                                              {mono ? <Printer size={17} /> : <Icon size={17} />}
+                                              <span>
+                                                {title} · {mono ? "black & white" : "colour"}
+                                                <em>{em}</em>
+                                              </span>
+                                              <b>{cnt}</b>
+                                            </button>
+                                          ));
+                                        })}
                                       </div>
                                     </section>
 
@@ -18840,28 +18898,57 @@ export default function ManageOrdersPage() {
                                     <section className="mo-sheet-sec">
                                       <h4>Print · {scopeTxt}</h4>
                                       <div className="mo-sheet-list">
-                                        <button
-                                          type="button"
-                                          disabled={!labelScope.length}
-                                          onClick={() => {
-                                            downloadFormsFor(
-                                              labelScope,
-                                              "pdf",
-                                              `address_labels_${n ? "selected_" : ""}${new Date().toISOString().slice(0, 10)}`,
-                                              true,
-                                            );
-                                            close();
-                                          }}
-                                        >
-                                          <StickyNote size={17} />
-                                          <span>
-                                            Address labels
-                                            <em>One merged PDF to print</em>
-                                          </span>
-                                          <b>{labelScope.length}</b>
-                                        </button>
+                                        {[false, true].map((mono) => (
+                                          <button
+                                            key={mono ? "bw" : "color"}
+                                            type="button"
+                                            disabled={!labelScope.length}
+                                            onClick={() => {
+                                              downloadLabelSet(labelScope, "all", mono);
+                                              close();
+                                            }}
+                                          >
+                                            {mono ? <Printer size={17} /> : <Palette size={17} />}
+                                            <span>
+                                              Address labels · {mono ? "black & white" : "colour"}
+                                              <em>4 per A4 landscape page</em>
+                                            </span>
+                                            <b>{labelScope.length}</b>
+                                          </button>
+                                        ))}
                                       </div>
                                     </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>Template labels · 4 per A4 page</h4>
+                                      <div className="mo-sheet-list">
+                                        {[
+                                          { kind: "gift", Icon: Gift, title: "Gift labels", em: "Confetti, surprise note & unwrap QR" },
+                                          { kind: "speed", Icon: Truck, title: "Express labels", em: "Priority Speed Post template" },
+                                        ].flatMap(({ kind, Icon, title, em }) => {
+                                          const cnt = labelSetOf(labelScope, kind).length;
+                                          return [false, true].map((mono) => (
+                                            <button
+                                              key={`${kind}-${mono}`}
+                                              type="button"
+                                              disabled={!cnt}
+                                              onClick={() => {
+                                                downloadLabelSet(labelScope, kind, mono);
+                                                close();
+                                              }}
+                                            >
+                                              {mono ? <Printer size={17} /> : <Icon size={17} />}
+                                              <span>
+                                                {title} · {mono ? "black & white" : "colour"}
+                                                <em>{em}</em>
+                                              </span>
+                                              <b>{cnt}</b>
+                                            </button>
+                                          ));
+                                        })}
+                                      </div>
+                                    </section>
+
 
                                     <section className="mo-sheet-sec">
                                       <h4>Notify customers</h4>

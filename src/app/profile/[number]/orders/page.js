@@ -1,33 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft, Package, ChevronRight, Clock, MessageCircle, AlertCircle } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { books as ALL_BOOKS } from "@/utils/book";
 import SupportSheet from "@/components/profile/SupportSheet";
 import ReviewRewardCard from "@/components/ReviewRewardCard";
 import PwaInstallPromo from "@/components/PwaInstallPromo";
+import { showToast, updateToast, dismissToast } from "@/context/ToastContext";
+import {
+  getCachedOrders,
+  setCachedOrders,
+  canLoad,
+  recordLoad,
+} from "@/utils/profileRate";
 
 const SUPPORT_WHATSAPP = "917710892108";
-
-// name -> cover image (order items come from the sheet, names may vary slightly)
-const normName = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
-const BOOK_IMAGE_BY_NAME = {};
-ALL_BOOKS.forEach((b) => {
-  if (b.image) BOOK_IMAGE_BY_NAME[normName(b.name)] = b.image;
-});
-function getBookImage(name) {
-  const n = normName(name);
-  if (!n) return null;
-  if (BOOK_IMAGE_BY_NAME[n]) return BOOK_IMAGE_BY_NAME[n];
-  const key = Object.keys(BOOK_IMAGE_BY_NAME).find(
-    (k) => k.includes(n) || n.includes(k),
-  );
-  return key ? BOOK_IMAGE_BY_NAME[key] : null;
-}
 
 // Parse "Books List" cell → [{ name, qty, price, total }]
 function parseBooks(str) {
@@ -86,6 +75,59 @@ export default function OrdersListPage() {
   const [loading, setLoading] = useState(true);
   const [showSupport, setShowSupport] = useState(false);
   const [error, setError] = useState("");
+  // Live countdown toast handle for the rate limiter.
+  const cooldownRef = useRef(null);
+
+  // Turn raw API rows into the display order list (pure, no network — also used
+  // when reading from cache so the cached payload stays small/serialisable).
+  const processRows = (all) =>
+    (Array.isArray(all) ? all : [])
+      .filter((o) => !/whatsapp/i.test(o["Payment Type"] || ""))
+      .map((o) => {
+        const rawStatus = String(o["Order Status"] || "");
+        const isUnconfirmed =
+          /unconfirmed|pending/i.test(rawStatus) ||
+          /\(unconfirmed\)/i.test(o["Customer Name"] || "");
+        const trackDetail = String(o["Tracking detail"] || "")
+          .split("||")[0]
+          .trim();
+        return {
+          ...o,
+          _books: parseBooks(o["Books List"]),
+          _date: parseSheetDate(
+            o["Timestamp (D)"] || o["Timestamp"] || o["Timestamp(D)"],
+          ),
+          _status:
+            trackDetail ||
+            (isUnconfirmed ? "Unconfirmed" : rawStatus || "Processing"),
+          _isUnconfirmed: isUnconfirmed && !trackDetail,
+        };
+      })
+      .filter(
+        (o) => o._books.length > 0 || parseFloat(o["Total Amount"] || 0) > 0,
+      )
+      .sort((a, b) => (b._date || 0) - (a._date || 0));
+
+  // Show (and live-update) a single countdown toast while rate-limited.
+  const startCooldownToast = (waitSec) => {
+    if (cooldownRef.current) return; // one countdown at a time
+    let left = Math.max(1, waitSec);
+    const msg = (s) =>
+      `Too many requests — please wait ${s}s. Fresh data loads in ${s}s.`;
+    const id = showToast(msg(left), "warning", { duration: 0 });
+    cooldownRef.current = { id, timer: null };
+    const tick = () => {
+      left -= 1;
+      if (left <= 0) {
+        dismissToast(id);
+        cooldownRef.current = null;
+        return;
+      }
+      updateToast(id, { message: msg(left) });
+      cooldownRef.current.timer = setTimeout(tick, 1000);
+    };
+    cooldownRef.current.timer = setTimeout(tick, 1000);
+  };
 
   useEffect(() => {
     if (number.length !== 10) {
@@ -105,56 +147,50 @@ export default function OrdersListPage() {
       router.replace("/profile");
       return;
     }
+
+    // 1) Fresh cache → render instantly, skip the network entirely.
+    const cached = getCachedOrders(number);
+    if (cached && cached.fresh) {
+      setOrders(processRows(cached.rows));
+      setLoading(false);
+      return;
+    }
+
+    // 2) Rate-limited → fall back to any stale cache + show the countdown.
+    const gate = canLoad(number);
+    if (!gate.allowed) {
+      if (cached) setOrders(processRows(cached.rows));
+      setLoading(false);
+      startCooldownToast(gate.waitSec);
+      return;
+    }
+
+    // 3) Allowed → do the live load (and record it against the limit).
+    recordLoad(number);
     (async () => {
       try {
         const res = await fetch(`/api/orders?phone=${number}`);
         const json = await res.json();
         const all = Array.isArray(json.orders) ? json.orders : [];
-        const real = all
-          .filter((o) => {
-            // Hide raw WhatsApp leads (not yet a real order). Unconfirmed
-            // orders (payment-pending / needs attention) ARE shown now, with a
-            // clear status + a contact-support prompt.
-            const wa = /whatsapp/i.test(o["Payment Type"] || "");
-            return !wa;
-          })
-          .map((o) => {
-            const rawStatus = String(o["Order Status"] || "");
-            const isUnconfirmed =
-              /unconfirmed|pending/i.test(rawStatus) ||
-              /\(unconfirmed\)/i.test(o["Customer Name"] || "");
-            // Live India Post status (when uploaded) overrides the shown status.
-            const trackDetail = String(o["Tracking detail"] || "")
-              .split("||")[0]
-              .trim();
-            return {
-              ...o,
-              _books: parseBooks(o["Books List"]),
-              _date: parseSheetDate(
-                o["Timestamp (D)"] || o["Timestamp"] || o["Timestamp(D)"],
-              ),
-              _status:
-                trackDetail ||
-                (isUnconfirmed ? "Unconfirmed" : rawStatus || "Processing"),
-              _isUnconfirmed: isUnconfirmed && !trackDetail,
-            };
-          })
-          // Keep only real orders — a row must have items or a non-zero total.
-          // (Stray sheet rows that only carry an Order ID are skipped.)
-          .filter(
-            (o) =>
-              o._books.length > 0 ||
-              parseFloat(o["Total Amount"] || 0) > 0,
-          )
-          .sort((a, b) => (b._date || 0) - (a._date || 0));
-        setOrders(real);
+        setCachedOrders(number, all);
+        setOrders(processRows(all));
       } catch (e) {
-        setError("Couldn't load your orders. Please try again.");
+        // On failure, show stale cache if we have it.
+        const fallback = getCachedOrders(number);
+        if (fallback) setOrders(processRows(fallback.rows));
+        else setError("Couldn't load your orders. Please try again.");
       } finally {
         setLoading(false);
       }
     })();
   }, [number]);
+
+  // Clear the countdown timer on unmount.
+  useEffect(() => {
+    return () => {
+      if (cooldownRef.current?.timer) clearTimeout(cooldownRef.current.timer);
+    };
+  }, []);
 
   const contactSupport = () => {
     const msg = `Hi TheBookX, I need help with my orders (${number}).`;
@@ -255,11 +291,7 @@ export default function OrdersListPage() {
                 const oid = String(o["Order ID"] || "");
                 const total = o["Total Amount"] || o.revenue || "";
                 const count = o._books.reduce((s, b) => s + (b.qty || 1), 0);
-                const covers = o._books
-                  .map((b) => getBookImage(b.name))
-                  .filter(Boolean)
-                  .slice(0, 4);
-                const extra = o._books.length - covers.length;
+                const titleCount = o._books.length;
                 const names = o._books.map((b) => b.name).join(", ");
                 return (
                   <Link
@@ -268,26 +300,16 @@ export default function OrdersListPage() {
                     className={`ord-card${o._isUnconfirmed ? " ord-card-unconfirmed" : ""}`}
                   >
                     <div className="ord-card-row">
+                      {/* Covers removed to cut image requests — a lightweight
+                          icon + title count stands in; the book names are shown
+                          in full below. */}
                       <div className="ord-card-covers">
-                        {covers.length > 0 ? (
-                          covers.map((src, ci) => (
-                            <Image
-                              key={ci}
-                              src={src}
-                              alt=""
-                              width={44}
-                              height={58}
-                              className="ord-cover"
-                            />
-                          ))
-                        ) : (
-                          <span className="ord-cover ord-cover-ph">
-                            <Package size={18} />
-                          </span>
-                        )}
-                        {extra > 0 && (
-                          <span className="ord-cover-more">+{extra}</span>
-                        )}
+                        <span className="ord-cover ord-cover-ph">
+                          <Package size={18} />
+                          {titleCount > 0 && (
+                            <span className="ord-cover-ph-n">{titleCount}</span>
+                          )}
+                        </span>
                       </div>
                       <div className="ord-card-main">
                         <span className="ord-card-id">{oid || "Order"}</span>

@@ -25,6 +25,8 @@ const ToastContext = createContext(null);
 // Module-level showToast, set once the Provider mounts so it can be
 // imported and called from anywhere (utils, async handlers, non-React code).
 let _showToast = null;
+let _updateToast = null;
+let _dismissToast = null;
 
 /**
  * Trigger a toast from anywhere in the app.
@@ -45,6 +47,20 @@ export function showToast(message, type = "info", options = {}) {
   if (typeof window !== "undefined") {
     console.warn("showToast called before ToastProvider mounted:", message);
   }
+}
+
+/**
+ * Update fields of an existing toast (e.g. a live countdown message).
+ *   const id = showToast("…", "warning", { duration: 0 });
+ *   updateToast(id, { message: "…" });
+ */
+export function updateToast(id, patch = {}) {
+  if (_updateToast) return _updateToast(id, patch);
+}
+
+/** Dismiss a toast by id from anywhere. */
+export function dismissToast(id) {
+  if (_dismissToast) return _dismissToast(id);
 }
 
 const ICON_BY_TYPE = {
@@ -167,13 +183,23 @@ export function ToastProvider({ children }) {
     [dismissToast],
   );
 
+  const updateToastById = useCallback((id, patch = {}) => {
+    setToasts((curr) =>
+      curr.map((t) => (t.id === id ? { ...t, ...patch } : t)),
+    );
+  }, []);
+
   // Expose the function-call API at module level once mounted
   useEffect(() => {
     _showToast = addToast;
+    _updateToast = updateToastById;
+    _dismissToast = dismissToast;
     return () => {
       if (_showToast === addToast) _showToast = null;
+      if (_updateToast === updateToastById) _updateToast = null;
+      if (_dismissToast === dismissToast) _dismissToast = null;
     };
-  }, [addToast]);
+  }, [addToast, updateToastById, dismissToast]);
 
   // Clean up any pending timers on unmount
   useEffect(() => {

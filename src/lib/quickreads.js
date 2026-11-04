@@ -353,6 +353,56 @@ _Approve this order in the QuickReads sheet to grant access._
   }
 }
 
+// One Telegram message for a whole QuickReads checkout, with "✅ Passed /
+// ❌ Failed" buttons (same as book orders). The backend reads the QR-REF line
+// from the message when a button is tapped, then records a verified or failed
+// row for these books in the QuickReads sheet — so keep that line's format.
+export function notifyQuickReadCheckoutTelegram({ name, mobile, items = [], plan, amount }) {
+  const isSub = plan === "monthly" || plan === "yearly";
+  // Telegram Markdown breaks (and drops the message) on stray * _ [ ] `.
+  const clean = (v) => String(v || "").replace(/[*_[\]`]/g, "");
+  name = clean(name);
+  const ids = isSub
+    ? [plan === "yearly" ? "SUB-YEARLY" : "SUB-MONTHLY"]
+    : items.map((b) => b.id);
+  const what = isSub
+    ? `Unlimited · ${plan === "yearly" ? "Yearly" : "Monthly"}`
+    : items.map((b, i) => `${i + 1}. ${clean(b.name)}`).join("\n");
+  const msg = `
+🧠 *QuickReads order · TheBookX*
+
+👤 Name: ${name || "-"}
+📞 ${mobile || "-"}
+📖 ${isSub ? what : `*Books (${items.length})*\n${what}`}
+💰 *Total: ₹${amount}* · UPI (QR shown)
+
+Tap Passed once the payment is in, or Failed if it isn't.
+QR-REF: ${mobile} · ${ids.join(",")} · ${amount}
+  `.trim();
+  const payload = JSON.stringify({
+    orderDetails: msg,
+    customerName: name,
+    customerPhone: mobile,
+    totalAmount: amount,
+    paymentMethod: "QuickReads-UPI",
+    actionButtons: "qr_verify",
+  });
+  try {
+    if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+      const blob = new Blob([payload], { type: "application/json" });
+      if (navigator.sendBeacon(QR_TELEGRAM_URL, blob)) return;
+    }
+    fetch(QR_TELEGRAM_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: payload,
+    }).catch(() => {});
+  } catch (e) {
+    console.error("QuickReads telegram failed:", e);
+  }
+}
+
 // Minimal CSV parser (handles quoted fields, escaped quotes, CRLF).
 function parseCsv(text) {
   const rows = [];
@@ -635,8 +685,9 @@ export async function submitSubscriptionOrder({ name, mobile, plan }) {
 // Check the sheet for a matching order:
 //   "approved" — payment verified (or approval column approved)
 //   "pending"  — order found but still unverified
+//   "failed"   — marked failed after `since` (Telegram ❌ Failed)
 //   "none"     — no matching order (or read failed)
-export async function checkApproval(phone, bookId) {
+export async function checkApproval(phone, bookId, since = 0) {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length < 10 || !bookId) return "none";
   try {
@@ -650,7 +701,9 @@ export async function checkApproval(phone, bookId) {
     const bIdx = idxOf(QR_BOOKID_HEADER);
     const pIdx = idxOf(QR_PAYMENT_HEADER);
     const aIdx = idxOf(QR_APPROVAL_HEADER);
+    const tIdx = idxOf("Timestamp");
     let status = "none";
+    let failed = false;
     for (let r = 1; r < rows.length; r++) {
       const cells = rows[r];
       const rowPhone = String(cells[mIdx] ?? "").replace(/\D/g, "").slice(-10);
@@ -660,9 +713,15 @@ export async function checkApproval(phone, bookId) {
       const appr = String(cells[aIdx] ?? "").trim().toLowerCase();
       const apprOk = QR_APPROVED_VALUES.includes(appr);
       if (payOk || apprOk) return "approved";
+      // A failed row (Telegram ❌ Failed) only counts for this checkout attempt:
+      // rows older than `since` (2 min grace for clock drift) are ignored.
+      if (since && /fail|reject/.test(appr + " " + String(cells[pIdx] ?? "").toLowerCase())) {
+        const t = parseSheetDate(cells[tIdx]);
+        if (t && t.getTime() >= since - 120000) failed = true;
+      }
       status = "pending";
     }
-    return status;
+    return failed ? "failed" : status;
   } catch (e) {
     console.error("QuickReads approval check failed:", e);
     return "error";

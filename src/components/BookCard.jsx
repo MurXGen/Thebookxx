@@ -61,6 +61,11 @@ function BookCard({ book }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [hasTrackedView, setHasTrackedView] = useState(false);
+  // Viewport gating — the cover image is only requested once the card scrolls
+  // near the viewport. Cards far down the page (home sections, long grids) never
+  // hit the image CDN until the user actually scrolls to them, which cuts cover
+  // requests dramatically. The designed text fallback costs no network.
+  const [inView, setInView] = useState(false);
 
   // Deterministic black/white cover derived from the title, so a book without
   // an image file always gets the same designed cover.
@@ -111,6 +116,29 @@ function BookCard({ book }) {
   }, [book, isOneRupee, cartTotal, hasTrackedView]);
 
   const coverRef = useRef(null);
+
+  // Request the cover only when the card nears the viewport. 300px rootMargin
+  // pre-loads just before it scrolls in so there's no visible pop-in, while
+  // off-screen cards stay unloaded.
+  useEffect(() => {
+    if (inView) return;
+    const el = coverRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setInView(true); // no observer support → load normally
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "300px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [inView]);
 
   const handleAddToCart = () => {
     // Allotment rule, only one ₹1 book per cart
@@ -224,11 +252,26 @@ function BookCard({ book }) {
 
         {/* Image */}
         <div className="book-image-wrapper" ref={coverRef}>
-          {book.image && !imgError && !imageLoaded && (
-            <div className="image-skeleton" />
+          {/* Pre-viewport sized placeholder — reserves the cover's box (so the
+              card keeps its height) and stays clickable, without loading any
+              image until the card nears the viewport. */}
+          {book.image && !imgError && !inView && (
+            <Link
+              href={bookUrl}
+              onClick={handleBookClick}
+              aria-label={`View details of ${book.name}`}
+              className="image-skeleton-link"
+            >
+              <span className="image-skeleton" />
+            </Link>
           )}
 
-          {book.image && !imgError ? (
+          {/* Loading shimmer overlay while the real cover fetches. */}
+          {book.image && !imgError && inView && !imageLoaded && (
+            <span className="image-skeleton" />
+          )}
+
+          {book.image && !imgError && inView ? (
             <Link
               href={bookUrl}
               onClick={handleBookClick}
@@ -247,7 +290,7 @@ function BookCard({ book }) {
                 loading="lazy"
               />
             </Link>
-          ) : (
+          ) : book.image && !imgError ? null : (
             // Designed fallback "cover" when no image file exists — title +
             // author styled to read like a real book cover.
             <Link

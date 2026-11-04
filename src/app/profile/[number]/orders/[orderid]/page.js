@@ -3,7 +3,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -643,7 +642,9 @@ function RouteScene({
   etaText = "",
 }) {
   const moving = stage === "transit";
-  const covers = (bookImgs || []).filter(Boolean).slice(0, 3);
+  // Covers intentionally dropped from the travel scene to cut cover-image
+  // requests — the vehicles ride with a plain parcel decal instead.
+  const covers = [];
   // When to show each fixed endpoint marker.
   const showHub = stage === "processing" || stage === "returned";
   const showDest =
@@ -3451,21 +3452,16 @@ export default function OrderDetailPage() {
 
         {!itemsOpen && (
           <div className="od-thumbs-row">
-            {books.map((b, i) => {
-              const bk = findBook(b.name);
-              return (
-                <span className="od-thumb" key={i}>
-                  {bk?.image ? (
-                    <Image src={bk.image} alt={b.name} width={46} height={62} />
-                  ) : (
-                    <span className="od-thumb-ph">
-                      <Package size={16} />
-                    </span>
-                  )}
-                  {b.qty > 1 && <span className="od-thumb-qty">×{b.qty}</span>}
+            {books.map((b, i) => (
+              // Covers dropped to cut image requests — a book icon stands in;
+              // full titles are listed below and in the expanded view.
+              <span className="od-thumb" key={i}>
+                <span className="od-thumb-ph">
+                  <Package size={16} />
                 </span>
-              );
-            })}
+                {b.qty > 1 && <span className="od-thumb-qty">×{b.qty}</span>}
+              </span>
+            ))}
           </div>
         )}
         {!itemsOpen && books[0]?.name && (
@@ -3479,22 +3475,12 @@ export default function OrderDetailPage() {
           {itemsOpen && (
             <div className="od-items-list">
               {books.map((b, i) => {
-                const bk = findBook(b.name);
                 return (
                   <div className="od-line" key={i}>
                     <span className="od-line-cover">
-                      {bk?.image ? (
-                        <Image
-                          src={bk.image}
-                          alt={b.name}
-                          width={44}
-                          height={60}
-                        />
-                      ) : (
-                        <span className="od-line-ph">
-                          <Package size={16} />
-                        </span>
-                      )}
+                      <span className="od-line-ph">
+                        <Package size={16} />
+                      </span>
                     </span>
                     <span className="od-line-info">
                       <span className="od-line-name">{b.name}</span>
@@ -4367,18 +4353,9 @@ export default function OrderDetailPage() {
                     {/* What they're rating — the order's books. */}
                     <div className="od-rate-order">
                       <span className="od-rate-covers">
-                        {books.slice(0, 3).map((b, i) => {
-                          const bk = findBook(b.name);
-                          return bk?.image ? (
-                            <Image
-                              key={i}
-                              src={bk.image}
-                              alt=""
-                              width={34}
-                              height={46}
-                            />
-                          ) : null;
-                        })}
+                        <span className="od-rate-cover-ph">
+                          <Package size={16} />
+                        </span>
                       </span>
                       <span className="od-rate-order-txt">
                         <strong>How was your order?</strong>

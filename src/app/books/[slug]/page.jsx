@@ -52,9 +52,21 @@ export async function generateMetadata({ params }) {
   // Kept concise (~60 chars incl. the "| TheBookX" the root template appends)
   // so Google displays it verbatim instead of rewriting a long promo title,
   // while still carrying the "from ₹1" price hook.
+  // Series tagging — when a book belongs to a named series (e.g. the Diary of a
+  // Wimpy Kid volumes) whose own title doesn't spell it out, we append the
+  // series name so searches like "diary of a wimpy kid fight or flight" surface
+  // the volume. `seoName` carries the series into every title/description/OG tag.
+  const seriesInName =
+    book.series &&
+    book.name.toLowerCase().includes(book.series.toLowerCase());
+  const seriesTag = book.series && !seriesInName ? book.series : "";
+  const seoName = seriesTag ? `${book.name} (${seriesTag})` : book.name;
+
+  // Author is embedded in the title for every book so the author's name ranks
+  // alongside the title across search surfaces.
   const title = book.author
-    ? `${book.name} by ${book.author} - Books from ₹1`
-    : `${book.name} - Books from ₹1`;
+    ? `${seoName} by ${book.author} - Books from ₹1`
+    : `${seoName} - Books from ₹1`;
 
   // Human-readable genre/category labels (drive audience-intent keywords).
   const cats = (book.catalogue || []).map((c) =>
@@ -66,7 +78,7 @@ export async function generateMetadata({ params }) {
   const isHindi = /hindi/i.test(book.language || "");
   const langLabel = isHindi ? "Hindi" : book.language || "English";
 
-  const description = `Buy ${book.name}${book.author ? ` by ${book.author}` : ""} (${langLabel}${cats[0] ? `, ${cats[0]}` : ""}) online at the lowest price on TheBookX. Free delivery, Cash on Delivery & easy 7-day returns across India. ${book.description.substring(0, 70)}`;
+  const description = `Buy ${seoName}${book.author ? ` by ${book.author}` : ""} (${langLabel}${cats[0] ? `, ${cats[0]}` : ""}) online at the lowest price on TheBookX. Free delivery, Cash on Delivery & easy 7-day returns across India. ${book.description.substring(0, 70)}`;
 
   // Aggressive, audience-targeted keyword set: exact title, author-fan,
   // price-intent, genre/category, language, and India buy-intent terms.
@@ -74,12 +86,19 @@ export async function generateMetadata({ params }) {
     book.name,
     book.author,
     book.author && `${book.author} books`,
+    book.author && `${book.name} by ${book.author}`,
     `${book.name} book`,
     `${book.name} price`,
     `${book.name} lowest price`,
     `buy ${book.name} online`,
     `${book.name} cash on delivery`,
     `${book.name} online India`,
+    // Series keywords so every volume ranks for the series name too.
+    seriesTag && seriesTag,
+    seriesTag && `${seriesTag} ${book.name}`,
+    seriesTag && `${book.name} ${seriesTag}`,
+    seriesTag && `${seriesTag} books`,
+    seriesTag && `buy ${seriesTag} online India`,
     isHindi && `${book.name} Hindi book`,
     isHindi && `Hindi books online`,
     ...cats,

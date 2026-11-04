@@ -1198,6 +1198,21 @@ button:hover {
   animation: shimmer 1.6s linear infinite;
   filter: blur(2px);
 }
+/* Sized placeholder shown before a card enters the viewport — reserves the
+   cover's 2:3 box so the card keeps its height without loading any image. */
+.image-skeleton-link {
+  display: inline-flex;
+  position: relative;
+  width: 160px;
+  max-width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  line-height: 0;
+}
+.image-skeleton-link .image-skeleton {
+  border-radius: 8px;
+}
 
 /* Badge */
 
@@ -10850,7 +10865,7 @@ textarea.sec-mid-btn,
 .toast {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 11px;
   width: auto;
   min-width: 288px;
@@ -31117,6 +31132,102 @@ img[data-loaded="true"] {
 .mo2-covers::-webkit-scrollbar {
   display: none;
 }
+
+/* Book-name pick chips (replace cover thumbnails in order cards). Tap to mark
+   a title picked/packed — same behaviour as the old cover tiles. */
+.mo2-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mo2-namechip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 7px 11px;
+  border-radius: 10px;
+  border: 1px solid var(--dark-20, #e3e3e6);
+  background: #fff;
+  color: var(--foreground, #111);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.mo2-namechip:hover {
+  border-color: var(--dark-40, #c7c7cc);
+}
+.mo2-namechip.picked {
+  background: rgba(22, 163, 74, 0.12);
+  border-color: #16a34a;
+  color: #15803d;
+}
+.mo2-namechip-txt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+.mo2-namechip-qty {
+  font-weight: 800;
+  color: var(--dark-50, #6b7280);
+  flex: 0 0 auto;
+}
+.mo2-namechip.picked .mo2-namechip-qty {
+  color: #15803d;
+}
+.mo2-namechip-tick {
+  flex: 0 0 auto;
+  color: #16a34a;
+}
+.mo-dark .mo2-namechip {
+  background: #20242b;
+  border-color: #2e333c;
+  color: #e6e8ec;
+}
+.mo-dark .mo2-namechip.picked {
+  background: rgba(22, 163, 74, 0.22);
+  border-color: #22c55e;
+  color: #86efac;
+}
+
+/* Compact-card book names (replace the small cover thumbnails). */
+.mo-compact-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+.mo-compact-nametag {
+  max-width: 100%;
+  padding: 3px 8px;
+  border-radius: 7px;
+  background: var(--surface-2, #f4f4f5);
+  color: var(--dark-70, #374151);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mo-compact-nametag.mo-compact-more {
+  background: #111827;
+  color: #fff;
+}
+.mo-dark .mo-compact-nametag {
+  background: #20242b;
+  color: #c4c8cf;
+}
+
+/* Empty-state hint for the create-product cover search (no images until typed). */
+.mo-cp-imgs-hint {
+  font-size: 12px;
+  color: var(--dark-50, #6b7280);
+  padding: 10px 2px;
+}
 .mo2-cover-item {
   flex: 0 0 auto;
   width: 78px;
@@ -40729,6 +40840,27 @@ img[data-loaded="true"] {
   height: 100%;
   object-fit: cover;
 }
+/* Progressive "load more" sentinel in the search results. */
+.sx-more-sentinel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 8px 8px;
+  width: 100%;
+  font-size: 12px;
+  color: var(--dark-50, #6b7280);
+}
+.sx-more-spin {
+  animation: shimmerSpin 0.9s linear infinite;
+  color: var(--tertiary, #fb8500);
+}
+@keyframes shimmerSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .search-qr-badge {
   position: absolute;
   top: 8px;
@@ -51433,11 +51565,29 @@ img[data-loaded="true"] {
   margin-left: -20px;
 }
 .ord-cover-ph {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--gray-500, #9ca3af);
   background: var(--surface-2, #f4f4f5);
+}
+.ord-cover-ph-n {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #fff;
 }
 .ord-cover-more {
   align-self: flex-end;

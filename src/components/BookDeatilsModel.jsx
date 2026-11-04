@@ -398,6 +398,14 @@ export default function BookDetailsModal({ book }) {
   const bookUrl = `/books/${bookSlug}`;
   const canonicalUrl = `https://thebookx.in${bookUrl}`;
 
+  // Series tagging for structured data — carry the series name (e.g. Diary of a
+  // Wimpy Kid) into the schema so the volume ranks for the series too.
+  const seriesInName =
+    book.series &&
+    book.name.toLowerCase().includes(book.series.toLowerCase());
+  const seriesTag = book.series && !seriesInName ? book.series : "";
+  const seoName = seriesTag ? `${book.name} (${seriesTag})` : book.name;
+
   const isOneRupee = book.discountedPrice === 1;
   const savings = book.originalPrice - book.discountedPrice;
   const savingsPercentage = Math.round((savings / book.originalPrice) * 100);
@@ -626,8 +634,14 @@ export default function BookDetailsModal({ book }) {
             "@type": ["Product", "Book"],
             "@id": canonicalUrl,
             url: canonicalUrl,
-            name: book.name,
-            description: `${book.description} Shop now at TheBookX, India's most trusted online bookstore.`,
+            name: seoName,
+            ...(seriesTag && {
+              alternateName: book.name,
+              isPartOf: { "@type": "BookSeries", name: seriesTag },
+            }),
+            description: `${book.description}${
+              seriesTag ? ` Part of the ${seriesTag} series.` : ""
+            } Shop now at TheBookX, India's most trusted online bookstore.`,
             image: book.image,
             brand: { "@type": "Brand", name: "TheBookX" },
             sku: book.id,

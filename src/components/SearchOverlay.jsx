@@ -35,6 +35,10 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 
+// How many result cards (and therefore covers) to reveal per batch. The first
+// batch loads immediately; each scroll to the sentinel reveals another.
+const SEARCH_BATCH = 6;
+
 const normalize = (str = "") => str.toLowerCase().trim();
 
 // "Loose" form — lowercase with every non-alphanumeric char removed. Lets
@@ -152,6 +156,11 @@ export default function SearchOverlay({
   const [isNarrow, setIsNarrow] = useState(false);
   // Results are split into Books / QuickReads tabs.
   const [resultTab, setResultTab] = useState("books");
+  // Progressive reveal — render only the first batch of result cards (so only
+  // their covers load); scrolling to the sentinel reveals the next batch.
+  const [visibleN, setVisibleN] = useState(SEARCH_BATCH);
+  const moreSentinelRef = useRef(null);
+  const searchBodyRef = useRef(null);
   const [qrTipOpen, setQrTipOpen] = useState(false);
   const qrTipRef = useRef(null);
   useEffect(() => {
@@ -371,6 +380,14 @@ export default function SearchOverlay({
         const catalogueMatch =
           looseQ && book.catalogue?.some((cat) => loose(cat).includes(looseQ));
 
+        // 3️⃣.5 Series match — so searching the series name (e.g. "wimpy kid")
+        // surfaces every volume whose own title doesn't spell the series out.
+        const seriesWords = wordsOf(book.series);
+        const seriesMatch =
+          !!book.series &&
+          (startsAtWordBoundary(seriesWords) ||
+            everyTokenIsWordPrefix(seriesWords));
+
         // 4⃣ Price match
         const priceRule = parsePriceQuery(q);
         let priceMatch = false;
@@ -387,7 +404,13 @@ export default function SearchOverlay({
           }
         }
 
-        return nameMatch || authorMatch || catalogueMatch || priceMatch;
+        return (
+          nameMatch ||
+          authorMatch ||
+          catalogueMatch ||
+          seriesMatch ||
+          priceMatch
+        );
       });
   const filteredBooks = matchedBooks.filter(
     (b) =>
@@ -440,6 +463,32 @@ export default function SearchOverlay({
     resultTab === "qr"
       ? qrBooks.map((book) => ({ type: "qr", book }))
       : sortedBooks.map((book) => ({ type: "book", book }));
+
+  // Whenever the result set changes (new query, tab, sort or filter), collapse
+  // back to the first batch so we never load every cover at once.
+  useEffect(() => {
+    setVisibleN(SEARCH_BATCH);
+  }, [debouncedQuery, resultTab, sortType, priceMax, genre]);
+
+  // Reveal the next batch when the sentinel scrolls into view. The results
+  // scroll INSIDE `.search-body`, so that element must be the observer root —
+  // otherwise (viewport root) the sentinel never registers and the spinner
+  // spins forever.
+  useEffect(() => {
+    const el = moreSentinelRef.current;
+    const root = searchBodyRef.current;
+    if (!el || !root || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisibleN((n) => (n < gridItems.length ? n + SEARCH_BATCH : n));
+        }
+      },
+      { root, rootMargin: "200px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [visibleN, gridItems.length, showResults, resultTab]);
 
   // Encode search term for WhatsApp
   const whatsappMessage = `Hey hi! I'm looking for a book related to "${query}" but couldn't find it on TheBookX. Could you please help me find it?`;
@@ -701,10 +750,22 @@ export default function SearchOverlay({
 
                   {/* Body, animated between placeholder / loader / empty / results */}
                   <div
+                    ref={searchBodyRef}
                     className="search-body"
                     style={{ paddingBottom: 24 }}
                     // Scrolling or tapping the results tucks the filter panel away.
-                    onScroll={() => filterOpen && setFilterOpen(false)}
+                    onScroll={(e) => {
+                      if (filterOpen) setFilterOpen(false);
+                      // Fallback reveal: when scrolled near the bottom, show more.
+                      const el = e.currentTarget;
+                      if (
+                        el.scrollHeight - el.scrollTop - el.clientHeight < 260
+                      ) {
+                        setVisibleN((n) =>
+                          n < gridItems.length ? n + SEARCH_BATCH : n,
+                        );
+                      }
+                    }}
                     onPointerDown={() => filterOpen && setFilterOpen(false)}
                   >
                     <AnimatePresence mode="wait">
@@ -1154,15 +1215,19 @@ export default function SearchOverlay({
                               Books tab.
                             </p>
                           )}
+                          {/* Cover cards, but revealed in small batches — only
+                              the first few load their images; scrolling to the
+                              sentinel reveals (and loads) more. Keeps cover
+                              requests proportional to what's actually viewed. */}
                           <div className="book-grid">
-                            {gridItems.map((item, idx) => (
+                            {gridItems.slice(0, visibleN).map((item, idx) => (
                               <motion.div
                                 key={`${item.type}-${item.book.id}`}
                                 initial={{ opacity: 0, y: 14 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{
                                   duration: 0.28,
-                                  delay: Math.min(idx * 0.03, 0.3),
+                                  delay: Math.min((idx % SEARCH_BATCH) * 0.03, 0.3),
                                   ease: "easeOut",
                                 }}
                               >
@@ -1185,6 +1250,7 @@ export default function SearchOverlay({
                                           src={item.book.image}
                                           alt={item.book.name}
                                           className="book-image loaded"
+                                          loading="lazy"
                                         />
                                       </Link>
                                       <span className="search-qr-badge">
@@ -1265,6 +1331,17 @@ export default function SearchOverlay({
                               </motion.div>
                             ))}
                           </div>
+                          {/* Reveal-more sentinel — loads the next batch as it
+                              scrolls into view. */}
+                          {visibleN < gridItems.length && (
+                            <div
+                              ref={moreSentinelRef}
+                              className="sx-more-sentinel"
+                            >
+                              <Loader2 size={18} className="sx-more-spin" />
+                              <span>Loading more…</span>
+                            </div>
+                          )}
                         </motion.div>
                       )}
                     </AnimatePresence>

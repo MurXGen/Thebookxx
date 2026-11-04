@@ -561,6 +561,8 @@ export const bookImages = {
   "happy-place": `${BOOK_IMAGE_BASE_PATH}/happy-place.png`,
   "funny-story": `${BOOK_IMAGE_BASE_PATH}/funny-story.png`,
   "fake-skating": `${BOOK_IMAGE_BASE_PATH}/fake-skating.png`,
+  "the-dinner-party": `${BOOK_IMAGE_BASE_PATH}/the-dinner-party.png`,
+  "u-n-me-its-complicated": `${BOOK_IMAGE_BASE_PATH}/u-n-me-its-complicated.png`,
   "not-in-love": `${BOOK_IMAGE_BASE_PATH}/not-in-love.png`,
   bride: `${BOOK_IMAGE_BASE_PATH}/bride.png`,
   "check-and-mate": `${BOOK_IMAGE_BASE_PATH}/check-and-mate.png`,
@@ -735,4 +737,6 @@ export const bookImages = {
   "happy-place": `${BOOK_IMAGE_BASE_PATH}/happy-place.jpeg`,
   "funny-story": `${BOOK_IMAGE_BASE_PATH}/funny-story.jpeg`,
   "fake-skating": `${BOOK_IMAGE_BASE_PATH}/fake-skating.jpeg`,
+  "the-dinner-party": `${BOOK_IMAGE_BASE_PATH}/the-dinner-party.jpeg`,
+  "u-n-me-its-complicated": `${BOOK_IMAGE_BASE_PATH}/u-n-me-its-complicated.jpeg`,
 };

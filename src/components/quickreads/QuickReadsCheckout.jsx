@@ -24,7 +24,7 @@ import {
 } from "@/data/quickreadsMeta";
 import {
   submitQuickReadOrder,
-  notifyQuickReadTelegram,
+  notifyQuickReadCheckoutTelegram,
   setSavedPhone,
   checkApproval,
   grantBookAccess,
@@ -79,6 +79,7 @@ export default function QuickReadsCheckout({
   const [countdown, setCountdown] = useState(30);
   const [upiCopied, setUpiCopied] = useState(false);
   const checkingRef = useRef(false);
+  const orderedAt = useRef(0); // when this attempt's order was written
   const timers = useRef([]);
   useEffect(() => setMounted(true), []);
 
@@ -120,17 +121,17 @@ export default function QuickReadsCheckout({
   // Write the order to the sheet as "Paid (unverified)".
   const writeOrder = async () => {
     setSavedPhone(phoneDigits);
+    orderedAt.current = Date.now();
+    // One Telegram message for the whole order, with Passed / Failed buttons.
+    notifyQuickReadCheckoutTelegram({
+      name: name.trim(),
+      mobile: phoneDigits,
+      items,
+      plan,
+      amount,
+    });
     if (isSub) {
       await submitSubscriptionOrder({ name: name.trim(), mobile: phoneDigits, plan });
-      notifyQuickReadTelegram({
-        name: name.trim(),
-        mobile: phoneDigits,
-        bookId: plan === "yearly" ? "SUB-YEARLY" : "SUB-MONTHLY",
-        bookName: planLabel,
-        amount,
-        paymentMethod: "UPI Payment",
-        paymentStatus: "Paid (unverified)",
-      });
       return;
     }
     for (const book of items) {
@@ -146,7 +147,6 @@ export default function QuickReadsCheckout({
       };
       // eslint-disable-next-line no-await-in-loop
       await submitQuickReadOrder(order);
-      notifyQuickReadTelegram(order);
     }
   };
 
@@ -161,11 +161,18 @@ export default function QuickReadsCheckout({
           finishPaid({ subscription: sub });
           return true;
         }
+        const subId = plan === "yearly" ? "SUB-YEARLY" : "SUB-MONTHLY";
+        if ((await checkApproval(phoneDigits, subId, orderedAt.current)) === "failed")
+          markFailed();
         return false;
       }
       const results = await Promise.all(
-        items.map((b) => checkApproval(phoneDigits, b.id)),
+        items.map((b) => checkApproval(phoneDigits, b.id, orderedAt.current)),
       );
+      if (results.some((r) => r === "failed")) {
+        markFailed();
+        return false;
+      }
       if (results.length > 0 && results.every((r) => r === "approved")) {
         items.forEach((b) => grantBookAccess(b.id, phoneDigits));
         finishPaid({});
@@ -179,6 +186,12 @@ export default function QuickReadsCheckout({
     }
   };
 
+  // Telegram ❌ Failed → the same "Payment failed" screen as the book checkout.
+  const markFailed = () => {
+    clearTimers();
+    setUpiPhase("failed");
+  };
+
   const finishPaid = (extra) => {
     clearTimers();
     setUpiPhase("success");
@@ -188,7 +201,8 @@ export default function QuickReadsCheckout({
 
   // While the UPI screen is open and the order is written, poll every 3s.
   useEffect(() => {
-    if (step !== "upi" || !confirmed || upiPhase === "success") return;
+    if (step !== "upi" || !confirmed || upiPhase === "success" || upiPhase === "failed")
+      return;
     const iv = setInterval(runCheck, 3000);
     return () => clearInterval(iv);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,14 +228,14 @@ export default function QuickReadsCheckout({
 
   // Pay → write the order, open the UPI screen (QR "generates" for 2s, then a
   // 30s wait before Verify / WhatsApp appear — same as the book checkout).
-  const beginPayment = async () => {
+  const beginPayment = async (retry = false) => {
     if (busy) return;
     setBusy(true);
     setQrUnlocked(false);
     setStep("upi");
     setUpiPhase("await");
     try {
-      if (!confirmed) {
+      if (!confirmed || retry) {
         await writeOrder();
         setConfirmed(true);
       }
@@ -538,7 +552,7 @@ export default function QuickReadsCheckout({
                   type="button"
                   className="pri-big-btn pay-confirm-btn"
                   disabled={busy}
-                  onClick={beginPayment}
+                  onClick={() => beginPayment()}
                 >
                   <span className="flex flex-row items-center justify-center gap-6">
                     {busy ? "Please wait…" : `Pay ₹${amount}`}
@@ -581,7 +595,7 @@ export default function QuickReadsCheckout({
               onCopyUpi={copyUpi}
               onDownloadQR={downloadQr}
               onCheckStatus={runCheck}
-              onTryAgain={beginPayment}
+              onTryAgain={() => beginPayment(true)} // fresh order + message
               onWhatsAppFallback={onWhatsApp}
               onClose={() => {
                 clearTimers();

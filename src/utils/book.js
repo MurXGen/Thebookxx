@@ -2010,6 +2010,7 @@ export const books = [
     description:
       "Enjoy the complete collection of hilarious middle-grade stories and comics from TheBookX.in. Jeff Kinney's beloved series has entertained readers of all ages. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "2100-2200",
     language: "English",
     size: "Paperback",
@@ -4491,6 +4492,7 @@ export const books = [
     description:
       "Laugh out loud with Jeff Kinney's global phenomenon 'Diary of a Wimpy Kid' at TheBookX.in. This beloved children's fiction follows Greg Heffley's hilarious middle school struggles through words and cartoons, perfect for reluctant readers. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4507,6 +4509,7 @@ export const books = [
     description:
       "Experience the chaos of brotherly rivalry with Jeff Kinney's 'Rodrick Rules' at TheBookX.in. Greg Heffley's evil older brother Rodrick knows Greg's deepest secret, and he's not afraid to use it. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination for children's books, starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "216",
     language: "English",
     size: "Paperback",
@@ -4523,6 +4526,7 @@ export const books = [
     description:
       "Join Greg Heffley's fight against his dad's boot camp plans in Jeff Kinney's 'The Last Straw' from TheBookX.in. This hilarious children's fiction follows Greg's desperate attempts to prove he's tough enough, with laugh-out-loud results. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4539,6 +4543,7 @@ export const books = [
     description:
       "Survive the worst summer ever with Jeff Kinney's 'Dog Days' at TheBookX.in. Greg Heffley's vacation plans go hilariously wrong in this bestselling children's fiction about family trips, swimming pools, and soggy dogs. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4555,6 +4560,7 @@ export const books = [
     description:
       "Navigate the awkwardness of growing up with Jeff Kinney's 'The Ugly Truth' from TheBookX.in. Greg Heffley faces boy-girl parties, changing friendships, and the terrifying world of adolescence, with his signature hilarious honesty. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4571,6 +4577,7 @@ export const books = [
     description:
       "Get snowed in with Greg Heffley in Jeff Kinney's 'Cabin Fever' at TheBookX.in. A holiday blizzard traps Greg indoors while he's also trying to avoid trouble for a mysterious crime, hilarious chaos ensues. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4587,6 +4594,7 @@ export const books = [
     description:
       "Survive the school dance disaster with Jeff Kinney's 'The Third Wheel' from TheBookX.in. Greg Heffley needs a date for the Valentine's Day dance, but love is complicated, and his plans go spectacularly wrong. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4603,6 +4611,7 @@ export const books = [
     description:
       "Flip a coin for Greg's fate in Jeff Kinney's 'Hard Luck' at TheBookX.in. Greg Heffley's friendship with Rowley is on the rocks, and he'll try anything, including consulting a Magic 8-Ball, to fix his luck. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4619,6 +4628,7 @@ export const books = [
     description:
       "Buckle up for a disastrous family road trip with Jeff Kinney's 'The Long Haul' from TheBookX.in. Greg Heffley's vacation plans turn into a hilarious nightmare of seagulls, pigs, and bathroom emergencies. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4635,6 +4645,7 @@ export const books = [
     description:
       "Go back to basics with Jeff Kinney's 'Old School' at TheBookX.in. Greg Heffley's town tries to live without electronics, but Greg discovers that 'old school' has its own set of terrors. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order today.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4651,6 +4662,7 @@ export const books = [
     description:
       "Get creative with Jeff Kinney's 'Double Down' from TheBookX.in. Greg Heffley decides to make a movie, but his artistic vision collides hilariously with reality, family, and school. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4667,6 +4679,7 @@ export const books = [
     description:
       "Escape to a tropical disaster with Jeff Kinney's 'The Getaway' at TheBookX.in. Greg Heffley's family vacation to a luxury resort turns into a nightmare of sunburns, creepy critters, and holiday chaos. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4683,6 +4696,7 @@ export const books = [
     description:
       "Survive a neighborhood snow war with Jeff Kinney's 'The Meltdown' from TheBookX.in. Greg Heffley and Rowley are caught in an epic snowball fight between rival groups, and the stakes have never been sillier. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4699,6 +4713,7 @@ export const books = [
     description:
       "Watch the Heffley house fall apart with Jeff Kinney's 'Wrecking Ball' at TheBookX.in. When Greg's family inherits some money, home renovations turn into a demolition disaster of epic proportions. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4715,6 +4730,7 @@ export const books = [
     description:
       "Dive into camping chaos with Jeff Kinney's 'The Deep End' from TheBookX.in. Greg Heffley's family buys an RV for a cross-country trip, but the campground is a muddy, mosquito-infested nightmare. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4731,6 +4747,7 @@ export const books = [
     description:
       "Hit the basketball court with Jeff Kinney's 'Big Shot' at TheBookX.in. Greg Heffley joins a struggling basketball team, proving that talent is optional when you have desperate determination and hilarious fails. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4747,6 +4764,7 @@ export const books = [
     description:
       "Rock out with Greg's brother Rodrick's band in Jeff Kinney's 'Diper Överlöde' from TheBookX.in. Greg gets dragged into the chaotic world of heavy metal, complete with loud music, bad decisions, and exploding drums. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4763,6 +4781,7 @@ export const books = [
     description:
       "Fight to save Greg's school in Jeff Kinney's 'No Brainer' at TheBookX.in. When funding is cut, Greg Heffley must come up with brilliant ideas to prevent his middle school from shutting down, no pressure. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4779,6 +4798,7 @@ export const books = [
     description:
       "Step into the latest Wimpy Kid adventure with Jeff Kinney's 'Hot Mess' from TheBookX.in. Greg Heffley faces a new set of hilarious disasters that prove middle school is always a chaotic, embarrassing, unforgettable ride. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4795,6 +4815,7 @@ export const books = [
     description:
       "Crash the worst party ever with Jeff Kinney's 'Partypooper' at TheBookX.in. Greg Heffley's social life implodes when he accidentally becomes the kid who ruins everything, hilarious consequences guaranteed. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
@@ -4811,10 +4832,11 @@ export const books = [
     description:
       "Face Greg's toughest choice yet in Jeff Kinney's 'Fight or Flight' from TheBookX.in. When cornered by bullies, family, and school, Greg Heffley must decide, stand his ground or run for his life? Either way, it's hilarious. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     pages: "224",
     language: "English",
     size: "Paperback",
-    stock: 0,
+    stock: 24,
     catalogue: ["children", "fiction", "humor", "bestseller"],
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
@@ -10835,6 +10857,7 @@ export const books = [
     description:
       "Buy the Diary of a Wimpy Kid 15-book set by Jeff Kinney online at the lowest price on TheBookX.in. The ultimate collection of the world's funniest children's series — join Greg Heffley through fifteen laugh-out-loud illustrated adventures in one incredible value box set. The perfect gift to get kids hooked on reading and the best value compared to buying the singles. Authentic, high-quality copies delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Jeff Kinney",
+    series: "Diary of a Wimpy Kid",
     authorSlug: "jeff-kinney",
     pages: "15 books",
     language: "English",
@@ -11330,6 +11353,42 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 240,
+    rating: 4.5,
+  },
+  {
+    id: "bk-745",
+    name: "The Dinner Party",
+    image: bookImages["the-dinner-party"],
+    description:
+      "Buy The Dinner Party by Freida McFadden online at the lowest price on TheBookX.in. From the #1 bestselling author of The Housemaid comes a twisty, page-turning thriller where one evening among friends spirals into secrets, suspicion and a night no one will forget. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Freida McFadden",
+    authorSlug: "freida-mcfadden",
+    pages: "300-360",
+    language: "English",
+    size: "Paperback",
+    stock: 22,
+    catalogue: ["fiction", "thriller", "mystery", "bestseller"],
+    originalPrice: calculateOriginalPrice(159),
+    discountedPrice: 159,
+    weight: 180,
+    rating: 4.5,
+  },
+  {
+    id: "bk-746",
+    name: "U n Me... It's Complicated",
+    image: bookImages["u-n-me-its-complicated"],
+    description:
+      "Buy U n Me... It's Complicated by Aditya Nighhot online at the lowest price on TheBookX.in. A heartfelt Indian college romance told from Aditya's point of view — a shy, bookish boy who falls for Rutuja, the most admired girl in college — and the misunderstandings, heartbreak and hard-won lessons that follow. Inspired by a true story and carrying a gentle message of hope, it's a relatable read for every young heart. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Aditya Nighhot",
+    authorSlug: "aditya-nighhot",
+    pages: "200-240",
+    language: "English",
+    size: "Paperback",
+    stock: 22,
+    catalogue: ["fiction", "romance", "indian-author", "bestseller"],
+    originalPrice: calculateOriginalPrice(179),
+    discountedPrice: 179,
+    weight: 160,
     rating: 4.5,
   },
 ];

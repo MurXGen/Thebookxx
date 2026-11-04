@@ -637,6 +637,8 @@ export const COST_BY_ID = {
   "bk-742": 110, // Happy Place — Emily Henry
   "bk-743": 110, // Funny Story — Emily Henry
   "bk-744": 90, // Fake Skating
+  "bk-745": 80, // The Dinner Party — Freida McFadden
+  "bk-746": 80, // U n Me... It's Complicated — Aditya Nighhot
   // ── Box sets & singles (Oct 2026) ──
   "bk-713": 280, // The Housemaid Series (3-book set)
   "bk-714": 100, // The Girl in the Glass Case

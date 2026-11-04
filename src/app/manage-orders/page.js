@@ -14928,7 +14928,7 @@ export default function ManageOrdersPage() {
             </div>
             {/* Dispatch queue — orders moved here from the Orders cards (any
                 status). Select rows, then download decorated address labels
-                (colored or B&W), 3 per page, same label size. */}
+                (colored: 3 per page; B&W: 4 per landscape page, 2×2). */}
             {bookSubTab === "queue" && (() => {
               const dOrders = orders.filter((o) =>
                 dispatchIds.includes(o["Order ID"]),

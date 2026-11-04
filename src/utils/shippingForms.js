@@ -1080,9 +1080,10 @@ function dataUrlToBytes(dataUrl) {
   return u8;
 }
 
-function jpegPagesToPdf(pages, marginPt) {
-  const PAGE_W = 595.28; // A4 portrait, points
-  const PAGE_H = 841.89;
+function jpegPagesToPdf(pages, marginPt, { landscape = false } = {}) {
+  // A4 in points — portrait by default, landscape for the 2×2 label sheet.
+  const PAGE_W = landscape ? 841.89 : 595.28;
+  const PAGE_H = landscape ? 595.28 : 841.89;
   const MARGIN = typeof marginPt === "number" ? marginPt : 22;
 
   const chunks = [];
@@ -2123,6 +2124,10 @@ export function buildAddressLabelSheetCanvas(group, opts = {}) {
 
 // Many address labels → ONE ordered PDF, three labels per page, no CDF.
 export function downloadAddressLabelsPDF(dataArray, filename, opts = {}) {
+  if (opts.mono) {
+    downloadBwLabelGridPDF(dataArray, filename);
+    return;
+  }
   const labels = dataArray.map((d) => buildAddressLabelCanvas(d, opts));
   const pages = packLabelPages(labels).map((group) => {
     const cv = stackLabelCanvases(group);
@@ -2539,5 +2544,403 @@ export function downloadGiftLabelsPDF(dataArray, filename) {
   triggerDownload(
     blob,
     filename || `gift_labels_${new Date().toISOString().slice(0, 10)}.pdf`,
+  );
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   B&W LABELS — 4 per landscape A4 page in a 2×2 grid.
+   Drawn in pure black on white (no greys, no decor) so they print crisp on any
+   printer. Every label is the same fixed size; long names / addresses shrink
+   or clamp instead of growing the label. Variants: standard, Speed, Gift.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const BW_W = 1100; // label size in canvas px (rendered at 2×)
+const BW_H = 770;
+const BW_INK = "#000000";
+const BW_FONT = "Poppins, 'Helvetica Neue', Arial, sans-serif";
+
+// Fill `str` on one line, shrinking from `size` down to `min` to fit `maxW`;
+// adds an ellipsis if it still doesn't fit.
+function bwFitText(ctx, str, x, y, maxW, { size, min, weight = "bold", align = "left", color = BW_INK }) {
+  let s = size;
+  let t = String(str || "");
+  ctx.textAlign = align;
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = color;
+  for (; s >= min; s -= 1) {
+    ctx.font = `${weight} ${s}px ${BW_FONT}`;
+    if (ctx.measureText(t).width <= maxW) break;
+  }
+  if (s < min) {
+    s = min;
+    ctx.font = `${weight} ${s}px ${BW_FONT}`;
+    while (t.length > 1 && ctx.measureText(`${t}…`).width > maxW) t = t.slice(0, -1);
+    t = `${t.trimEnd()}…`;
+  }
+  ctx.fillText(t, x, y);
+  return s;
+}
+
+// Word-wrap into at most `maxLines` lines (last line gets an ellipsis).
+// Returns the baseline of the last line drawn.
+function bwWrap(ctx, str, x, y, maxW, lh, maxLines, font, color = BW_INK) {
+  ctx.font = font;
+  ctx.fillStyle = color;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  const words = String(str || "").split(/\s+/).filter(Boolean);
+  const lines = [];
+  let line = "";
+  for (const w of words) {
+    const test = line ? `${line} ${w}` : w;
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line);
+      line = w;
+    } else line = test;
+  }
+  if (line) lines.push(line);
+  const shown = lines.slice(0, maxLines);
+  if (lines.length > maxLines) {
+    let last = shown[maxLines - 1];
+    while (last.length > 1 && ctx.measureText(`${last}…`).width > maxW) last = last.slice(0, -1);
+    shown[maxLines - 1] = `${last.trimEnd()}…`;
+  }
+  shown.forEach((l, i) => ctx.fillText(l, x, y + i * lh));
+  return y + Math.max(0, shown.length - 1) * lh;
+}
+
+function bwRoundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// Small line icons, drawn so they print as solid black at any size.
+function bwBolt(ctx, x, y, h, color) {
+  const k = h / 66;
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x + 24 * k, y);
+  ctx.lineTo(x, y + 38 * k);
+  ctx.lineTo(x + 18 * k, y + 38 * k);
+  ctx.lineTo(x + 9 * k, y + 66 * k);
+  ctx.lineTo(x + 40 * k, y + 26 * k);
+  ctx.lineTo(x + 21 * k, y + 26 * k);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+function bwGiftIcon(ctx, x, y, s, color) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = s * 0.09;
+  ctx.lineJoin = "round";
+  ctx.strokeRect(x + s * 0.08, y + s * 0.42, s * 0.84, s * 0.54); // box
+  ctx.fillRect(x, y + s * 0.26, s, s * 0.18); // lid
+  ctx.fillRect(x + s * 0.44, y + s * 0.26, s * 0.12, s * 0.7); // ribbon
+  ctx.beginPath(); // bow
+  ctx.ellipse(x + s * 0.32, y + s * 0.15, s * 0.16, s * 0.1, -0.5, 0, Math.PI * 2);
+  ctx.ellipse(x + s * 0.68, y + s * 0.15, s * 0.16, s * 0.1, 0.5, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+function bwPhoneIcon(ctx, x, y, s, color) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = s * 0.12;
+  bwRoundRect(ctx, x + s * 0.22, y, s * 0.56, s, s * 0.12);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x + s * 0.42, y + s * 0.84);
+  ctx.lineTo(x + s * 0.58, y + s * 0.84);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawBwLabel(ctx, data) {
+  const W = BW_W;
+  const H = BW_H;
+  const isCOD = !!data.isCOD;
+  const variant = data.isGift ? "gift" : data.isFaster ? "speed" : "normal";
+  const M = 10; // frame inset
+  const PAD = 34; // content padding inside the frame
+  const L = M + PAD;
+  const R = W - M - PAD;
+
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, W, H);
+
+  // Frame
+  ctx.save();
+  ctx.strokeStyle = BW_INK;
+  ctx.lineWidth = 3;
+  bwRoundRect(ctx, M, M, W - 2 * M, H - 2 * M, 18);
+  ctx.stroke();
+  ctx.restore();
+
+  // ── Header: solid black band, brand left, label type right ──
+  const HB = 92;
+  ctx.save();
+  bwRoundRect(ctx, M, M, W - 2 * M, H - 2 * M, 18);
+  ctx.clip();
+  ctx.fillStyle = BW_INK;
+  ctx.fillRect(M, M, W - 2 * M, HB);
+  ctx.restore();
+  ctx.fillStyle = "#fff";
+  ctx.font = `800 40px ${BW_FONT}`;
+  ctx.textAlign = "left";
+  ctx.fillText("TheBookX", L, M + 60);
+  const brandW = (() => {
+    ctx.font = `800 40px ${BW_FONT}`;
+    return ctx.measureText("TheBookX").width;
+  })();
+  ctx.font = `600 17px ${BW_FONT}`;
+  ctx.fillText("Books, delivered with care", L + brandW + 18, M + 58);
+
+  // Type chip (white pill on the black band)
+  const chip = {
+    speed: { text: "SPEED POST", sub: "Deliver first" },
+    gift: { text: "GIFT PARCEL", sub: "Handle with care" },
+    normal: { text: "SHIPPING LABEL", sub: "" },
+  }[variant];
+  ctx.font = `800 22px ${BW_FONT}`;
+  const chipTextW = ctx.measureText(chip.text).width;
+  const iconW = variant === "normal" ? 0 : 34;
+  const chipW = chipTextW + iconW + 36;
+  const chipH = 50;
+  const chipX = R - chipW;
+  const chipY = M + (HB - chipH) / 2;
+  ctx.fillStyle = "#fff";
+  bwRoundRect(ctx, chipX, chipY, chipW, chipH, chipH / 2);
+  ctx.fill();
+  if (variant === "speed") bwBolt(ctx, chipX + 16, chipY + 10, 30, BW_INK);
+  if (variant === "gift") bwGiftIcon(ctx, chipX + 14, chipY + 11, 28, BW_INK);
+  ctx.fillStyle = BW_INK;
+  ctx.textAlign = "left";
+  ctx.fillText(chip.text, chipX + 18 + iconW, chipY + 33);
+
+  // ── Right column: review QR ──
+  const qSize = 196;
+  const qx = R - qSize;
+  let y = M + HB + 42;
+  ctx.font = `800 15px ${BW_FONT}`;
+  ctx.textAlign = "center";
+  ctx.fillStyle = BW_INK;
+  ctx.fillText("SCAN & RATE US", qx + qSize / 2, y);
+  ctx.save();
+  ctx.strokeStyle = BW_INK;
+  ctx.lineWidth = 2;
+  bwRoundRect(ctx, qx - 8, y + 10, qSize + 16, qSize + 16, 10);
+  ctx.stroke();
+  ctx.restore();
+  drawQrCode(ctx, REVIEW_URL, qx, y + 18, qSize);
+  const starY = y + 18 + qSize + 34;
+  const sr = 13;
+  const sGap = 9;
+  let sx = qx + (qSize - (5 * sr * 2 + 4 * sGap)) / 2 + sr;
+  for (let i = 0; i < 5; i++) {
+    drawStarOutline(ctx, sx, starY, sr, BW_INK, 2.2);
+    sx += sr * 2 + sGap;
+  }
+
+  // ── Left column: DELIVER TO ──
+  const colW = qx - 36 - L;
+  ctx.font = `800 16px ${BW_FONT}`;
+  ctx.textAlign = "left";
+  ctx.fillStyle = BW_INK;
+  ctx.fillText("DELIVER TO", L, y);
+  bwFitText(ctx, data.customerName || "—", L, y + 52, colW, { size: 48, min: 30, weight: "800" });
+
+  const cleanAddress = String(data.customerAddress || "")
+    .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/i, "")
+    .replace(/\s*,\s*$/, "")
+    .trim();
+  const lc = cleanAddress.toLowerCase();
+  const city = String(data.customerCity || "").trim();
+  const state = String(data.customerState || "").trim();
+  const addr = [cleanAddress];
+  if (city && !lc.includes(city.toLowerCase())) addr.push(city);
+  if (state && !lc.includes(state.toLowerCase())) addr.push(state);
+  let ay = bwWrap(ctx, addr.filter(Boolean).join(", "), L, y + 94, colW, 30, 3, `500 23px ${BW_FONT}`);
+
+  // City, State — PIN on one bold line (the PIN is what sorting offices read).
+  ay += 50;
+  const pin = String(data.customerPincode || "").trim();
+  const cityState = [city, state].filter(Boolean).join(", ");
+  const placeLine = [cityState, pin].filter(Boolean).join(" — ");
+  if (placeLine)
+    bwFitText(ctx, placeLine, L, ay, colW, { size: 30, min: 20, weight: "800" });
+
+  // Phone(s)
+  const fmtPh = (p) => {
+    const d = String(p || "").replace(/\D/g, "").slice(-10);
+    return d ? `+91 ${d.slice(0, 5)} ${d.slice(5)}` : "";
+  };
+  const phones = [fmtPh(data.customerPhone), fmtPh(data.customerAltPhone)]
+    .filter(Boolean)
+    .join("  /  ");
+  if (phones) {
+    const py = ay + 52;
+    bwPhoneIcon(ctx, L, py - 26, 30, BW_INK);
+    bwFitText(ctx, phones, L + 38, py, colW - 38, { size: 28, min: 20, weight: "800" });
+  }
+
+  // ── Payment strip (full width) ──
+  const payY = 486;
+  const payH = 104;
+  const payW = R - L;
+  ctx.save();
+  if (isCOD) {
+    ctx.fillStyle = BW_INK;
+    bwRoundRect(ctx, L, payY, payW, payH, 14);
+    ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.font = `800 17px ${BW_FONT}`;
+    ctx.textAlign = "left";
+    ctx.fillText("COLLECT ON DELIVERY", L + 26, payY + 36);
+    ctx.font = `800 46px ${BW_FONT}`;
+    ctx.fillText(`₹ ${Number(data.codAmount || 0).toLocaleString("en-IN")} /-`, L + 26, payY + 84);
+    ctx.font = `700 19px ${BW_FONT}`;
+    ctx.textAlign = "right";
+    ctx.fillText("Cash or UPI", R - 26, payY + 46);
+    ctx.font = `500 17px ${BW_FONT}`;
+    ctx.fillText("to the delivery agent", R - 26, payY + 72);
+  } else {
+    ctx.strokeStyle = BW_INK;
+    ctx.lineWidth = 3;
+    bwRoundRect(ctx, L, payY, payW, payH, 14);
+    ctx.stroke();
+    ctx.fillStyle = BW_INK;
+    ctx.font = `800 17px ${BW_FONT}`;
+    ctx.textAlign = "left";
+    ctx.fillText("PAYMENT", L + 26, payY + 36);
+    ctx.font = `800 40px ${BW_FONT}`;
+    ctx.fillText("PREPAID", L + 26, payY + 80);
+    ctx.font = `800 21px ${BW_FONT}`;
+    ctx.textAlign = "right";
+    ctx.fillText("DO NOT COLLECT", R - 26, payY + 46);
+    ctx.font = `500 17px ${BW_FONT}`;
+    ctx.fillText("Already paid online", R - 26, payY + 72);
+  }
+  ctx.restore();
+
+  // ── Note ──
+  let note;
+  if (variant === "gift") {
+    note = "A gift for you — happy reading! Please deliver with care.";
+  } else {
+    const dn = deliveryNoteFor(data.note);
+    note = dn.isCustomer
+      ? `Note: ${dn.text}`
+      : "Deliver to the customer — do not return. ग्राहक को ही डिलीवर करें, वापस न लौटाएँ।";
+  }
+  bwWrap(ctx, note, L, payY + payH + 40, payW, 24, 2, `700 18px ${BW_FONT}`);
+
+  // ── Footer: FROM (left) · Order ID (right) ──
+  const fy = H - M - 62;
+  ctx.save();
+  ctx.strokeStyle = BW_INK;
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6, 6]);
+  ctx.beginPath();
+  ctx.moveTo(L, fy - 26);
+  ctx.lineTo(R, fy - 26);
+  ctx.stroke();
+  ctx.restore();
+  const oid = String(data.orderId || "—");
+  ctx.font = `800 17px ${BW_FONT}`;
+  const oidW = ctx.measureText(oid).width;
+  ctx.textAlign = "right";
+  ctx.fillStyle = BW_INK;
+  ctx.font = `700 13px ${BW_FONT}`;
+  ctx.fillText("ORDER ID", R, fy);
+  ctx.font = `800 17px ${BW_FONT}`;
+  ctx.fillText(oid, R, fy + 26);
+  const fromW = R - L - oidW - 40;
+  ctx.textAlign = "left";
+  ctx.font = `800 13px ${BW_FONT}`;
+  ctx.fillText("FROM", L, fy);
+  bwFitText(ctx, `TheBookX · ${SENDER.addressLines.join(", ")}`, L + 52, fy, fromW - 52, {
+    size: 15,
+    min: 11,
+    weight: "500",
+  });
+  bwFitText(ctx, `Seller help: ${SENDER.mobile}`, L, fy + 26, fromW, {
+    size: 15,
+    min: 11,
+    weight: "700",
+  });
+}
+
+function buildBwLabelCanvas(data) {
+  const cv = document.createElement("canvas");
+  cv.width = BW_W * 2;
+  cv.height = BW_H * 2;
+  const ctx = cv.getContext("2d");
+  ctx.scale(2, 2);
+  drawBwLabel(ctx, data);
+  return cv;
+}
+
+// Four labels on one landscape sheet, 2×2, with dashed cut lines between.
+const BW_GAP = 56; // px at 2× between cells and round the edge
+function buildBwSheetCanvas(group) {
+  const cw = BW_W * 2;
+  const ch = BW_H * 2;
+  const out = document.createElement("canvas");
+  out.width = cw * 2 + BW_GAP * 3;
+  out.height = ch * 2 + BW_GAP * 3;
+  const ctx = out.getContext("2d");
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, out.width, out.height);
+  group.forEach((d, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    ctx.drawImage(
+      buildBwLabelCanvas(d),
+      BW_GAP + col * (cw + BW_GAP),
+      BW_GAP + row * (ch + BW_GAP),
+    );
+  });
+  ctx.save();
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([16, 12]);
+  const midX = BW_GAP * 1.5 + cw;
+  const midY = BW_GAP * 1.5 + ch;
+  // Only cut between labels that are actually on the page.
+  const rows = Math.ceil(group.length / 2);
+  ctx.beginPath();
+  if (group.length > 1) {
+    ctx.moveTo(midX, 12);
+    ctx.lineTo(midX, rows > 1 ? out.height - 12 : midY);
+  }
+  if (rows > 1) {
+    ctx.moveTo(12, midY);
+    ctx.lineTo(group.length > 3 ? out.width - 12 : midX, midY);
+  }
+  ctx.stroke();
+  ctx.restore();
+  return out;
+}
+
+export function downloadBwLabelGridPDF(dataArray, filename) {
+  const pages = [];
+  for (let i = 0; i < dataArray.length; i += 4) {
+    const cv = buildBwSheetCanvas(dataArray.slice(i, i + 4));
+    const url = cv.toDataURL("image/jpeg", 0.95);
+    pages.push({ data: dataUrlToBytes(url), w: cv.width, h: cv.height });
+  }
+  const blob = jpegPagesToPdf(pages, 12, { landscape: true });
+  triggerDownload(
+    blob,
+    filename || `labels_bw_${new Date().toISOString().slice(0, 10)}.pdf`,
   );
 }

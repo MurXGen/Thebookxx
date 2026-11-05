@@ -62,6 +62,7 @@ import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
 import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
+import { rewardNote } from "@/utils/orderRewards";
 
 const PINCODE_DATA_KEY = "user_pincode";
 
@@ -218,6 +219,7 @@ export default function AddressModal({
   // the lookup can't determine it, this stays false so the shopper can type it.
   const [stateAutoFilled, setStateAutoFilled] = useState(false);
   const [fasterDelivery, setFasterDelivery] = useState(false);
+  const [fasterTip, setFasterTip] = useState(false); // "What's Faster delivery?"
   const [billItemsOpen, setBillItemsOpen] = useState(false); // book summary accordion
   const [isValidPincode, setIsValidPincode] = useState(true);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
@@ -1430,7 +1432,9 @@ export default function AddressModal({
         giftWrapCharge: giftWrapAmountForOrder,
         codHandlingFee: feeForThisOrder,
         advancePaid: advance,
-        orderComment: resellNote || "",
+        orderComment: [resellNote, rewardNote(totalDiscounted)]
+          .filter(Boolean)
+          .join(" · "),
         coupon: appliedCoupon?.code || "",
         couponDiscount: appliedCoupon ? couponDiscount : 0,
         confirmed,
@@ -2727,12 +2731,14 @@ export default function AddressModal({
                       return;
                     }
                     setPaySel("UPI"); // online payment selected by default
-                    // Pick delivery speed first (its own step), then payment.
-                    setShowSpeedModal(true);
+                    // Straight to payment; Faster delivery starts ticked there
+                    // (they can untick it on the same sheet).
+                    setFasterDelivery(true);
+                    setShowPaySelect(true);
                   }}
                 >
                   <span className="flex flex-row items-center justify-center gap-6">
-                    {isFormValid() ? "Continue to delivery speed" : "Continue"}
+                    Proceed
                     <ArrowRight size={18} strokeWidth={2.5} />
                   </span>
                 </LoadingButton>
@@ -3004,6 +3010,68 @@ export default function AddressModal({
                   </div>
                 )}
 
+                {/* Faster delivery — ticked by default on arrival; the bill
+                    updates live. Not available with Cash on Delivery. */}
+                <div
+                  className={`fdx${fasterDelivery ? " on" : ""}${paySel === "COD" ? " off" : ""}`}
+                >
+                  <button
+                    type="button"
+                    className="fdx-main"
+                    role="checkbox"
+                    aria-checked={fasterDelivery}
+                    aria-disabled={paySel === "COD"}
+                    disabled={paySel === "COD"}
+                    onClick={() => {
+                      if (paySel === "COD") return;
+                      setFasterDelivery((v) => !v);
+                      buzz(8);
+                    }}
+                  >
+                    <span className="fdx-box" aria-hidden="true">
+                      {fasterDelivery && <Check size={14} strokeWidth={3.2} />}
+                    </span>
+                    <span className="fdx-txt">
+                      <span className="fdx-title">
+                        <Zap size={15} className="fdx-zap" /> Faster delivery
+                      </span>
+                      <span className="fdx-sub">
+                        {paySel === "COD"
+                          ? "Not available with Cash on Delivery"
+                          : fasterDelivery
+                            ? "Arrives in 1–6 days"
+                            : "Standard: arrives in 5–9 days"}
+                      </span>
+                    </span>
+                    <span className="fdx-price">
+                      {fasterExtra > 0 ? `+₹${fasterExtra}` : "Free"}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="fdx-info"
+                    aria-label="What is Faster delivery?"
+                    aria-expanded={fasterTip}
+                    onClick={() => setFasterTip((v) => !v)}
+                    onBlur={() => setFasterTip(false)}
+                  >
+                    <Info size={16} />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {fasterTip && (
+                      <motion.p
+                        className="fdx-tip"
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        transition={{ duration: 0.18 }}
+                      >
+                        Packed first, sent by priority post. Arrives in 1–6 days.
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
                 {/* Payment methods — full-width selectable cards. */}
                 <div className="pay-methods" hidden={isZeroPayable}>
                   <span className="deliv-addon-head pay-methods-head">
@@ -3012,7 +3080,11 @@ export default function AddressModal({
                   {/* Pay Online (recommended, selected by default) */}
                   <button
                     type="button"
-                    onClick={() => setPaySel("UPI")}
+                    onClick={() => {
+                      // Coming back from COD → Faster starts ticked again.
+                      if (paySel === "COD") setFasterDelivery(true);
+                      setPaySel("UPI");
+                    }}
                     className={`pay-method pm2${paySel === "UPI" ? " selected" : ""}`}
                   >
                     <span className="pm2-main">
@@ -3116,11 +3188,14 @@ export default function AddressModal({
                   {/* Cash on Delivery — unavailable with Faster delivery */}
                   <button
                     type="button"
-                    disabled={fasterDelivery}
-                    onClick={() => !fasterDelivery && setPaySel("COD")}
-                    className={`pay-method pm2${paySel === "COD" ? " selected" : ""}${
-                      fasterDelivery ? " pay-method-disabled" : ""
-                    }`}
+                    onClick={() => {
+                      if (fasterDelivery) {
+                        setFasterDelivery(false);
+                        showToast("Cash on Delivery uses Standard delivery", "info");
+                      }
+                      setPaySel("COD");
+                    }}
+                    className={`pay-method pm2${paySel === "COD" ? " selected" : ""}`}
                   >
                     <span className="pm2-main">
                       <span className="pm2-titlerow">
@@ -3144,7 +3219,7 @@ export default function AddressModal({
                       <span className="pay-perks">
                         {fasterDelivery ? (
                           <span className="pay-method-desc">
-                            Not available with Faster delivery
+                            Switches to Standard delivery
                           </span>
                         ) : proActive ? (
                           <span className="pay-perk">No COD fee · Member</span>

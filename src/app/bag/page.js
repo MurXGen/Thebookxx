@@ -6,6 +6,8 @@ import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
+import OrderRewards from "@/components/OrderRewards";
+import BagQuickAdd from "@/components/BagQuickAdd";
 import { fetchProStatus, cachedProStatus } from "@/utils/proPlan";
 import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
@@ -50,6 +52,7 @@ import {
   Share2,
   Search,
   ShoppingCart,
+  ShoppingBag,
   RotateCcw,
   FileText,
   X,
@@ -187,72 +190,72 @@ function BagContent() {
     return `${origin}/bag?shared=${encodeURIComponent(enc)}`;
   };
 
-  // Share the bag directly from the header button: build the link, shorten it,
-  // then use the native share sheet on mobile or copy to clipboard on desktop.
+  // Short link for the current bag, made in the background whenever the bag
+  // changes — so a tap can share instantly (navigator.share / clipboard only
+  // work straight after a tap, not after waiting on a network call).
+  const bagKey = cart.map((i) => `${i.id}:${i.qty || 1}`).join(",");
+  const [bagShort, setBagShort] = useState({ key: "", url: "" });
+  useEffect(() => {
+    if (!bagKey) return;
+    let live = true;
+    const t = setTimeout(async () => {
+      const long = buildBagLink();
+      const short = await shortenUrl(long);
+      if (live && /^https:\/\/tinyurl\.com\/\w+$/.test(String(short).trim()))
+        setBagShort({ key: bagKey, url: String(short).trim() });
+    }, 600);
+    return () => {
+      live = false;
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bagKey]);
+
+  const copyText = (text) => {
+    if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+    // Older browsers / non-secure contexts.
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return ok ? Promise.resolve() : Promise.reject(new Error("copy failed"));
+  };
+
+  // Header Share: native share sheet on phones, copy the link elsewhere.
   const handleShareBag = async () => {
     if (!cart.length) {
       showToast("Your bag is empty — add books to share.", "info");
       return;
     }
-    if (shareBusy) return;
-    setShareBusy(true);
+    const url = bagShort.key === bagKey && bagShort.url ? bagShort.url : buildBagLink();
+    const n = cart.reduce((s, i) => s + (i.qty || 1), 0);
+    const text = `My TheBookX bag: ${n} book${n > 1 ? "s" : ""} I picked. Have a look`;
     try {
-      const longUrl = buildBagLink();
-      const tiny = (await shortenUrl(longUrl)) || longUrl;
-      const canNativeShare =
-        typeof navigator !== "undefined" &&
-        navigator.share &&
-        (typeof window === "undefined" || window.innerWidth <= 768);
-      if (canNativeShare) {
-        await navigator.share({
-          title: "My TheBookX bag",
-          text: "Check out the books I picked on TheBookX ",
-          url: tiny,
-        });
-      } else if (
-        typeof navigator !== "undefined" &&
-        navigator.clipboard?.writeText
-      ) {
-        await navigator.clipboard.writeText(tiny);
-        showToast("Bag link copied — share it with anyone!", "success");
-      } else {
-        // Last-resort fallback when clipboard API is unavailable.
-        window.prompt("Copy your bag link:", tiny);
+      if (typeof navigator !== "undefined" && navigator.share && window.matchMedia("(pointer: coarse)").matches) {
+        await navigator.share({ title: "My TheBookX bag", text, url });
+        return;
       }
+      await copyText(url);
+      showToast("Bag link copied. Paste it anywhere to share.", "success");
     } catch (err) {
-      if (err && err.name === "AbortError") {
-        /* user dismissed the native share sheet — no-op */
-      } else {
-        console.error("Share failed:", err);
-        showToast("Couldn't share the bag. Please try again.", "error");
+      if (err && err.name === "AbortError") return; // closed the share sheet
+      try {
+        await copyText(url);
+        showToast("Bag link copied. Paste it anywhere to share.", "success");
+      } catch {
+        window.prompt("Copy your bag link:", url);
       }
-    } finally {
-      setShareBusy(false);
     }
   };
 
-  // Confirm from the modal: shorten to TinyURL, then share/copy it.
+  // Confirm from the review modal: same instant share/copy as the header.
   const confirmShareBag = async () => {
-    setShareBusy(true);
-    try {
-      const longUrl = buildBagLink();
-      const tiny = (await shortenUrl(longUrl)) || longUrl;
-      if (navigator.share && window.innerWidth <= 768) {
-        await navigator.share({
-          title: "My TheBookX bag",
-          text: "Check out the books I picked on TheBookX ",
-          url: tiny,
-        });
-      } else {
-        await navigator.clipboard.writeText(tiny);
-        showToast("Bag link copied — share it with anyone!", "success");
-      }
-      setShowShareModal(false);
-    } catch (_) {
-      /* user dismissed share sheet */
-    } finally {
-      setShareBusy(false);
-    }
+    await handleShareBag();
+    setShowShareModal(false);
   };
 
   // Add all shared books to the cart. When `reset`, clear the cart first.
@@ -1233,22 +1236,48 @@ ${itemsBlock}${qrLines}
             }
           />
         </div>
-        <div
-          className="flex flex-col gap-12 justify-center items-center"
-          style={{ height: "90vh" }}
-        >
-          <span className="font-16">Add books to cart to fill your bags</span>
-          <button onClick={() => router.push("/")} className="pri-big-btn">
-            Browse
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowRecommendationModal(true)}
-            className="sec-mid-btn flex flex-row gap-8 items-center"
-          >
-            <Sparkles size={16} />
-            Need Book Suggestion?
-          </button>
+        {/* Empty bag — give them a way in: ask for help, start under ₹199,
+            or pick from quick-add rows (one tap each). */}
+        <div className="section-680 bag-empty2">
+          <div className="bag-empty2-hero">
+            <span className="bag-empty2-ic" aria-hidden="true">
+              <ShoppingBag size={26} />
+            </span>
+            <h2 className="bag-empty2-title">Your bag is empty</h2>
+            <div className="bag-empty2-ctas">
+              <Link href="/books" className="pri-big-btn">
+                Browse books
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowRecommendationModal(true)}
+                className="sec-big-btn bag-empty2-help"
+              >
+                <Sparkles size={16} /> Help me choose
+              </button>
+            </div>
+          </div>
+
+          <OrderRewards amount={0} celebrate={false} />
+
+          <BagQuickAdd empty />
+
+          <WishlistStrip />
+
+          <div className="bag-empty2-ask">
+            <span>
+              <b>Looking for a particular book?</b>
+              <small>Send us the title, we&apos;ll check and get back.</small>
+            </span>
+            <a
+              href="https://wa.me/917710892108?text=Hi%20TheBookX!%20I%27m%20looking%20for%20this%20book%3A%20"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bag-empty2-wa"
+            >
+              <FaWhatsapp size={16} /> Ask
+            </a>
+          </div>
         </div>
 
         <RecommendationModal
@@ -1353,37 +1382,8 @@ ${itemsBlock}${qrLines}
             <CartOfferStrip discountedAmount={totalDiscounted} />
           )}
 
-          {cartBooks.length > 0 &&
-            (() => {
-              const free =
-                totalDiscounted >= 1000 ? 4 : totalDiscounted >= 500 ? 3 : 2;
-              const nextAt =
-                totalDiscounted < 500
-                  ? 500
-                  : totalDiscounted < 1000
-                    ? 1000
-                    : null;
-              return (
-                <div className="bag-bm-strip">
-                  <span className="bag-bm-ic" aria-hidden="true">
-                    🔖
-                  </span>
-                  <span className="bag-bm-txt">
-                    <b>
-                      Up to {free} free bookmark{free > 1 ? "s" : ""}
-                    </b>{" "}
-                    on this order — add them at checkout
-                    {nextAt ? (
-                      <span className="bag-bm-next">
-                        {" "}
-                        · add ₹{nextAt - totalDiscounted} more to unlock{" "}
-                        {free + 1}
-                      </span>
-                    ) : null}
-                  </span>
-                </div>
-              );
-            })()}
+          {/* Bookmark achievements (2 → 3 → 4 free, Mystery Box at ₹3000) */}
+          {cartBooks.length > 0 && <OrderRewards amount={totalDiscounted} />}
 
           <div className="cart-items-panel">
             <div className="cart-items-list">
@@ -1529,6 +1529,10 @@ ${itemsBlock}${qrLines}
           {/* Wishlist — horizontal strip below the added books */}
           <WishlistStrip />
 
+          {cartBooks.length > 0 && (
+            <BagQuickAdd cartBooks={cartBooks} amount={totalDiscounted} />
+          )}
+
           {recommendedBooks.length > 0 && (
             <div className="cart-sep">
               <span className="cart-sep-line" />
@@ -1543,7 +1547,7 @@ ${itemsBlock}${qrLines}
             <div className="cart-recommendations">
               <div className="cart-rec-head">
                 <span className="cart-rec-title">
-                  Readers who picked these also loved…
+                  More you may like
                 </span>
                 <span className="cart-rec-sub">
                   Hand-picked for you, add one more and make it a reading

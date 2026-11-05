@@ -88,6 +88,31 @@ export default function Navbar() {
   // search overlay and seed it with that term so searches are shareable/deep
   // linkable. Cleared when the user opens search manually.
   const [searchInitialQuery, setSearchInitialQuery] = useState("");
+  // Phones: the search pill rests as an icon. Once per visit it slides open
+  // for ~4s so people see it's there, then tucks back. Later pages start as
+  // the icon, so nothing jumps between navigations.
+  const [searchPeek, setSearchPeek] = useState(false);
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 640px)").matches) return;
+    try {
+      if (sessionStorage.getItem("tbx_search_peek")) return;
+    } catch {
+      /* storage blocked: still peek once */
+    }
+    const open = setTimeout(() => {
+      try {
+        sessionStorage.setItem("tbx_search_peek", "1");
+      } catch {
+        /* ignore */
+      }
+      setSearchPeek(true);
+    }, 500);
+    const close = setTimeout(() => setSearchPeek(false), 4500);
+    return () => {
+      clearTimeout(open);
+      clearTimeout(close);
+    };
+  }, []);
   const [navHidden, setNavHidden] = useState(false);
   // Measure the fixed navbar's real height so the spacer below matches exactly.
   const navRef = useRef(null);
@@ -207,7 +232,7 @@ export default function Navbar() {
           {/* MIDDLE — flexible inline search (opens the overlay on tap) */}
           <button
             type="button"
-            className="nav-search-inline"
+            className={`nav-search-inline${searchPeek ? " peek" : ""}`}
             onClick={() => {
               trackEvent("search_opened", { source: "navbar_inline" });
               setSearchInitialQuery("");
@@ -217,7 +242,8 @@ export default function Navbar() {
           >
             <Search size={18} />
             <span className="nav-search-inline-ph">
-              Search books, authors…
+              <span className="nsi-long">Search books, authors…</span>
+              <span className="nsi-short">Search books</span>
             </span>
           </button>
 

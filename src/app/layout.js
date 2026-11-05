@@ -7,6 +7,8 @@ import { ToastProvider } from "@/context/ToastContext";
 import RegisterSW from "@/components/RegisterSW";
 import SplashScreen from "@/components/UI/SplashScreen";
 import GlobalHaptics from "@/components/UI/GlobalHaptics";
+import ClickFeedback from "@/components/UI/ClickFeedback";
+import { Suspense } from "react";
 import RainEffect from "@/components/UI/RainEffect";
 import { PLProvider } from "@/context/PLContext";
 
@@ -239,6 +241,10 @@ export default function RootLayout({ children }) {
               <SplashScreen />
               <RegisterSW />
               <GlobalHaptics />
+              {/* Tap feedback: top bar on navigation + spinner on busy buttons */}
+              <Suspense fallback={null}>
+                <ClickFeedback />
+              </Suspense>
               <AnalyticsTracker />
               {/* Monsoon rain effect — temporarily disabled. Re-enable by
                   uncommenting the line below. */}

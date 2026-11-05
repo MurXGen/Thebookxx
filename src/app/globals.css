@@ -65320,3 +65320,43 @@ h2.od-reco-title {
 }
 .od-ready:not(.od-ready--warn) .od-ready-badge { background: #16a34a; }
 .od-ready:not(.od-ready--warn) .od-ready-badge svg { fill: #fff; }
+
+/* ── Tap feedback (ClickFeedback.jsx) ── */
+.cf-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2147483647;
+  width: 0;
+  height: 3px;
+  opacity: 0;
+  background: linear-gradient(90deg, #fb8500, #ffb703);
+  box-shadow: 0 0 8px rgba(251, 133, 0, 0.55);
+  border-radius: 0 3px 3px 0;
+  pointer-events: none;
+}
+.cf-busy {
+  position: fixed;
+  z-index: 2147483646;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(1px);
+  pointer-events: none;
+  animation: cf-in 0.15s ease;
+}
+.cf-spin {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(28, 24, 20, 0.18);
+  border-top-color: #fb8500;
+  animation: cf-rot 0.7s linear infinite;
+}
+[aria-busy="true"] { cursor: progress; }
+@keyframes cf-rot { to { transform: rotate(360deg); } }
+@keyframes cf-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .cf-spin { animation-duration: 1.6s; }
+}

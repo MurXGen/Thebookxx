@@ -7,6 +7,7 @@ import {
   useCallback,
   useMemo,
   useRef,
+  useLayoutEffect,
   Fragment,
 } from "react";
 import { createPortal } from "react-dom";
@@ -92,6 +93,9 @@ import {
   Printer,
   Palette,
   Images,
+  Stamp,
+  ListPlus,
+  ListChecks,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
@@ -1025,6 +1029,30 @@ const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 // One headline KPI. `prev` (same metric for the comparison period) renders a
 // delta chip; `lowerIsBetter` flips its colour for rates like cancellations;
 // `unit: "pts"` compares percentages as point changes, not relative ones.
+// Chart tooltip that keeps itself on screen: after each render it measures
+// itself and shifts sideways (--nudge) if it would cross a viewport edge; the
+// arrow shifts back the same amount so it still points at the mark.
+function EdgeSafeTip({ className, x, y, children }) {
+  const ref = useRef(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.setProperty("--nudge", "0px");
+    const r = el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const m = 8;
+    let n = 0;
+    if (r.right > vw - m) n = vw - m - r.right;
+    else if (r.left < m) n = m - r.left;
+    el.style.setProperty("--nudge", `${Math.round(n)}px`);
+  }, [x, y, children]);
+  return (
+    <div ref={ref} className={className} style={{ left: x, top: y }}>
+      {children}
+    </div>
+  );
+}
+
 // Tiny trend line for a KPI tile — hover shows the day and its value.
 function Sparkline({ data, labels, fmt = (v) => v.toLocaleString() }) {
   const [hi, setHi] = useState(null);
@@ -1487,6 +1515,66 @@ const TRACK_STATUS_OPTIONS = [
 
 // Active = Getting Shipped OR Processing OR Confirmed OR In Transit without a
 // tracking ID — and never unconfirmed rows. The Orders tab's default view.
+// Search match for one order: name, order ID, phone, pincode, city,
+// tracking ID, address or any book title.
+const orderMatchesQuery = (order, q) => {
+  const qq = String(q || "").trim().toLowerCase();
+  if (!qq) return true;
+  const digits = qq.replace(/\D/g, "");
+  const has = (v) => String(v || "").toLowerCase().includes(qq);
+  if (
+    has(order["Customer Name"]) ||
+    has(order["Order ID"]) ||
+    has(order["City"]) ||
+    has(order["State"]) ||
+    has(order["Address"]) ||
+    has(order["Shipping ID"])
+  )
+    return true;
+  if (
+    digits.length >= 3 &&
+    (String(order["Phone Number"] || "").replace(/\D/g, "").includes(digits) ||
+      String(order["Pincode"] || "").includes(digits))
+  )
+    return true;
+  return (order.parsedBooks || []).some((b) => has(b.name));
+};
+
+// "🛵 Out for delivery" → ["🛵", "Out for delivery"] (email template rows
+// show the emoji in its own tile).
+const splitLeadEmoji = (label) => {
+  const str = String(label || "");
+  const m = str.match(/^(\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*)\s*/u);
+  return m ? [m[1], str.slice(m[0].length)] : ["✉️", str];
+};
+
+// Abandoned-cart "Books" snapshot ("Name, Other Name x2, …") → catalogue
+// ids. Names can contain commas, so match known titles longest-first.
+const CART_BOOKS_BY_LEN = [...(ALL_BOOKS || [])]
+  .filter((b) => b && b.id && b.name)
+  .sort((a, b) => b.name.length - a.name.length);
+const parseCartBooks = (str) => {
+  let rest = String(str || "").trim();
+  const out = [];
+  while (rest) {
+    const hit = CART_BOOKS_BY_LEN.find((b) =>
+      rest.toLowerCase().startsWith(b.name.toLowerCase()),
+    );
+    if (!hit) {
+      const cut = rest.indexOf(", ");
+      if (cut < 0) break;
+      rest = rest.slice(cut + 2);
+      continue;
+    }
+    rest = rest.slice(hit.name.length);
+    const q = rest.match(/^ x(\d+)/);
+    if (q) rest = rest.slice(q[0].length);
+    out.push({ id: hit.id, name: hit.name, qty: q ? Number(q[1]) : 1 });
+    rest = rest.replace(/^,\s*/, "");
+  }
+  return out;
+};
+
 const isActiveOrder = (order) => {
   const s = order["Order Status"] || "";
   const sl = s.toLowerCase();
@@ -3853,6 +3941,23 @@ export default function ManageOrdersPage() {
   const [dateTo, setDateTo] = useState("");
   const [selectedDate, setSelectedDate] = useState(""); // "YYYY-MM-DD" from calendar
   const [chartBaseOrders, setChartBaseOrders] = useState([]); // list filters minus the day pick
+  const [dayHover, setDayHover] = useState(null); // day-chart hover {i, side}
+  // Day-chart range: "7" | "14" | "30" days back, or "custom" {from,to}
+  // (YYYY-MM-DD). Remembered on this device.
+  const [dayRange, setDayRange] = useState(() => {
+    try {
+      const v = JSON.parse(localStorage.getItem("mo_dayrange") || "null");
+      if (v && v.kind) return v;
+    } catch {}
+    return { kind: "14" };
+  });
+  const [dayRangeSheet, setDayRangeSheet] = useState(false);
+  const [dayRangeDraft, setDayRangeDraft] = useState({ from: "", to: "" });
+  useEffect(() => {
+    try {
+      localStorage.setItem("mo_dayrange", JSON.stringify(dayRange));
+    } catch {}
+  }, [dayRange]);
   // 14-day chart under search: open by default, choice remembered.
   const [dayChartOpen, setDayChartOpen] = useState(() => {
     try {
@@ -3885,6 +3990,7 @@ export default function ManageOrdersPage() {
   // Share the dispatch queue as a link (encodes the queued order IDs).
   const [dispShareOpen, setDispShareOpen] = useState(false);
   const [dispSheetOpen, setDispSheetOpen] = useState(false);
+  const [dispatchQuery, setDispatchQuery] = useState("");
   const [dispPaste, setDispPaste] = useState("");
   const [dispLinkCopied, setDispLinkCopied] = useState(false);
   useEffect(() => {
@@ -4389,14 +4495,13 @@ export default function ManageOrdersPage() {
     // Anchor to the hovered mark, not the cursor: centred on it, just above
     // the top of its column (bar groups share a parent), so the tooltip never
     // sits on top of the bars it describes. Flips below when there's no room.
-    const pad = 78;
-    const vw = typeof window !== "undefined" ? window.innerWidth : 0;
+    // (EdgeSafeTip keeps the bubble on screen; x stays on the mark.)
     const r = el.getBoundingClientRect();
     const pr = el.parentElement?.getBoundingClientRect() || r;
     const top = Math.min(r.top, pr.top);
     const below = top < 72;
     setChartTip({
-      x: Math.min(Math.max(r.left + r.width / 2, pad), Math.max(pad, vw - pad)),
+      x: r.left + r.width / 2,
       y: below ? Math.max(r.bottom, pr.bottom) : top,
       text: el.getAttribute("data-tip"),
       below,
@@ -4685,21 +4790,37 @@ export default function ManageOrdersPage() {
     }
   };
   // Open WhatsApp with a friendly nudge pre-filled for this cart's shopper.
+  // WhatsApp nudge for a cart. Short, one clear action, and a direct
+  // https://www. link (no redirect) so WhatsApp shows the preview card.
+  // Open carts link to /bag?shared=… which puts their exact books back in
+  // the bag in one tap.
   const whatsappCart = (c) => {
     const phone = String(c?.phone || "").replace(/\D/g, "").slice(-10);
     if (phone.length !== 10) {
       showToast("No phone number for this cart yet.", "error");
       return;
     }
+    const SITE = "https://www.thebookx.in";
     const first = (c?.name || "").trim().split(/\s+/)[0] || "there";
-    const books = (c?.books || "").trim();
-    const booksLine = books ? `\n\nYour picks:\n• ${books.split(", ").join("\n• ")}` : "";
-    const msg =
-      `Hi ${first}! 👋 This is TheBookX.\n\n` +
-      `We noticed you left some lovely books in your bag` +
-      `${booksLine}\n\n` +
-      `Still interested? We'd love to help you complete your order — reply here if you have any questions or need a hand. 📚\n\n` +
-      `Shop now: https://thebookx.in`;
+    const converted = /convert/i.test(String(c?.status || ""));
+    let msg;
+    if (converted && c?.orderId) {
+      msg =
+        `Hi ${first} 👋 Thanks for ordering from TheBookX! 📚\n\n` +
+        `Track your order here:\n${SITE}/profile/${phone}/orders/${encodeURIComponent(c.orderId)}`;
+    } else {
+      const picks = parseCartBooks(c?.books);
+      const shown = picks[0]?.name;
+      const more = picks.length > 1 ? ` + ${picks.length - 1} more` : "";
+      const link = picks.length
+        ? `${SITE}/bag?shared=${picks.map((p) => `${p.id}:${p.qty}`).join(",")}`
+        : `${SITE}/bag`;
+      msg =
+        `Hi ${first} 👋 Your books are still waiting in your TheBookX bag 📚\n\n` +
+        (shown ? `*${shown}*${more}\n\n` : "") +
+        `Tap to add them back & checkout in a minute 👇\n${link}\n\n` +
+        `Free delivery across India 🚚 Reply here if you need any help!`;
+    }
     window.open(
       `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`,
       "_blank",
@@ -5183,6 +5304,43 @@ export default function ManageOrdersPage() {
     }
   });
   const [pushingTracking, setPushingTracking] = useState(false);
+  // Queued weight & size edits (orderId → {"Weight(gm)", "Sizes(Lxbxh)"}),
+  // saved locally and pushed with the tracking IDs in one go.
+  const [pendingShip, setPendingShip] = useState(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      const raw = localStorage.getItem("mo_pending_ship");
+      const obj = raw ? JSON.parse(raw) : {};
+      return obj && typeof obj === "object" ? obj : {};
+    } catch {
+      return {};
+    }
+  });
+  useEffect(() => {
+    try {
+      if (Object.keys(pendingShip).length)
+        localStorage.setItem("mo_pending_ship", JSON.stringify(pendingShip));
+      else localStorage.removeItem("mo_pending_ship");
+    } catch {}
+  }, [pendingShip]);
+  useEffect(() => {
+    const ids = Object.keys(pendingShip);
+    if (!ids.length || !orders.length) return;
+    let changed = false;
+    const next = orders.map((o) => {
+      const p = pendingShip[String(o["Order ID"])];
+      if (
+        p &&
+        (o["Weight(gm)"] !== p["Weight(gm)"] || o["Sizes(Lxbxh)"] !== p["Sizes(Lxbxh)"])
+      ) {
+        changed = true;
+        return { ...o, ...p };
+      }
+      return o;
+    });
+    if (changed) setOrders(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orders, pendingShip]);
   // Persist the queued tracking IDs whenever they change (cleared on push/discard).
   useEffect(() => {
     try {
@@ -5608,26 +5766,38 @@ export default function ManageOrdersPage() {
     });
   };
 
-  const pushPendingTracking = async () => {
-    const entries = Object.entries(pendingTracking);
-    if (entries.length === 0) return;
+  // Every order with a queued shipment edit (weight/size and/or tracking).
+  const pendingShipIds = [
+    ...new Set([...Object.keys(pendingShip), ...Object.keys(pendingTracking)]),
+  ];
+  // Push all queued weight, size & tracking edits — one write per order, all
+  // in parallel. The cards already show the new values, so no re-read.
+  const pushPendingShipments = async () => {
+    const ids = pendingShipIds;
+    if (!ids.length) return;
     setPushingTracking(true);
     try {
       await Promise.all(
-        entries.map(([id, tid]) =>
-          updateOrderRow(id, { "Shipping ID": tid }).catch((e) =>
-            console.error("Tracking push failed for", id, e),
-          ),
-        ),
+        ids.map((id) => {
+          const fields = { ...(pendingShip[id] || {}) };
+          if (pendingTracking[id]) fields["Shipping ID"] = pendingTracking[id];
+          return updateOrderRow(id, fields).catch((e) =>
+            console.error("Shipment push failed for", id, e),
+          );
+        }),
+      );
+      setPendingShip({});
+      setPendingTracking({});
+      showToast(
+        `Pushed ${ids.length} order${ids.length === 1 ? "" : "s"} to the sheet ✓`,
+        "success",
       );
     } finally {
       setPushingTracking(false);
-      setPendingTracking({});
-      setTimeout(fetchOrders, 1300);
     }
   };
-
-  const discardPendingTracking = () => {
+  const discardPendingShipments = () => {
+    setPendingShip({});
     setPendingTracking({});
     fetchOrders();
   };
@@ -7488,6 +7658,79 @@ export default function ManageOrdersPage() {
     );
   };
 
+  // Same count as the Orders filter chips (badge on the bottom Filters button).
+  const filterChipCount = (() => {
+    const st = Array.isArray(statusFilter) ? statusFilter : [statusFilter];
+    let c = st.length === 1 && st[0] === "active" ? 0 : st.length;
+    if (paymentFilter !== "all") c += 1;
+    if (dateFrom) c += 1;
+    if (dateTo) c += 1;
+    if (selectedDate) c += 1;
+    return c;
+  })();
+
+  // Phone bottom search: Orders searches every order, Dispatch searches the
+  // queue. null on other tabs (no bar).
+  const bottomSearch =
+    activeTab === "orders"
+      ? {
+          value: searchQuery,
+          set: setSearchQuery,
+          placeholder: "Search name, pincode, book…",
+          count: filteredOrders.length,
+          actions: (
+            <>
+              <button
+                type="button"
+                className={`mo-bottomsearch-btn${filterChipCount ? " set" : ""}`}
+                onClick={() => setShowFilters(true)}
+                aria-label="Filters"
+                aria-haspopup="dialog"
+              >
+                <SlidersHorizontal size={17} />
+                {filterChipCount > 0 && <b>{filterChipCount}</b>}
+              </button>
+              {orderView === "cards" && (
+                <button
+                  type="button"
+                  className={`mo-bottomsearch-btn${cardSelectMode ? " on" : ""}`}
+                  onClick={() =>
+                    setCardSelectMode((v) => {
+                      if (v) setSelectedIds([]);
+                      return !v;
+                    })
+                  }
+                  aria-pressed={cardSelectMode}
+                  aria-label={cardSelectMode ? "Exit select mode" : "Select orders"}
+                >
+                  <CheckSquare size={17} />
+                </button>
+              )}
+            </>
+          ),
+        }
+      : activeTab === "book" && bookSubTab === "queue"
+        ? {
+            value: dispatchQuery,
+            set: setDispatchQuery,
+            placeholder: "Search queue: name, pincode, book…",
+            count: orders.filter(
+              (o) =>
+                dispatchIds.includes(o["Order ID"]) &&
+                orderMatchesQuery(o, dispatchQuery),
+            ).length,
+          }
+        : null;
+  // The select bar sits above the search bar when both show.
+  useEffect(() => {
+    try {
+      document.documentElement.style.setProperty(
+        "--mo-bottomsearch-h",
+        bottomSearch ? "60px" : "0px",
+      );
+    } catch {}
+  }, [!!bottomSearch]);
+
   // Whether every book in an order has been picked (touched).
   const isOrderFullyPicked = (o) => {
     const oid = o["Order ID"] || o._rowIndex;
@@ -7829,7 +8072,13 @@ export default function ManageOrdersPage() {
         const ship = String(order["Shipping ID"] || "").toLowerCase();
         const pin = String(order["Pincode"] || "");
         const addr = String(order["Address"] || "").toLowerCase();
+        const city = String(order["City"] || "").toLowerCase();
+        const books = (order.parsedBooks || [])
+          .map((b) => String(b.name || "").toLowerCase())
+          .join(" | ");
         return (
+          books.includes(qq) ||
+          city.includes(qq) ||
           name.includes(qq) ||
           oid.includes(qq) ||
           (qDigits.length > 0 && phone.includes(qDigits)) ||
@@ -9366,6 +9615,35 @@ export default function ManageOrdersPage() {
     setWsH(h || "");
   };
   const closeWeightSize = () => setWsOrder(null);
+  // Most-used weights and box sides across all orders, for one-tap chips in
+  // the shipment-details sheet (top 5 each; L, B, H counted separately).
+  const shipPresets = useMemo(() => {
+    const tally = () => new Map();
+    const w = tally();
+    const L = tally();
+    const B = tally();
+    const H = tally();
+    const bump = (m, v) => v && m.set(v, (m.get(v) || 0) + 1);
+    orders.forEach((o) => {
+      const wt = String(o["Weight(gm)"] || "").replace(/[^\d]/g, "");
+      if (wt && Number(wt) > 0) bump(w, wt);
+      const dims = String(o["Sizes(Lxbxh)"] || "")
+        .split(/\s*[xX×*]\s*/)
+        .map((d) => String(d).replace(/[^\d.]/g, ""));
+      if (dims.length === 3 && dims.every((d) => Number(d) > 0)) {
+        bump(L, dims[0]);
+        bump(B, dims[1]);
+        bump(H, dims[2]);
+      }
+    });
+    const top = (m) =>
+      [...m.entries()]
+        .sort((a, b) => b[1] - a[1] || Number(a[0]) - Number(b[0]))
+        .slice(0, 5)
+        .map(([v, n]) => ({ v, n }));
+    return { w: top(w), L: top(L), B: top(B), H: top(H) };
+  }, [orders]);
+
   // Open the shipment-details sheet (weight/sizes + tracking id, with scanner).
   // Seeds the tracking draft from the order's current Shipping ID.
   const openShipEdit = (order) => {
@@ -9554,13 +9832,19 @@ export default function ManageOrdersPage() {
 
   // Bulk: send one template to every selected order (or all) that has an email.
   const [emailBulkOpen, setEmailBulkOpen] = useState(false);
+  // Optional explicit order list (Dispatch passes its selected queue orders);
+  // null → the Orders tab's selection, or every visible order.
+  const [emailBulkScope, setEmailBulkScope] = useState(null);
   const [bulkEmailProgress, setBulkEmailProgress] = useState(null); // {done,total}
-  const sendBulkStatusEmail = async (tpl) => {
-    const scope = (
-      selectedIds.length
+  const emailBulkOrders = () =>
+    (
+      emailBulkScope ||
+      (selectedIds.length
         ? filteredOrders.filter((o) => selectedIds.includes(o["Order ID"]))
-        : filteredOrders
+        : filteredOrders)
     ).filter((o) => String(o["Email"] || "").trim());
+  const sendBulkStatusEmail = async (tpl) => {
+    const scope = emailBulkOrders();
     if (!scope.length) {
       showToast("No selected orders have an email.", "error");
       return;
@@ -9602,6 +9886,7 @@ export default function ManageOrdersPage() {
     }
     setBulkEmailProgress(null);
     setEmailBulkOpen(false);
+    setEmailBulkScope(null);
     showToast(
       `Sent “${tpl.label}” to ${ok}/${scope.length} customer(s) ✓`,
       ok ? "success" : "error",
@@ -9675,19 +9960,20 @@ export default function ManageOrdersPage() {
     const curTrk = String(
       wsOrder.shippingId || wsOrder["Shipping ID"] || "",
     ).trim();
-    setWsSaving(true);
-    patchLocalOrder(oid, { "Weight(gm)": w, "Sizes(Lxbxh)": sizes });
-    try {
-      await updateOrderRow(oid, { "Weight(gm)": w, "Sizes(Lxbxh)": sizes });
-      if (trk && trk !== curTrk) queueTracking(wsOrder, trk);
-      showToast("Shipment details saved ✓", "success");
-      setWsOrder(null);
-    } catch (e) {
-      console.error("Weight/sizes save failed:", e);
-      showToast("Save failed — please try again.", "error");
-    } finally {
-      setWsSaving(false);
+    // Saved locally (card updates instantly) and queued — the shipment bar
+    // pushes every queued edit to the sheet in one go.
+    const curW = String(wsOrder["Weight(gm)"] || "").replace(/[^\d]/g, "");
+    const curS = String(wsOrder["Sizes(Lxbxh)"] || "").trim();
+    if (w !== curW || sizes !== curS || pendingShip[oid]) {
+      patchLocalOrder(oid, { "Weight(gm)": w, "Sizes(Lxbxh)": sizes });
+      setPendingShip((p) => ({
+        ...p,
+        [oid]: { "Weight(gm)": w, "Sizes(Lxbxh)": sizes },
+      }));
     }
+    if (trk && trk !== curTrk) queueTracking(wsOrder, trk);
+    setWsOrder(null);
+    showToast("Saved · push to the sheet when you're done", "success");
   };
 
   // ── Replace-a-book: swap one order line for a catalogue title ──
@@ -11993,30 +12279,16 @@ export default function ManageOrdersPage() {
                                       <ChevronRight size={15} />
                                     </button>
                                   </div>
-                                  <div className="mo2-ship">
-                                    <button
-                                      type="button"
-                                      className={`mo2-ship-btn${w || sz ? "" : " todo"}`}
-                                      onClick={() => openShipEdit(order)}
-                                      title="Edit weight & size"
-                                    >
-                                      <Package size={13} />
-                                      <span>
-                                        {w || sz
-                                          ? [w && `${w} g`, sz].filter(Boolean).join(" · ")
-                                          : "Add weight & size"}
-                                      </span>
-                                    </button>
-                                    <button
-                                      type="button"
-                                      className={`mo2-ship-btn${trk ? " ok" : " todo"}`}
-                                      onClick={() => openShipEdit(order)}
-                                      title="Edit tracking id"
-                                    >
-                                      <Truck size={13} />
-                                      <span>{trk || "Add tracking"}</span>
-                                    </button>
-                                  </div>
+                                  {(w || sz || trk) && (
+                                    <p className="mo2-shipline">
+                                      {(w || sz) && (
+                                        <span>
+                                          📦 {[w && `${w} g`, sz].filter(Boolean).join(" · ")}
+                                        </span>
+                                      )}
+                                      {trk && <span>🚚 {trk}</span>}
+                                    </p>
+                                  )}
                                   {custNote && (
                                     <p className="mo2-note" title={custNote}>
                                       “{custNote}”
@@ -12042,7 +12314,8 @@ export default function ManageOrdersPage() {
                                   title="WhatsApp the customer"
                                   aria-label="WhatsApp the customer"
                                 >
-                                  <FaWhatsapp size={17} />
+                                  <FaWhatsapp size={18} className="mo-act-ic" />
+                                  <small className="mo-act-l">Chat</small>
                                 </button>
                                 {String(order["Email"] || "").trim() && (
                                   <button
@@ -12056,7 +12329,8 @@ export default function ManageOrdersPage() {
                                     title="Email the customer"
                                     aria-label="Email the customer"
                                   >
-                                    <Mail size={15} />
+                                    <Mail size={17} className="mo-act-ic" />
+                                    <small className="mo-act-l">Email</small>
                                   </button>
                                 )}
                                 {String(order["Email"] || "").trim() && (
@@ -12067,7 +12341,8 @@ export default function ManageOrdersPage() {
                                     title="Send a status email (pick a template)"
                                     aria-label="Send status email"
                                   >
-                                    <MailCheck size={15} />
+                                    <MailCheck size={17} className="mo-act-ic" />
+                                    <small className="mo-act-l">Status</small>
                                   </button>
                                 )}
                                 {orderId && (
@@ -12081,7 +12356,8 @@ export default function ManageOrdersPage() {
                                     title="Open customer order page"
                                     aria-label="Open customer order page"
                                   >
-                                    <ExternalLink size={15} />
+                                    <ExternalLink size={17} className="mo-act-ic" />
+                                    <small className="mo-act-l">View</small>
                                   </a>
                                 )}
                                 <button
@@ -12096,10 +12372,11 @@ export default function ManageOrdersPage() {
                                   aria-label="Book online with India Post"
                                 >
                                   {bookedOrders[orderId] ? (
-                                    <CheckCircle size={15} />
+                                    <CheckCircle size={17} className="mo-act-ic" />
                                   ) : (
-                                    <Truck size={15} />
+                                    <Stamp size={17} className="mo-act-ic" />
                                   )}
+                                  <small className="mo-act-l">{bookedOrders[orderId] ? "Booked" : "Book"}</small>
                                 </button>
                                 <button
                                   type="button"
@@ -12113,11 +12390,38 @@ export default function ManageOrdersPage() {
                                   aria-label="Move to Dispatch"
                                 >
                                   {dispatchIds.includes(orderId) ? (
-                                    <CheckCircle size={15} />
+                                    <ListChecks size={17} className="mo-act-ic" />
                                   ) : (
-                                    <Send size={15} />
+                                    <ListPlus size={17} className="mo-act-ic" />
                                   )}
+                                  <small className="mo-act-l">{dispatchIds.includes(orderId) ? "Queued" : "Queue"}</small>
                                 </button>
+                                {(() => {
+                                  // One button for weight, size & tracking (the
+                                  // same editor); the dot shows what's missing.
+                                  const sw = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");
+                                  const ss = String(order["Sizes(Lxbxh)"] || "").trim();
+                                  const st = String(order.shippingId || order["Shipping ID"] || "").trim();
+                                  const done = (sw || ss) && st;
+                                  const missing = [!(sw || ss) && "weight & size", !st && "tracking"].filter(Boolean);
+                                  return (
+                                    <button
+                                      type="button"
+                                      className={`mo-frame-ic mo-frame-ship ${done ? "ok" : "todo"}`}
+                                      onClick={() => openShipEdit(order)}
+                                      title={done ? "Edit weight, size & tracking" : `Add ${missing.join(" and ")}`}
+                                      aria-label={done ? "Edit weight, size & tracking" : `Add ${missing.join(" and ")}`}
+                                    >
+                                      {done ? (
+                                        <PackageCheck size={17} className="mo-act-ic" />
+                                      ) : (
+                                        <Package size={17} className="mo-act-ic" />
+                                      )}
+                                      <small className="mo-act-l">Parcel</small>
+                                      <i className="mo-frame-dot" aria-hidden="true" />
+                                    </button>
+                                  );
+                                })()}
                               </div>
                               <div className="mo-kebab-wrap">
                                 <button
@@ -12132,7 +12436,8 @@ export default function ManageOrdersPage() {
                                     setCardMenuId((p) => (p === orderId ? null : orderId));
                                   }}
                                 >
-                                  <MoreVertical size={16} />
+                                  <MoreVertical size={17} className="mo-act-ic" />
+                                  <small className="mo-act-l">More</small>
                                 </button>
                                 {cardMenuId === orderId && (
                                   <>
@@ -12920,7 +13225,7 @@ export default function ManageOrdersPage() {
   };
 
   return (
-    <div className={`my-orders-page mo-glass${darkMode ? " mo-dark" : ""}`}>
+    <div className={`my-orders-page mo-glass${darkMode ? " mo-dark" : ""}${bottomSearch ? " has-bsearch" : ""}${pendingShipIds.length ? " has-shipbar" : ""}`}>
       {/* New-order chime (drop the audio file at /public/sounds/new-order.mp3) */}
       <audio
         ref={newOrderAudioRef}
@@ -13177,12 +13482,13 @@ export default function ManageOrdersPage() {
             {chartTip &&
               typeof document !== "undefined" &&
               createPortal(
-                <div
+                <EdgeSafeTip
                   className={`an2-tip${chartTip.below ? " below" : ""}${darkMode ? " mo-dark" : ""}`}
-                  style={{ left: chartTip.x, top: chartTip.y }}
+                  x={chartTip.x}
+                  y={chartTip.y}
                 >
                   {chartTip.text}
-                </div>,
+                </EdgeSafeTip>,
                 moPortalTarget(),
               )}
 
@@ -13198,26 +13504,59 @@ export default function ManageOrdersPage() {
                 } by day of month · dashed = forecast`}
               >
                 {/* Orders / revenue — drives both the insights and the chart. */}
-                <div className="an2-mrr-tabs" role="tablist">
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={runRateMetric !== "revenue"}
-                    className={`an2-mrr-tab${runRateMetric !== "revenue" ? " on" : ""}`}
-                    onClick={() => setRunRateMetric("orders")}
-                  >
-                    Orders
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={runRateMetric === "revenue"}
-                    className={`an2-mrr-tab${runRateMetric === "revenue" ? " on" : ""}`}
-                    onClick={() => setRunRateMetric("revenue")}
-                  >
-                    Revenue
-                  </button>
-                </div>
+                {(() => {
+                  // Segmented switch: each option shows this month's figure.
+                  const curM = monthlyRunRate.months.find((m) => m.isCurrent);
+                  const opts = [
+                    {
+                      k: "orders",
+                      Icon: ShoppingBag,
+                      label: "Orders",
+                      v: curM ? curM.total.toLocaleString("en-IN") : "—",
+                    },
+                    {
+                      k: "revenue",
+                      Icon: IndianRupee,
+                      label: "Revenue",
+                      v: curM ? `₹${Math.round(curM.totalRev).toLocaleString("en-IN")}` : "—",
+                    },
+                  ];
+                  return (
+                    <div className="an2-mrr-seg" role="tablist" aria-label="Run-rate metric">
+                      {opts.map(({ k, Icon, label, v }) => {
+                        const on = (runRateMetric === "revenue") === (k === "revenue");
+                        return (
+                          <button
+                            key={k}
+                            type="button"
+                            role="tab"
+                            aria-selected={on}
+                            className={`an2-mrr-seg-btn${on ? " on" : ""}`}
+                            onClick={() => setRunRateMetric(k)}
+                          >
+                            {on && (
+                              <motion.span
+                                layoutId="an2-mrr-seg-pill"
+                                className="an2-mrr-seg-pill"
+                                transition={PILL_SPRING}
+                              />
+                            )}
+                            <span className="an2-mrr-seg-ic">
+                              <Icon size={15} />
+                            </span>
+                            <span className="an2-mrr-seg-t">
+                              <span className="an2-mrr-seg-l">{label}</span>
+                              <b className="an2-mrr-seg-v">
+                                {v}
+                                <em> this month</em>
+                              </b>
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
                 {/* Insights first: the questions an owner asks of this chart,
                     answered in words — ahead or behind, where it lands, what a
                     record takes, and which way it is trending. */}
@@ -14989,63 +15328,143 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
-                  {/* Row 3 — the current view in one line, plus anything that
-                      needs attention. Scrolls sideways on phones. */}
-                  <div className="mo-viewsum">
-                    <span>
-                      <b>{realOrders.length.toLocaleString()}</b> order
-                      {realOrders.length === 1 ? "" : "s"}
-                    </span>
-                    <span>
-                      <b>₹{fRevenue.toLocaleString()}</b>
-                    </span>
-                    <span>
-                      <b>{fBooks.toLocaleString()}</b> books
-                    </span>
-                    <span className="mo-vs-pay">
-                      COD {fCod} · UPI {fUpi} · ₹99 {fPrepaid}
-                    </span>
-                    {unconfirmedOrders.length > 0 && (
-                      <button
-                        type="button"
-                        className="mo-vs-alert"
-                        onClick={() => setShowUnconfirmed(true)}
-                      >
-                        <AlertCircle size={13} />
-                        {unconfirmedOrders.length} to review
-                      </button>
-                    )}
-                    {unavailCandidates.length > 0 && (
-                      <button
-                        type="button"
-                        className="mo-vs-alert warn"
-                        onClick={() => setUnavailOpen(true)}
-                      >
-                        <AlertTriangle size={13} />
-                        {unavailCandidates.length} unavailable
-                      </button>
-                    )}
-                    {dismissedIds.length > 0 && (
-                      <button
-                        type="button"
-                        className="mo-vs-alert"
-                        onClick={reloadCards}
-                      >
-                        <RefreshCw size={13} />
-                        {dismissedIds.length} hidden
-                      </button>
-                    )}
-                  </div>
+                  {/* Row 3 — the current view: three headline numbers, the
+                      payment split as one bar, and anything needing attention.
+                      On phones (search lives in the bottom bar) the Filters
+                      and Select buttons sit here instead of on their own row. */}
+                  {(() => {
+                    const n = realOrders.length;
+                    const pay = [
+                      { k: "upi", label: "Online", v: fUpi },
+                      { k: "adv", label: "₹99 advance", v: fPrepaid },
+                      { k: "cod", label: "COD", v: fCod },
+                    ];
+                    const alerts = [
+                      unconfirmedOrders.length > 0 && (
+                        <button
+                          key="rev"
+                          type="button"
+                          className="mo-vs2-alert"
+                          onClick={() => setShowUnconfirmed(true)}
+                        >
+                          <AlertCircle size={14} />
+                          <b>{unconfirmedOrders.length}</b> to review
+                          <ChevronRight size={14} className="mo-vs2-go" />
+                        </button>
+                      ),
+                      unavailCandidates.length > 0 && (
+                        <button
+                          key="unav"
+                          type="button"
+                          className="mo-vs2-alert warn"
+                          onClick={() => setUnavailOpen(true)}
+                        >
+                          <AlertTriangle size={14} />
+                          <b>{unavailCandidates.length}</b> books unavailable
+                          <ChevronRight size={14} className="mo-vs2-go" />
+                        </button>
+                      ),
+                      dismissedIds.length > 0 && (
+                        <button
+                          key="hid"
+                          type="button"
+                          className="mo-vs2-alert"
+                          onClick={reloadCards}
+                        >
+                          <RefreshCw size={14} />
+                          <b>{dismissedIds.length}</b> hidden · show
+                        </button>
+                      ),
+                    ].filter(Boolean);
+                    return (
+                      <div className="mo-vs2">
+                        <div className="mo-vs2-top">
+                          <div className="mo-vs2-stats">
+                            <div className="mo-vs2-stat">
+                              <span>Orders</span>
+                              <b>{n.toLocaleString()}</b>
+                            </div>
+                            <div className="mo-vs2-stat">
+                              <span>Revenue</span>
+                              <b>₹{fRevenue.toLocaleString()}</b>
+                            </div>
+                            <div className="mo-vs2-stat">
+                              <span>Books</span>
+                              <b>{fBooks.toLocaleString()}</b>
+                            </div>
+                          </div>
+                        </div>
+                        {n > 0 && (
+                          <div className="mo-vs2-pay">
+                            <div className="mo-vs2-paybar" role="img" aria-label={pay.map((p) => `${p.label} ${p.v}`).join(", ")}>
+                              {pay.map((p) =>
+                                p.v > 0 ? (
+                                  <i key={p.k} className={p.k} style={{ flexGrow: p.v }} />
+                                ) : null,
+                              )}
+                            </div>
+                            <div className="mo-vs2-paylegend">
+                              {pay.map((p) => (
+                                <span key={p.k}>
+                                  <i className={p.k} />
+                                  {p.label} <b>{p.v}</b>
+                                  <em>{Math.round((p.v / n) * 100)}%</em>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {alerts.length > 0 && (
+                          <div className="mo-vs2-alerts">{alerts}</div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   {/* Last 14 days at a glance for the current filters, stacked
                       by payment type. Tap a day to filter the list to it; tap
                       again to clear. Bar count = cards you'll see. */}
                   {(() => {
-                    const DAYS = 14;
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
+                    const ymd = (d) =>
+                      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+                    const fromYmd = (v) => {
+                      const [y, m, dd] = String(v || "").split("-").map(Number);
+                      return y && m && dd ? new Date(y, m - 1, dd) : null;
+                    };
+                    const MAX_DAYS = 92;
+                    const isCustom =
+                      dayRange.kind === "custom" &&
+                      fromYmd(dayRange.from) &&
+                      fromYmd(dayRange.to);
+                    const rangeEnd = isCustom ? fromYmd(dayRange.to) : today;
+                    const DAYS = isCustom
+                      ? Math.min(
+                          MAX_DAYS,
+                          Math.round((rangeEnd - fromYmd(dayRange.from)) / 86400000) + 1,
+                        )
+                      : Number(dayRange.kind) || 14;
+                    const fmtShort = (d) =>
+                      d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+                    const rangeLabel = isCustom
+                      ? `${fmtShort(fromYmd(dayRange.from))} – ${fmtShort(rangeEnd)}`
+                      : `Last ${DAYS} days`;
+                    // Many days → thin bars: hide per-bar numbers/tags and
+                    // label every few days (the tooltip has the detail).
+                    // Every day keeps full-size bars + labels; long ranges
+                    // scroll sideways (opened at today) instead of squeezing.
+                    const dense = false;
+                    const labelEvery = 1;
+                    const scrolls = DAYS > 14;
+                    const openCustom = () => {
+                      const s0 = new Date(rangeEnd);
+                      s0.setDate(s0.getDate() - (DAYS - 1));
+                      setDayRangeDraft({ from: ymd(s0), to: ymd(rangeEnd) });
+                      setDayRangeSheet(true);
+                    };
                     const days = Array.from({ length: DAYS }, (_, i) => {
-                      const d = new Date(today);
+                      const d = new Date(rangeEnd);
                       d.setDate(d.getDate() - (DAYS - 1 - i));
                       return { d, k: dayKey(d), upi: 0, adv: 0, cod: 0, speed: 0, gift: 0 };
                     });
@@ -15090,8 +15509,15 @@ export default function ManageOrdersPage() {
                         >
                           <span className="mo-daybars-title">
                             <ChevronDown size={15} className="mo-daybars-chev" />
-                            Last {DAYS} days
-                            {chips.some((c) => c.key !== "date") ? " · current filters" : ""}
+                            <span>
+                              {rangeLabel}
+                              {chips.some((c) => c.key !== "date") ? " · current filters" : ""}
+                              <small className="mo-daybars-sub">
+                                {sum.upi + sum.adv + sum.cod} orders · avg{" "}
+                                {Math.round(((sum.upi + sum.adv + sum.cod) / DAYS) * 10) / 10}/day
+                                {selectedDate ? " · tap the day again to clear" : " · tap a day to filter"}
+                              </small>
+                            </span>
                           </span>
                           <span className="mo-daybars-legend">
                             <i className="upi" /> Online {sum.upi}
@@ -15105,40 +15531,309 @@ export default function ManageOrdersPage() {
                         <AnimatePresence initial={false}>
                         {dayChartOpen && (
                         <motion.div className="mo-daybars-body" {...SLIDE}>
-                        <div className="mo-daybars-plot">
-                          {days.map((x) => {
+                        <div className="mo-daybars-range" role="tablist" aria-label="Chart range">
+                          {[
+                            ["7", "7 days"],
+                            ["14", "14 days"],
+                            ["30", "30 days"],
+                          ].map(([k, l]) => (
+                            <button
+                              key={k}
+                              type="button"
+                              role="tab"
+                              aria-selected={dayRange.kind === k}
+                              className={dayRange.kind === k ? "on" : ""}
+                              onClick={() => setDayRange({ kind: k })}
+                            >
+                              {l}
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            role="tab"
+                            aria-selected={!!isCustom}
+                            aria-haspopup="dialog"
+                            className={`custom${isCustom ? " on" : ""}`}
+                            onClick={openCustom}
+                          >
+                            <Calendar size={13} />
+                            {isCustom ? rangeLabel : "Custom"}
+                          </button>
+                        </div>
+                        <div
+                          className={`mo-daybars-scroll${scrolls ? " on" : ""}`}
+                          ref={(el) => {
+                            // Jump to today whenever the range changes.
+                            if (el && el.dataset.k !== rangeLabel) {
+                              el.dataset.k = rangeLabel;
+                              el.scrollLeft = el.scrollWidth;
+                            }
+                          }}
+                        >
+                        <div
+                          className={`mo-daybars-plot${dense ? " dense" : ""}`}
+                          style={{
+                            gridTemplateColumns: `repeat(${DAYS}, minmax(${scrolls ? 30 : 0}px, 1fr))`,
+                          }}
+                        >
+                          {days.map((x, i) => {
                             const t = tot(x);
                             const on = selectedDate === x.k;
                             const isToday = x.k === dayKey(today);
+                            const dow = x.d.getDay();
+                            const label = x.d.toLocaleDateString("en-IN", {
+                              weekday: "short",
+                              day: "numeric",
+                              month: "short",
+                            });
+                            const tipSide =
+                              dayHover?.i === i
+                                ? dayHover.side
+                                : "";
                             return (
                               <button
                                 key={x.k}
                                 type="button"
-                                className={`mo-daybar${on ? " on" : ""}${selectedDate && !on ? " dim" : ""}`}
+                                className={`mo-daybar${on ? " on" : ""}${selectedDate && !on ? " dim" : ""}${isToday ? " today" : ""}${dow === 0 || dow === 6 ? " wknd" : ""}`}
                                 onClick={() => setSelectedDate(on ? "" : x.k)}
-                                title={`${x.d.toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · ${t} orders — Online ${x.upi}, ₹99 ${x.adv}, COD ${x.cod} · Speed ${x.speed}, Gift ${x.gift}`}
+                                onMouseEnter={(e) => {
+                                  // Flip the tooltip by where the bar sits in
+                                  // the visible (scrolled) area.
+                                  const r = e.currentTarget.getBoundingClientRect();
+                                  const box = (
+                                    e.currentTarget.closest(".mo-daybars-scroll") ||
+                                    e.currentTarget.parentElement
+                                  ).getBoundingClientRect();
+                                  const side =
+                                    r.left - box.left < 80 ? " l" : box.right - r.right < 80 ? " r" : "";
+                                  setDayHover({ i, side });
+                                }}
+                                onMouseLeave={() => setDayHover((h) => (h?.i === i ? null : h))}
+                                onFocus={() => setDayHover({ i, side: "" })}
+                                onBlur={() => setDayHover((h) => (h?.i === i ? null : h))}
+                                aria-label={`${label}: ${t} orders — Online ${x.upi}, ₹99 advance ${x.adv}, COD ${x.cod}`}
                                 aria-pressed={on}
                               >
-                                <span className="mo-daybar-n">{t || ""}</span>
-                                <span className="mo-daybar-col" style={{ height: `${(t / max) * 100}%` }}>
-                                  {x.cod > 0 && <span className="cod" style={{ flexGrow: x.cod }} />}
-                                  {x.adv > 0 && <span className="adv" style={{ flexGrow: x.adv }} />}
-                                  {x.upi > 0 && <span className="upi" style={{ flexGrow: x.upi }} />}
+                                {dayHover?.i === i && (
+                                  <span className={`mo-daybar-tip${tipSide}`} role="tooltip">
+                                    <span className="mo-daybar-tip-h">
+                                      {label} · <b>{t} order{t === 1 ? "" : "s"}</b>
+                                    </span>
+                                    {[
+                                      ["upi", "Online", x.upi],
+                                      ["adv", "₹99 advance", x.adv],
+                                      ["cod", "COD", x.cod],
+                                    ].map(([k, l, v]) => (
+                                      <span className="mo-daybar-tip-r" key={k}>
+                                        <i className={k} />
+                                        {l}
+                                        <b>{v}</b>
+                                      </span>
+                                    ))}
+                                    {(x.speed > 0 || x.gift > 0) && (
+                                      <span className="mo-daybar-tip-x">
+                                        {x.speed > 0 && `⚡ Speed ${x.speed}`}
+                                        {x.speed > 0 && x.gift > 0 && " · "}
+                                        {x.gift > 0 && `🎁 Gift ${x.gift}`}
+                                      </span>
+                                    )}
+                                  </span>
+                                )}
+                                <span className="mo-daybar-n">{dense ? "" : t || ""}</span>
+                                <span className="mo-daybar-track">
+                                  <span className="mo-daybar-col" style={{ height: `${(t / max) * 100}%` }}>
+                                    {x.cod > 0 && <span className="cod" style={{ flexGrow: x.cod }} />}
+                                    {x.adv > 0 && <span className="adv" style={{ flexGrow: x.adv }} />}
+                                    {x.upi > 0 && <span className="upi" style={{ flexGrow: x.upi }} />}
+                                  </span>
                                 </span>
-                                <span className="mo-daybar-tags">
-                                  {x.speed > 0 && <i className="speed">⚡{x.speed}</i>}
-                                  {x.gift > 0 && <i className="gift">🎁{x.gift}</i>}
-                                </span>
+                                {!dense && (
+                                  <span className="mo-daybar-tags">
+                                    {x.speed > 0 && <i className="speed">⚡{x.speed}</i>}
+                                    {x.gift > 0 && <i className="gift">🎁{x.gift}</i>}
+                                  </span>
+                                )}
                                 <span className="mo-daybar-d">
-                                  {isToday ? "Today" : x.d.getDate()}
+                                  {(!dense || (DAYS - 1 - i) % labelEvery === 0) && (
+                                    <>
+                                      <small>
+                                        {isToday
+                                          ? "Today"
+                                          : dense || x.d.getDate() === 1
+                                            ? x.d.toLocaleDateString("en-IN", { month: "short" })
+                                            : x.d.toLocaleDateString("en-IN", { weekday: "narrow" })}
+                                      </small>
+                                      {x.d.getDate()}
+                                    </>
+                                  )}
                                 </span>
                               </button>
                             );
                           })}
                         </div>
+                        </div>
                         </motion.div>
                         )}
                         </AnimatePresence>
+
+                        {/* Custom range — slide-up sheet like the bill. */}
+                        {typeof document !== "undefined" &&
+                          createPortal(
+                            <AnimatePresence>
+                              {dayRangeSheet &&
+                                (() => {
+                                  const close = () => setDayRangeSheet(false);
+                                  const f = fromYmd(dayRangeDraft.from);
+                                  const t = fromYmd(dayRangeDraft.to);
+                                  const span = f && t ? Math.round((t - f) / 86400000) + 1 : 0;
+                                  const err = !f || !t
+                                    ? "Pick both dates."
+                                    : t < f
+                                      ? "The end date is before the start date."
+                                      : t > today
+                                        ? "The end date can't be in the future."
+                                        : span > MAX_DAYS
+                                          ? `Pick up to ${MAX_DAYS} days (this is ${span}).`
+                                          : "";
+                                  const back = (n) => {
+                                    const d0 = new Date(today);
+                                    d0.setDate(d0.getDate() - (n - 1));
+                                    return { from: ymd(d0), to: ymd(today) };
+                                  };
+                                  const presets = [
+                                    { k: "Last 60 days", ...back(60) },
+                                    { k: "Last 90 days", ...back(90) },
+                                    {
+                                      k: "This month",
+                                      from: ymd(new Date(today.getFullYear(), today.getMonth(), 1)),
+                                      to: ymd(today),
+                                    },
+                                    {
+                                      k: "Last month",
+                                      from: ymd(new Date(today.getFullYear(), today.getMonth() - 1, 1)),
+                                      to: ymd(new Date(today.getFullYear(), today.getMonth(), 0)),
+                                    },
+                                  ];
+                                  return (
+                                    <>
+                                      <motion.div
+                                        key="mo-range-bg"
+                                        className="mo-sheet-backdrop"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        onClick={close}
+                                      />
+                                      <motion.aside
+                                        key="mo-range"
+                                        className="mo-sheet mo-sheet-up mo-range-sheet"
+                                        role="dialog"
+                                        aria-modal="true"
+                                        aria-label="Chart date range"
+                                        initial={{ y: "100%" }}
+                                        animate={{ y: 0 }}
+                                        exit={{ y: "100%" }}
+                                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                      >
+                                        <span className="mo-sheet-grip" aria-hidden="true" />
+                                        <div className="mo-sheet-head">
+                                          <div>
+                                            <h3>Custom range</h3>
+                                            <p className="mo-sheet-note">
+                                              Show the orders chart for any span up to {MAX_DAYS} days.
+                                            </p>
+                                          </div>
+                                          <button
+                                            type="button"
+                                            className="mo-sheet-x"
+                                            onClick={close}
+                                            aria-label="Close"
+                                          >
+                                            <X size={18} />
+                                          </button>
+                                        </div>
+                                        <div className="mo-sheet-body">
+                                          <div className="mo-range-presets">
+                                            {presets.map((p) => {
+                                              const on = p.from === dayRangeDraft.from && p.to === dayRangeDraft.to;
+                                              return (
+                                                <button
+                                                  key={p.k}
+                                                  type="button"
+                                                  className={on ? "on" : ""}
+                                                  onClick={() => setDayRangeDraft({ from: p.from, to: p.to })}
+                                                >
+                                                  {p.k}
+                                                </button>
+                                              );
+                                            })}
+                                          </div>
+                                          <div className="mo-range-fields">
+                                            <label>
+                                              <span>From</span>
+                                              <input
+                                                type="date"
+                                                value={dayRangeDraft.from}
+                                                max={dayRangeDraft.to || ymd(today)}
+                                                onChange={(e) =>
+                                                  setDayRangeDraft((d) => ({ ...d, from: e.target.value }))
+                                                }
+                                              />
+                                            </label>
+                                            <label>
+                                              <span>To</span>
+                                              <input
+                                                type="date"
+                                                value={dayRangeDraft.to}
+                                                min={dayRangeDraft.from || undefined}
+                                                max={ymd(today)}
+                                                onChange={(e) =>
+                                                  setDayRangeDraft((d) => ({ ...d, to: e.target.value }))
+                                                }
+                                              />
+                                            </label>
+                                          </div>
+                                          <p className={`mo-range-sum${err ? " err" : ""}`}>
+                                            {err ||
+                                              `${fmtShort(f)} – ${fmtShort(t)} · ${span} day${span === 1 ? "" : "s"}`}
+                                          </p>
+                                        </div>
+                                        <div className="mo-sheet-foot">
+                                          <button
+                                            type="button"
+                                            className="mo-sheet-clear"
+                                            onClick={() => {
+                                              setDayRange({ kind: "14" });
+                                              close();
+                                            }}
+                                          >
+                                            Reset to 14 days
+                                          </button>
+                                          <button
+                                            type="button"
+                                            className="mo-sheet-done"
+                                            disabled={!!err}
+                                            onClick={() => {
+                                              setDayRange({
+                                                kind: "custom",
+                                                from: dayRangeDraft.from,
+                                                to: dayRangeDraft.to,
+                                              });
+                                              if (!dayChartOpen) toggleDayChart();
+                                              close();
+                                            }}
+                                          >
+                                            Show graph
+                                          </button>
+                                        </div>
+                                      </motion.aside>
+                                    </>
+                                  );
+                                })()}
+                            </AnimatePresence>,
+                            moPortalTarget(),
+                          )}
                       </div>
                     );
                   })()}
@@ -15450,9 +16145,13 @@ export default function ManageOrdersPage() {
                 status). Select rows, then download decorated address labels
                 (colour or B&W, 4 per A4 landscape page, 2×2). */}
             {bookSubTab === "queue" && (() => {
-              const dOrders = orders.filter((o) =>
+              const dQueue = orders.filter((o) =>
                 dispatchIds.includes(o["Order ID"]),
               );
+              // Bottom-bar search narrows the queue (name, pincode, book…).
+              const dOrders = dispatchQuery.trim()
+                ? dQueue.filter((o) => orderMatchesQuery(o, dispatchQuery))
+                : dQueue;
               const scope = dispatchSel.length
                 ? dOrders.filter((o) => dispatchSel.includes(o["Order ID"]))
                 : dOrders;
@@ -15482,7 +16181,11 @@ export default function ManageOrdersPage() {
                     <div className="mo-dispatch-head-top">
                       <span className="mo-dispatch-title">
                         <Send size={16} /> Dispatch queue
-                        <b>{dOrders.length}</b>
+                        <b>
+                          {dispatchQuery.trim()
+                            ? `${dOrders.length}/${dQueue.length}`
+                            : dQueue.length}
+                        </b>
                       </span>
                       <div className="mo-dispatch-head-r">
                         <button
@@ -15519,7 +16222,18 @@ export default function ManageOrdersPage() {
                     </div>
                   </div>
 
-                  {dOrders.length === 0 ? (
+                  {dOrders.length === 0 && dQueue.length > 0 ? (
+                    <p className="mo-dispatch-empty">
+                      No queued order matches “{dispatchQuery.trim()}”.{" "}
+                      <button
+                        type="button"
+                        className="mo-selbar-link"
+                        onClick={() => setDispatchQuery("")}
+                      >
+                        Clear search
+                      </button>
+                    </p>
+                  ) : dOrders.length === 0 ? (
                     <p className="mo-dispatch-empty">
                       No orders queued yet. On any order card, tap the{" "}
                       <Send size={12} /> icon to move it here for label
@@ -15539,19 +16253,6 @@ export default function ManageOrdersPage() {
                               className={`mo-dispatch-card-wrap${selected ? " sel" : ""}`}
                               key={oid}
                             >
-                              <button
-                                type="button"
-                                className="mo-dispatch-card-x"
-                                title="Remove from dispatch queue"
-                                onClick={() => {
-                                  toggleDispatch(oid);
-                                  setDispatchSel((p) =>
-                                    p.filter((x) => x !== oid),
-                                  );
-                                }}
-                              >
-                                <X size={14} />
-                              </button>
                               {renderOrderCard(order, idx, {
                                 mode: true,
                                 selected,
@@ -15562,6 +16263,18 @@ export default function ManageOrdersPage() {
                                       : [...p, oid],
                                   ),
                               })}
+                              <button
+                                type="button"
+                                className="mo-dispatch-remove"
+                                onClick={() => {
+                                  toggleDispatch(oid);
+                                  setDispatchSel((p) =>
+                                    p.filter((x) => x !== oid),
+                                  );
+                                }}
+                              >
+                                <X size={14} /> Remove from queue
+                              </button>
                             </div>
                           );
                         })}
@@ -15790,6 +16503,39 @@ export default function ManageOrdersPage() {
                                           </span>
                                           <b>{contractN}</b>
                                         </button>
+                                      </div>
+                                    </section>
+
+                                    <section className="mo-sheet-sec">
+                                      <h4>Notify customers</h4>
+                                      <div className="mo-sheet-list">
+                                        {(() => {
+                                          const withEmail = scope.filter((o) =>
+                                            String(o["Email"] || "").trim(),
+                                          );
+                                          return (
+                                            <button
+                                              type="button"
+                                              disabled={!withEmail.length}
+                                              onClick={() => {
+                                                setEmailBulkScope(scope);
+                                                setEmailBulkOpen(true);
+                                                close();
+                                              }}
+                                            >
+                                              <MailCheck size={17} />
+                                              <span>
+                                                Email status update
+                                                <em>
+                                                  {withEmail.length < scope.length
+                                                    ? `${scope.length - withEmail.length} without an email will be skipped`
+                                                    : "Only orders with an email address"}
+                                                </em>
+                                              </span>
+                                              <b>{withEmail.length}</b>
+                                            </button>
+                                          );
+                                        })()}
                                       </div>
                                     </section>
 
@@ -17057,7 +17803,7 @@ export default function ManageOrdersPage() {
                         </div>
                       ) : (
                         <div className="mo-carts-list">
-                          {list.map((c) => {
+                          {list.map((c, ci) => {
                             const converted = c.status === "Converted";
                             const initial = (c.name || "G")
                               .trim()
@@ -17065,7 +17811,9 @@ export default function ManageOrdersPage() {
                               .toUpperCase();
                             return (
                               <div
-                                key={c.cartKey}
+                                // The sheet can hold the same cart key twice
+                                // (one device, two rows) — keep keys unique.
+                                key={`${c.cartKey}-${ci}`}
                                 className={`mo-cart-card${converted ? " converted" : ""}`}
                               >
                                 <div className="mo-cart-top">
@@ -19091,36 +19839,6 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
-                  {Object.keys(pendingTracking).length > 0 && (
-                    <div className="mo-status-pushbar mo-track-pushbar">
-                      <span className="mo-status-pushbar-lbl">
-                        {Object.keys(pendingTracking).length} tracking ID
-                        {Object.keys(pendingTracking).length === 1 ? "" : "s"}{" "}
-                        saved
-                      </span>
-                      <div className="mo-status-pushbar-actions">
-                        <button
-                          type="button"
-                          className="mo-status-discard"
-                          onClick={discardPendingTracking}
-                          disabled={pushingTracking}
-                        >
-                          Discard
-                        </button>
-                        <button
-                          type="button"
-                          className="mo-status-push"
-                          onClick={pushPendingTracking}
-                          disabled={pushingTracking}
-                        >
-                          {pushingTracking
-                            ? "Pushing…"
-                            : `Push ${Object.keys(pendingTracking).length} to sheet`}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
                   {/* Always-visible colorful gift-cards download — exports only
                       gift-wrap orders (selected ones if any, else all in view).
                       Prices show only for COD gift orders. */}
@@ -20263,6 +20981,21 @@ export default function ManageOrdersPage() {
                           autoFocus
                         />
                       </label>
+                      {shipPresets.w.length > 0 && (
+                        <div className="mo-ws-chips" aria-label="Most used weights">
+                          {shipPresets.w.map(({ v, n }) => (
+                            <button
+                              key={v}
+                              type="button"
+                              className={`mo-ws-chip${String(wsWeight) === v ? " on" : ""}`}
+                              onClick={() => setWsWeight(v)}
+                              title={`Used on ${n} order${n === 1 ? "" : "s"}`}
+                            >
+                              {v} g<em>×{n}</em>
+                            </button>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Live India Post bucket — Express-opted orders and
                           within-Maharashtra orders are always Speed; otherwise
@@ -20320,33 +21053,42 @@ export default function ManageOrdersPage() {
 
                       <div className="mo-ws-field">
                         <span className="mo-ws-label">Sizes (L × B × H, cm)</span>
-                        <div className="mo-ws-dims">
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            className="mo-ws-input"
-                            placeholder="L"
-                            value={wsL}
-                            onChange={(e) => setWsL(e.target.value)}
-                          />
-                          <span className="mo-ws-x">×</span>
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            className="mo-ws-input"
-                            placeholder="B"
-                            value={wsB}
-                            onChange={(e) => setWsB(e.target.value)}
-                          />
-                          <span className="mo-ws-x">×</span>
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            className="mo-ws-input"
-                            placeholder="H"
-                            value={wsH}
-                            onChange={(e) => setWsH(e.target.value)}
-                          />
+                        <div className="mo-ws-dims2">
+                          {[
+                            ["L", wsL, setWsL, shipPresets.L],
+                            ["B", wsB, setWsB, shipPresets.B],
+                            ["H", wsH, setWsH, shipPresets.H],
+                          ].map(([k, val, set, list], i) => (
+                            <Fragment key={k}>
+                              {i > 0 && <span className="mo-ws-x">×</span>}
+                              <div className="mo-ws-dimcol">
+                                <input
+                                  type="number"
+                                  inputMode="numeric"
+                                  className="mo-ws-input"
+                                  placeholder={k}
+                                  aria-label={k === "L" ? "Length (cm)" : k === "B" ? "Breadth (cm)" : "Height (cm)"}
+                                  value={val}
+                                  onChange={(e) => set(e.target.value)}
+                                />
+                                {list.length > 0 && (
+                                  <div className="mo-ws-chips col" aria-label={`Most used ${k}`}>
+                                    {list.slice(0, 4).map(({ v, n }) => (
+                                      <button
+                                        key={v}
+                                        type="button"
+                                        className={`mo-ws-chip${String(val) === v ? " on" : ""}`}
+                                        onClick={() => set(v)}
+                                        title={`Used on ${n} order${n === 1 ? "" : "s"}`}
+                                      >
+                                        {v}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </Fragment>
+                          ))}
                         </div>
                       </div>
                       <div className="mo-ws-field">
@@ -20374,11 +21116,6 @@ export default function ManageOrdersPage() {
                           </button>
                         </div>
                       </div>
-                      <p className="mo-ws-note">
-                        Saved to the order and auto-filled into the India Post
-                        bulk file. Weight in grams, sizes as <b>L×B×H</b>; the
-                        tracking ID is queued for push.
-                      </p>
                     </div>
 
                     <div className="mo-ws-foot">
@@ -21404,6 +22141,109 @@ export default function ManageOrdersPage() {
             moPortalTarget(),
           )}
 
+        {/* ===== Shipment queue bar — global, every tab ===== */}
+        {pendingShipIds.length > 0 &&
+          (() => {
+            const pend = orders.filter((o) =>
+              pendingShipIds.includes(String(o["Order ID"])),
+            );
+            const ready = pend.filter(ipHasWeightSizes);
+            const speedN = ready.filter((o) => classifyOrderProduct(o) === "speed").length;
+            const contractN = ready.length - speedN;
+            const selbarUp =
+              (activeTab === "orders" && cardSelectMode) ||
+              (activeTab === "book" && bookSubTab === "queue" && dispatchSel.length > 0);
+            const n = pendingShipIds.length;
+            return (
+              <div
+                className={`mo-shipbar${selbarUp ? " above-sel" : ""}${railCollapsed ? " rail-collapsed" : ""}`}
+                role="region"
+                aria-label="Unsaved shipment details"
+              >
+                <div className="mo-shipbar-info">
+                  <span className="mo-shipbar-dot" aria-hidden="true" />
+                  <span>
+                    <b>{n}</b> order{n === 1 ? "" : "s"} with new weight / tracking
+                    <em> · not in the sheet yet</em>
+                  </span>
+                </div>
+                <div className="mo-shipbar-acts">
+                  <button
+                    type="button"
+                    className="mo-shipbar-ip"
+                    disabled={!speedN}
+                    onClick={() => openIpBulkForOrders("speed", pend)}
+                    title="Download the India Post Speed Post file"
+                  >
+                    <Truck size={14} /> Speed <b>{speedN}</b>
+                  </button>
+                  <button
+                    type="button"
+                    className="mo-shipbar-ip"
+                    disabled={!contractN}
+                    onClick={() => openIpBulkForOrders("contractual", pend)}
+                    title="Download the India Post Contractual file"
+                  >
+                    <Package size={14} /> Contractual <b>{contractN}</b>
+                  </button>
+                  <button
+                    type="button"
+                    className="mo-shipbar-discard"
+                    onClick={discardPendingShipments}
+                    disabled={pushingTracking}
+                  >
+                    Discard
+                  </button>
+                  <button
+                    type="button"
+                    className="mo-shipbar-push"
+                    onClick={pushPendingShipments}
+                    disabled={pushingTracking}
+                  >
+                    {pushingTracking ? (
+                      <Loader2 size={14} className="mo-spin" />
+                    ) : (
+                      <UploadCloud size={14} />
+                    )}
+                    {pushingTracking ? "Pushing…" : `Push ${n}`}
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+
+        {/* ===== Mobile bottom search — Orders & Dispatch queue ===== */}
+        {bottomSearch && (
+          <div className="mo-bottomsearch" role="search">
+            <Search size={17} aria-hidden="true" />
+            <input
+              type="search"
+              enterKeyHint="search"
+              value={bottomSearch.value}
+              onChange={(e) => bottomSearch.set(e.target.value)}
+              placeholder={bottomSearch.placeholder}
+              aria-label={bottomSearch.placeholder}
+            />
+            {bottomSearch.value ? (
+              <>
+                <span className="mo-bottomsearch-n">
+                  {bottomSearch.count}
+                  <span className="mo-bottomsearch-nw"> found</span>
+                </span>
+                <button
+                  type="button"
+                  className="mo-bottomsearch-x"
+                  onClick={() => bottomSearch.set("")}
+                  aria-label="Clear search"
+                >
+                  <X size={16} />
+                </button>
+              </>
+            ) : null}
+            {bottomSearch.actions}
+          </div>
+        )}
+
         {/* ===== Mobile bottom navigation ===== */}
         <nav className="mo-bottomnav" aria-label="Dashboard sections">
           {/* "IDs" (tracking) tab hidden for now — filtered out here. */}
@@ -21802,15 +22642,23 @@ export default function ManageOrdersPage() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
             >
+              <span className="mo-emailtpl-grip" aria-hidden="true" />
               <div className="support-sheet-head">
                 <div>
                   <div className="support-sheet-title">
                     <MailCheck size={16} /> Email the customer
                   </div>
+                  <div className="mo-emailtpl-to">
+                    <span className="mo-emailtpl-to-k">To</span>
+                    <span className="mo-emailtpl-to-v">
+                      {String(emailTplOrder["Customer Name"] || "").trim() || "Customer"}
+                      <em>
+                        {String(emailTplOrder["Email"] || "").trim() || "No email on file"}
+                      </em>
+                    </span>
+                  </div>
                   <div className="support-sheet-sub">
-                    {String(emailTplOrder["Email"] || "").trim() ||
-                      "No email on file"}{" "}
-                    · pick a template — sent instantly with tracking &amp; bill.
+                    Tap a template to send it now — tracking &amp; bill are attached.
                   </div>
                 </div>
                 <button
@@ -21831,15 +22679,24 @@ export default function ManageOrdersPage() {
                     disabled={emailingOrder !== ""}
                     onClick={() => sendStatusEmailTemplate(emailTplOrder, tpl)}
                   >
+                    <span className="mo-emailtpl-emo" aria-hidden="true">
+                      {splitLeadEmoji(tpl.label)[0]}
+                    </span>
                     <span className="mo-emailtpl-l">
-                      <span className="mo-emailtpl-label">{tpl.label}</span>
+                      <span className="mo-emailtpl-label">{splitLeadEmoji(tpl.label)[1]}</span>
                       <span className="mo-emailtpl-sub">{tpl.subheading}</span>
                     </span>
-                    {emailingOrder === tpl.key ? (
-                      <Loader2 size={16} className="mo-spin" />
-                    ) : (
-                      <Send size={15} />
-                    )}
+                    <span className={`mo-emailtpl-go${emailingOrder === tpl.key ? " busy" : ""}`}>
+                      {emailingOrder === tpl.key ? (
+                        <>
+                          <Loader2 size={14} className="mo-spin" /> Sending
+                        </>
+                      ) : (
+                        <>
+                          <Send size={13} /> Send
+                        </>
+                      )}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -21856,7 +22713,11 @@ export default function ManageOrdersPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => !bulkEmailProgress && setEmailBulkOpen(false)}
+            onClick={() => {
+              if (bulkEmailProgress) return;
+              setEmailBulkOpen(false);
+              setEmailBulkScope(null);
+            }}
             style={{ zIndex: 2147483000 }}
           >
             <motion.div
@@ -21867,14 +22728,9 @@ export default function ManageOrdersPage() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
             >
+              <span className="mo-emailtpl-grip" aria-hidden="true" />
               {(() => {
-                const n = (
-                  selectedIds.length
-                    ? filteredOrders.filter((o) =>
-                        selectedIds.includes(o["Order ID"]),
-                      )
-                    : filteredOrders
-                ).filter((o) => String(o["Email"] || "").trim()).length;
+                const n = emailBulkOrders().length;
                 return (
                   <div className="support-sheet-head">
                     <div>
@@ -21884,7 +22740,12 @@ export default function ManageOrdersPage() {
                       </div>
                       <div className="support-sheet-sub">
                         Pick a template — sent to every{" "}
-                        {selectedIds.length ? "selected" : "visible"} order with
+                        {emailBulkScope
+                          ? "selected dispatch"
+                          : selectedIds.length
+                            ? "selected"
+                            : "visible"}{" "}
+                        order with
                         an email (with tracking &amp; bill).
                       </div>
                     </div>
@@ -21892,7 +22753,8 @@ export default function ManageOrdersPage() {
                       type="button"
                       className="support-sheet-x"
                       onClick={() =>
-                        !bulkEmailProgress && setEmailBulkOpen(false)
+                        !bulkEmailProgress &&
+                        (setEmailBulkOpen(false), setEmailBulkScope(null))
                       }
                       aria-label="Close"
                     >
@@ -21917,11 +22779,16 @@ export default function ManageOrdersPage() {
                       className="mo-emailtpl-row"
                       onClick={() => sendBulkStatusEmail(tpl)}
                     >
+                      <span className="mo-emailtpl-emo" aria-hidden="true">
+                        {splitLeadEmoji(tpl.label)[0]}
+                      </span>
                       <span className="mo-emailtpl-l">
-                        <span className="mo-emailtpl-label">{tpl.label}</span>
+                        <span className="mo-emailtpl-label">{splitLeadEmoji(tpl.label)[1]}</span>
                         <span className="mo-emailtpl-sub">{tpl.subheading}</span>
                       </span>
-                      <Send size={15} />
+                      <span className="mo-emailtpl-go">
+                        <Send size={13} /> Send
+                      </span>
                     </button>
                   ))}
                 </div>

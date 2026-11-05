@@ -6812,3 +6812,1143 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
   z-index: 3;
 }
 .mo-glass .an2-mrr-hdot.fc { background: var(--g-surface-3, #fff); border: 2px dashed var(--bc); box-shadow: none; }
+
+/* Chart tooltips stay on screen: EdgeSafeTip sets --nudge; the arrow
+   counter-shifts so it still points at the hovered bar. */
+.mo-glass .an2-tip {
+  transform: translate(calc(-50% + var(--nudge, 0px)), calc(-100% - 10px));
+  max-width: calc(100vw - 16px);
+  white-space: normal;
+  width: max-content;
+}
+.mo-glass .an2-tip.below {
+  transform: translate(calc(-50% + var(--nudge, 0px)), 10px);
+}
+.mo-glass .an2-tip::after {
+  left: calc(50% - var(--nudge, 0px));
+}
+
+/* 39 · Phone bottom dock — search above the tab bar, squarer active state,
+   hairline separators between tabs. Desktop is unchanged. */
+.mo-glass .mo-bottomsearch { display: none; }
+@media (max-width: 1023px) {
+  .mo-glass .mo-bottomsearch {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--g-bottombar-h) + env(safe-area-inset-bottom, 0px));
+    z-index: 899;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 60px;
+    padding: 9px 12px;
+    background: var(--g-surface-solid);
+    border-top: 1px solid var(--g-hairline);
+  }
+  .mo-glass .mo-bottomsearch > svg {
+    position: absolute;
+    left: 25px;
+    color: var(--g-ink-3);
+    pointer-events: none;
+  }
+  .mo-glass .mo-bottomsearch input {
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    padding: 0 12px 0 40px;
+    border: 1px solid var(--g-hairline);
+    border-radius: 10px;
+    background: rgb(var(--g-ink-rgb) / 0.04);
+    color: var(--g-ink);
+    font: inherit;
+    font-size: 15px; /* ≥15px stops iOS zooming on focus */
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .mo-glass .mo-bottomsearch input::-webkit-search-cancel-button { display: none; }
+  .mo-glass .mo-bottomsearch input:focus {
+    border-color: var(--g-ink-3);
+    background: var(--g-surface-3);
+  }
+  .mo-glass .mo-bottomsearch-n {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--g-ink-2, var(--g-ink));
+    white-space: nowrap;
+  }
+  .mo-glass .mo-bottomsearch-x {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--g-hairline);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--g-ink-2, var(--g-ink));
+  }
+
+  /* Room for the extra row; the top search input is redundant on phones. */
+  .my-orders-page.mo-glass.has-bsearch .mo-main {
+    padding-bottom: calc(var(--g-bottombar-h) + 60px + 34px);
+  }
+  .my-orders-page.mo-glass.has-bsearch .mo-toolbar .admin-search-input {
+    display: none;
+  }
+  /* Select bar stacks above the search row. */
+  .mo-glass .mo-selbar {
+    bottom: calc(var(--g-bottombar-h) + var(--mo-bottomsearch-h, 0px) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Tab bar: squarer active tile instead of a capsule, hairline separators. */
+  .mo-glass .mo-bottomnav {
+    padding: 0 0 env(safe-area-inset-bottom, 0px);
+  }
+  .my-orders-page.mo-glass .mo-bottomnav .mo-nav-item + .mo-nav-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 16px;
+    bottom: 16px;
+    width: 1px;
+    background: var(--g-hairline);
+  }
+  .mo-glass .mo-bottomnav .mo-nav-item .mo-nav-pill {
+    top: 6px;
+    bottom: 6px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    background: rgb(var(--g-ink-rgb) / 0.07);
+  }
+  .my-orders-page.mo-glass .mo-bottomnav .mo-nav-item > svg,
+  .my-orders-page.mo-glass .mo-bottomnav .mo-nav-item > span:not(.mo-nav-pill):not(.mo-nav-count) {
+    position: relative;
+    z-index: 2;
+  }
+  /* Active tab also gets a short ink bar on top. */
+  .my-orders-page.mo-glass .mo-bottomnav .mo-nav-item.active::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 30%;
+    right: 30%;
+    height: 2px;
+    border-radius: 0 0 2px 2px;
+    background: var(--g-ink);
+  }
+}
+
+/* 40 · Run-rate Orders / Revenue switch — segmented, with this month's
+   figure on each option and a sliding selected tile. */
+.mo-glass .an2-mrr-seg {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  max-width: 440px;
+  padding: 4px;
+  margin-bottom: 14px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 12px;
+  background: rgb(var(--g-ink-rgb) / 0.035);
+}
+.mo-glass .an2-mrr-seg-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--g-ink-3);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.mo-glass .an2-mrr-seg-btn:hover:not(.on) { background: rgb(var(--g-ink-rgb) / 0.04); }
+.mo-glass .an2-mrr-seg-pill {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  background: var(--g-surface-3);
+  border: 1px solid var(--g-hairline);
+  box-shadow: 0 1px 2px rgb(var(--g-ink-rgb) / 0.08), 0 4px 12px -6px rgb(var(--g-ink-rgb) / 0.18);
+  z-index: 0;
+}
+.mo-glass .an2-mrr-seg-ic,
+.mo-glass .an2-mrr-seg-t { position: relative; z-index: 1; }
+.mo-glass .an2-mrr-seg-ic {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgb(var(--g-ink-rgb) / 0.06);
+}
+.mo-glass .an2-mrr-seg-btn.on .an2-mrr-seg-ic { background: var(--g-ink); color: var(--g-surface-3); }
+.mo-glass .an2-mrr-seg-t { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.mo-glass .an2-mrr-seg-l { font-size: 12px; font-weight: 600; }
+.mo-glass .an2-mrr-seg-v {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--g-ink-2, var(--g-ink));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.mo-glass .an2-mrr-seg-btn.on .an2-mrr-seg-l { color: var(--g-ink-2, var(--g-ink)); }
+.mo-glass .an2-mrr-seg-btn.on .an2-mrr-seg-v { color: var(--g-ink); }
+.mo-glass .an2-mrr-seg-v em { font-style: normal; font-size: 11px; font-weight: 500; color: var(--g-ink-3); }
+@media (max-width: 1023px) {
+  .mo-glass .an2-mrr-seg { max-width: none; }
+  .mo-glass .an2-mrr-seg-v em { display: none; }
+}
+@media (max-width: 1023px) {
+  /* Beats the console-wide input padding so the icon never covers text. */
+  /* (a global "input { padding … !important }" forces the !important) */
+  .my-orders-page.mo-glass .mo-bottomsearch input[type="search"] {
+    padding: 0 12px 0 40px !important;
+    height: 42px;
+    border-radius: 10px;
+  }
+}
+
+/* 41 · Orders view summary (mo-vs2) + 14-day chart polish */
+.my-orders-page.mo-glass .mo-vs2 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 0 14px;
+  border-top: 1px solid var(--g-hairline);
+}
+.my-orders-page.mo-glass .mo-vs2-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.my-orders-page.mo-glass .mo-vs2-stats {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+.my-orders-page.mo-glass .mo-vs2-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 18px;
+  min-width: 0;
+}
+.my-orders-page.mo-glass .mo-vs2-stat:first-child { padding-left: 0; }
+.my-orders-page.mo-glass .mo-vs2-stat + .mo-vs2-stat { border-left: 1px solid var(--g-hairline); }
+.my-orders-page.mo-glass .mo-vs2-stat span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-vs2-stat b {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--g-ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* Desktop keeps Filters / Select in the search toolbar. */
+.my-orders-page.mo-glass .mo-vs2-actions { display: none; gap: 6px; flex: 0 0 auto; }
+.my-orders-page.mo-glass .mo-vs2-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 9px;
+  background: var(--g-surface-3);
+  color: var(--g-ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-vs2-btn b {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: var(--g-ink);
+  color: var(--g-surface-3);
+  font-size: 11px;
+}
+.my-orders-page.mo-glass .mo-vs2-btn.on {
+  background: var(--g-ink);
+  border-color: var(--g-ink);
+  color: var(--g-surface-3);
+}
+
+/* Payment split: one stacked bar + legend with share */
+.my-orders-page.mo-glass .mo-vs2-pay { display: flex; flex-direction: column; gap: 8px; }
+.my-orders-page.mo-glass .mo-vs2-paybar {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--g-sunken);
+}
+.my-orders-page.mo-glass .mo-vs2-paybar i { display: block; min-width: 4px; }
+.my-orders-page.mo-glass :is(.mo-vs2-paybar, .mo-vs2-paylegend, .mo-daybar-tip) i.upi { background: var(--pay-upi); }
+.my-orders-page.mo-glass :is(.mo-vs2-paybar, .mo-vs2-paylegend, .mo-daybar-tip) i.adv { background: var(--pay-adv); }
+.my-orders-page.mo-glass :is(.mo-vs2-paybar, .mo-vs2-paylegend, .mo-daybar-tip) i.cod { background: var(--pay-cod); }
+.my-orders-page.mo-glass .mo-vs2-paylegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 12.5px;
+  color: var(--g-ink-3);
+}
+.my-orders-page.mo-glass .mo-vs2-paylegend span { display: inline-flex; align-items: center; gap: 6px; }
+.my-orders-page.mo-glass .mo-vs2-paylegend i { width: 9px; height: 9px; border-radius: 3px; }
+.my-orders-page.mo-glass .mo-vs2-paylegend b { color: var(--g-ink); font-weight: 700; }
+.my-orders-page.mo-glass .mo-vs2-paylegend em { font-style: normal; font-size: 11.5px; }
+
+/* Attention chips */
+.my-orders-page.mo-glass .mo-vs2-alerts { display: flex; flex-wrap: wrap; gap: 8px; }
+.my-orders-page.mo-glass .mo-vs2-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 8px 0 11px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 9px;
+  background: var(--g-surface-3);
+  color: var(--g-ink-2, var(--g-ink));
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-vs2-alert b { font-weight: 800; color: var(--g-ink); }
+.my-orders-page.mo-glass .mo-vs2-alert .mo-vs2-go { color: var(--g-ink-3); }
+.my-orders-page.mo-glass .mo-vs2-alert.warn {
+  border-color: rgb(220 38 38 / 0.28);
+  background: rgb(220 38 38 / 0.06);
+  color: #b91c1c;
+}
+.my-orders-page.mo-glass .mo-vs2-alert.warn b,
+.my-orders-page.mo-glass .mo-vs2-alert.warn .mo-vs2-go { color: #b91c1c; }
+.my-orders-page.mo-glass.mo-dark .mo-vs2-alert.warn,
+.my-orders-page.mo-glass.mo-dark .mo-vs2-alert.warn b,
+.my-orders-page.mo-glass.mo-dark .mo-vs2-alert.warn .mo-vs2-go { color: #fca5a5; }
+.my-orders-page.mo-glass .mo-vs2-alert:hover { border-color: var(--g-ink-3); }
+
+@media (max-width: 1023px) {
+  /* Search is in the bottom bar → no separate toolbar row on phones. */
+  .my-orders-page.mo-glass.has-bsearch .mo-toolbar { display: none; }
+  .my-orders-page.mo-glass.has-bsearch .mo-vs2 { border-top: 0; padding-top: 2px; }
+}
+@media (max-width: 560px) {
+  .my-orders-page.mo-glass .mo-vs2-top { flex-direction: column; align-items: stretch; }
+  .my-orders-page.mo-glass .mo-vs2-stats { justify-content: space-between; }
+  .my-orders-page.mo-glass .mo-vs2-stat { flex: 1; padding: 0 12px; }
+  .my-orders-page.mo-glass .mo-vs2-stat b { font-size: 18px; }
+}
+
+/* ---- 14-day chart ---- */
+.my-orders-page.mo-glass .mo-daybars-title > span { display: flex; flex-direction: column; gap: 1px; }
+.my-orders-page.mo-glass .mo-daybars-title { align-items: flex-start; font-size: 13.5px; font-weight: 700; color: var(--g-ink); }
+.my-orders-page.mo-glass .mo-daybars-chev { margin-top: 2px; }
+.my-orders-page.mo-glass .mo-daybars-sub { font-size: 11.5px; font-weight: 500; color: var(--g-ink-3); }
+.my-orders-page.mo-glass .mo-daybars-head { align-items: flex-start; }
+.my-orders-page.mo-glass .mo-daybars-legend { gap: 4px 4px; font-size: 12px; }
+.my-orders-page.mo-glass .mo-daybars-legend i { width: 9px; height: 9px; border-radius: 3px; margin-left: 8px; }
+.my-orders-page.mo-glass .mo-daybars-body .mo-daybars-plot { margin-top: 14px; }
+.my-orders-page.mo-glass .mo-daybars-plot { height: 168px; gap: 6px; }
+.my-orders-page.mo-glass .mo-daybar { position: relative; border-radius: 9px; padding: 0 0 4px; }
+.my-orders-page.mo-glass .mo-daybar:hover,
+.my-orders-page.mo-glass .mo-daybar:focus-visible { background: rgb(var(--g-ink-rgb) / 0.035); outline: none; }
+.my-orders-page.mo-glass .mo-daybar.today { background: rgb(var(--g-ink-rgb) / 0.045); }
+.my-orders-page.mo-glass .mo-daybar-track {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: min(100%, 26px);
+  min-height: 0;
+  border-radius: 7px;
+  background: rgb(var(--g-ink-rgb) / 0.045);
+  overflow: hidden;
+}
+.my-orders-page.mo-glass .mo-daybar-track .mo-daybar-col {
+  width: 100%;
+  border-radius: 7px;
+  gap: 2px;
+  background: transparent;
+  min-height: 0;
+}
+.my-orders-page.mo-glass .mo-daybar-col span { border-radius: 3px; }
+.my-orders-page.mo-glass .mo-daybar.on .mo-daybar-track { box-shadow: 0 0 0 2px var(--g-surface-solid), 0 0 0 3.5px var(--g-ink); }
+.my-orders-page.mo-glass .mo-daybar.on .mo-daybar-col { box-shadow: none; }
+.my-orders-page.mo-glass .mo-daybar-d {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--g-ink-2, var(--g-ink));
+}
+.my-orders-page.mo-glass .mo-daybar-d small { font-size: 9.5px; font-weight: 600; color: var(--g-ink-3); text-transform: uppercase; }
+.my-orders-page.mo-glass .mo-daybar.wknd .mo-daybar-d { color: var(--g-ink-3); }
+.my-orders-page.mo-glass .mo-daybar.today .mo-daybar-d,
+.my-orders-page.mo-glass .mo-daybar.today .mo-daybar-d small { color: var(--g-ink); }
+.my-orders-page.mo-glass .mo-daybar-n { font-size: 11.5px; color: var(--g-ink); }
+
+/* Hover tooltip, anchored to the top of the hovered day; edge days align
+   inward so it never leaves the card. */
+.my-orders-page.mo-glass .mo-daybar-tip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 150px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  box-shadow: 0 12px 28px -12px rgb(0 0 0 / 0.5);
+  pointer-events: none;
+}
+.my-orders-page.mo-glass .mo-daybar-tip.l { left: 0; transform: none; }
+.my-orders-page.mo-glass .mo-daybar-tip.r { left: auto; right: 0; transform: none; }
+.my-orders-page.mo-glass.mo-dark .mo-daybar-tip { background: #f4f4f2; color: #111; }
+.my-orders-page.mo-glass .mo-daybar-tip-h { font-size: 11.5px; opacity: 0.85; margin-bottom: 2px; }
+.my-orders-page.mo-glass .mo-daybar-tip-h b { opacity: 1; font-weight: 800; }
+.my-orders-page.mo-glass .mo-daybar-tip-r { display: flex; align-items: center; gap: 7px; }
+.my-orders-page.mo-glass .mo-daybar-tip-r i { width: 8px; height: 8px; border-radius: 2px; }
+.my-orders-page.mo-glass .mo-daybar-tip-r b { margin-left: auto; padding-left: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.my-orders-page.mo-glass .mo-daybar-tip-x { margin-top: 3px; padding-top: 5px; border-top: 1px solid rgb(127 127 127 / 0.35); font-size: 11.5px; }
+@media (hover: none) {
+  .my-orders-page.mo-glass .mo-daybar-tip { display: none; }
+}
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .mo-daybars-plot { height: 150px; gap: 3px; }
+  .my-orders-page.mo-glass .mo-daybar-d { font-size: 11px; }
+  .my-orders-page.mo-glass .mo-daybars-legend { width: 100%; }
+}
+
+/* Bottom search: Filters + Select buttons beside the field (phones). */
+@media (max-width: 1023px) {
+  .my-orders-page.mo-glass .mo-bottomsearch-btn {
+    position: relative;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--g-hairline);
+    border-radius: 10px;
+    background: var(--g-surface-3);
+    color: var(--g-ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .my-orders-page.mo-glass .mo-bottomsearch-btn.on {
+    background: var(--g-ink);
+    border-color: var(--g-ink);
+    color: var(--g-surface-3);
+  }
+  .my-orders-page.mo-glass .mo-bottomsearch-btn b {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border: 2px solid var(--g-surface-solid);
+    border-radius: 99px;
+    background: var(--g-ink);
+    color: var(--g-surface-3);
+    font-size: 10.5px;
+    font-weight: 800;
+  }
+  .my-orders-page.mo-glass .mo-bottomsearch { gap: 8px; }
+}
+@media (max-width: 420px) {
+  .my-orders-page.mo-glass .mo-bottomsearch-nw { display: none; }
+}
+
+/* 42 · Day-chart range tabs + custom range sheet */
+.my-orders-page.mo-glass .mo-daybars-range {
+  display: flex;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 3px;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--g-hairline);
+  border-radius: 10px;
+  background: rgb(var(--g-ink-rgb) / 0.035);
+  scrollbar-width: none;
+}
+.my-orders-page.mo-glass .mo-daybars-range::-webkit-scrollbar { display: none; }
+.my-orders-page.mo-glass .mo-daybars-range button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--g-ink-3);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-daybars-range button:hover:not(.on) { color: var(--g-ink); }
+.my-orders-page.mo-glass .mo-daybars-range button.on {
+  background: var(--g-surface-3);
+  color: var(--g-ink);
+  box-shadow: 0 1px 2px rgb(var(--g-ink-rgb) / 0.1), 0 0 0 1px var(--g-hairline);
+}
+/* Dense ranges (30+ days): thinner gaps, no per-bar numbers */
+.my-orders-page.mo-glass .mo-daybars-plot.dense { gap: 2px; }
+.my-orders-page.mo-glass .mo-daybars-plot.dense .mo-daybar-track { width: 100%; border-radius: 4px; }
+.my-orders-page.mo-glass .mo-daybars-plot.dense .mo-daybar-col,
+.my-orders-page.mo-glass .mo-daybars-plot.dense .mo-daybar-col span { border-radius: 2px; }
+.my-orders-page.mo-glass .mo-daybars-plot.dense .mo-daybar-d { min-height: 26px; font-size: 11px; }
+.my-orders-page.mo-glass .mo-daybars-plot.dense .mo-daybar-n { min-height: 0; }
+
+.mo-glass .mo-range-sheet .mo-sheet-head p { margin: 2px 0 0; }
+.mo-glass .mo-range-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.mo-glass .mo-range-presets button {
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 9px;
+  background: var(--g-surface-3);
+  color: var(--g-ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.mo-glass .mo-range-presets button.on { background: var(--g-ink); border-color: var(--g-ink); color: var(--g-surface-3); }
+.mo-glass .mo-range-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mo-glass .mo-range-fields label { display: flex; flex-direction: column; gap: 6px; }
+.mo-glass .mo-range-fields span { font-size: 12px; font-weight: 600; color: var(--g-ink-3); }
+.mo-glass .mo-range-fields input {
+  height: 46px;
+  width: 100%;
+  border: 1px solid var(--g-hairline);
+  border-radius: 10px;
+  background: var(--g-surface-3);
+  color: var(--g-ink);
+  font: inherit;
+  font-size: 15px;
+}
+.mo-glass .mo-range-sum { margin: 14px 0 0; font-size: 13px; font-weight: 600; color: var(--g-ink-2, var(--g-ink)); }
+.mo-glass .mo-range-sum.err { color: #b91c1c; }
+.mo-glass.mo-dark .mo-range-sum.err { color: #fca5a5; }
+.mo-glass .mo-sheet-done:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* 43 · Card action row — emoji buttons on soft tints, with a small hop on
+   hover and a squish on press. Shipping line replaces the two ship buttons. */
+.my-orders-page.mo-glass .mo2-actions-l { gap: 7px; flex-wrap: wrap; }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ic {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  background: var(--tint, rgb(var(--g-ink-rgb) / 0.05));
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, background 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.my-orders-page.mo-glass .mo2-actions .mo-emo {
+  display: block;
+  font-size: 18px;
+  line-height: 1;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ic:hover {
+  background: var(--tint-h, rgb(var(--g-ink-rgb) / 0.09));
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px -8px var(--tint-s, rgb(0 0 0 / 0.35));
+}
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ic:hover .mo-emo { animation: moEmoHop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ic:active { transform: scale(0.9); }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ic:focus-visible { outline: 2px solid var(--g-ink); outline-offset: 2px; }
+@keyframes moEmoHop {
+  0% { transform: translateY(0) rotate(0) scale(1); }
+  35% { transform: translateY(-3px) rotate(-10deg) scale(1.18); }
+  65% { transform: translateY(0) rotate(6deg) scale(1.05); }
+  100% { transform: translateY(0) rotate(0) scale(1); }
+}
+/* Per-action tints */
+.my-orders-page.mo-glass .mo2-actions .mo-frame-wa { --tint: rgb(37 211 102 / 0.13); --tint-h: rgb(37 211 102 / 0.22); --tint-s: rgb(37 211 102 / 0.6); }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-email { --tint: rgb(59 130 246 / 0.12); --tint-h: rgb(59 130 246 / 0.2); --tint-s: rgb(59 130 246 / 0.6); }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-emailsend { --tint: rgb(139 92 246 / 0.12); --tint-h: rgb(139 92 246 / 0.2); --tint-s: rgb(139 92 246 / 0.6); }
+.my-orders-page.mo-glass .mo2-actions a.mo-frame-ic { --tint: rgb(14 165 233 / 0.12); --tint-h: rgb(14 165 233 / 0.2); --tint-s: rgb(14 165 233 / 0.6); }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-book { --tint: rgb(239 68 68 / 0.11); --tint-h: rgb(239 68 68 / 0.19); --tint-s: rgb(239 68 68 / 0.55); }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-dispatch { --tint: rgb(249 115 22 / 0.12); --tint-h: rgb(249 115 22 / 0.2); --tint-s: rgb(249 115 22 / 0.6); }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ship { --tint: rgb(180 130 70 / 0.14); --tint-h: rgb(180 130 70 / 0.24); --tint-s: rgb(180 130 70 / 0.6); }
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-book.done, .mo-frame-dispatch.on) {
+  --tint: rgb(34 197 94 / 0.14); --tint-h: rgb(34 197 94 / 0.22); --tint-s: rgb(34 197 94 / 0.6);
+  border-color: rgb(34 197 94 / 0.35);
+}
+/* Shipping status dot: green = weight + tracking set, amber = something missing */
+.my-orders-page.mo-glass .mo-frame-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--g-surface-solid);
+  background: #f59e0b;
+}
+.my-orders-page.mo-glass .mo-frame-ship.ok .mo-frame-dot { background: #22c55e; }
+.my-orders-page.mo-glass .mo-frame-ship.todo .mo-frame-dot { animation: moDotPulse 1.8s ease-in-out infinite; }
+@keyframes moDotPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(245 158 11 / 0.55); }
+  60% { box-shadow: 0 0 0 5px rgb(245 158 11 / 0); }
+}
+/* Dark mode: slightly stronger tints so they read on dark surfaces */
+.my-orders-page.mo-glass.mo-dark .mo2-actions .mo-frame-ic { filter: saturate(1.15); }
+@media (prefers-reduced-motion: reduce) {
+  .my-orders-page.mo-glass .mo2-actions .mo-frame-ic:hover .mo-emo,
+  .my-orders-page.mo-glass .mo-frame-ship.todo .mo-frame-dot { animation: none; }
+  .my-orders-page.mo-glass .mo2-actions .mo-frame-ic:hover { transform: none; }
+}
+
+.my-orders-page.mo-glass .mo2-shipline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--g-ink-2, var(--g-ink));
+  font-variant-numeric: tabular-nums;
+}
+
+/* 44 · Email template picker — full-width bottom sheet on phones, centred
+   dialog on desktop; emoji tile + 2-line preview + explicit Send pill. */
+.mo-emailtpl-modal {
+  --et-surface: var(--g-surface-solid, #fff);
+  --et-card: var(--g-surface-3, #fff);
+  --et-ink: var(--g-ink, #0a0a0a);
+  --et-ink-3: var(--g-ink-3, #6b7280);
+  --et-line: var(--g-hairline, #ececec);
+  --et-tint: rgb(var(--g-ink-rgb, 15 23 42) / 0.05);
+  background: var(--et-surface) !important;
+  color: var(--et-ink);
+}
+.mo-dark .mo-emailtpl-modal {
+  --et-surface: #1c1c1b;
+  --et-card: #242423;
+  --et-ink: #f2f2f0;
+  --et-ink-3: #a3a3a0;
+  --et-line: rgba(255, 255, 255, 0.09);
+  --et-tint: rgba(255, 255, 255, 0.06);
+}
+.mo-emailtpl-modal .support-sheet-head { border-bottom-color: var(--et-line); padding: 16px 18px 14px; }
+.mo-emailtpl-modal .support-sheet-title { color: var(--et-ink); font-size: 17px; }
+.mo-emailtpl-modal .support-sheet-title svg { color: var(--et-ink); }
+.mo-emailtpl-modal .support-sheet-sub { color: var(--et-ink-3); max-width: none; margin-top: 8px; }
+.mo-emailtpl-modal .support-sheet-x {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border-color: var(--et-line);
+  background: var(--et-card);
+  color: var(--et-ink);
+}
+.mo-emailtpl-to {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--et-line);
+  border-radius: 10px;
+  background: var(--et-tint);
+  min-width: 0;
+}
+.mo-emailtpl-to-k {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--et-ink-3);
+}
+.mo-emailtpl-to-v {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--et-ink);
+}
+.mo-emailtpl-to-v em {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--et-ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mo-emailtpl-grip { display: none; }
+
+.mo-emailtpl-list { gap: 10px; padding: 14px 16px 18px; max-height: none; }
+.mo-emailtpl-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--et-line);
+  background: var(--et-card);
+  color: var(--et-ink);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
+}
+.mo-emailtpl-row:hover:not(:disabled) { border-color: var(--et-ink-3); background: var(--et-card); }
+.mo-emailtpl-row:active:not(:disabled) { transform: scale(0.985); }
+.mo-emailtpl-emo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--et-tint);
+  font-size: 22px;
+  line-height: 1;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+.mo-emailtpl-label { font-size: 15px; color: var(--et-ink); }
+.mo-emailtpl-sub {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--et-ink-3);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.mo-emailtpl-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 9px;
+  background: var(--et-ink);
+  color: var(--et-surface);
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.mo-emailtpl-go.busy { opacity: 0.75; }
+.mo-emailtpl-row > svg { display: none; }
+.mo-emailtpl-progress { color: var(--et-ink-3); }
+
+/* Phones: edge-to-edge bottom sheet with a grip, safe-area padding. */
+@media (max-width: 768px) {
+  .bill-modal.mo-emailtpl-modal {
+    position: fixed;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    max-height: 90dvh;
+    border-radius: 20px 20px 0 0 !important;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.22);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .mo-emailtpl-grip {
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: 8px auto 0;
+    border-radius: 99px;
+    background: var(--et-line);
+    flex: 0 0 auto;
+  }
+  .mo-emailtpl-modal .support-sheet-head { padding-top: 8px; }
+  .mo-emailtpl-list { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .mo-emailtpl-row { grid-template-columns: 40px minmax(0, 1fr) auto; padding: 11px; }
+  .mo-emailtpl-emo { width: 40px; height: 40px; font-size: 20px; }
+}
+
+/* 45 · Shipment details — most-used weight / L / B / H chips */
+.mo-ws-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: -4px;
+}
+.mo-ws-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--g-hairline, #e5e5e5);
+  border-radius: 8px;
+  background: var(--g-surface-3, #fff);
+  color: var(--g-ink, #111);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 28px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.mo-ws-chip em { font-style: normal; font-size: 11px; font-weight: 600; color: var(--g-ink-3, #8a8a8a); }
+.mo-ws-chip:hover { border-color: var(--g-ink-3, #999); }
+.mo-ws-chip:active { transform: scale(0.94); }
+.mo-ws-chip.on { background: var(--g-ink, #111); border-color: var(--g-ink, #111); color: var(--g-surface-3, #fff); }
+.mo-ws-chip.on em { color: inherit; opacity: 0.7; }
+.mo-ws-dims2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+}
+.mo-ws-dims2 .mo-ws-x { line-height: 50px; }
+.mo-ws-dimcol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.mo-ws-dimcol .mo-ws-input { text-align: center; padding: 0 6px; width: 100%; }
+.mo-ws-chips.col { margin-top: 0; justify-content: center; }
+.mo-ws-chips.col .mo-ws-chip { padding: 0 9px; min-width: 40px; justify-content: center; }
+.mo-dark .mo-ws-chip { background: #242423; border-color: rgba(255, 255, 255, 0.1); color: #f2f2f0; }
+.mo-dark .mo-ws-chip.on { background: #f2f2f0; border-color: #f2f2f0; color: #111; }
+.mo-ws-chips.col { gap: 5px; }
+.mo-ws-chips.col .mo-ws-chip {
+  flex: 1 1 calc(50% - 3px);
+  min-width: 0;
+  max-width: calc(50% - 3px);
+  height: 28px;
+  padding: 0 4px;
+  font-size: 12.5px;
+  line-height: 26px;
+}
+
+/* 46 · Card actions v2 — coloured SVG icon + short label per action, laid
+   out as one even row (More included) so every target is easy to grab. */
+.my-orders-page.mo-glass .mo2-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+.my-orders-page.mo-glass .mo2-actions-l {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+.my-orders-page.mo-glass .mo2-actions .mo-kebab-wrap { flex: 0 0 auto; display: flex; }
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: auto;
+  min-width: 44px;
+  height: 52px;
+  padding: 0 2px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: var(--tint, rgb(var(--g-ink-rgb) / 0.05));
+  color: var(--ic, var(--g-ink-2));
+  text-decoration: none;
+}
+.my-orders-page.mo-glass .mo2-actions .mo-kebab-btn { --tint: rgb(var(--g-ink-rgb) / 0.05); --ic: var(--g-ink-2); }
+.my-orders-page.mo-glass .mo2-actions .mo-act-ic { flex: 0 0 auto; color: var(--ic, currentColor); }
+.my-orders-page.mo-glass .mo2-actions .mo-act-l {
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--g-ink-2, var(--g-ink));
+  white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn):hover {
+  background: var(--tint-h, rgb(var(--g-ink-rgb) / 0.09));
+  transform: translateY(-1px);
+}
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn):hover .mo-act-ic {
+  animation: moEmoHop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn):active { transform: scale(0.94); }
+/* Icon colours per action (tints come from section 43) */
+.my-orders-page.mo-glass .mo2-actions .mo-frame-wa { --ic: #16a34a; }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-email { --ic: #2563eb; }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-emailsend { --ic: #7c3aed; }
+.my-orders-page.mo-glass .mo2-actions a.mo-frame-ic { --ic: #0284c7; }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-book { --ic: #dc2626; }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-dispatch { --ic: #ea580c; }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ship { --ic: #a16207; }
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-book.done, .mo-frame-dispatch.on, .mo-frame-ship.ok) { --ic: #16a34a; }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ship.ok {
+  --tint: rgb(34 197 94 / 0.12); --tint-h: rgb(34 197 94 / 0.2);
+}
+.my-orders-page.mo-glass .mo2-actions .mo-frame-dot { top: 5px; right: 6px; }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-ship.ok .mo-frame-dot { display: none; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions .mo-frame-wa { --ic: #4ade80; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions .mo-frame-email { --ic: #60a5fa; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions .mo-frame-emailsend { --ic: #a78bfa; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions a.mo-frame-ic { --ic: #38bdf8; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions .mo-frame-book { --ic: #f87171; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions .mo-frame-dispatch { --ic: #fb923c; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions .mo-frame-ship { --ic: #fbbf24; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions :is(.mo-frame-book.done, .mo-frame-dispatch.on, .mo-frame-ship.ok) { --ic: #4ade80; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions .mo-frame-ic { filter: none; }
+@media (max-width: 420px) {
+  .my-orders-page.mo-glass .mo2-actions-l { grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); gap: 4px; }
+  .my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn) { min-width: 40px; height: 50px; }
+  .my-orders-page.mo-glass .mo2-actions .mo-act-l { font-size: 9.5px; }
+}
+
+/* One row always: columns share the width equally, however many actions. */
+.my-orders-page.mo-glass .mo2-actions-l {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn) { min-width: 0; }
+.my-orders-page.mo-glass .mo2-actions .mo-kebab-btn { width: 44px; }
+@media (max-width: 420px) {
+  .my-orders-page.mo-glass .mo2-actions { gap: 4px; }
+  .my-orders-page.mo-glass .mo2-actions-l { gap: 4px; }
+  .my-orders-page.mo-glass .mo2-actions .mo-kebab-btn { width: 34px; }
+  .my-orders-page.mo-glass .mo2-actions .mo-act-l { font-size: 9px; letter-spacing: 0; }
+  .my-orders-page.mo-glass .mo2-actions .mo-act-ic { width: 16px; height: 16px; }
+}
+
+/* 47 · Day chart scrolls sideways for long ranges */
+.my-orders-page.mo-glass .mo-daybars-scroll { position: relative; }
+.my-orders-page.mo-glass .mo-daybars-scroll.on {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  padding-bottom: 6px;
+  /* soft fade at both edges hints there's more */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+}
+.my-orders-page.mo-glass .mo-daybars-scroll.on .mo-daybars-plot { width: max-content; min-width: 100%; padding: 0 10px; }
+.my-orders-page.mo-glass .mo-daybars-scroll.on .mo-daybar { scroll-snap-align: end; }
+.my-orders-page.mo-glass .mo-daybars-scroll.on::-webkit-scrollbar { height: 6px; }
+.my-orders-page.mo-glass .mo-daybars-scroll.on::-webkit-scrollbar-thumb { background: rgb(var(--g-ink-rgb) / 0.18); border-radius: 99px; }
+
+/* 48 · Shipment queue bar — weight/size/tracking edits saved locally, pushed
+   to the sheet in one go; India Post Speed / Contractual downloads beside it. */
+.mo-glass .mo-shipbar {
+  position: fixed;
+  left: calc(var(--g-rail-w) + (100vw - var(--g-rail-w)) / 2);
+  bottom: 20px;
+  translate: -50% 0;
+  z-index: 949;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: min(760px, calc(100vw - var(--g-rail-w) - 32px));
+  padding: 8px 8px 8px 14px;
+  border: 1px solid var(--g-hairline);
+  border-radius: 14px;
+  background: var(--g-surface-solid);
+  box-shadow: var(--g-shadow-lg, 0 12px 32px -12px rgb(0 0 0 / 0.3));
+  animation: moShipIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mo-glass .mo-shipbar.rail-collapsed {
+  left: calc(var(--g-rail-w-collapsed) + (100vw - var(--g-rail-w-collapsed)) / 2);
+}
+.mo-glass .mo-shipbar.above-sel { bottom: 84px; }
+@keyframes moShipIn { from { opacity: 0; transform: translateY(12px); } }
+.mo-glass .mo-shipbar-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--g-ink);
+}
+.mo-glass .mo-shipbar-info em { font-style: normal; color: var(--g-ink-3); }
+.mo-glass .mo-shipbar-dot {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f59e0b;
+  animation: moDotPulse 1.8s ease-in-out infinite;
+}
+.mo-glass .mo-shipbar-acts { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.mo-glass .mo-shipbar-acts button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.mo-glass .mo-shipbar-ip {
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-3);
+  color: var(--g-ink);
+}
+.mo-glass .mo-shipbar-ip b {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: rgb(var(--g-ink-rgb) / 0.08);
+  font-size: 11.5px;
+}
+.mo-glass .mo-shipbar-ip:disabled { opacity: 0.45; cursor: not-allowed; }
+.mo-glass .mo-shipbar-discard {
+  border: 0;
+  background: transparent;
+  color: var(--g-ink-3);
+}
+.mo-glass .mo-shipbar-discard:hover { color: #b91c1c; }
+.mo-glass .mo-shipbar-push {
+  border: 1px solid var(--g-ink);
+  background: var(--g-ink);
+  color: var(--g-surface-3);
+}
+.mo-glass .mo-shipbar-acts button:disabled { cursor: progress; }
+
+@media (max-width: 1023px) {
+  /* Phones: full width, stacked above the search row (and select bar). */
+  .mo-glass .mo-shipbar {
+    left: 0;
+    right: 0;
+    translate: none;
+    width: auto;
+    bottom: calc(var(--g-bottombar-h) + var(--mo-bottomsearch-h, 0px) + env(safe-area-inset-bottom, 0px));
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px 14px 0 0;
+    border-width: 1px 0 0;
+    box-shadow: 0 -8px 24px -14px rgb(0 0 0 / 0.3);
+  }
+  .mo-glass .mo-shipbar.above-sel {
+    bottom: calc(var(--g-bottombar-h) + var(--mo-bottomsearch-h, 0px) + 56px + env(safe-area-inset-bottom, 0px));
+  }
+  .mo-glass .mo-shipbar-info em { display: none; }
+  .mo-glass .mo-shipbar-acts { display: grid; grid-template-columns: 1fr 1fr auto 1fr; }
+  .mo-glass .mo-shipbar-acts button { justify-content: center; padding: 0 8px; }
+  /* leave room so the last card isn't hidden behind the bar */
+  .my-orders-page.mo-glass.has-shipbar .mo-main { padding-bottom: calc(var(--g-bottombar-h) + 60px + 120px); }
+}
+@media (max-width: 1023px) {
+  .mo-glass .mo-shipbar {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    align-items: center;
+    gap: 8px 6px;
+  }
+  .mo-glass .mo-shipbar-acts { display: contents; }
+  .mo-glass .mo-shipbar-info { grid-column: 1 / span 5; grid-row: 1; }
+  .mo-glass .mo-shipbar-discard { grid-column: 6; grid-row: 1; justify-self: end; height: 28px !important; padding: 0 2px !important; }
+  .mo-glass .mo-shipbar-ip:nth-of-type(1) { grid-column: 1 / span 2; grid-row: 2; }
+  .mo-glass .mo-shipbar-ip:nth-of-type(2) { grid-column: 3 / span 2; grid-row: 2; }
+  .mo-glass .mo-shipbar-push { grid-column: 5 / span 2; grid-row: 2; }
+  .mo-glass .mo-shipbar-acts button { min-width: 0; height: 38px; font-size: 12.5px; }
+}
+@media (max-width: 380px) {
+  .mo-glass .mo-shipbar-ip svg { display: none; }
+}
+
+/* 49 · Dispatch cards — action icons wrap onto rows, and "Remove from
+   queue" sits under the card instead of a corner ✕ over the status pill. */
+.my-orders-page.mo-glass .mo-dispatch-card-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.my-orders-page.mo-glass .mo-dispatch-card-wrap > .admin-order-card { flex: 1; }
+.my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions-l {
+  grid-auto-flow: row;
+  grid-auto-columns: auto;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+}
+.my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions { align-items: flex-start; }
+.my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn) { height: 54px; }
+.my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions .mo-act-l { font-size: 11px; }
+.my-orders-page.mo-glass .mo-dispatch-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 40px;
+  margin-top: 8px;
+  border: 1px dashed rgb(220 38 38 / 0.35);
+  border-radius: 10px;
+  background: rgb(220 38 38 / 0.04);
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-dispatch-remove:hover { background: rgb(220 38 38 / 0.09); border-style: solid; }
+.my-orders-page.mo-glass.mo-dark .mo-dispatch-remove { color: #fca5a5; border-color: rgb(248 113 113 / 0.35); background: rgb(248 113 113 / 0.06); }
+.my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+  gap: 6px;
+}
+.my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions-l { display: contents; }
+.my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions .mo-kebab-wrap { display: block; }
+.my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions .mo-kebab-btn { width: 100%; }

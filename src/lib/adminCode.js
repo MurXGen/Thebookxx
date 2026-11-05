@@ -1,5 +1,5 @@
-// Admin unlock code check, shared by the client AdminLock gate and server
-// routes that must only answer the console (e.g. escrow review).
+// Admin unlock code check, shared by the client AdminLock gate and any server
+// route that must only answer the console.
 //
 // The valid code is NOT stored on its own: it lives inside a long, fixed,
 // random-looking string. A code is accepted when it appears as a substring of

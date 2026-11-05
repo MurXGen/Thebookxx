@@ -1025,7 +1025,120 @@ const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 // One headline KPI. `prev` (same metric for the comparison period) renders a
 // delta chip; `lowerIsBetter` flips its colour for rates like cancellations;
 // `unit: "pts"` compares percentages as point changes, not relative ones.
-function KpiTile({ icon: Icon, label, value, sub, cur, prev, lowerIsBetter, unit }) {
+// Tiny trend line for a KPI tile — hover shows the day and its value.
+function Sparkline({ data, labels, fmt = (v) => v.toLocaleString() }) {
+  const [hi, setHi] = useState(null);
+  const W = 120;
+  const H = 30;
+  const max = Math.max(...data, 0);
+  const min = Math.min(...data, 0);
+  const span = max - min || 1;
+  const x = (i) => (i / (data.length - 1)) * W;
+  const y = (v) => H - 3 - ((v - min) / span) * (H - 6);
+  const line = data.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const area = `${line}L${W},${H}L0,${H}Z`;
+  const onMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const i = Math.round(((e.clientX - r.left) / r.width) * (data.length - 1));
+    setHi(Math.max(0, Math.min(data.length - 1, i)));
+  };
+  return (
+    <div className="an2-spark" onMouseMove={onMove} onMouseLeave={() => setHi(null)}>
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
+        <path className="an2-spark-area" d={area} />
+        <path className="an2-spark-line" d={line} vectorEffect="non-scaling-stroke" />
+        {hi != null && (
+          <line className="an2-spark-x" x1={x(hi)} x2={x(hi)} y1="0" y2={H} vectorEffect="non-scaling-stroke" />
+        )}
+      </svg>
+      {hi != null && (
+        <span
+          className="an2-spark-tip"
+          style={(() => {
+            // Anchor to the cursor's side so the tip never leaves the tile.
+            const f = hi / (data.length - 1);
+            if (f > 0.6) return { right: `${(1 - f) * 100}%` };
+            if (f < 0.4) return { left: `${f * 100}%` };
+            return { left: `${f * 100}%`, transform: "translateX(-50%)" };
+          })()}
+        >
+          {labels?.[hi]} · <b>{fmt(data[hi])}</b>
+        </span>
+      )}
+    </div>
+  );
+}
+
+// Donut with a centre headline; hovering a slice (or its legend row) shows it
+// in the centre. Slices: [{ label, value, cls }], cls picks the colour token.
+function An2Donut({ title, sub, center, centerSub, slices, fmt = (v) => v.toLocaleString(), note }) {
+  const [hi, setHi] = useState(null);
+  const total = slices.reduce((t, s) => t + Math.max(0, s.value), 0);
+  const R = 42;
+  const C = 2 * Math.PI * R;
+  const GAP = total > 0 && slices.filter((s) => s.value > 0).length > 1 ? 2.2 : 0;
+  let acc = 0;
+  const pct = (v) => (total ? Math.round((v / total) * 100) : 0);
+  const shown = hi != null ? slices[hi] : null;
+  return (
+    <div className="an2-donut-card">
+      <div className="an2-donut-head">
+        <span className="an2-donut-t">{title}</span>
+        {sub && <span className="an2-donut-s">{sub}</span>}
+      </div>
+      <div className="an2-donut-body">
+        <div className="an2-donut">
+          <svg viewBox="0 0 100 100" role="img" aria-label={`${title}: ${slices.map((s) => `${s.label} ${pct(s.value)}%`).join(", ")}`}>
+            <circle className="an2-donut-track" cx="50" cy="50" r={R} />
+            {total > 0 &&
+              slices.map((s, i) => {
+                const len = (Math.max(0, s.value) / total) * C;
+                const dash = Math.max(0, len - GAP);
+                const off = -acc;
+                acc += len;
+                if (!s.value) return null;
+                return (
+                  <circle
+                    key={s.label}
+                    className={`an2-donut-seg ${s.cls}${hi != null && hi !== i ? " dim" : ""}`}
+                    cx="50"
+                    cy="50"
+                    r={R}
+                    strokeDasharray={`${dash} ${C - dash}`}
+                    strokeDashoffset={off}
+                    onMouseEnter={() => setHi(i)}
+                    onMouseLeave={() => setHi(null)}
+                  />
+                );
+              })}
+          </svg>
+          <div className="an2-donut-c">
+            <strong>{shown ? `${pct(shown.value)}%` : center}</strong>
+            <span>{shown ? shown.label : centerSub}</span>
+          </div>
+        </div>
+        <ul className="an2-donut-leg">
+          {slices.map((s, i) => (
+            <li
+              key={s.label}
+              className={hi === i ? "on" : ""}
+              onMouseEnter={() => setHi(i)}
+              onMouseLeave={() => setHi(null)}
+            >
+              <i className={s.cls} />
+              <span className="an2-donut-l">{s.label}</span>
+              <b>{fmt(s.value)}</b>
+              <em>{pct(s.value)}%</em>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {note && <p className="an2-donut-note">{note}</p>}
+    </div>
+  );
+}
+
+function KpiTile({ icon: Icon, label, value, sub, cur, prev, lowerIsBetter, unit, spark, sparkLabels, sparkFmt, meter }) {
   let delta = null;
   if (prev != null && cur != null) {
     const diff = unit === "pts" ? cur - prev : prev ? ((cur - prev) / prev) * 100 : null;
@@ -1054,6 +1167,14 @@ function KpiTile({ icon: Icon, label, value, sub, cur, prev, lowerIsBetter, unit
           {delta}
           {sub}
         </span>
+        {spark && spark.length > 1 && (
+          <Sparkline data={spark} labels={sparkLabels} fmt={sparkFmt} />
+        )}
+        {meter && (
+          <span className={`an2-meter ${meter.tone || ""}`} aria-hidden="true">
+            <i style={{ width: `${Math.max(0, Math.min(100, meter.pct))}%` }} />
+          </span>
+        )}
       </div>
     </div>
   );
@@ -8211,6 +8332,88 @@ export default function ManageOrdersPage() {
     };
   }, [orders, analyticsPeriod, periodWindow]);
 
+  // Daily series behind the KPI sparklines (period start → today), and how
+  // far through the period we are vs the whole of the previous period.
+  const pulseSeries = useMemo(() => {
+    const now = new Date();
+    let start = periodWindow.start ? new Date(periodWindow.start) : null;
+    if (analyticsPeriod === "all" || !start) {
+      start = new Date(now);
+      start.setDate(start.getDate() - 29);
+    }
+    start.setHours(0, 0, 0, 0);
+    const endCap = periodWindow.end && periodWindow.end < now ? periodWindow.end : now;
+    const days = [];
+    const idx = {};
+    for (let d = new Date(start); d <= endCap && days.length < 400; d.setDate(d.getDate() + 1)) {
+      idx[dayKey(d)] = days.length;
+      days.push({
+        label: d.toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
+        revenue: 0,
+        orders: 0,
+        cost: 0,
+      });
+    }
+    const list = analyticsPeriod === "all" ? orders.filter(hasOrderId) : anOrders;
+    list.forEach((o) => {
+      const i = idx[dayKey(getOrderDate(o))];
+      if (i == null) return;
+      days[i].revenue += o.revenue || 0;
+      days[i].orders += 1;
+      days[i].cost += o.totalCost || 0;
+    });
+    // A year view reads better by week than by 365 tiny points.
+    let pts = days;
+    if (days.length > 60) {
+      pts = [];
+      for (let i = 0; i < days.length; i += 7) {
+        const wk = days.slice(i, i + 7);
+        pts.push({
+          label: `wk of ${wk[0].label}`,
+          revenue: wk.reduce((t, d) => t + d.revenue, 0),
+          orders: wk.reduce((t, d) => t + d.orders, 0),
+          cost: wk.reduce((t, d) => t + d.cost, 0),
+        });
+      }
+    }
+    // Pace: share of the period gone vs share of last period's total reached.
+    let pace = null;
+    const { start: ps, end: pe } = periodWindow;
+    if (analyticsPeriod !== "all" && analyticsPeriod !== "day" && ps && pe && now < pe) {
+      const prevStart = new Date(ps);
+      if (analyticsPeriod === "week") prevStart.setDate(prevStart.getDate() - 7);
+      else if (analyticsPeriod === "year") prevStart.setFullYear(prevStart.getFullYear() - 1);
+      else prevStart.setMonth(prevStart.getMonth() - 1);
+      const prev = orders.filter((o) => {
+        if (!hasOrderId(o)) return false;
+        const d = getOrderDate(o);
+        return d && d >= prevStart && d < ps;
+      });
+      const msDay = 86400000;
+      const totalDays = Math.max(1, Math.round((pe - ps) / msDay));
+      const dayNo = Math.min(totalDays, Math.floor((now - ps) / msDay) + 1);
+      pace = {
+        dayNo,
+        totalDays,
+        timePct: Math.round((dayNo / totalDays) * 100),
+        prevRev: prev.reduce((t, o) => t + (o.revenue || 0), 0),
+        prevN: prev.length,
+        prevLabel:
+          analyticsPeriod === "month"
+            ? MONTH_LABELS[prevStart.getMonth()]
+            : `last ${analyticsPeriod}`,
+      };
+    }
+    return {
+      labels: pts.map((d) => d.label),
+      revenue: pts.map((d) => d.revenue),
+      orders: pts.map((d) => d.orders),
+      profit: pts.map((d) => d.revenue - d.cost),
+      cost: pts.map((d) => d.cost),
+      pace,
+    };
+  }, [anOrders, orders, analyticsPeriod, periodWindow]);
+
   // 2 — Distinct customers (all-time) who currently hold wallet balance.
   const walletUsers = useMemo(() => {
     const latest = {};
@@ -8602,6 +8805,68 @@ export default function ManageOrdersPage() {
     });
     return q;
   }, [anOrders]);
+
+  // Projection & run rate — extrapolate the period's pace to its full length.
+  const projection = useMemo(() => {
+    const now = new Date();
+    const msDay = 86400000;
+    const start = periodWindow.start;
+    const end = periodWindow.end;
+    // No bounded window (all-time / day) report the observed daily pace only.
+    if (analyticsPeriod === "all" || !start || !end) {
+      const activeDays = Math.max(
+        1,
+        new Set(anOrders.map((o) => dayKey(getOrderDate(o))).filter(Boolean))
+          .size,
+      );
+      return {
+        hasForecast: false,
+        revPerDay: Math.round(overview.revenue / activeDays),
+        ordPerDay: Math.round((overview.n / activeDays) * 10) / 10,
+        totalDays: activeDays,
+        elapsedDays: activeDays,
+        daysLeft: 0,
+        actualRev: overview.revenue,
+        projectedRev: overview.revenue,
+        projectedOrders: overview.n,
+        progressPct: 100,
+      };
+    }
+    const totalDays = Math.max(1, Math.round((end - start) / msDay));
+    const complete = now >= end;
+    let elapsedDays;
+    if (complete) elapsedDays = totalDays;
+    else if (now < start) elapsedDays = 0;
+    else
+      elapsedDays = Math.min(totalDays, Math.floor((now - start) / msDay) + 1);
+    const eDays = Math.max(1, elapsedDays);
+    const revPerDay = overview.revenue / eDays;
+    const ordPerDay = overview.n / eDays;
+    const daysLeft = Math.max(0, totalDays - elapsedDays);
+    const hasForecast = !complete && totalDays > 1 && daysLeft > 0;
+    const projectedRev = hasForecast
+      ? Math.round(revPerDay * totalDays)
+      : overview.revenue;
+    const projectedOrders = hasForecast
+      ? Math.round(ordPerDay * totalDays)
+      : overview.n;
+    const progressPct =
+      projectedRev > 0
+        ? Math.min(100, Math.round((overview.revenue / projectedRev) * 100))
+        : 0;
+    return {
+      hasForecast,
+      revPerDay: Math.round(revPerDay),
+      ordPerDay: Math.round(ordPerDay * 10) / 10,
+      totalDays,
+      elapsedDays,
+      daysLeft,
+      actualRev: overview.revenue,
+      projectedRev,
+      projectedOrders,
+      progressPct,
+    };
+  }, [anOrders, overview, analyticsPeriod, periodWindow]);
 
   // Monthly run rate — one line per month of the CURRENT year, plotted by
   // day-of-month (x = 1…31). Each point is the running cumulative order count
@@ -12809,13 +13074,6 @@ export default function ManageOrdersPage() {
                       >
                         <Wallet size={16} /> Transactions
                       </Link>
-                      <Link
-                        href="/manage-orders/escrow"
-                        className="mo-menu-item"
-                        onClick={() => setShowToolsMenu(false)}
-                      >
-                        <ShieldCheck size={16} /> Escrow review
-                      </Link>
                       <button
                         type="button"
                         className="mo-menu-item"
@@ -13103,6 +13361,25 @@ export default function ManageOrdersPage() {
                         .filter(Boolean)
                         .sort((a, b) => b.value - a.value)
                     : [];
+                  // Forecast for the live month on days it hasn't reached yet.
+                  const fcPt =
+                    hoverDay && cur?.predicted
+                      ? cur.predicted.find(
+                          (pt) => pt.day === hoverDay && !cur.pts.some((q) => q.day === hoverDay),
+                        )
+                      : null;
+                  const fcRow = fcPt
+                    ? { label: `${cur.label} forecast`, color: cur.color, value: valOf(fcPt), fc: true }
+                    : null;
+                  // Dots where each line crosses the hovered day.
+                  const hoverDots = [
+                    ...hoverRows.map((r) => ({ color: r.color, v: r.value, key: r.label })),
+                    ...(fcRow ? [{ color: fcRow.color, v: fcRow.value, key: "fc", fc: true }] : []),
+                  ];
+                  // Keep the tooltip inside the card: right of the cursor on
+                  // the left half, left of it on the right half.
+                  const boxW = mrrRef.current?.clientWidth || 0;
+                  const flip = boxW && mrrTip ? mrrTip.x > boxW / 2 : false;
                   if (!months.length)
                     return (
                       <p className="an2-bp-empty">No orders yet this year.</p>
@@ -13184,11 +13461,43 @@ export default function ManageOrdersPage() {
                           />
                         )}
 
-                        {hoverDay && hoverRows.length > 0 && (
-                          <div className="an2-mrr-tip" style={{ left: mrrTip.x }}>
+                        {hoverDay &&
+                          hoverDots.map((d) => (
+                            <span
+                              key={d.key}
+                              className={`an2-mrr-hdot${d.fc ? " fc" : ""}`}
+                              style={{
+                                left: `${(xOf(hoverDay) / W) * 100}%`,
+                                top: `${(yOf(d.v) / H) * 100}%`,
+                                "--bc": d.color,
+                              }}
+                            />
+                          ))}
+
+                        {hoverDay && (hoverRows.length > 0 || fcRow) && (
+                          <div
+                            className={`an2-mrr-tip v2${flip ? " flip" : ""}`}
+                            style={
+                              flip
+                                ? { left: "auto", right: boxW - mrrTip.x + 14 }
+                                : { left: mrrTip.x + 14 }
+                            }
+                          >
                             <div className="an2-mrr-tip-day">
                               Day {hoverDay} · {year}
                             </div>
+                            {fcRow && (
+                              <div className="an2-mrr-tip-row fc">
+                                <i
+                                  className="an2-mrr-tip-dot fc"
+                                  style={{ borderColor: fcRow.color }}
+                                />
+                                <span className="an2-mrr-tip-m">{fcRow.label}</span>
+                                <span className="an2-mrr-tip-v">
+                                  ~{fmtV(fcRow.value)}
+                                </span>
+                              </div>
+                            )}
                             {hoverRows.map((r) => (
                               <div className="an2-mrr-tip-row" key={r.label}>
                                 <i
@@ -13236,6 +13545,46 @@ export default function ManageOrdersPage() {
                   {prevOverview ? ` · ${prevOverview.label}` : ""}
                 </span>
               </div>
+              {pulseSeries.pace && (() => {
+                const p = pulseSeries.pace;
+                const revPct = p.prevRev ? Math.round((overview.revenue / p.prevRev) * 100) : null;
+                const ordPct = p.prevN ? Math.round((overview.n / p.prevN) * 100) : null;
+                const Row = ({ k, v, pct, tone, mark }) => (
+                  <div className="an2-pace-row">
+                    <div className="an2-pace-top">
+                      <span className="an2-pace-k">{k}</span>
+                      <span className="an2-pace-v">{v}</span>
+                    </div>
+                    <span className={`an2-pace-bar ${tone}`}>
+                      <i style={{ width: `${Math.min(100, pct)}%` }} />
+                      {mark != null && <b style={{ left: `${Math.min(100, mark)}%` }} title="Time elapsed" />}
+                    </span>
+                  </div>
+                );
+                return (
+                  <div className="an2-pace">
+                    <Row k="Period elapsed" v={`Day ${p.dayNo} of ${p.totalDays} · ${p.timePct}%`} pct={p.timePct} tone="time" />
+                    {revPct != null && (
+                      <Row
+                        k={`Revenue vs all of ${p.prevLabel}`}
+                        v={`₹${overview.revenue.toLocaleString()} of ₹${p.prevRev.toLocaleString()} · ${revPct}%`}
+                        pct={revPct}
+                        tone={revPct >= p.timePct ? "ahead" : "behind"}
+                        mark={p.timePct}
+                      />
+                    )}
+                    {ordPct != null && (
+                      <Row
+                        k={`Orders vs all of ${p.prevLabel}`}
+                        v={`${overview.n} of ${p.prevN} · ${ordPct}%`}
+                        pct={ordPct}
+                        tone={ordPct >= p.timePct ? "ahead" : "behind"}
+                        mark={p.timePct}
+                      />
+                    )}
+                  </div>
+                );
+              })()}
               <div className="an2-stats">
                 <KpiTile
                   icon={IndianRupee}
@@ -13244,6 +13593,9 @@ export default function ManageOrdersPage() {
                   cur={overview.revenue}
                   prev={prevOverview?.revenue}
                   sub={`₹${overview.aov.toLocaleString()} avg order`}
+                  spark={pulseSeries.revenue}
+                  sparkLabels={pulseSeries.labels}
+                  sparkFmt={(v) => `₹${Math.round(v).toLocaleString()}`}
                 />
                 <KpiTile
                   icon={ShoppingBag}
@@ -13252,6 +13604,9 @@ export default function ManageOrdersPage() {
                   cur={overview.n}
                   prev={prevOverview?.n}
                   sub={`${overview.units} books · ${overview.unitsPerOrder}/order`}
+                  spark={pulseSeries.orders}
+                  sparkLabels={pulseSeries.labels}
+                  sparkFmt={(v) => `${v} order${v === 1 ? "" : "s"}`}
                 />
                 <KpiTile
                   icon={overview.profit >= 0 ? TrendingUp : TrendingDown}
@@ -13260,6 +13615,9 @@ export default function ManageOrdersPage() {
                   cur={overview.profit}
                   prev={prevOverview?.profit}
                   sub={`${overview.margin}% margin · net ${netProfit >= 0 ? "" : "−"}₹${Math.abs(netProfit).toLocaleString()}`}
+                  spark={pulseSeries.profit}
+                  sparkLabels={pulseSeries.labels}
+                  sparkFmt={(v) => `${v < 0 ? "−" : ""}₹${Math.abs(Math.round(v)).toLocaleString()}`}
                 />
                 <KpiTile
                   icon={Package}
@@ -13269,6 +13627,9 @@ export default function ManageOrdersPage() {
                   prev={prevOverview?.cost}
                   lowerIsBetter
                   sub={`incl. ₹${overview.delivery.toLocaleString()} postage`}
+                  spark={pulseSeries.cost}
+                  sparkLabels={pulseSeries.labels}
+                  sparkFmt={(v) => `₹${Math.round(v).toLocaleString()}`}
                 />
                 <KpiTile
                   icon={CheckCircle}
@@ -13278,6 +13639,7 @@ export default function ManageOrdersPage() {
                   prev={prevOverview?.successRate}
                   unit="pts"
                   sub={`${overview.delivered} delivered · ${overview.openN} still open`}
+                  meter={{ pct: overview.successRate, tone: "good" }}
                 />
                 <KpiTile
                   icon={RotateCcw}
@@ -13288,6 +13650,7 @@ export default function ManageOrdersPage() {
                   unit="pts"
                   lowerIsBetter
                   sub={`${overview.cancelled} orders lost`}
+                  meter={{ pct: overview.cancelRate, tone: "bad" }}
                 />
                 <KpiTile
                   icon={ShieldCheck}
@@ -13297,6 +13660,7 @@ export default function ManageOrdersPage() {
                   prev={prevOverview?.prepaidRate}
                   unit="pts"
                   sub={`${overview.upiN} UPI · ${overview.advN} ₹99 advance`}
+                  meter={{ pct: overview.prepaidRate, tone: "c1" }}
                 />
                 <KpiTile
                   icon={Wallet}
@@ -13306,8 +13670,132 @@ export default function ManageOrdersPage() {
                 />
               </div>
 
-              {/* (Projections card removed — the run-rate insights above already
-                show pace and the projected month-end.) */}
+              {/* Mix at a glance — status, payment, and where revenue goes. */}
+              <div className="an2-donuts">
+                <An2Donut
+                  title="Order status"
+                  sub={`${overview.n} orders`}
+                  center={`${overview.successRate}%`}
+                  centerSub="delivery success"
+                  slices={[
+                    { label: "Delivered", value: overview.delivered, cls: "s-good" },
+                    { label: "In progress", value: overview.openN, cls: "s-open" },
+                    { label: "Cancelled / returned", value: overview.cancelled, cls: "s-bad" },
+                  ]}
+                />
+                <An2Donut
+                  title="Payment mix"
+                  sub="How customers paid"
+                  center={`${overview.prepaidRate}%`}
+                  centerSub="prepaid"
+                  slices={[
+                    { label: "UPI · paid online", value: overview.upiN, cls: "c1" },
+                    { label: "COD + ₹99 advance", value: overview.advN, cls: "c2" },
+                    { label: "Cash on delivery", value: overview.codN - overview.advN, cls: "c3" },
+                  ]}
+                />
+                <An2Donut
+                  title="Where revenue goes"
+                  sub={`₹${overview.revenue.toLocaleString()} revenue`}
+                  center={`${overview.margin}%`}
+                  centerSub="margin"
+                  fmt={(v) => `₹${Math.round(v).toLocaleString()}`}
+                  slices={[
+                    { label: "Books & packing", value: Math.max(0, overview.cost - overview.delivery), cls: "c1" },
+                    { label: "Postage", value: overview.delivery, cls: "c2" },
+                    { label: "Profit", value: Math.max(0, overview.profit), cls: "c3" },
+                  ]}
+                  note={
+                    overview.profit < 0
+                      ? `Running at a loss of ₹${Math.abs(overview.profit).toLocaleString()} — costs exceed revenue.`
+                      : null
+                  }
+                />
+              </div>
+
+              {/* Projections & run rate */}
+              <An2Section
+                title="Projections & run rate"
+                sub={
+                  projection.hasForecast
+                    ? `Current pace projected to the full ${
+                        analyticsPeriod === "week"
+                          ? "week"
+                          : analyticsPeriod === "year"
+                            ? "year"
+                            : "month"
+                      }`
+                    : "Observed sales pace for this period"
+                }
+                right={
+                  <span className="an2-card-total">
+                    ₹{projection.revPerDay.toLocaleString()}/day
+                  </span>
+                }
+              >
+                <div className="an2-proj-tiles">
+                  <div className="an2-proj-tile">
+                    <span className="an2-proj-lbl">Run rate</span>
+                    <strong className="an2-proj-val">
+                      ₹{projection.revPerDay.toLocaleString()}
+                      <small>/day</small>
+                    </strong>
+                    <span className="an2-proj-x">
+                      {projection.ordPerDay} orders/day
+                    </span>
+                  </div>
+                  <div className="an2-proj-tile">
+                    <span className="an2-proj-lbl">So far</span>
+                    <strong className="an2-proj-val">
+                      ₹{projection.actualRev.toLocaleString()}
+                    </strong>
+                    <span className="an2-proj-x">
+                      {overview.n} orders · day {projection.elapsedDays}/
+                      {projection.totalDays}
+                    </span>
+                  </div>
+                  <div className="an2-proj-tile hot">
+                    <span className="an2-proj-lbl">
+                      Projected{" "}
+                      {analyticsPeriod === "week"
+                        ? "week"
+                        : analyticsPeriod === "year"
+                          ? "year"
+                          : analyticsPeriod === "month"
+                            ? "month"
+                            : "total"}
+                    </span>
+                    <strong className="an2-proj-val hot">
+                      ₹{projection.projectedRev.toLocaleString()}
+                    </strong>
+                    <span className="an2-proj-x">
+                      ~{projection.projectedOrders} orders
+                      {projection.hasForecast
+                        ? ` · ${projection.daysLeft} day${projection.daysLeft === 1 ? "" : "s"} left`
+                        : " · final"}
+                    </span>
+                  </div>
+                </div>
+                {projection.hasForecast && (
+                  <div className="an2-proj-prog">
+                    <div className="an2-proj-prog-head">
+                      <span>
+                        Achieved {projection.progressPct}% of projection
+                      </span>
+                      <span>
+                        ₹{projection.actualRev.toLocaleString()} / ₹
+                        {projection.projectedRev.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="an2-proj-bar">
+                      <div
+                        className="an2-proj-fill"
+                        style={{ width: `${projection.progressPct}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </An2Section>
             </An2Group>
 
             <An2Group

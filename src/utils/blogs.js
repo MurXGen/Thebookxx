@@ -4,6 +4,171 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "national-education-day-2026-maulana-azad-books-for-learners-india": {
+    "id": "blog-099",
+    "title": "National Education Day 2026 (11 November): Maulana Azad and 16 Books for Curious Learners in India",
+    "slug": "national-education-day-2026-maulana-azad-books-for-learners-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-05",
+    "lastModified": "2026-11-05",
+    "excerpt": "National Education Day is 11 November 2026, Maulana Azad's birth anniversary. Learn why it matters and pick 16 books for students and lifelong learners.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "India marks National Education Day on 11 November, the birth anniversary of Maulana Abul Kalam Azad, the country's first Education Minister. In 2026 it falls on Wednesday, three days after Diwali and three days before Children's Day, which makes this a natural week to think about learning. The day has been observed since 2008, when the Ministry of Human Resource Development (now the Ministry of Education) decided to honour Azad's role in building the foundations of Indian education. This guide explains who Azad was, why the day still matters, and gives you a practical reading list for students, parents and adult learners, all available from India with free delivery."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "National Education Day 2026: quick facts",
+        "content": "Date: Wednesday, 11 November 2026. Honours: Maulana Abul Kalam Azad, born 11 November 1888, India's first Education Minister (1947 to 1958). Observed since: 2008. Azad was awarded the Bharat Ratna posthumously in 1992."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Who was Maulana Abul Kalam Azad?"
+      },
+      {
+        "type": "paragraph",
+        "content": "Azad was a scholar, journalist and freedom fighter who became one of the Indian National Congress's senior leaders and served as its president. After Independence he became the first Education Minister of India and held the post until his death on 22 February 1958. He argued that every child deserves access to basic education and that a modern country needs strong institutions for science, technology and the arts."
+      },
+      {
+        "type": "paragraph",
+        "content": "Institutions associated with his tenure include the University Grants Commission, which began as a commission in 1953, the first Indian Institute of Technology at Kharagpur in 1951, and cultural bodies such as the Sahitya Akademi, the Sangeet Natak Akademi and the Lalit Kala Akademi. He was also a writer: his memoir India Wins Freedom, published in 1959, remains a primary source for readers of the freedom movement."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why this day matters for readers today"
+      },
+      {
+        "type": "paragraph",
+        "content": "Education policy has changed a great deal since the 1950s, with the Right to Education Act in 2009 and the National Education Policy in 2020, but the central idea Azad pushed is still the test: does a child learn to think, and does the system leave room for reading? Many Indian students spend most of their year on textbooks and exam preparation. A National Education Day habit as simple as 20 minutes of non-syllabus reading is one of the cheapest ways to widen a learner's world."
+      },
+      {
+        "type": "blockquote",
+        "content": "Education is not only what is taught in a classroom. It is also what a curious person chooses to read, ask and try next."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on learning, curiosity and big ideas"
+      },
+      {
+        "type": "paragraph",
+        "content": "If you want to understand how people learn, or how to learn better yourself, begin with these. <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> explains the two systems of the mind and why we make predictable errors. <a href=\"/books/mindset\" style=\"color:#fb8500;font-weight:600\">Mindset</a> shows how believing that ability can grow changes how students handle failure. <a href=\"/books/outliers\" style=\"color:#fb8500;font-weight:600\">Outliers</a> looks at the hidden advantages and long practice behind exceptional success, and <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> is a wide-angle history that makes a good starter for curious teenagers and adults."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on focus, habits and study discipline"
+      },
+      {
+        "type": "paragraph",
+        "content": "A good education also depends on routine. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> breaks consistency into small steps a student can start tonight. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> is a strong argument for long, distraction-free study blocks, which is a useful idea in a phone-heavy age. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is a gentler read on finding purpose, helpful for students choosing a stream or career."
+      },
+      {
+        "type": "paragraph",
+        "content": "Clear thinking and clear communication sit under every subject. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to thinking clearly and speaking and writing without confusion, which suits students preparing for interviews, presentations and exams as much as working professionals. For people skills, <a href=\"/books/how-to-win-friends-and-influence-people\" style=\"color:#fb8500;font-weight:600\">How to Win Friends and Influence People</a> remains a classic."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Reading offer from TheBookX",
+        "content": "Books start from just ₹1, with free delivery and Cash on Delivery available across India. Pick one learning book and one story for the week."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books by and about India's educators and dreamers"
+      },
+      {
+        "type": "paragraph",
+        "content": "Dr A.P.J. Abdul Kalam spent his later years among students, and <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> is his life story, from a boy in Rameswaram to India's missile programme. <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds: Unleashing the Power Within India</a> is his call to young Indians to use their potential. Both are good picks for a school or college student."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories that teach without lecturing"
+      },
+      {
+        "type": "paragraph",
+        "content": "Fiction is also education. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan is a gentle introduction to Indian short stories in English, with childhood and small-town life at the centre. <a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> is a light, funny read about life inside an engineering college, popular with exam-weary readers. <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> is a moving real-life account that teaches history through one teenager's voice. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> and <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> offer two different, easy-to-read takes on choices and second chances."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "A simple National Education Day plan"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Choose one book from each group above: one on learning, one on habits, one story.",
+          "Set a daily slot of 20 minutes, ideally before the phone comes out.",
+          "Write one line after each session about what you learned or want to ask.",
+          "Share one idea at dinner. Teaching it back is the quickest way to remember it.",
+          "Finish one book by Children's Day on 14 November, then pick the next."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting a learner this week"
+      },
+      {
+        "type": "paragraph",
+        "content": "A book is a very good gift for a student: it costs little, it lasts, and it does not need charging. If you are gifting for Children's Day or to thank a teacher, TheBookX offers gift wrapping for +₹25 on top of free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/national-education-day-2026-maulana-azad-books-for-learners-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/national-education-day-2026-maulana-azad-books-for-learners-india.jpeg",
+        "alt": "A young student reading a book by a sunlit window on National Education Day",
+        "caption": "A few quiet pages a day: the simplest way to honour National Education Day.",
+        "category": "education"
+      }
+    ],
+    "keywords": [
+      "National Education Day 2026",
+      "National Education Day 11 November",
+      "Maulana Abul Kalam Azad",
+      "Maulana Azad birth anniversary",
+      "books for students India",
+      "best books for learners",
+      "education books India",
+      "buy books online India"
+    ],
+    "categories": [
+      "Education",
+      "Student Reading",
+      "Special Days"
+    ],
+    "faqs": [
+      {
+        "question": "When is National Education Day in 2026?",
+        "answer": "National Education Day is observed on 11 November every year. In 2026 it falls on a Wednesday."
+      },
+      {
+        "question": "Why is National Education Day celebrated on 11 November?",
+        "answer": "It marks the birth anniversary of Maulana Abul Kalam Azad, born on 11 November 1888, who was independent India's first Education Minister. The day has been observed since 2008."
+      },
+      {
+        "question": "Which books are good for students on National Education Day?",
+        "answer": "Good picks include Wings of Fire, Atomic Habits, Deep Work, Mindset, Thinking, Fast and Slow, and The Art of Clarity by Murthy Thevar. All are available on TheBookX."
+      },
+      {
+        "question": "Can I order books online from TheBookX with Cash on Delivery?",
+        "answer": "Yes. TheBookX delivers across India with free delivery and Cash on Delivery, and books start from just ₹1."
+      }
+    ]
+  },
   "sharjah-international-book-fair-2026-45th-edition-books-to-read-india": {
     "id": "blog-098",
     "title": "Sharjah International Book Fair 2026 Opens 4 November: What Indian Readers Should Know and Read",

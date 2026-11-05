@@ -6610,3 +6610,205 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
     font-size: 8.5px;
   }
 }
+
+/* 38 · Pulse visuals — sparklines, meters, pace bars, donuts, run-rate tooltip.
+   Categorical slots 1–3 (blue / orange / aqua) and status good / critical come
+   from a CVD-validated palette; dark mode uses its own stepped values. */
+.mo-glass {
+  --viz-c1: #2a78d6;
+  --viz-c2: #eb6834;
+  --viz-c3: #1baf7a;
+  --viz-good: #0ca30c;
+  --viz-bad: #d03b3b;
+  --viz-open: #a3a7ae;
+  --viz-track: rgba(15, 23, 42, 0.08);
+}
+.mo-glass.mo-dark {
+  --viz-c1: #3987e5;
+  --viz-c2: #d95926;
+  --viz-c3: #199e70;
+  --viz-open: #5f636b;
+  --viz-track: rgba(255, 255, 255, 0.09);
+}
+
+/* KPI sparkline */
+.mo-glass .an2-spark {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  margin-top: 8px;
+  cursor: crosshair;
+}
+.mo-glass .an2-spark svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.mo-glass .an2-spark-line { fill: none; stroke: var(--viz-c1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.mo-glass .an2-spark-area { fill: var(--viz-c1); opacity: 0.12; }
+.mo-glass .an2-spark-x { stroke: var(--g-ink-3); stroke-width: 1; stroke-dasharray: 2 2; }
+.mo-glass .an2-spark-tip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  white-space: nowrap;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: var(--g-ink);
+  color: var(--g-surface-3);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* KPI meter bar */
+.mo-glass .an2-meter {
+  display: block;
+  width: 100%;
+  height: 6px;
+  margin-top: 10px;
+  border-radius: 99px;
+  background: var(--viz-track);
+  overflow: hidden;
+}
+.mo-glass .an2-meter i { display: block; height: 100%; border-radius: 99px; background: var(--viz-c1); transition: width 0.5s ease; }
+.mo-glass .an2-meter.good i { background: var(--viz-good); }
+.mo-glass .an2-meter.bad i { background: var(--viz-bad); }
+.mo-glass .an2-stat-body { min-width: 0; flex: 1; }
+
+/* Pace strip: period elapsed vs share of last period reached */
+.mo-glass .an2-pace {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-r, 14px);
+  background: var(--g-surface-3);
+}
+.mo-glass .an2-pace-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+.mo-glass .an2-pace-k { font-size: 12px; font-weight: 600; color: var(--g-ink-3); }
+.mo-glass .an2-pace-v { font-size: 12px; font-weight: 700; color: var(--g-ink); text-align: right; }
+.mo-glass .an2-pace-bar {
+  position: relative;
+  display: block;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--viz-track);
+}
+.mo-glass .an2-pace-bar i { display: block; height: 100%; border-radius: 99px; background: var(--viz-open); transition: width 0.5s ease; }
+.mo-glass .an2-pace-bar.ahead i { background: var(--viz-good); }
+.mo-glass .an2-pace-bar.behind i { background: var(--viz-c2); }
+.mo-glass .an2-pace-bar b {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 16px;
+  margin-left: -1px;
+  border-radius: 2px;
+  background: var(--g-ink);
+}
+@media (max-width: 900px) {
+  .mo-glass .an2-pace { grid-template-columns: 1fr; gap: 12px; }
+}
+
+/* Donut row */
+.mo-glass .an2-donuts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 1100px) { .mo-glass .an2-donuts { grid-template-columns: 1fr; } }
+.mo-glass .an2-donut-card {
+  padding: 16px;
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-r, 14px);
+  background: var(--g-surface-3);
+}
+.mo-glass .an2-donut-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
+.mo-glass .an2-donut-t { font-size: 14px; font-weight: 700; color: var(--g-ink); }
+.mo-glass .an2-donut-s { font-size: 12px; color: var(--g-ink-3); }
+.mo-glass .an2-donut-body { display: flex; align-items: center; gap: 16px; }
+.mo-glass .an2-donut { position: relative; flex: 0 0 116px; width: 116px; height: 116px; }
+.mo-glass .an2-donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.mo-glass .an2-donut-track { fill: none; stroke: var(--viz-track); stroke-width: 13; }
+.mo-glass .an2-donut-seg { fill: none; stroke-width: 13; cursor: pointer; transition: opacity 0.15s, stroke-width 0.15s; }
+.mo-glass .an2-donut-seg:hover { stroke-width: 15; }
+.mo-glass .an2-donut-seg.dim { opacity: 0.3; }
+.mo-glass .an2-donut-c {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.mo-glass .an2-donut-c strong { font-size: 20px; font-weight: 800; color: var(--g-ink); line-height: 1.1; }
+.mo-glass .an2-donut-c span { font-size: 10.5px; color: var(--g-ink-3); max-width: 76px; line-height: 1.2; margin-top: 2px; }
+.mo-glass .an2-donut-leg { list-style: none; margin: 0; padding: 0; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.mo-glass .an2-donut-leg li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto 38px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  cursor: default;
+}
+.mo-glass .an2-donut-leg li.on { background: var(--viz-track); }
+.mo-glass .an2-donut-leg i { width: 10px; height: 10px; border-radius: 3px; }
+.mo-glass .an2-donut-l { color: var(--g-ink-2, var(--g-ink)); line-height: 1.25; overflow-wrap: anywhere; }
+.mo-glass .an2-donut-leg b { font-weight: 700; color: var(--g-ink); }
+.mo-glass .an2-donut-leg em { font-style: normal; color: var(--g-ink-3); text-align: right; }
+.mo-glass .an2-donut-note { margin: 10px 0 0; font-size: 12px; color: var(--viz-bad); font-weight: 600; }
+.mo-glass .an2-donut-seg.c1, .mo-glass .an2-donut-leg i.c1 { stroke: var(--viz-c1); background: var(--viz-c1); }
+.mo-glass .an2-donut-seg.c2, .mo-glass .an2-donut-leg i.c2 { stroke: var(--viz-c2); background: var(--viz-c2); }
+.mo-glass .an2-donut-seg.c3, .mo-glass .an2-donut-leg i.c3 { stroke: var(--viz-c3); background: var(--viz-c3); }
+.mo-glass .an2-donut-seg.s-good, .mo-glass .an2-donut-leg i.s-good { stroke: var(--viz-good); background: var(--viz-good); }
+.mo-glass .an2-donut-seg.s-bad, .mo-glass .an2-donut-leg i.s-bad { stroke: var(--viz-bad); background: var(--viz-bad); }
+.mo-glass .an2-donut-seg.s-open, .mo-glass .an2-donut-leg i.s-open { stroke: var(--viz-open); background: var(--viz-open); }
+@media (max-width: 420px) {
+  .mo-glass .an2-donut { flex-basis: 96px; width: 96px; height: 96px; }
+}
+
+/* Run-rate tooltip — solid, high-contrast, never off the edge */
+.mo-glass .an2-mrr { position: relative; }
+.mo-glass .an2-mrr-tip.v2 {
+  transform: none;
+  top: 8px;
+  min-width: 190px;
+  max-height: none;
+  overflow: visible;
+  padding: 10px 12px;
+  background: #111;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 14px 32px -12px rgba(0, 0, 0, 0.55);
+}
+.mo-glass.mo-dark .an2-mrr-tip.v2,
+.mo-portal-host.mo-dark .an2-mrr-tip.v2 {
+  background: #f4f4f2;
+  color: #111;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+.mo-glass .an2-mrr-tip.v2 .an2-mrr-tip-day { font-size: 11px; opacity: 0.7; margin-bottom: 8px; letter-spacing: 0.02em; }
+.mo-glass .an2-mrr-tip.v2 .an2-mrr-tip-row { font-size: 13px; padding: 3px 0; gap: 8px; }
+.mo-glass .an2-mrr-tip.v2 .an2-mrr-tip-m { opacity: 0.85; }
+.mo-glass .an2-mrr-tip.v2 .an2-mrr-tip-v { font-variant-numeric: tabular-nums; margin-left: 14px; }
+.mo-glass .an2-mrr-tip.v2 .an2-mrr-tip-row.fc {
+  margin-bottom: 4px;
+  padding-bottom: 7px;
+  border-bottom: 1px dashed currentColor;
+  border-bottom-color: rgba(127, 127, 127, 0.45);
+}
+.mo-glass .an2-mrr-tip-dot.fc { background: transparent !important; border: 2px dashed; width: 10px; height: 10px; border-radius: 50%; }
+.mo-glass .an2-mrr-hdot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--bc);
+  box-shadow: 0 0 0 2px var(--g-surface-3, #fff);
+  pointer-events: none;
+  z-index: 3;
+}
+.mo-glass .an2-mrr-hdot.fc { background: var(--g-surface-3, #fff); border: 2px dashed var(--bc); box-shadow: none; }

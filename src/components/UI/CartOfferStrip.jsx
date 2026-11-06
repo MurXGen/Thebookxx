@@ -196,9 +196,19 @@ export default function CartOfferStrip({ discountedAmount }) {
           {/* Achieved reward replaces "See all offers"; tapping the strip
               opens the sheet, where flat rewards are applied by hand. */}
           {canApply ? (
-            <span className="offer-see-all offer-see-done">
-              <Check size={11} strokeWidth={3} /> Avail {bestUnlocked.reward}
-            </span>
+            <button
+              type="button"
+              className="offer-see-all offer-avail-btn"
+              onClick={(e) => {
+                // Apply the unlocked reward right here (don't open the sheet).
+                e.preventDefault();
+                e.stopPropagation();
+                applyOffer(bestUnlocked.value);
+                showToast(`${bestUnlocked.reward} applied to your bag`, "success");
+              }}
+            >
+              Avail {bestUnlocked.reward}
+            </button>
           ) : appliedFlat ? (
             <span className="offer-see-all offer-see-done">
               <Check size={11} strokeWidth={3} /> {appliedFlat.reward} applied

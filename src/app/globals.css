@@ -773,7 +773,7 @@ button:hover {
 .trending-section .h-scroll-track .trending-card {
   border-right: 1px solid var(--hairline, #ececec);
   border-radius: 0;
-  padding: 16px 14px;
+  padding: 16px 14px 6px;
   transition: background 0.2s ease, box-shadow 0.2s ease,
     border-color 0.2s ease, border-radius 0.2s ease;
 }
@@ -902,6 +902,9 @@ button:hover {
 
 .h-scroll-track {
   display: flex;
+  /* Cards size to their own content instead of stretching to the tallest in the
+     row — removes the empty gap below the "Add to Cart" button. */
+  align-items: flex-start;
   gap: 12px;
   overflow-x: auto;
   scroll-behavior: smooth;
@@ -962,7 +965,7 @@ button:hover {
 
 .trending-card {
   background: transparent;
-  padding: 12px 10px;
+  padding: 12px 10px 4px;
   border-radius: 16px;
   overflow: hidden;
   min-width: 200px;
@@ -1197,6 +1200,155 @@ button:hover {
   background-size: 200% 100%;
   animation: shimmer 1.6s linear infinite;
   filter: blur(2px);
+}
+
+/* Delivery-speed check — slim centered stripe below the navbar. */
+.delbar {
+  width: 100%;
+  background: linear-gradient(90deg, #fff4e3, #fffaf2 50%, #fff4e3);
+  border-bottom: 1px solid rgba(251, 133, 0, 0.22);
+}
+.delbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 7px 16px;
+}
+.delbar-lead {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #9a5a00;
+  white-space: nowrap;
+}
+/* Compact pill that holds the pincode input + Check button. */
+.delbar-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 4px 0 11px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(251, 133, 0, 0.4);
+  background: #fff;
+  box-shadow: 0 2px 8px -4px rgba(251, 133, 0, 0.5);
+}
+.delbar-pin-ic {
+  flex: 0 0 auto;
+  color: var(--tertiary, #fb8500);
+}
+.delbar-input {
+  width: 128px;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #1c1814;
+}
+.delbar-input::placeholder {
+  color: #b9a689;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.delbar-check {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.delbar-check:disabled {
+  background: #e7cba0;
+  cursor: default;
+}
+.delbar-result {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.delbar-to {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #1c1814;
+}
+.delbar-state {
+  margin-left: 4px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.14);
+  color: #15803d;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+.delbar-sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.12);
+}
+.delbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff;
+  border: 1px solid #ecdcc3;
+  color: #6b5330;
+}
+.delbar-chip.fast {
+  background: rgba(22, 163, 74, 0.12);
+  border-color: rgba(22, 163, 74, 0.3);
+  color: #15803d;
+}
+.delbar-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: none;
+  background: transparent;
+  color: var(--tertiary, #fb8500);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+@media (max-width: 560px) {
+  .delbar-inner {
+    padding: 6px 12px;
+    gap: 8px;
+  }
+  .delbar-sep {
+    display: none;
+  }
+  .delbar-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  .delbar-input {
+    width: 110px;
+  }
 }
 /* Sized placeholder shown before a card enters the viewport — reserves the
    cover's 2:3 box so the card keeps its height without loading any image. */
@@ -53369,6 +53521,25 @@ img[data-loaded="true"] {
   font-size: 13px;
   color: var(--dark-50, #6b7280);
 }
+.coupon-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 22px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.cp-spin {
+  color: var(--tertiary, #fb8500);
+  animation: cpSpin 0.9s linear infinite;
+}
+@keyframes cpSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 .coupon-card {
   display: flex;
   align-items: center;
@@ -62395,6 +62566,126 @@ h2.od-reco-title {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
+
+/* "Add a gift message" CTA inside the gift-wrap card. */
+.pa-card-gift {
+  cursor: pointer;
+}
+.pa-gift-cta {
+  margin-top: 8px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  border: 1px dashed #e0b24b;
+  background: #fffaf0;
+  color: #9a6a00;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.pa-gift-cta:hover {
+  background: #fff3df;
+}
+
+/* Gift-wrap message editor (opens below the add-ons grid). */
+.gift-msg {
+  margin-top: 2px;
+}
+.gift-msg-save {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  padding: 7px 14px;
+  border-radius: 9px;
+  border: none;
+  background: #16a34a;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.gift-msg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid #f0d79a;
+  background: #fffaf0;
+}
+.gift-msg-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 800;
+  color: #8a5a00;
+}
+.gift-msg-count {
+  font-weight: 600;
+  color: #b08a3a;
+}
+.gift-msg-input {
+  width: 100%;
+  resize: vertical;
+  min-height: 46px;
+  border: 1px solid #ecd9a8;
+  border-radius: 9px;
+  padding: 9px 11px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+  color: #1c1814;
+  outline: none;
+}
+.gift-msg-input:focus {
+  border-color: #e0b24b;
+  box-shadow: 0 0 0 3px rgba(224, 178, 75, 0.18);
+}
+
+/* Gift message on the order details page. */
+.od-giftmsg {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, #fff7e6, #fffdf7);
+  border: 1px solid rgba(224, 178, 75, 0.45);
+}
+.od-giftmsg-ic {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(224, 178, 75, 0.2);
+  color: #9a6a00;
+}
+.od-giftmsg-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.od-giftmsg-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9a6a1a;
+}
+.od-giftmsg-text {
+  margin: 0;
+  font-size: 14px;
+  font-style: italic;
+  color: #5a4420;
+  line-height: 1.5;
+}
 .pa-card {
   position: relative;
   display: flex;
@@ -66287,6 +66578,74 @@ h2.od-reco-title {
 .orw-strip { overflow: visible; }
 
 /* ===== Faster delivery check (Choose payment method) ===== */
+/* Current (standard) delivery stripe shown above the Faster-delivery option. */
+.dstripe {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 2px 0 10px;
+  padding: 11px 13px;
+  border: 1.5px solid #16a34a;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #ecfdf3, #f7fef9 60%, #fff);
+  box-shadow: 0 6px 18px -12px rgba(22, 163, 74, 0.45);
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+.dstripe.muted {
+  border-color: #e5e7eb;
+  background: #fafafa;
+  box-shadow: none;
+  opacity: 0.85;
+}
+.dstripe-ic {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: rgba(22, 163, 74, 0.14);
+  color: #15803d;
+}
+.dstripe.muted .dstripe-ic {
+  background: #eef0f2;
+  color: #6b7280;
+}
+.dstripe-txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.dstripe-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #14532d;
+}
+.dstripe.muted .dstripe-title {
+  color: #374151;
+}
+.dstripe-sub {
+  font-size: 11.5px;
+  color: #4b5563;
+  font-weight: 500;
+}
+.dstripe-free {
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  color: #15803d;
+  background: rgba(22, 163, 74, 0.14);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.dstripe.muted .dstripe-free {
+  color: #6b7280;
+  background: #eef0f2;
+}
+
 .fdx {
   position: relative;
   display: flex;
@@ -66396,3 +66755,180 @@ h2.od-reco-title {
   border: 6px solid transparent;
   border-top-color: #1c1814;
 }
+
+/* ===== Bookmark achievements: compact ===== */
+.orw-strip { padding: 10px 12px 2px; }
+.orw-strip-head { gap: 10px; }
+.orw-strip-head .bmk-row { width: auto; }
+.orw-strip-txt b { font-size: 13.5px; line-height: 1.25; }
+.orw-sub { font-size: 11.5px; font-weight: 600; color: #b45309; }
+.orw-next {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid #f2d3a6;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #b45309;
+  white-space: nowrap;
+}
+.orw-next.done { border-color: #bbf7d0; color: #15803d; }
+.orw-chev { margin-left: -2px; }
+.orw-strip .orw-track { height: 4px; margin: 12px 6px 26px; }
+.orw-strip .orw-dot { width: 12px; height: 12px; margin-left: -6px; border-width: 2px; }
+.orw-strip .orw-dot svg { width: 8px; height: 8px; }
+.orw-strip .orw-dot.zero { width: 8px; height: 8px; margin-left: -4px; }
+.orw-strip .orw-dot small { top: 14px; font-size: 10px; }
+.orw-strip .orw-dot small b { font-size: 10px; font-weight: 700; }
+.orw-strip .orw-dot.zero small { top: 12px; }
+
+/* ===== Delivery stripe (fixed under navbar): message left, pincode right ===== */
+.delbar-inner {
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 12px;
+  padding: 6px 16px;
+}
+.delbar-msg {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: #5c4a33;
+}
+.delbar-msg > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.delbar-msg b { color: #1c1814; font-weight: 800; }
+.delbar-msg-ic { flex-shrink: 0; color: #b45309; }
+.delbar-msg-ic.fast { color: #16a34a; fill: #22c55e; }
+.delbar-msg-fast { color: #15803d; font-weight: 600; }
+@media (max-width: 420px) { .delbar-msg-fast { display: none; } }
+.delbar-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1.5px solid var(--tertiary, #fb8500);
+  border-radius: 999px;
+  background: #fff;
+  color: #c2410c;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.delbar-btn:hover { background: #fff4e6; }
+.delbar-btn:not(.set) { background: var(--tertiary, #fb8500); color: #fff; }
+
+.delbar-overlay { display: flex; align-items: flex-end; justify-content: center; }
+@media (min-width: 640px) { .delbar-overlay { align-items: center; } }
+.delbar-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(420px, 100%);
+  padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+  border-radius: 20px 20px 0 0;
+  background: #fff;
+}
+@media (min-width: 640px) { .delbar-sheet { border-radius: 20px; } }
+.delbar-sheet-head { display: flex; align-items: center; justify-content: space-between; }
+.delbar-sheet-head b { font-size: 17px; color: #1c1814; }
+.delbar-sheet-x { padding: 4px; border: 0; background: none; color: #6b7280; cursor: pointer; }
+.delbar-sheet-sub { margin: -4px 0 4px; font-size: 13px; color: #6b5f52; }
+.delbar-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 50px;
+  padding: 0 14px;
+  border: 1.5px solid #e7e5e4;
+  border-radius: 14px;
+  background: #fafaf9;
+  color: #c2410c;
+}
+.delbar-field:focus-within { border-color: #fb8500; background: #fff; box-shadow: 0 0 0 3px rgba(251, 133, 0, .15); }
+.delbar-field.err { border-color: #dc2626; }
+.delbar-field input,
+.delbar-field input:focus {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0 !important;
+  outline: none;
+  box-shadow: none !important;
+  background: transparent !important;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: #1c1814;
+}
+.delbar-field input::placeholder { letter-spacing: 0; font-weight: 500; font-size: 15px; color: #a8a29e; }
+.delbar-err { margin-top: -4px; font-size: 12px; font-weight: 600; color: #dc2626; }
+.delbar-submit { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+/* Delivery stripe: white with an orange underline; sheet full width */
+.delbar { background: #fff !important; border-bottom: 2px solid var(--tertiary, #fb8500) !important; }
+.delbar-sheet {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  border-radius: 20px 20px 0 0 !important;
+  padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+}
+.delbar-overlay { align-items: flex-end !important; }
+.delbar-lbl { margin-top: 2px; font-size: 13px; font-weight: 700; color: #1c1814; }
+.delbar-input2 {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--dark-20, #82828250);
+  border-radius: 12px;
+  background: #fafafa;
+  font: inherit;
+  font-size: 15px;
+  color: #1c1814;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.delbar-input2:focus {
+  border-color: var(--tertiary, #fb8500);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.15);
+}
+.delbar-input2.err { border-color: #dc2626; }
+.delbar-input2::placeholder { color: #a8a29e; }
+.delbar-overlay { z-index: 2147482000 !important; }
+@media (max-width: 520px) { .delbar-msg-fast { display: none; } }
+
+/* Cover placeholder = the real cover's size, so cards don't change height
+   (and rows don't keep empty space) while covers load in. */
+.image-skeleton-link {
+  width: auto;
+  height: 150px;
+  aspect-ratio: 2 / 3;
+}
+@media (max-width: 450px) {
+  .image-skeleton-link { height: 138px; }
+}
+
+/* "Avail ₹X OFF" — tertiary link button: applies the reward on tap */
+.offer-avail-btn {
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--tertiary-light, #ffb703);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.offer-avail-btn:hover { color: #ffd166; }
+.offer-avail-btn:active { transform: scale(0.97); }

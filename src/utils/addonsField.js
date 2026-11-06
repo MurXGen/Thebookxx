@@ -33,22 +33,42 @@ export function parseAddonsField(raw) {
       charged = 0;
     }
   }
+  // Optional gift-wrap note is appended as "· Note: <text>" — pull it back out.
+  const noteMatch = s.match(/·\s*Note:\s*([\s\S]+)$/i);
+  const message = noteMatch ? noteMatch[1].trim() : "";
   return {
     giftOn,
     bookmarkQty: qty,
     bookmarkCharged: charged,
     bookmarkFree: free,
     bookmarkCharge: charged * BOOKMARK_UNIT,
+    message,
   };
 }
 
-export function encodeAddonsField({ giftOn, bookmarkQty = 0, bookmarkFree = 0 }) {
+// Pull just the gift-wrap note out of a Gift Wrap column value.
+export function parseGiftMessage(raw) {
+  const m = String(raw || "").match(/·\s*Note:\s*([\s\S]+)$/i);
+  return m ? m[1].trim() : "";
+}
+
+export function encodeAddonsField({
+  giftOn,
+  bookmarkQty = 0,
+  bookmarkFree = 0,
+  message = "",
+}) {
   const prefix = giftOn ? "Yes" : "No";
   const qty = Math.max(0, Number(bookmarkQty) || 0);
+  let base;
   if (qty > 0) {
     const free = Math.min(Math.max(0, Number(bookmarkFree) || 0), qty);
     const charged = Math.max(0, qty - free);
-    return `${prefix}-Bookmark ${charged}-${free}`;
+    base = `${prefix}-Bookmark ${charged}-${free}`;
+  } else {
+    base = prefix;
   }
-  return prefix;
+  // Gift note rides in the same column (decoder-safe: it's a trailing suffix).
+  const note = String(message || "").trim().replace(/\s+/g, " ");
+  return note ? `${base} · Note: ${note}` : base;
 }

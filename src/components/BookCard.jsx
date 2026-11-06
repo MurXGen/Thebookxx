@@ -2,7 +2,7 @@
 
 import { useStore } from "@/context/StoreContext";
 import { trackAddToCart } from "@/lib/ga";
-import { books } from "@/utils/book";
+import { books, bookDisplayTitle } from "@/utils/book";
 import { Book, Minus, Plus, Share2, ShoppingCart, Bell, Heart } from "lucide-react";
 import Image from "next/image";
 import { coverFallbackVars } from "@/components/BookCoverImg";
@@ -346,7 +346,7 @@ function BookCard({ book }) {
               aria-label={`Buy ${book.name}${book.author ? ` by ${book.author}` : ""} online at ₹${book.discountedPrice}${savings > 0 ? ` (save ₹${savings})` : ""} on TheBookX`}
               title={`${book.name}, buy online at lowest price ₹${book.discountedPrice}`}
             >
-              {book.name}
+              {bookDisplayTitle(book)}
             </Link>
 
             {/* Category Link - Internal Backlink for SEO */}

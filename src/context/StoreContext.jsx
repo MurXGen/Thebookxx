@@ -295,6 +295,14 @@ export function StoreProvider({ children }) {
         }),
         keepalive: true,
       }).catch(() => {});
+      // Same device in the Pincodes tab → Converted = Yes.
+      if (deviceId)
+        fetch("/api/pincodes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "convert", deviceId, orderId, phone: digits }),
+          keepalive: true,
+        }).catch(() => {});
     } catch {}
   };
 

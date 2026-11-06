@@ -80,6 +80,9 @@ export const NOTES_SHEET_NAME = process.env.NOTES_SHEET_NAME || "Notes";
 
 export const ABANDONED_CART_SHEET_NAME =
   process.env.ABANDONED_CART_SHEET_NAME || "Abandoned Cart";
+// Pincodes entered in the delivery stripe (one row per device).
+export const PINCODES_SHEET_NAME =
+  process.env.PINCODES_SHEET_NAME || "Pincodes";
 
 // Our return pickup destination (printed as the "to" address on the request).
 export const RETURN_TO_ADDRESS =
@@ -726,5 +729,38 @@ export async function proPlanRows(phone) {
         );
   } catch {
     return [];
+  }
+}
+
+// ── Pincode checks (delivery stripe) ───────────────────────────────────────
+// One row per device, keyed by "Device ID": append the first time, update after.
+export function pincodeAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "append",
+    sheet: PINCODES_SHEET_NAME,
+    data,
+  });
+}
+export function pincodeUpdate(deviceId, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: PINCODES_SHEET_NAME,
+    matchColumn: "Device ID",
+    matchValue: String(deviceId),
+    data,
+  });
+}
+export async function pincodeRowByDevice(deviceId) {
+  const id = String(deviceId || "").trim();
+  if (!id) return null;
+  try {
+    const table = await gvizQuery({ sheet: PINCODES_SHEET_NAME });
+    return (
+      tableToObjects(table).find(
+        (r) => String(r["Device ID"] ?? "").trim() === id,
+      ) || null
+    );
+  } catch {
+    return null;
   }
 }

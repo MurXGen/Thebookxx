@@ -133,6 +133,18 @@ export const resetOffer = () => {
   localStorage.removeItem(ONE_RUPEE_OFFER_KEY);
 };
 
+// Visible title for a book — appends the series name (e.g. "Diary of a Wimpy
+// Kid") when the book belongs to a series whose own title doesn't already spell
+// it out. Used for display only; `book.name` (cart, orders, slugs) is unchanged.
+export const bookDisplayTitle = (b) => {
+  const name = String(b?.name || "");
+  const series = String(b?.series || "");
+  if (series && !name.toLowerCase().includes(series.toLowerCase())) {
+    return `${name} (${series})`;
+  }
+  return name;
+};
+
 export const books = [
   {
     id: "bk-001",

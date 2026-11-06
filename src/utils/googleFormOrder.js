@@ -366,6 +366,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     paymentType,
     fasterDeliveryChoice,
     giftWrapSelected,
+    giftMessage = "",
     shortLink,
     totalWithDelivery,
     finalPayable,
@@ -532,6 +533,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       giftOn: !!giftWrapSelected,
       bookmarkQty: bookmarkQty || (bookmarkSelected ? 1 : 0),
       bookmarkFree,
+      message: giftWrapSelected ? giftMessage : "",
     }),
     giftWrapCharge: giftWrapSelected
       ? Number.isFinite(giftWrapChargeIn)

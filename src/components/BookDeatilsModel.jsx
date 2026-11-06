@@ -785,7 +785,7 @@ export default function BookDetailsModal({ book }) {
             exit={{ y: -60, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <span className="bd-sticky-title">{book.name}</span>
+            <span className="bd-sticky-title">{seoName}</span>
             <div className="bd-sticky-actions">
               <button
                 type="button"
@@ -946,7 +946,7 @@ export default function BookDetailsModal({ book }) {
                 <div className="bd-title-row">
                   <div className="bd-title-block">
                     <h1 className="bd-title" itemProp="name">
-                      {book.name}
+                      {seoName}
                     </h1>
 
                     {book.author && (

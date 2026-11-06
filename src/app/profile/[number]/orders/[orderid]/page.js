@@ -1688,6 +1688,8 @@ export default function OrderDetailPage() {
       payOnDelivery: payOnDeliveryF,
       couponCode,
       couponDiscount,
+      giftOn: addons.giftOn,
+      giftMessage: addons.message,
     };
   }, [books, order]);
 
@@ -3544,6 +3546,19 @@ export default function OrderDetailPage() {
           )}
         </AnimatePresence>
       </section>
+
+      {/* Gift message — the note the shopper added with gift wrapping. */}
+      {bd.giftMessage && (
+        <section className="od-block od-giftmsg">
+          <span className="od-giftmsg-ic">
+            <Gift size={18} />
+          </span>
+          <div className="od-giftmsg-body">
+            <span className="od-giftmsg-label">Gift message</span>
+            <p className="od-giftmsg-text">“{bd.giftMessage}”</p>
+          </div>
+        </section>
+      )}
 
       {/* Price details (Flipkart-style breakdown) */}
       <section className="od-block od-price-block">

@@ -172,7 +172,7 @@ export default function BillModal({
           </div>
           {offerDiscount > 0 && (
             <div className="bill-row">
-              <span>{offerLabel || "Offer"}</span>
+              <span>Achievement discount</span>
               <span className="green">− ₹{offerDiscount}</span>
             </div>
           )}
@@ -213,17 +213,31 @@ export default function BillModal({
             </div>
           ) : (
             <>
-              <div className="bill-row">
-                <span className="flex flex-col">
-                  <span>Delivery</span>
-                  <span className="bm2-muted">
-                    {isFasterDelivery ? "Faster · 1–6 days" : "Standard · 5–9 days"}
+              {/* Only ONE delivery line — Faster (when chosen) overrides and
+                  replaces the standard line; otherwise standard (free/charged).
+                  Handling & Care is a separate concept, shown below for big
+                  carts. */}
+              {isFasterDelivery ? (
+                <div className="bill-row">
+                  <span className="flex flex-col">
+                    <span>Faster delivery</span>
+                    <span className="bm2-muted">Priority dispatch · 1–6 days</span>
                   </span>
-                </span>
-                <span className={stdDeliveryAmt > 0 ? "" : "green"}>
-                  {stdDeliveryAmt > 0 ? `+ ₹${stdDeliveryAmt}` : "FREE"}
-                </span>
-              </div>
+                  <span className="orange">
+                    {fasterExtra > 0 ? `+ ₹${fasterExtra}` : "FREE"}
+                  </span>
+                </div>
+              ) : (
+                <div className="bill-row">
+                  <span className="flex flex-col">
+                    <span>Delivery</span>
+                    <span className="bm2-muted">Standard · 4–9 days</span>
+                  </span>
+                  <span className={stdDeliveryAmt > 0 ? "" : "green"}>
+                    {stdDeliveryAmt > 0 ? `+ ₹${stdDeliveryAmt}` : "FREE"}
+                  </span>
+                </div>
+              )}
               {handlingAmt > 0 && (
                 <div className="bill-row">
                   <span className="flex flex-col gap-4">
@@ -250,15 +264,6 @@ export default function BillModal({
                     )}
                   </span>
                   <span>+ ₹{handlingAmt}</span>
-                </div>
-              )}
-              {fasterExtra > 0 && (
-                <div className="bill-row">
-                  <span className="flex flex-col">
-                    <span>Faster delivery</span>
-                    <span className="bm2-muted">Priority dispatch</span>
-                  </span>
-                  <span className="orange">+ ₹{fasterExtra}</span>
                 </div>
               )}
             </>

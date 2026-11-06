@@ -37,13 +37,13 @@ function Ribbons({ count, fresh = 0, size = "md" }) {
 // 0 bookmarks → 2 free (every order, always reached) → ₹500 → ₹1000 → Box.
 const STOPS = [
   { id: "zero", at: -1, pos: 0, top: "0", reward: "" },
-  { id: "base", at: 0, pos: 18, top: `${BASE_FREE_BOOKMARKS} free`, reward: "every order" },
+  { id: "base", at: 0, pos: 18, top: `${BASE_FREE_BOOKMARKS} free`, reward: "" },
   ...REWARD_LEVELS.map((l, i, all) => ({
     id: l.id,
     at: l.at,
     pos: i === all.length - 1 ? 100 : 18 + ((i + 1) * (100 - 18)) / (all.length + 0.75),
-    top: inr(l.at),
-    reward: l.mystery ? "Mystery Box" : `${l.bookmarks} free`,
+    top: l.mystery ? `${inr(l.at)} · Box` : inr(l.at),
+    reward: "",
     box: l.mystery,
   })),
 ];
@@ -108,7 +108,7 @@ function Track({ amount, fx, onFxDone }) {
             {on && st.id !== "zero" && <Check size={9} strokeWidth={4} />}
             <small>
               <b>{st.top}</b>
-              {st.reward}
+              {st.reward || null}
             </small>
           </span>
         );
@@ -194,19 +194,22 @@ export default function OrderRewards({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.level, variant, celebrate]);
 
-  const headline = p.next
-    ? p.next.mystery
-      ? `${p.bookmarks} free bookmarks · ${inr(p.gap)} more for the Mystery Box`
-      : `${p.bookmarks} free bookmarks · ${inr(p.gap)} more for ${p.next.short}`
-    : "4 free bookmarks + the Mystery Box unlocked";
+  const nextLabel = p.next
+    ? `${inr(p.gap)} to ${p.next.mystery ? "Mystery Box" : `${p.next.bookmarks === 3 ? "3rd" : `${p.next.bookmarks}th`} free`}`
+    : "All unlocked";
 
   const head = (
     <>
       <Ribbons count={p.bookmarks} size="sm" />
       <span className="orw-strip-txt">
-        <span className="orw-kicker">Bookmark achievements</span>
-        <b>{headline}</b>
+        <b>
+          {p.bookmarks} free bookmarks{p.current?.mystery ? " + Mystery Box" : ""}
+        </b>
+        <small className="orw-sub">
+          {p.amount > 0 ? "Claim at checkout" : "On every order"}
+        </small>
       </span>
+      <span className={`orw-next${p.next ? "" : " done"}`}>{nextLabel}</span>
     </>
   );
 
@@ -223,12 +226,6 @@ export default function OrderRewards({
           <ChevronDown size={16} className={`orw-chev${open ? " open" : ""}`} />
         </button>
         <Track amount={p.amount} fx={fx} onFxDone={() => setFx(null)} />
-        {/* Short nudge: free, but only if they claim them. */}
-        {p.amount > 0 && (
-          <p className="orw-claim">
-            Claim your {p.bookmarks} free bookmarks at checkout.
-          </p>
-        )}
         {open && (
           <div className="orw-more">
             <LevelList amount={p.amount} />

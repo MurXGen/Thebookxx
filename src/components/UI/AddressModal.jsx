@@ -63,6 +63,7 @@ import { showToast } from "@/context/ToastContext";
 import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
 import { rewardNote } from "@/utils/orderRewards";
+import { encodeAddonsField } from "@/utils/addonsField";
 
 const PINCODE_DATA_KEY = "user_pincode";
 
@@ -268,6 +269,8 @@ export default function AddressModal({
   // registers a pending membership when the order is placed.
   // Coupons — slide-up list + code entry; applied coupon discounts the order.
   const [showCouponSheet, setShowCouponSheet] = useState(false);
+  // Lets the shopper decline (un-opt) the automatic cart-reward discount.
+  const [offerOptedOut, setOfferOptedOut] = useState(false);
   const [coupons, setCoupons] = useState([]);
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
@@ -394,6 +397,18 @@ export default function AddressModal({
     setGiftWrap(giftWrapSelected);
   }, [giftWrapSelected]);
 
+  // Optional gift-wrap message — shown when gift wrap is on, saved to the order
+  // (Gift Wrap column) and surfaced on the order details page.
+  const [giftMessage, setGiftMessage] = useState("");
+  const [giftMsgOpen, setGiftMsgOpen] = useState(false);
+  // Clear the message if gift wrap is turned off.
+  useEffect(() => {
+    if (!giftWrap) {
+      setGiftMessage("");
+      setGiftMsgOpen(false);
+    }
+  }, [giftWrap]);
+
   // Keep the parent (and the shared Bill modal) in sync with add-on choices.
   useEffect(() => {
     if (onDeliveryChoiceChange) onDeliveryChoiceChange(fasterDelivery);
@@ -406,6 +421,11 @@ export default function AddressModal({
   //   below ₹500  → 2 free · ₹500–999 → 3 free · ₹1000+ → 4 free
   const [bookmarkQty, setBookmarkQty] = useState(0);
   const BOOKMARK_UNIT = 9;
+  // Switching to Cash on Delivery caps bookmarks at 1 — trim any extra.
+  useEffect(() => {
+    const cap = paySel === "COD" ? 1 : 2;
+    setBookmarkQty((q) => (q > cap ? cap : q));
+  }, [paySel]);
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
@@ -703,7 +723,8 @@ export default function AddressModal({
   // discount applies. When a (non-wallet) coupon is active we undo the cart
   // offer so the coupon replaces it; the coupon then applies on the pre-offer
   // bill. `basePayable` is the item bill before whichever discount is active.
-  const offerActive = !appliedCoupon || isWalletCoupon; // wallet coupon stacks
+  // Active unless replaced by a (non-wallet) coupon OR the shopper opted out.
+  const offerActive = (!appliedCoupon || isWalletCoupon) && !offerOptedOut;
   const activeOfferDiscount = offerActive ? offerDiscount : 0;
   const basePayable = offerActive ? finalPayable : finalPayable + offerDiscount;
 
@@ -886,6 +907,9 @@ export default function AddressModal({
     totalDiscounted >= 1000 ? 4 : totalDiscounted >= 500 ? 3 : 2;
   const bookmarkExtra = Math.max(0, bookmarkQty - freeBookmarks);
   const bookmarkCharge = bookmarkExtra * BOOKMARK_UNIT;
+  // Bookmark cap by payment type — 1 on Cash on Delivery orders, 2 on online
+  // paid orders (prepaid customers can add one extra).
+  const maxBookmarks = paySel === "COD" ? 1 : 2;
 
   // Add-ons that ride on the bill. Gift wrap + chargeable bookmarks both apply
   // to EVERY flow (online, two-parts, COD) as real line items — never folded
@@ -1335,6 +1359,18 @@ export default function AddressModal({
         ),
         "Advance Amount": String(n0(advanceAmt)),
         "COD Collectible": String(n0(codCollectForOrder)),
+        // Gift-wrap note → appended into the encoded Gift Wrap column (keeps the
+        // gift/bookmark code intact; the note rides as a decoder-safe suffix).
+        ...((giftWrap || giftWrapSelected) && giftMessage.trim()
+          ? {
+              "Gift Wrap": encodeAddonsField({
+                giftOn: giftWrap || giftWrapSelected,
+                bookmarkQty,
+                bookmarkFree: Math.min(bookmarkQty, freeBookmarks),
+                message: giftMessage.trim(),
+              }),
+            }
+          : {}),
       };
       updateOrderRow(orderId, updates).catch((e) =>
         console.error("Order upsert update failed:", e),
@@ -1409,6 +1445,7 @@ export default function AddressModal({
         paymentLabel,
         fasterDeliveryChoice: isFaster,
         giftWrapSelected: giftWrapOn,
+        giftMessage: giftWrapOn ? giftMessage.trim() : "",
         shortLink,
         totalWithDelivery: Math.max(0, rawTotalAppend - extraWalletAppend),
         bookmarkSelected: bookmarkQty > 0,
@@ -3010,6 +3047,20 @@ export default function AddressModal({
                   </div>
                 )}
 
+                {/* Current delivery type — a highlighted stripe above Faster
+                    delivery so shoppers always see the included standard option
+                    (free, 4–9 days). Dims when Faster is the active choice. */}
+                <div className={`dstripe${fasterDelivery ? " muted" : ""}`}>
+                  <span className="dstripe-ic" aria-hidden="true">
+                    <Truck size={15} />
+                  </span>
+                  <span className="dstripe-txt">
+                    <span className="dstripe-title">Standard delivery</span>
+                    <span className="dstripe-sub">Arrives in 4–9 days</span>
+                  </span>
+                  <span className="dstripe-free">FREE</span>
+                </div>
+
                 {/* Faster delivery — ticked by default on arrival; the bill
                     updates live. Not available with Cash on Delivery. */}
                 <div
@@ -3283,14 +3334,22 @@ export default function AddressModal({
                 <div className="pa-grid-block">
                   <span className="deliv-addon-head">Make it special</span>
                   <div className="pa-grid">
-                    <button
-                      type="button"
-                      className={`pa-card${giftWrap ? " on" : ""}`}
+                    <div
+                      className={`pa-card pa-card-gift${giftWrap ? " on" : ""}`}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={giftWrap}
                       onClick={() => {
                         buzz(giftWrap ? 8 : [12, 40, 12]);
                         setGiftWrap((v) => !v);
                       }}
-                      aria-pressed={giftWrap}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          buzz(giftWrap ? 8 : [12, 40, 12]);
+                          setGiftWrap((v) => !v);
+                        }
+                      }}
                     >
                       <span className="pa-card-top">
                         <span className="pa-card-ic">
@@ -3301,9 +3360,29 @@ export default function AddressModal({
                         </span>
                       </span>
                       <span className="pa-card-name">Gift wrap</span>
-                      <span className="pa-card-sub">Wrapped with a note</span>
+                      <span className="pa-card-sub">
+                        {giftWrap && giftMessage.trim()
+                          ? "Message added ✓"
+                          : "Wrapped with a note"}
+                      </span>
                       <span className="pa-card-price">+₹{giftWrapCharge}</span>
-                    </button>
+                      {/* CTA lives inside the card — opens the note editor. */}
+                      {giftWrap && (
+                        <button
+                          type="button"
+                          className="pa-gift-cta"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setGiftMsgOpen(true);
+                          }}
+                        >
+                          <MessageSquare size={12} />
+                          {giftMessage.trim()
+                            ? "Edit gift message"
+                            : "Add a gift message"}
+                        </button>
+                      )}
+                    </div>
 
                     <div
                       className={`pa-card pa-card-static${bookmarkQty > 0 ? " on" : ""}`}
@@ -3320,7 +3399,9 @@ export default function AddressModal({
                       </span>
                       <span className="pa-card-name">Bookmarks</span>
                       <span className="pa-card-sub">
-                        {freeBookmarks} free · ₹{BOOKMARK_UNIT} each after
+                        {paySel === "COD"
+                          ? "1 free with COD · pay online for 2"
+                          : "Up to 2 free with your order"}
                       </span>
                       <AnimatePresence>
                         {bmFx && (
@@ -3382,11 +3463,20 @@ export default function AddressModal({
                           type="button"
                           className="pa-step-btn"
                           onClick={() => {
-                            if (bookmarkQty >= 20) return;
+                            if (bookmarkQty >= maxBookmarks) {
+                              showToast(
+                                paySel === "COD"
+                                  ? "Only 1 bookmark per Cash on Delivery order. Pay online to add 2."
+                                  : "Up to 2 bookmarks per order.",
+                                "info",
+                              );
+                              return;
+                            }
                             buzz(12);
                             setBmFx({ k: Date.now(), dir: "up" });
-                            setBookmarkQty((q) => Math.min(20, q + 1));
+                            setBookmarkQty((q) => Math.min(maxBookmarks, q + 1));
                           }}
+                          disabled={bookmarkQty >= maxBookmarks}
                           aria-label="Add a bookmark"
                         >
                           +
@@ -3469,6 +3559,38 @@ export default function AddressModal({
                       </span>
                     </button>
                   </div>
+
+                  {/* Gift-note editor — opened from the CTA inside the gift card;
+                      saved with the order and shown on the order details page. */}
+                  {giftWrap && giftMsgOpen && (
+                    <div className="gift-msg">
+                      <div className="gift-msg-field">
+                        <span className="gift-msg-label">
+                          <span>Gift message</span>
+                          <span className="gift-msg-count">
+                            {giftMessage.length}/200
+                          </span>
+                        </span>
+                        <textarea
+                          className="gift-msg-input"
+                          placeholder="Write a short note to include with the gift…"
+                          value={giftMessage}
+                          maxLength={200}
+                          rows={2}
+                          autoFocus
+                          onChange={(e) => setGiftMessage(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="gift-msg-save"
+                          onClick={() => setGiftMsgOpen(false)}
+                        >
+                          <Check size={13} strokeWidth={3} />
+                          {giftMessage.trim() ? "Save note" : "Done"}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -4379,16 +4501,27 @@ export default function AddressModal({
                     <span className="cp-reward-sub">
                       {offerActive
                         ? "🎉 Applied — you've unlocked this cart reward!"
-                        : "Your cart reward · replaced by the coupon below"}
+                        : appliedCoupon
+                          ? "Your cart reward · replaced by the coupon below"
+                          : "Removed · tap to use this reward again"}
                     </span>
                   </div>
                   {offerActive ? (
-                    <span className="cp-reward-tick">Applied</span>
+                    <button
+                      type="button"
+                      className="coupon-use-btn coupon-remove-btn"
+                      onClick={() => setOfferOptedOut(true)}
+                    >
+                      Remove
+                    </button>
                   ) : (
                     <button
                       type="button"
                       className="coupon-use-btn"
-                      onClick={removeCoupon}
+                      onClick={() => {
+                        if (appliedCoupon) removeCoupon();
+                        setOfferOptedOut(false);
+                      }}
                     >
                       Use this
                     </button>
@@ -4427,7 +4560,10 @@ export default function AddressModal({
               <span className="cp-list-lbl">Available coupons</span>
               <div className="coupon-list">
                 {couponLoading ? (
-                  <div className="coupon-empty">Loading coupons…</div>
+                  <div className="coupon-loading">
+                    <Loader2 size={18} className="cp-spin" />
+                    <span>Finding the best coupons for you…</span>
+                  </div>
                 ) : coupons.length === 0 ? (
                   <div className="coupon-empty">No coupons available right now.</div>
                 ) : (

@@ -18,6 +18,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import SearchMain from "./UI/SearchMain";
 import SearchOverlay from "./SearchOverlay";
+import DeliveryCheckBar from "./DeliveryCheckBar";
 import { AnimatePresence, motion } from "framer-motion";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import InstallPWA from "./InstallPWA";
@@ -285,6 +286,8 @@ export default function Navbar() {
         <div className="nav-trust-stripe">
           <RotatingTrust />
         </div>
+        {/* Delivery stripe — part of the fixed header, so it stays put. */}
+        <DeliveryCheckBar />
       </header>
       {/* Spacer reserves the fixed navbar's height so content isn't hidden. */}
       <div
@@ -292,6 +295,7 @@ export default function Navbar() {
         aria-hidden="true"
         style={{ height: navH }}
       />
+
 
       <SearchOverlay
         open={searchOpen}

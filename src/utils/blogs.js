@@ -4,6 +4,174 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "crossword-book-awards-2026-jury-shortlist-20th-edition-indian-books-to-read": {
+    "id": "blog-100",
+    "title": "Crossword Book Awards 2026 (20th Edition): The Jury Shortlist and Indian Books to Read While You Wait for the Winners",
+    "slug": "crossword-book-awards-2026-jury-shortlist-20th-edition-indian-books-to-read",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-06",
+    "lastModified": "2026-11-06",
+    "excerpt": "The 20th Crossword Book Awards shortlist is out, with winners due in Mumbai in December. Here is what it says about Indian writing and what to read now.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The Crossword Book Awards, India's long-running prize for Indian writing in English, reached its 20th edition in 2026. The jury shortlist was reported in mid-October: 25 titles narrowed from a 50-title longlist announced in September, with winners expected at a ceremony in Mumbai in December 2026. If you follow Indian books, this is the list that will shape conversations in bookshops and reading groups through the winter. Here is what the shortlist tells us, who is judging, and a practical reading list drawn from books you can order today."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What the 2026 shortlist includes"
+      },
+      {
+        "type": "paragraph",
+        "content": "The awards began in 1998 and have honoured more than 100 books since. For 2026 the shortlisted titles span fiction, non-fiction, translation, children's writing and business. Press coverage names Sarnath Banerjee's Absolute Jafar, Rahul Bhattacharya's Railsong and Sundar Sarukkai's Water Days among the fiction picks, and Snigdha Poonam's Scamlands, Neha Sinha's Wild Capital and Ipsita Chakravarty's Dapaan in non-fiction. The translation list includes Volga's On the Banks of the Pompa, Anamika's Sita's Veil and Siddique Alam's The Chinese Mansion, while business readers have Manish Sabharwal's Made in India, Srinath Sridharan's Family and Dhanda and Adil Rustomjee's Running Behind Lakshmi. Note that reports name only part of the 25-title list, so check the official Crossword announcement for the full roster."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Key dates and facts",
+        "content": "Edition: 20th. Jury announced: 4 August 2026. Shortlist: 25 titles from a 50-title longlist. Ceremony: Mumbai, December 2026 (exact date not yet confirmed in the coverage we found). Alongside the jury awards, Popular Choice Awards are decided by reader votes."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Who is judging"
+      },
+      {
+        "type": "paragraph",
+        "content": "The jury is made up of working writers and thinkers. Fiction is judged by Anuja Chauhan, Manju Kapur and Samit Basu; non-fiction by Anirudh Kanisetti, Jyoti Malhotra and Naresh Fernandes; business and management by Monika Halan, Rama Bijapurkar and Shrayana Bhattacharya; children's literature by Fiona Fernandez, Payal Kapadia and Ranjit Lal; and translation by Meena Kandasamy, Ranjit Hoskote and Srinath Perur. That spread is a good reminder of how wide Indian writing has become: a prize list can sit comfortably between a graphic-novel-style satire and a study of wetlands and wild capital."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why award lists matter to everyday readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "Prize shortlists are not only for critics. They give you a map, especially when you feel overwhelmed by choice. A shortlist tells you which books a panel of readers argued about, and it often introduces you to authors and translators you might otherwise miss. The honest caveat is that new shortlisted titles can take time to reach every shelf and edition. So a smart way to follow the season is to read widely in the same territory now, and add the new titles as they become available."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Indian fiction to read now"
+      },
+      {
+        "type": "paragraph",
+        "content": "The shortlist's fiction side leans towards inventive, place-rooted storytelling. If that appeals, start with the writers who defined modern Indian fiction in English. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy remains the benchmark for lyrical, structurally daring Indian prose. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R. K. Narayan shows how a small imaginary town can hold a whole country, and <a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> is Narayan at his most quietly devastating. For something lighter and very contemporary, <a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> and <a href=\"/books/2-states\" style=\"color:#fb8500;font-weight:600\">2 States</a> by Chetan Bhagat are easy, popular reads about campus life and cross-cultural romance."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Retellings and the translation conversation"
+      },
+      {
+        "type": "paragraph",
+        "content": "Three of the translated titles on the shortlist, including Anamika's Sita's Veil, work with stories from the epics or from Indian-language traditions. If that is your lane, <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni retells the Mahabharata through Draupadi, <a href=\"/books/sita-warrior-of-mithila\" style=\"color:#fb8500;font-weight:600\">Sita: Warrior of Mithila</a> by Amish gives the Ramayana a heroine-first treatment, and <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> by Devdutt Pattanaik is an accessible, illustrated way into the epic. Translation matters because so much of India's best writing begins in other languages; reading retellings is a gentle first step."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Business and money books for the business-category readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "The business shortlist reflects a growing appetite for books about India's own economy and family firms. To build the vocabulary, pair them with a few durable classics: <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel on behaviour and wealth, <a href=\"/books/the-art-of-spending-money\" style=\"color:#fb8500;font-weight:600\">The Art of Spending Money</a> for the other half of the money story, <a href=\"/books/the-intelligent-investor\" style=\"color:#fb8500;font-weight:600\">The Intelligent Investor</a> by Benjamin Graham for long-term thinking, and <a href=\"/books/zero-to-one\" style=\"color:#fb8500;font-weight:600\">Zero to One</a> by Peter Thiel for building something new."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-fiction and big ideas"
+      },
+      {
+        "type": "paragraph",
+        "content": "The non-fiction picks range from investigative reporting to nature writing. For readers who enjoy that mix of curiosity and public life, <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A. P. J. Abdul Kalam is an enduring Indian story of science and perseverance, and <a href=\"/books/autobiography-of-a-yogi\" style=\"color:#fb8500;font-weight:600\">Autobiography of a Yogi</a> by Paramahansa Yogananda is among the most widely read spiritual memoirs from India. If you want a habit to read more of them, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is the practical companion."
+      },
+      {
+        "type": "paragraph",
+        "content": "Many readers also say clear thinking is the quiet skill behind good reading. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical book on cutting through mental noise and communicating with precision, which pairs well with any dense non-fiction on this list."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gift ideas for children and young readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "The shortlist also recognises Indian children's books such as Giants, If Elephants Could Talk and Our Rice Tastes of Spring. With Children's Day on 14 November, it is a good moment to start a young reader on a series or a story collection. The <a href=\"/books/sudha-murty-collection-12-book-set\" style=\"color:#fb8500;font-weight:600\">Sudha Murty Collection (12-Book Set)</a> is a generous gift for school-age readers and their families, and <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig is a thoughtful pick for older teens and adults who like big questions."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "A simple plan to follow the awards season"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one book from each category you care about: one fiction, one non-fiction, one translation or retelling.",
+          "Read 20 pages a day. Three weeks is enough to finish two short books before the December ceremony.",
+          "Note one sentence about what each book does well; it makes the winners' announcement far more interesting.",
+          "Add the shortlisted titles that appeal to you to a wishlist and compare them with what you have already read."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Order books with free delivery across India"
+      },
+      {
+        "type": "paragraph",
+        "content": "TheBookX has books from ₹1, free delivery and Cash on Delivery across India. If you are gifting a reader this festive season, gift wrapping is available for +₹25."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/crossword-book-awards-2026-jury-shortlist-20th-edition-indian-books-to-read.jpeg",
+    "images": [
+      {
+        "url": "/blogs/crossword-book-awards-2026-jury-shortlist-20th-edition-indian-books-to-read.jpeg",
+        "alt": "A young woman reading a novel with a cup of tea in a bright, cozy corner at home",
+        "caption": "Awards season is a good excuse to build a reading list and settle in with a book.",
+        "category": "awards"
+      }
+    ],
+    "keywords": [
+      "Crossword Book Awards 2026",
+      "Crossword Book Awards shortlist",
+      "Crossword Book Awards 20th edition",
+      "Indian books to read 2026",
+      "Indian fiction books",
+      "best Indian authors",
+      "book awards India",
+      "buy books online India"
+    ],
+    "categories": [
+      "Book Awards",
+      "Indian Writing",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "What is the Crossword Book Awards 2026?",
+        "answer": "It is the 20th edition of India's Crossword Book Awards, which honour Indian writing. The 2026 jury shortlist has 25 titles, narrowed from a 50-title longlist, and winners are expected at a Mumbai ceremony in December 2026."
+      },
+      {
+        "question": "When will the Crossword Book Awards 2026 winners be announced?",
+        "answer": "Coverage says the ceremony will take place in Mumbai in December 2026. An exact date had not been confirmed in the reports we found, so check the official Crossword announcements."
+      },
+      {
+        "question": "Who are the judges of the Crossword Book Awards 2026?",
+        "answer": "Each category has its own jury. For example, Anuja Chauhan, Manju Kapur and Samit Basu judge fiction, while Anirudh Kanisetti, Jyoti Malhotra and Naresh Fernandes judge non-fiction."
+      },
+      {
+        "question": "Can I order Indian books online with Cash on Delivery?",
+        "answer": "Yes. TheBookX delivers across India with free delivery and Cash on Delivery, and books start from just ₹1."
+      }
+    ]
+  },
   "national-education-day-2026-maulana-azad-books-for-learners-india": {
     "id": "blog-099",
     "title": "National Education Day 2026 (11 November): Maulana Azad and 16 Books for Curious Learners in India",

@@ -6765,6 +6765,7 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
 .mo-glass .an2-donut-seg.s-good, .mo-glass .an2-donut-leg i.s-good { stroke: var(--viz-good); background: var(--viz-good); }
 .mo-glass .an2-donut-seg.s-bad, .mo-glass .an2-donut-leg i.s-bad { stroke: var(--viz-bad); background: var(--viz-bad); }
 .mo-glass .an2-donut-seg.s-open, .mo-glass .an2-donut-leg i.s-open { stroke: var(--viz-open); background: var(--viz-open); }
+.mo-glass .an2-donut-seg.s-pre, .mo-glass .an2-donut-leg i.s-pre { stroke: color-mix(in srgb, var(--viz-bad) 32%, var(--g-surface-solid)); background: color-mix(in srgb, var(--viz-bad) 32%, var(--g-surface-solid)); }
 @media (max-width: 420px) {
   .mo-glass .an2-donut { flex-basis: 96px; width: 96px; height: 96px; }
 }

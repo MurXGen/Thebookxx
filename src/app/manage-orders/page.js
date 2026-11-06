@@ -882,7 +882,8 @@ function summarizeOrders(list) {
   const delivered = list.filter((o) =>
     /delivered|money received/i.test(statusOf(o)),
   ).length;
-  const cancelled = list.filter((o) => /cancel|return/i.test(statusOf(o))).length;
+  const cancelled = list.filter((o) => isLostStatus(statusOf(o))).length;
+  const preCancelled = list.filter((o) => isPreCancelStatus(statusOf(o))).length;
   const codN = list.filter(isCod).length;
   // COD orders whose ₹99 advance is already paid online.
   const advN = list.filter(
@@ -906,6 +907,7 @@ function summarizeOrders(list) {
     aov: n ? Math.round(revenue / n) : 0,
     delivered,
     cancelled,
+    preCancelled,
     codN,
     advN,
     upiN: n - codN,
@@ -916,7 +918,7 @@ function summarizeOrders(list) {
       delivered + cancelled
         ? Math.round((delivered / (delivered + cancelled)) * 100)
         : 0,
-    openN: n - delivered - cancelled,
+    openN: n - delivered - cancelled - preCancelled,
     // Fully prepaid (UPI) plus COD with the ₹99 advance — orders with skin in
     // the game, which is what keeps RTO down.
     prepaidRate: pct(n - codN + advN),
@@ -1633,6 +1635,14 @@ function paymentBucket(raw) {
     return "UPI / Online";
   return "Other (Cards/Gift)";
 }
+
+// Analytics "lost" orders: Cancelled and Returned only. Pre-cancellation
+// (called off before it shipped) is not a loss, so it stays out of the count.
+const isPreCancelStatus = (status) => /pre[\s-]*cancel/i.test(String(status || ""));
+const isLostStatus = (status) => {
+  const s = String(status || "");
+  return /return/i.test(s) || (/cancel/i.test(s) && !isPreCancelStatus(s));
+};
 
 // Status → accent colour for the order-card status chip.
 function moStatusColor(status) {
@@ -8436,7 +8446,7 @@ export default function ManageOrdersPage() {
       if (ph) custMap[ph] = (custMap[ph] || 0) + 1;
       const st = String(o["Order Status"] || "").toLowerCase();
       if (st.includes("delivered")) delivered += 1;
-      if (st.includes("cancel") || st.includes("return")) cancelled += 1;
+      if (isLostStatus(st)) cancelled += 1;
       if (String(o["Shipping ID"] || "").trim()) tracked += 1;
       const isCod = /cash|cod/i.test(String(o["Payment Type"] || ""));
       if (isCod) {
@@ -8879,7 +8889,7 @@ export default function ManageOrdersPage() {
       const s = String(o["Order Status"] || "").toLowerCase();
       const hasTrack = !!String(o["Shipping ID"] || "").trim();
       placed += 1;
-      if (/cancel|return/.test(s)) cancelled += 1; // returned = cancelled
+      if (isLostStatus(s)) cancelled += 1; // returned = cancelled
       if (/return/.test(s)) returned += 1;
       const isDelivered = /delivered|money received/.test(s);
       if (isDelivered) delivered += 1;
@@ -8918,7 +8928,7 @@ export default function ManageOrdersPage() {
       bucket.n += 1;
       bucket.revenue += o.revenue || 0;
       if (/delivered|money received/.test(s)) bucket.delivered += 1;
-      if (/cancel|return/.test(s)) bucket.cancelled += 1;
+      if (isLostStatus(s)) bucket.cancelled += 1;
     });
     const shape = (b, label, key) => ({
       key,
@@ -11108,7 +11118,7 @@ export default function ManageOrdersPage() {
   // both cancel and return statuses.
   const matchStatusKey = (o, key) => {
     const st = String(o["Order Status"] || "");
-    return key === "Cancelled" ? /cancel|return/i.test(st) : st === key;
+    return key === "Cancelled" ? isLostStatus(st) : st === key;
   };
   const statusCounts = STATUS_META.map((s) => ({
     ...s,
@@ -11160,7 +11170,7 @@ export default function ManageOrdersPage() {
   // ── Cancelled orders — auto loss from forfeited postage ──
   // Only cancelled orders that actually shipped (have a tracking / Shipping ID)
   // count here: an unshipped cancellation forfeits no postage.
-  const isCancelled = (o) => /cancel|return/i.test(String(o["Order Status"] || ""));
+  const isCancelled = (o) => isLostStatus(o["Order Status"]);
   const hasShippingId = (o) =>
     String(o["Shipping ID"] || o.shippingId || "").trim() !== "";
   const cancelledOrders = anOrders.filter(
@@ -14020,6 +14030,9 @@ export default function ManageOrdersPage() {
                     { label: "Delivered", value: overview.delivered, cls: "s-good" },
                     { label: "In progress", value: overview.openN, cls: "s-open" },
                     { label: "Cancelled / returned", value: overview.cancelled, cls: "s-bad" },
+                    ...(overview.preCancelled
+                      ? [{ label: "Pre-cancelled", value: overview.preCancelled, cls: "s-pre" }]
+                      : []),
                   ]}
                 />
                 <An2Donut

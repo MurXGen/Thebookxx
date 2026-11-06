@@ -6016,6 +6016,7 @@ export default function ManageOrdersPage() {
   const [tidFrom, setTidFrom] = useState("");
   const [tidTo, setTidTo] = useState("");
   const [tidSel, setTidSel] = useState([]); // selected Order IDs
+  const [tidBulkStatus, setTidBulkStatus] = useState("");
   const [tidCopied, setTidCopied] = useState(false);
   const [trackPicks, setTrackPicks] = useState({});
   // Per-row email template pick + bulk email template + bulk send progress for
@@ -8272,8 +8273,20 @@ export default function ManageOrdersPage() {
       })
       .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0));
   }, [orders, tidStatus, tidFrom, tidTo]);
+  // Queue a status change (local only) for the copy-IDs rows — it joins the
+  // same status queue the order cards use and pushes from the bar.
+  const queueTidStatus = (ids, val) => {
+    if (!ids.length || !val) return;
+    ids.forEach((id) => patchLocalOrder(id, { "Order Status": val, status: val }));
+    setPendingStatus((prev) => {
+      const next = { ...prev };
+      ids.forEach((id) => (next[id] = val));
+      return next;
+    });
+  };
+  const tidSelCount = tidRows.filter((r) => tidSel.includes(r.orderId)).length;
   const tidCopy = () => {
-    const chosen = tidSel.length
+    const chosen = tidSelCount
       ? tidRows.filter((r) => tidSel.includes(r.orderId))
       : tidRows;
     const text = chosen.map((r) => r.tracking).join(" ");
@@ -18293,8 +18306,8 @@ export default function ManageOrdersPage() {
                   disabled={tidRows.length === 0}
                 >
                   {tidCopied ? <Check size={15} /> : <Copy size={15} />}
-                  Copy {tidSel.length || tidRows.length} ID
-                  {(tidSel.length || tidRows.length) === 1 ? "" : "s"}
+                  Copy {tidSelCount || tidRows.length} ID
+                  {(tidSelCount || tidRows.length) === 1 ? "" : "s"}
                 </button>
               </div>
 
@@ -18363,7 +18376,7 @@ export default function ManageOrdersPage() {
                       <input
                         type="checkbox"
                         checked={
-                          tidSel.length === tidRows.length && tidRows.length > 0
+                          tidSelCount === tidRows.length && tidRows.length > 0
                         }
                         onChange={(e) =>
                           setTidSel(
@@ -18373,9 +18386,72 @@ export default function ManageOrdersPage() {
                           )
                         }
                       />
-                      Select all ({tidSel.length}/{tidRows.length})
+                      Select all ({tidSelCount}/{tidRows.length})
                     </label>
+                    {tidSelCount > 0 && (
+                      <div className="mo-tid-bulk">
+                        <select
+                          value={tidBulkStatus}
+                          onChange={(e) => setTidBulkStatus(e.target.value)}
+                          aria-label="New status for selected orders"
+                        >
+                          <option value="">Change status to…</option>
+                          {TRACK_STATUS_OPTIONS.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          disabled={!tidBulkStatus}
+                          onClick={() => {
+                            const ids = tidRows
+                              .filter((r) => tidSel.includes(r.orderId))
+                              .map((r) => r.orderId);
+                            queueTidStatus(ids, tidBulkStatus);
+                            showToast(
+                              `${ids.length} set to ${tidBulkStatus} · push to save`,
+                              "success",
+                            );
+                            setTidSel([]);
+                            setTidBulkStatus("");
+                          }}
+                        >
+                          Apply to {tidSelCount}
+                        </button>
+                      </div>
+                    )}
                   </div>
+                  {Object.keys(pendingStatus).length > 0 && (
+                    <div className="mo-status-pushbar">
+                      <span className="mo-status-pushbar-lbl">
+                        {Object.keys(pendingStatus).length} status change
+                        {Object.keys(pendingStatus).length === 1 ? "" : "s"}{" "}
+                        queued
+                      </span>
+                      <div className="mo-status-pushbar-actions">
+                        <button
+                          type="button"
+                          className="mo-status-discard"
+                          onClick={discardPendingStatus}
+                          disabled={pushingStatus}
+                        >
+                          Discard
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-status-push"
+                          onClick={pushPendingStatus}
+                          disabled={pushingStatus}
+                        >
+                          {pushingStatus
+                            ? "Pushing…"
+                            : `Push ${Object.keys(pendingStatus).length} to sheet`}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   <div className="mo-tid-list">
                     {tidRows.map((r) => {
                       const on = tidSel.includes(r.orderId);
@@ -18391,12 +18467,7 @@ export default function ManageOrdersPage() {
                             )
                           }
                         >
-                          <input
-                            type="checkbox"
-                            checked={on}
-                            onChange={() => {}}
-                            onClick={(e) => e.stopPropagation()}
-                          />
+                          <input type="checkbox" checked={on} readOnly />
                           <div className="mo-tid-row-main">
                             <span className="mo-tid-tracking">
                               {r.tracking}
@@ -18412,7 +18483,27 @@ export default function ManageOrdersPage() {
                                 : ""}
                             </span>
                           </div>
-                          <span className="mo-tid-status">{r.status}</span>
+                          <div
+                            className={`mo-tid-stsel${pendingStatus[r.orderId] ? " dirty" : ""}`}
+                            style={{ "--st-color": moStatusColor(r.status) }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <select
+                              value={r.status}
+                              title="Change status (queued — push to save)"
+                              onChange={(e) => queueTidStatus([r.orderId], e.target.value)}
+                            >
+                              {(TRACK_STATUS_OPTIONS.includes(r.status)
+                                ? TRACK_STATUS_OPTIONS
+                                : [r.status, ...TRACK_STATUS_OPTIONS]
+                              ).map((s) => (
+                                <option key={s} value={s}>
+                                  {s}
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown size={13} />
+                          </div>
                         </div>
                       );
                     })}

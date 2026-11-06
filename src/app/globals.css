@@ -66932,3 +66932,29 @@ h2.od-reco-title {
 }
 .offer-avail-btn:hover { color: #ffd166; }
 .offer-avail-btn:active { transform: scale(0.97); }
+
+/* ===== Order success: light confetti over the top summary ===== */
+.osc-top { position: relative; overflow: hidden; }
+.osc-confetti { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.osc-top > *:not(.osc-confetti) { position: relative; z-index: 1; }
+.osc-confetti i {
+  position: absolute;
+  top: -12px;
+  width: 7px;
+  height: 11px;
+  border-radius: 2px;
+  opacity: 0;
+  animation-name: osc-fall;
+  animation-timing-function: cubic-bezier(.25, .6, .4, 1);
+  animation-fill-mode: forwards;
+}
+.osc-confetti i.round { width: 7px; height: 7px; border-radius: 50%; }
+@keyframes osc-fall {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0); }
+  10% { opacity: 1; }
+  80% { opacity: .9; }
+  100% { opacity: 0; transform: translate3d(var(--drift, 0), 230px, 0) rotate(var(--rot, 180deg)); }
+}
+.osc-top-title { font-size: 22px; letter-spacing: -0.01em; }
+.osc-sum { margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) { .osc-confetti { display: none; } }

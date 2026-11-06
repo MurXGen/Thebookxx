@@ -7953,3 +7953,50 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
 .my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions-l { display: contents; }
 .my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions .mo-kebab-wrap { display: block; }
 .my-orders-page.mo-glass .mo-dispatch-card-wrap .mo2-actions .mo-kebab-btn { width: 100%; }
+
+/* ── 50. Copy tracking IDs — per-row status + bulk change ─────────────── */
+.my-orders-page.mo-glass .mo-tid-bar { flex-wrap: wrap; gap: 8px; }
+.my-orders-page.mo-glass .mo-tid-bulk {
+  display: inline-flex; align-items: center; gap: 6px; margin-left: auto;
+}
+.my-orders-page.mo-glass .mo-tid-bulk select {
+  height: 34px; padding: 0 28px 0 12px !important; border-radius: 9px;
+  border: 1px solid var(--g-hairline); background: var(--g-surface-3);
+  color: var(--g-ink); font-size: 12.5px; font-weight: 700; cursor: pointer;
+}
+.my-orders-page.mo-glass .mo-tid-bulk button {
+  height: 34px; padding: 0 14px; border-radius: 9px; border: 0;
+  background: var(--g-ink); color: var(--g-surface-solid);
+  font-size: 12.5px; font-weight: 800; cursor: pointer; white-space: nowrap;
+}
+.my-orders-page.mo-glass .mo-tid-bulk button:disabled { opacity: 0.4; cursor: not-allowed; }
+.my-orders-page.mo-glass .mo-tid .mo-status-pushbar { margin: 2px 0 4px; }
+
+.my-orders-page.mo-glass .mo-tid-stsel {
+  position: relative; flex: 0 0 auto; display: inline-flex; align-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--st-color, #6b7280) 13%, transparent);
+  color: var(--st-color, #6b7280);
+}
+.my-orders-page.mo-glass.mo-dark .mo-tid-stsel {
+  background: color-mix(in srgb, var(--st-color, #6b7280) 24%, transparent);
+  color: color-mix(in srgb, var(--st-color, #6b7280) 55%, #fff);
+}
+.my-orders-page.mo-glass .mo-tid-stsel select {
+  appearance: none; -webkit-appearance: none; border: 0; background: transparent;
+  color: inherit; font-size: 11.5px; font-weight: 800; cursor: pointer;
+  padding: 5px 24px 5px 11px !important; height: auto; border-radius: 999px;
+  max-width: 170px; text-overflow: ellipsis;
+}
+.my-orders-page.mo-glass .mo-tid-stsel svg {
+  position: absolute; right: 8px; pointer-events: none;
+}
+.my-orders-page.mo-glass .mo-tid-stsel.dirty {
+  box-shadow: 0 0 0 1.5px var(--tertiary, #fb8500);
+}
+.my-orders-page.mo-glass .mo-tid-stsel select option { color: #1c1814; background: #fff; }
+@media (max-width: 560px) {
+  .my-orders-page.mo-glass .mo-tid-bulk { width: 100%; margin-left: 0; }
+  .my-orders-page.mo-glass .mo-tid-bulk select { flex: 1; min-width: 0; }
+  .my-orders-page.mo-glass .mo-tid-stsel select { max-width: 120px; }
+}

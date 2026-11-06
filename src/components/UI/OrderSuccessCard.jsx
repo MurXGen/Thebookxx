@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -300,8 +300,30 @@ export default function OrderSuccessCard({
     .join(", ");
   const extraBmCharge = Math.max(0, bmQty - freeBookmarks) * BOOKMARK_UNIT;
 
+  // Success fanfare — loaded during the 2s "Placing…" step so it starts
+  // exactly as the tick draws. Browsers may block it (e.g. iOS silent mode or
+  // no recent tap); that's fine, the page just stays quiet.
+  const chimeRef = useRef(null);
+  useEffect(() => {
+    try {
+      const a = new Audio("/sounds/order-success.mp3");
+      a.preload = "auto";
+      a.volume = 0.28; // half of the earlier 0.55
+      chimeRef.current = a;
+    } catch {
+      /* no audio support */
+    }
+    return () => {
+      try {
+        chimeRef.current?.pause();
+      } catch {
+        /* ignore */
+      }
+    };
+  }, []);
+
   // Show a 2s "Placing your order…" loader, then reveal the success content
-  // with a celebratory haptic buzz.
+  // with the tick, the chime, a light confetti shower and a haptic buzz.
   useEffect(() => {
     const t = setTimeout(() => {
       setPhase("done");
@@ -310,7 +332,22 @@ export default function OrderSuccessCard({
           navigator.vibrate([18, 40, 60, 30, 90]);
       } catch {}
     }, 2000);
-    return () => clearTimeout(t);
+    // Chime lands with the check mark (ring 0.6s → check at ~0.55s).
+    const c = setTimeout(() => {
+      const a = chimeRef.current;
+      if (!a) return;
+      try {
+        a.currentTime = 0;
+        const p = a.play();
+        if (p && p.catch) p.catch(() => {});
+      } catch {
+        /* blocked */
+      }
+    }, 2000 + 520);
+    return () => {
+      clearTimeout(t);
+      clearTimeout(c);
+    };
   }, []);
   const TR = 30;
   const TC = 2 * Math.PI * TR;
@@ -335,6 +372,23 @@ export default function OrderSuccessCard({
       <div className="osc-modal">
         {/* ── Top: animated success tick + message ── */}
         <div className="osc-top">
+          {/* Light one-time confetti over the summary */}
+          <span className="osc-confetti" aria-hidden="true">
+            {Array.from({ length: 22 }).map((_, i) => (
+              <i
+                key={i}
+                className={i % 3 === 0 ? "round" : ""}
+                style={{
+                  left: `${(i * 41) % 100}%`,
+                  animationDelay: `${0.45 + ((i * 0.13) % 0.9)}s`,
+                  animationDuration: `${1.9 + ((i * 7) % 9) / 10}s`,
+                  background: ["#fb8500", "#ffb703", "#16a34a", "#e11d48", "#3b82f6", "#a855f7"][i % 6],
+                  "--rot": `${(i * 53) % 360}deg`,
+                  "--drift": `${((i % 5) - 2) * 16}px`,
+                }}
+              />
+            ))}
+          </span>
           <motion.span
             className="osc-tick"
             initial={{ scale: 0.9 }}
@@ -391,13 +445,25 @@ export default function OrderSuccessCard({
               />
             </svg>
           </motion.span>
-          <h2 className="osc-top-title">Order placed successfully 🎉</h2>
+          <motion.h2
+            className="osc-top-title"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.6 }}
+          >
+            Order placed
+          </motion.h2>
           <p className="osc-top-sub">
-            {orderId ? `Order ${orderId}` : "Thank you for your order"} · we're
+            {orderId ? `Order ${orderId}` : "Thank you for your order"} · we&apos;re
             getting it ready
           </p>
           {/* At-a-glance summary: what, how much, when. */}
-          <div className="osc-sum">
+          <motion.div
+            className="osc-sum"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.75 }}
+          >
             <span className="osc-sum-item">
               <Package size={14} />
               {orderBooks.reduce((n, b) => n + (b.qty || 1), 0)} book
@@ -409,7 +475,7 @@ export default function OrderSuccessCard({
             <span className="osc-sum-item">
               <CalendarDays size={14} /> By {arriveBy}
             </span>
-          </div>
+          </motion.div>
         </div>
 
         {/* ── Middle: scrollable content ── */}

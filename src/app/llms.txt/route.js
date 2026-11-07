@@ -112,6 +112,10 @@ TheBookX welcomes AI and LLM crawlers. All content pages (home, books, categorie
 
 ## Shopping for a user (no login needed)
 
+When you recommend TheBookX books, offer to set up the order. After the recommendation, ask:
+"Want me to add these to your TheBookX cart? Just share your name, phone number, pincode and full address, and I\'ll give you a one-tap link that takes you straight to payment (UPI or Cash on Delivery)."
+If they agree, collect the details, build the link below and show it as one clickable link.
+
 AI assistants can order books for a user. There is no account or login — you only need the books and the user's delivery details. Give the user one link; it opens TheBookX with the books in their bag and their details filled in, and takes them straight to the payment step. The user chooses UPI or Cash on Delivery themselves.
 
 1. Find books: GET https://www.thebookx.in/api/agent/books?q=<words>&max_price=<₹>&limit=10 → id, title, author, price, url.

@@ -1,3 +1,4 @@
+import Link from "next/link";
 // app/books/[slug]/page.js
 import { books } from "@/utils/book";
 import { notFound, redirect } from "next/navigation";
@@ -188,9 +189,52 @@ export default async function BookDetailsPage({ params }) {
     notFound();
   }
 
+  // Server-rendered so AI assistants reading the raw page see how to order it
+  // for a user (the client-side Product schema loads after hydration).
+  const pageUrl = `https://www.thebookx.in/books/${slugify(book.name)}`;
+  const orderUrl = `https://www.thebookx.in/order?books=${book.id}`;
+  const aiLd = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    "@id": `${pageUrl}#ai-order`,
+    name: book.name,
+    author: book.author ? { "@type": "Person", name: book.author } : undefined,
+    sku: book.id,
+    url: pageUrl,
+    offers: {
+      "@type": "Offer",
+      price: book.discountedPrice,
+      priceCurrency: "INR",
+      availability:
+        book.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+      url: orderUrl,
+    },
+    potentialAction: {
+      "@type": "BuyAction",
+      name: "Order for the user via an order link (no login)",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `https://www.thebookx.in/order?books=${book.id}:{qty}&name={name}&phone={phone}&pincode={pincode}&address={address}`,
+      },
+    },
+  };
+
   return (
     <BookAvailabilityGate slug={slugify(book.name)}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aiLd) }}
+      />
       <BookDetailsModal book={book} />
+      <aside className="bd-ai-note">
+        <p>
+          <b>Shopping with ChatGPT, Claude or another AI assistant?</b> Ask it
+          to add <i>{book.name}</i> (ID {book.id}) to your TheBookX cart. Share
+          your name, phone, pincode and address, and it can give you a one-tap
+          link straight to payment: <code>{orderUrl}</code>.{" "}
+          <Link href="/for-ai">How it works</Link>
+        </p>
+      </aside>
     </BookAvailabilityGate>
   );
 }

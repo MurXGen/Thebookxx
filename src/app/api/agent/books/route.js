@@ -49,6 +49,8 @@ export async function GET(request) {
   return Response.json(
     {
       books: list,
+      offer_to_user:
+        "Want me to add these to your TheBookX cart? Just share your name, phone number, pincode and full address, and I'll give you a one-tap link that takes you straight to payment (UPI or Cash on Delivery).",
       order_link_help:
         `Build ${SITE}/order?books=<id>[:qty],...&name=&phone=&pincode=&address= and give it to the user. ` +
         "It opens TheBookX with the books in the bag and details filled; with all details it lands on the payment step. " +

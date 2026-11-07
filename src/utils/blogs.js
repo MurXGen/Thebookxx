@@ -4,6 +4,176 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "kamaladevi-chattopadhyay-nif-book-prize-2026-shortlist-nonfiction-books-to-read-india": {
+    "id": "blog-101",
+    "title": "Kamaladevi Chattopadhyay NIF Book Prize 2026 Shortlist: Five Non-Fiction Books on Modern India and What to Read Alongside",
+    "slug": "kamaladevi-chattopadhyay-nif-book-prize-2026-shortlist-nonfiction-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-07",
+    "lastModified": "2026-11-07",
+    "excerpt": "The Rs 15 lakh NIF Book Prize shortlist is out, with the winner due 12 December. See the five finalists and a themed reading list to read alongside.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "India's richest non-fiction prize has a new shortlist. The Kamaladevi Chattopadhyay NIF Book Prize, run by the New India Foundation and worth Rs 15 lakh to the winning author, named five finalists in late October 2026, and the winner will be announced at the Bangalore Literature Festival on 12 December. All five books are works of history, biography and political economy about modern India, and together they make an unusually good reading map of how the country got here. Here is what is on the list, what the prize stands for, and a practical set of books from our catalogue that sit well alongside it."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The 2026 shortlist at a glance"
+      },
+      {
+        "type": "paragraph",
+        "content": "According to press reports of the announcement, the five shortlisted books, all published in 2025, are: A Man for All Seasons: The Life of K.M. Panikkar by Narayani Basu; Shattered Lands: Five Partitions and the Making of Modern Asia by Sam Dalrymple; Assembling India's Constitution: A New Democratic History by Rohit De and Ornit Shani; A Sixth of Humanity: Independent India's Development Odyssey by Devesh Kapur and Arvind Subramanian; and The Secret Master: Arun Kashalkar and a Journey to the Edge of Music by Sumana Ramanan."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Key facts",
+        "content": "Prize: Kamaladevi Chattopadhyay NIF Book Prize, organised by the New India Foundation and instituted in 2018. Prize money: Rs 15 lakh. Shortlist: five non-fiction books on modern and contemporary India, reported on 28 October 2026. Winner: to be announced in December, with the presentation on 12 December 2026 at the Bangalore Literature Festival. Jury chair: Niraja Gopal Jayal."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why this prize matters for readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "Most prize conversations in India revolve around fiction. This one rewards the slower, more demanding craft of narrative non-fiction: archival research, argument and clear prose. Recent winners show the range. In 2025 the prize went to Aparajith Ramnath for Engineering a Nation: The Life and Career of M. Visvesvaraya, in 2024 to Ashok Gopal for A Part Apart: The Life and Thought of B.R. Ambedkar, and in 2023 to Akshaya Mukul for Writer, Rebel, Soldier, Lover: The Many Lives of Agyeya. Each is a book that changed how a well-known name or institution is understood."
+      },
+      {
+        "type": "paragraph",
+        "content": "The 2026 jury includes historians, a political scientist, a former diplomat and business leaders: N. Chandrasekaran, Niraja Gopal Jayal, Rahul Matthan, Jahnavi Phalkey, Srinath Raghavan, Nirupama Rao and Manish Sabharwal. That mix is a hint at the shortlist's spread, from constitutional history to economics to Hindustani music."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Three themes running through the shortlist"
+      },
+      {
+        "type": "paragraph",
+        "content": "Read together, the five books circle three questions. How was the Indian state built, on paper and in practice? How has the country fared on development since 1947? And how do people, from diplomats to musicians, carry ideas across borders and generations? You do not need the shortlisted titles in hand to explore these questions today. Here is a themed reading list from books you can order from TheBookX right now."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you want to understand how India's institutions were built"
+      },
+      {
+        "type": "paragraph",
+        "content": "The constitutional and political story is where most readers should start. <a href=\"/books/jugalbandi\" style=\"color:#fb8500;font-weight:600\">Jugalbandi</a> by Vinay Sitapati traces the long partnership of Atal Bihari Vajpayee and L.K. Advani and, with it, a big piece of modern Indian politics. <a href=\"/books/nani-a-palkhivala-a-life\" style=\"color:#fb8500;font-weight:600\">Nani A. Palkhivala - A Life</a> by M.V. Kamath profiles the jurist who argued some of the most important constitutional cases of his era. For a view from inside public institutions, <a href=\"/books/advice-dissent\" style=\"color:#fb8500;font-weight:600\">Advice & Dissent</a> is Y.V. Reddy's account of his years in public service, including as governor of the Reserve Bank of India."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you want the economics of development"
+      },
+      {
+        "type": "paragraph",
+        "content": "The question of why some countries grow and others stall is at the heart of A Sixth of Humanity. Three accessible companions are <a href=\"/books/why-nations-fail\" style=\"color:#fb8500;font-weight:600\">Why Nations Fail</a> by Daron Acemoglu and James A. Robinson, which argues that institutions decide long-run outcomes; <a href=\"/books/fault-lines\" style=\"color:#fb8500;font-weight:600\">Fault Lines</a> by Raghuram Rajan, on the hidden fractures in the global economy; and <a href=\"/books/factfulness\" style=\"color:#fb8500;font-weight:600\">Factfulness</a> by Hans Rosling, which trains you to read development data without panic. For a corporate lens, <a href=\"/books/hdfc-bank-2-0\" style=\"color:#fb8500;font-weight:600\">HDFC Bank 2.0</a> by Tamal Bandyopadhyay follows one of India's largest private banks."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you want big-picture history and biography"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari remains the easiest on-ramp to long-sweep history, a good warm-up before a book like Shattered Lands. For biography that makes institutions feel human, try <a href=\"/books/the-power-broker\" style=\"color:#fb8500;font-weight:600\">The Power Broker</a> by Robert Caro, a monumental portrait of how one man shaped a city, and <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam, the life story of a scientist who became a president. Younger readers can pair it with <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds: Unleashing the Power Within India</a>, Kalam's call to the nation's youth."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you want the music and the stories"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Secret Master is a book about devotion to music, and fiction can take you into the same world. <a href=\"/books/an-equal-music\" style=\"color:#fb8500;font-weight:600\">An Equal Music</a> by Vikram Seth follows a violinist in a string quartet in London and is among the finest novels about making music. For sprawling Mumbai, pick up <a href=\"/books/sacred-games\" style=\"color:#fb8500;font-weight:600\">Sacred Games</a> by Vikram Chandra, and for gentler small-town India, <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan is a classic you can finish in a weekend."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple plan for reading serious non-fiction"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one theme, not five books. Choose institutions, economics or biography and read two books on it back to back.",
+          "Alternate heavy and light. Follow a dense history with a short novel so you finish what you start.",
+          "Set a small daily target. Twenty pages a day is a long book a month.",
+          "Keep a margin notebook. Write one sentence per chapter in your own words; it doubles your recall.",
+          "Read the winner when it is announced. The 12 December result is a natural deadline for your own shortlist reading."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "If the habit is the hard part, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel are two of the most practical bestsellers on building routines and thinking clearly about decisions. And if you struggle to cut through noise while you read, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar offers simple, actionable ways to think more clearly and decide with confidence."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Order your reading list today",
+        "content": "Books start from Rs 1 on TheBookX, with free delivery and Cash on Delivery across India. Add a few titles from the lists above and build your own shortlist before the winner is announced on 12 December."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Our take"
+      },
+      {
+        "type": "paragraph",
+        "content": "A prize shortlist is useful because it narrows the field, but the real value is in what you read around it. Whether you pick up the finalists or start with the classics and bestsellers above, the aim is the same: to read slowly enough to learn something and often enough to make it a habit."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/kamaladevi-chattopadhyay-nif-book-prize-2026-shortlist-nonfiction-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/kamaladevi-chattopadhyay-nif-book-prize-2026-shortlist-nonfiction-books-to-read-india.jpeg",
+        "alt": "A young woman reading a thick non-fiction book at a sunlit desk with a cup of tea and a notebook",
+        "caption": "A prize shortlist is a good reason to start a themed reading list on modern India.",
+        "category": "awards"
+      }
+    ],
+    "keywords": [
+      "Kamaladevi Chattopadhyay NIF Book Prize 2026",
+      "NIF Book Prize shortlist",
+      "best non-fiction books on India",
+      "Indian history books to read",
+      "books on Indian politics and economy",
+      "Shattered Lands Sam Dalrymple",
+      "Bangalore Literature Festival 2026",
+      "non-fiction book awards India"
+    ],
+    "categories": [
+      "Book Awards",
+      "Non-Fiction",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "What is the Kamaladevi Chattopadhyay NIF Book Prize?",
+        "answer": "It is a non-fiction book prize on modern and contemporary India, organised by the New India Foundation and instituted in 2018. The winning author receives Rs 15 lakh."
+      },
+      {
+        "question": "Which books are on the 2026 shortlist?",
+        "answer": "The five shortlisted books are A Man for All Seasons: The Life of K.M. Panikkar by Narayani Basu, Shattered Lands by Sam Dalrymple, Assembling India's Constitution by Rohit De and Ornit Shani, A Sixth of Humanity by Devesh Kapur and Arvind Subramanian, and The Secret Master by Sumana Ramanan."
+      },
+      {
+        "question": "When will the 2026 NIF Book Prize winner be announced?",
+        "answer": "The winner is due in December 2026, with the prize presentation on 12 December 2026 at the Bangalore Literature Festival."
+      },
+      {
+        "question": "Which books can I read now if I want to follow this shortlist?",
+        "answer": "Good starting points include Jugalbandi, Advice & Dissent, Why Nations Fail, Fault Lines, Sapiens and An Equal Music, all available on TheBookX with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "crossword-book-awards-2026-jury-shortlist-20th-edition-indian-books-to-read": {
     "id": "blog-100",
     "title": "Crossword Book Awards 2026 (20th Edition): The Jury Shortlist and Indian Books to Read While You Wait for the Winners",

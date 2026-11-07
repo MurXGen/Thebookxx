@@ -6964,7 +6964,7 @@ export const books = [
     pages: "224",
     language: "English",
     size: "Hardcover",
-    stock: 20,
+    stock: 0,
     catalogue: ["fiction", "children", "graphic-novel", "comic"],
     originalPrice: calculateOriginalPrice(339),
     discountedPrice: 339,

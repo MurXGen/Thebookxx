@@ -16,6 +16,9 @@ import {
   Package,
   CalendarDays,
   ChevronRight,
+  Copy,
+  Truck,
+  Home,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import CommunityJoin from "@/components/CommunityJoin";
@@ -367,8 +370,19 @@ export default function OrderSuccessCard({
     );
   }
 
+  const firstName = String(name || "").trim().split(/\s+/)[0] || "";
+  const bookCount = orderBooks.reduce((n, b) => n + (b.qty || 1), 0);
+  const copyOrderId = async () => {
+    try {
+      await navigator.clipboard.writeText(orderId);
+      showToast("Order ID copied", "success");
+    } catch {
+      /* ignore */
+    }
+  };
+
   return (
-    <div className="osc-overlay">
+    <div className="osc-overlay osc-full">
       <div className="osc-modal">
         {/* ── Top: animated success tick + message ── */}
         <div className="osc-top">
@@ -451,35 +465,97 @@ export default function OrderSuccessCard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.6 }}
           >
-            Order placed
+            Order placed{firstName ? `, ${firstName}` : ""}
           </motion.h2>
-          <p className="osc-top-sub">
-            {orderId ? `Order ${orderId}` : "Thank you for your order"} · we&apos;re
-            getting it ready
-          </p>
-          {/* At-a-glance summary: what, how much, when. */}
-          <motion.div
-            className="osc-sum"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.75 }}
+          <motion.p
+            className="osc-top-sub"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.35, delay: 0.7 }}
           >
-            <span className="osc-sum-item">
-              <Package size={14} />
-              {orderBooks.reduce((n, b) => n + (b.qty || 1), 0)} book
-              {orderBooks.reduce((n, b) => n + (b.qty || 1), 0) === 1 ? "" : "s"}
+            Thank you. We&apos;re getting your books ready.
+          </motion.p>
+          {orderId && (
+            <motion.button
+              type="button"
+              className="osc-oid"
+              onClick={copyOrderId}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.35, delay: 0.75 }}
+            >
+              {orderId} <Copy size={12} />
+            </motion.button>
+          )}
+          {/* At-a-glance: what, how much, when. */}
+          <motion.div
+            className="osc-stats"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.85 }}
+          >
+            <span className="osc-stat">
+              <small>Books</small>
+              <b>
+                <Package size={14} /> {bookCount}
+              </b>
             </span>
-            <span className="osc-sum-item">
+            <span className="osc-stat">
+              <small>Total</small>
               <b>₹{total}</b>
             </span>
-            <span className="osc-sum-item">
-              <CalendarDays size={14} /> By {arriveBy}
+            <span className="osc-stat">
+              <small>Arrives by</small>
+              <b>
+                <CalendarDays size={14} /> {arriveBy}
+              </b>
             </span>
           </motion.div>
         </div>
 
         {/* ── Middle: scrollable content ── */}
         <div className="osc-body">
+          {/* Where the order is now */}
+          <ol className="osc-steps" aria-label="Order progress">
+            {[
+              { k: "placed", label: "Placed", Icon: Check, on: true },
+              { k: "packing", label: "Packing", Icon: Package, now: true },
+              { k: "shipped", label: isFaster ? "Priority ship" : "Shipped", Icon: Truck },
+              { k: "home", label: "Delivered", Icon: Home },
+            ].map((st) => (
+              <li
+                key={st.k}
+                className={`osc-step${st.on ? " on" : ""}${st.now ? " now" : ""}`}
+              >
+                <span className="osc-step-dot">
+                  <st.Icon size={13} strokeWidth={2.4} />
+                </span>
+                <span className="osc-step-lbl">{st.label}</span>
+              </li>
+            ))}
+          </ol>
+
+          <span className="osc-sec-title osc-sec-first">Stay in touch</span>
+
+          {/* Help + community — always one tap away after ordering. */}
+          <a
+            className="osc-help"
+            href={helpLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="osc-help-ic">
+              <FaWhatsapp size={20} />
+            </span>
+            <span className="osc-help-txt">
+              <strong>Any questions? Ask us</strong>
+              <span>We reply on WhatsApp — your order details are sent along</span>
+            </span>
+            <ChevronRight size={18} className="osc-help-arrow" />
+          </a>
+          <CommunityJoin variant="card" className="osc-community" />
+
+          <span className="osc-sec-title">Delivery</span>
           {/* Delivering to */}
           <div className="osc-deliver">
             <div className="osc-deliver-head">
@@ -505,6 +581,8 @@ export default function OrderSuccessCard({
               successful delivery.
             </div>
           </div>
+
+          <span className="osc-sec-title">Make this order yours</span>
 
           {/* Add note */}
           <button
@@ -547,7 +625,7 @@ export default function OrderSuccessCard({
                 <Zap size={18} />
               </div>
               <div className="osc-up-main">
-                <span className="osc-up-title">Faster delivery added ⚡</span>
+                <span className="osc-up-title">Faster delivery added</span>
                 <span className="osc-up-sub">Arriving in 1–6 days.</span>
               </div>
             </div>
@@ -597,30 +675,12 @@ export default function OrderSuccessCard({
             </button>
           )}
 
-          {/* Help + community — always one tap away after ordering. */}
-          <a
-            className="osc-help"
-            href={helpLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span className="osc-help-ic">
-              <FaWhatsapp size={20} />
-            </span>
-            <span className="osc-help-txt">
-              <strong>Any questions? Ask us</strong>
-              <span>We reply on WhatsApp — your order details are sent along</span>
-            </span>
-            <ChevronRight size={18} className="osc-help-arrow" />
-          </a>
-          <CommunityJoin variant="card" className="osc-community" />
-
           {/* Bestseller upsell */}
           {bestsellers.length > 0 && (
             <div className="osc-sell">
               <div className="osc-sell-head">
                 <span className="osc-sell-title">
-                  ✨ Add before we pack — <b>flat 30% off</b>
+                  Add before we pack · <b>flat 30% off</b>
                 </span>
                 <span className="osc-sell-sub">
                   Only at this step · ships together, nothing extra online.

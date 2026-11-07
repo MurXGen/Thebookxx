@@ -2,12 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, LayoutGrid, Package, Zap } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Home, LayoutGrid, Package, Zap, Search } from "lucide-react";
 import { readProfileCache } from "@/utils/profileCache";
+import { trackEvent } from "@/lib/ga";
+
+// Loaded only when the centre Search button is first tapped.
+const SearchOverlay = dynamic(() => import("./SearchOverlay"), { ssr: false });
 
 /**
  * Fixed mobile-only bottom navigation for the storefront.
- * Tabs: Home · Categories · QuickReads · Orders (count badge). Hidden on tablets/desktop
+ * Tabs: Home · Categories · [Search, raised centre] · QuickReads · Orders. Hidden on tablets/desktop
  * (>=768px). The floating Checkout bar (CartBar) stacks just above this nav —
  * handled in CSS via `body.has-bottom-nav`.
  */
@@ -16,6 +21,13 @@ export default function MobileBottomNav() {
   const router = useRouter();
   const [orderCount, setOrderCount] = useState(0);
   const [hidden, setHidden] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchMounted, setSearchMounted] = useState(false);
+  const openSearch = () => {
+    trackEvent("search_opened", { source: "bottom_nav" });
+    setSearchMounted(true);
+    setSearchOpen(true);
+  };
 
   // Slide the bottom nav DOWN when scrolling down, reveal it when scrolling up —
   // mirrors the navbar's hide-on-scroll behaviour.
@@ -103,13 +115,32 @@ export default function MobileBottomNav() {
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
   return (
+    <>
     <nav
       className={`tbx-bottomnav${hidden ? " tbx-bn-hidden" : ""}`}
       aria-label="Primary"
     >
-      {tabs.map(({ key, label, Icon, href, badge }) => {
+      {tabs.flatMap(({ key, label, Icon, href, badge }, idx) => {
         const active = isActive(href);
-        return (
+        const centre =
+          idx === 2
+            ? [
+                <button
+                  key="search"
+                  type="button"
+                  className="tbx-bn-search"
+                  onClick={openSearch}
+                  aria-label="Search books"
+                >
+                  <span className="tbx-bn-search-ring" aria-hidden="true" />
+                  <span className="tbx-bn-search-btn">
+                    <Search size={22} strokeWidth={2.4} />
+                  </span>
+                  <span className="tbx-bn-label">Search</span>
+                </button>,
+              ]
+            : [];
+        return [...centre, (
           <button
             key={key}
             type="button"
@@ -128,8 +159,12 @@ export default function MobileBottomNav() {
             </span>
             <span className="tbx-bn-label">{label}</span>
           </button>
-        );
+        )];
       })}
     </nav>
+    {searchMounted && (
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+    )}
+    </>
   );
 }

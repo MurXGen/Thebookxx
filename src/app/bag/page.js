@@ -1780,10 +1780,12 @@ ${itemsBlock}${qrLines}
             }
           }}
           onClose={() => {
+            // "Keep shopping" → clear the bag and go to the homepage.
             try {
               clearCart && clearCart();
             } catch {}
             setSuccessCtx(null);
+            router.push("/");
           }}
         />
       )}

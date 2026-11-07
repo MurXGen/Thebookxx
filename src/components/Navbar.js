@@ -282,12 +282,12 @@ export default function Navbar() {
           </div>
         </nav>
 
+        {/* Delivery stripe — part of the fixed header, so it stays put. */}
+        <DeliveryCheckBar />
         {/* Rotating trust promo — black one-line stripe stuck below the navbar */}
         <div className="nav-trust-stripe">
           <RotatingTrust />
         </div>
-        {/* Delivery stripe — part of the fixed header, so it stays put. */}
-        <DeliveryCheckBar />
       </header>
       {/* Spacer reserves the fixed navbar's height so content isn't hidden. */}
       <div

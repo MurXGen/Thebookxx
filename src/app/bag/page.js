@@ -1135,6 +1135,29 @@ ${itemsBlock}${qrLines}
     proceedToCheckout();
   };
 
+  // Order link (/order?books=…&phone=… → /bag?checkout=1): open checkout
+  // straight away once the bag has loaded; AddressModal jumps to payment when
+  // the details are complete. Reminder pop-ups are skipped on purpose.
+  const [autoPayStep, setAutoPayStep] = useState(false);
+  const autoCheckoutDone = useRef(false);
+  useEffect(() => {
+    if (autoCheckoutDone.current) return;
+    if (searchParams.get("checkout") !== "1") return;
+    if (!cartBooks.length) return;
+    autoCheckoutDone.current = true;
+    router.replace("/bag");
+    if (!canCheckout) {
+      showToast(
+        `Add ₹${amountNeededToCheckout} more to checkout (minimum ₹${MIN_CHECKOUT_AMOUNT})`,
+        "warning",
+      );
+      return;
+    }
+    setAutoPayStep(true);
+    setShowAddressModal(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, cartBooks.length, canCheckout]);
+
   // If the bag has QuickReads, remind the shopper they're digital-only BEFORE
   // the address step; otherwise go straight to the address modal.
   const proceedToCheckout = () => {
@@ -1792,6 +1815,7 @@ ${itemsBlock}${qrLines}
 
       <AddressModal
         open={showAddressModal}
+        autoPayStep={autoPayStep}
         onClose={() => {
           setShowAddressModal(false);
           // Keep the pending entry, refreshed with whatever was typed.

@@ -8,6 +8,10 @@
 # ─────────────────────────────────────────────────────────────
 User-agent: *
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
@@ -23,6 +27,10 @@ User-agent: GPTBot
 User-agent: ChatGPT-User
 User-agent: OAI-SearchBot
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
@@ -33,18 +41,30 @@ User-agent: Claude-User
 User-agent: Claude-SearchBot
 User-agent: anthropic-ai
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
 # Google AI (Gemini / Vertex)
 User-agent: Google-Extended
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
 # Common Crawl (used by many LLMs)
 User-agent: CCBot
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
@@ -52,12 +72,20 @@ Disallow: /manage-orders
 User-agent: PerplexityBot
 User-agent: Perplexity-User
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
 # ByteDance
 User-agent: Bytespider
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
@@ -65,12 +93,20 @@ Disallow: /manage-orders
 User-agent: Applebot
 User-agent: Applebot-Extended
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
 # Amazon
 User-agent: Amazonbot
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
@@ -79,12 +115,20 @@ User-agent: Meta-ExternalAgent
 User-agent: Meta-ExternalFetcher
 User-agent: FacebookBot
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
 # Microsoft / Copilot
 User-agent: Bingbot
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
@@ -100,6 +144,10 @@ User-agent: AddSearchBot
 User-agent: Ai2Bot
 User-agent: Mistral-AI-User
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
@@ -108,6 +156,10 @@ Disallow: /manage-orders
 # ─────────────────────────────────────────────────────────────
 User-agent: Googlebot
 Allow: /
+Allow: /api/agent/
+Allow: /openapi.json
+Allow: /order
+Allow: /for-ai
 Disallow: /api/
 Disallow: /manage-orders
 
@@ -125,3 +177,7 @@ Allow: /
 Sitemap: https://thebookx.in/sitemap.xml
 # AI / LLM guide (see https://llmstxt.org)
 # LLMs: https://thebookx.in/llms.txt
+# AI shopping (no login): https://www.thebookx.in/for-ai
+#   Search:     https://www.thebookx.in/api/agent/books?q=<words>
+#   Order link: https://www.thebookx.in/api/agent/order-link?books=<id>[:qty],...&name=&phone=&pincode=&address=
+#   API spec:   https://www.thebookx.in/openapi.json

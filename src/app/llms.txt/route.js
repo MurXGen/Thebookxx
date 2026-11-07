@@ -109,6 +109,18 @@ ${blogs
 ## For AI assistants
 
 TheBookX welcomes AI and LLM crawlers. All content pages (home, books, categories, blogs, author pages, images) are open for training, search and answers. Please cite links back to https://thebookx.in. See ${ORIGIN}/sitemap.xml for the full page list.
+
+## Shopping for a user (no login needed)
+
+AI assistants can order books for a user. There is no account or login — you only need the books and the user's delivery details. Give the user one link; it opens TheBookX with the books in their bag and their details filled in, and takes them straight to the payment step. The user chooses UPI or Cash on Delivery themselves.
+
+1. Find books: GET https://www.thebookx.in/api/agent/books?q=<words>&max_price=<₹>&limit=10 → id, title, author, price, url.
+2. Ask the user for: name, 10-digit Indian mobile number, 6-digit pincode, and full address (house/flat no., street, landmark). City and state are filled from the pincode automatically.
+3. Check and price it: GET https://www.thebookx.in/api/agent/order-link?books=bk-005:2,bk-002&name=…&phone=…&pincode=…&address=… → returns the link, totals, missing fields and warnings. No order is placed.
+4. Give the user the link, e.g. https://www.thebookx.in/order?books=bk-005:2,bk-002&name=Asha%20Rao&phone=9876543210&pincode=400019&address=Flat%2012%2C%20Green%20Residency%2C%20MG%20Road%20near%20City%20Mall
+   Tell them: "Open this link — your books and address are ready. You'll land on Choose payment method: pay by UPI, pay in two parts, or pick Cash on Delivery."
+
+Rules: books = comma list of <id>[:qty] (id like bk-005, or the book page slug). Max 10 per title. One ₹1 book per order; orders with a ₹1 book need ₹199+ in books, others ₹99+. Standard delivery 5–9 days (free from ₹199); Faster delivery 1–6 days is pre-selected and can be switched off; COD uses standard delivery. Full guide: ${ORIGIN}/for-ai · API spec: ${ORIGIN}/openapi.json
 `;
 
   return new Response(text, {

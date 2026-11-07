@@ -146,6 +146,7 @@ export const FastCheckout = () => (
 
 export default function AddressModal({
   open,
+  autoPayStep = false, // opened from an AI/shared order link with details filled
   onClose,
   onOrderPlaced,
   proActive = false,
@@ -1111,6 +1112,24 @@ export default function AddressModal({
       setArea(saved.area || "");
       setState(saved.state || "");
       setFasterDelivery(saved.fasterDelivery || false);
+      try {
+        const em = localStorage.getItem("checkoutEmail");
+        if (em && !email) setEmail(em);
+      } catch {
+        /* ignore */
+      }
+      // Order link with every detail present → skip to "Choose payment method".
+      const ok =
+        autoPayStep &&
+        String(saved.name || "").trim().length >= 3 &&
+        /^[6-9]\d{9}$/.test(normalizePhone(saved.phone || "")) &&
+        /^\d{6}$/.test(String(saved.pincode || "")) &&
+        String(saved.address || "").trim().length > ADDRESS_MIN_CHARS;
+      if (ok) {
+        setPaySel("UPI");
+        setFasterDelivery(true);
+        setTimeout(() => setShowPaySelect(true), 250);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);

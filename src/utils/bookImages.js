@@ -567,6 +567,7 @@ export const bookImages = {
   "caught-up": `${BOOK_IMAGE_BASE_PATH}/caught-up.png`,
   "game-on": `${BOOK_IMAGE_BASE_PATH}/game-on.png`,
   "into-darkness-trilogy-set": `${BOOK_IMAGE_BASE_PATH}/into-darkness-trilogy-set.png`,
+  "technical-analysis-candlesticks": `${BOOK_IMAGE_BASE_PATH}/technical-analysis-candlesticks.png`,
   "not-in-love": `${BOOK_IMAGE_BASE_PATH}/not-in-love.png`,
   bride: `${BOOK_IMAGE_BASE_PATH}/bride.png`,
   "check-and-mate": `${BOOK_IMAGE_BASE_PATH}/check-and-mate.png`,
@@ -747,4 +748,5 @@ export const bookImages = {
   "caught-up": `${BOOK_IMAGE_BASE_PATH}/caught-up.jpeg`,
   "game-on": `${BOOK_IMAGE_BASE_PATH}/game-on.jpeg`,
   "into-darkness-trilogy-set": `${BOOK_IMAGE_BASE_PATH}/into-darkness-trilogy-set.jpeg`,
+  "technical-analysis-candlesticks": `${BOOK_IMAGE_BASE_PATH}/technical-analysis-candlesticks.jpeg`,
 };

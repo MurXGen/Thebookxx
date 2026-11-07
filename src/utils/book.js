@@ -11475,4 +11475,22 @@ export const books = [
     weight: 600,
     rating: 4.5,
   },
+  {
+    id: "bk-751",
+    name: "Guide to Technical Analysis & Candlesticks",
+    image: bookImages["technical-analysis-candlesticks"],
+    description:
+      "Buy Guide to Technical Analysis & Candlesticks by Ravi Patel online at the lowest price on TheBookX.in. A clear, practical guide to reading charts, candlestick patterns and market trends — perfect for beginners and traders who want to make smarter, more confident decisions in the stock market. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Ravi Patel",
+    authorSlug: "ravi-patel",
+    pages: "200-260",
+    language: "English",
+    size: "Paperback",
+    stock: 22,
+    catalogue: ["finance", "non-fiction", "business", "bestseller"],
+    originalPrice: calculateOriginalPrice(189),
+    discountedPrice: 189,
+    weight: 160,
+    rating: 4.5,
+  },
 ];

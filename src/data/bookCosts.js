@@ -643,6 +643,7 @@ export const COST_BY_ID = {
   "bk-748": 90, // Caught Up — Navessa Allen
   "bk-749": 90, // Game On — Navessa Allen
   "bk-750": 270, // Into Darkness Trilogy combo (3 × 90)
+  "bk-751": 90, // Guide to Technical Analysis & Candlesticks — Ravi Patel
   // ── Box sets & singles (Oct 2026) ──
   "bk-713": 280, // The Housemaid Series (3-book set)
   "bk-714": 100, // The Girl in the Glass Case

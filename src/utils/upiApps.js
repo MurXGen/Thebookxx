@@ -57,6 +57,20 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+// Result of the last QR download attempt: "pending" | "ok" | "failed".
+// Browsers can't tell us if the shopper cancelled a save dialog, only whether
+// the file was produced and handed to the browser.
+let qrResult = "pending";
+export const lastQrResult = () => qrResult;
+function reportQr(ok) {
+  qrResult = ok ? "ok" : "failed";
+  try {
+    window.dispatchEvent(new CustomEvent("tbx:qr-download", { detail: { ok } }));
+  } catch {
+    /* ignore */
+  }
+}
+
 export function downloadUpiQr({
   amount = 0,
   upiId = "",
@@ -147,28 +161,45 @@ export function downloadUpiQr({
     ctx.textAlign = "left";
 
     c.toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
+      if (!blob) return reportQr(false);
+      try {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "thebookx-upi-qr.png";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        reportQr(true);
+      } catch {
+        reportQr(false);
+      }
+    }, "image/png");
+  };
+
+  qrResult = "pending";
+  const img = new Image();
+  img.onload = () => {
+    try {
+      render(img);
+    } catch {
+      reportQr(false);
+    }
+  };
+  img.onerror = () => {
+    // Fallback: just download the raw QR asset.
+    try {
       const a = document.createElement("a");
-      a.href = url;
+      a.href = qrSrc;
       a.download = "thebookx-upi-qr.png";
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-    }, "image/png");
-  };
-
-  const img = new Image();
-  img.onload = () => render(img);
-  img.onerror = () => {
-    // Fallback: just download the raw QR asset.
-    const a = document.createElement("a");
-    a.href = qrSrc;
-    a.download = "thebookx-upi-qr.png";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+      reportQr(true);
+    } catch {
+      reportQr(false);
+    }
   };
   img.src = qrSrc;
 }

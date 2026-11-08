@@ -110,7 +110,9 @@ export async function GET(request) {
     //       link at all, e.g. manual/goodwill credits) count.
     // Safety: any failure reading the orders sheet leaves everything untouched
     // (no refunds applied, nothing hidden) — we never penalise on a failed read.
-    const anyOrderLinked = entries.some((e) => e.orderId);
+    // Orders are always read now: wallet top-ups live on the order row.
+    const anyOrderLinked = true;
+    const topUpCredits = [];
     let presentIds = new Set();
     let cancelledIds = new Set();
     let confirmedIds = new Set(); // orders whose spend is allowed to count
@@ -136,6 +138,25 @@ export async function GET(request) {
         tableToObjects(oTable).forEach((row) => {
           const oid = String(row["Order ID"] ?? row["Order Id"] ?? "").trim();
           if (!oid) return;
+          // Wallet top-up paid with this order → a wallet credit, but only once
+          // the order qualifies: online-paid and confirmed, or delivered (COD).
+          const topUp = Math.round(parseFloat(row["Wallet Top-up"] ?? 0) || 0);
+          if (topUp > 0) {
+            const st = String(row["Order Status"] ?? "").toLowerCase();
+            const isCod = /cash|cod/i.test(String(row["Payment Type"] ?? ""));
+            const confirmed = st && !/unconfirmed|fail|cancel|rto|return/.test(st);
+            const delivered = /deliver/.test(st) && !/undeliver|not deliver/.test(st);
+            if (delivered || (confirmed && !isCod)) {
+              const d = parseSheetDate(row["Timestamp"]) || new Date();
+              topUpCredits.push({
+                date: d.getTime(),
+                amount: topUp,
+                type: "credit",
+                reason: `Wallet top-up (order ${oid})`,
+                orderId: oid,
+              });
+            }
+          }
           presentIds.add(oid);
           const status = String(row["Order Status"] ?? "");
           const s = status.toLowerCase();
@@ -160,6 +181,13 @@ export async function GET(request) {
       }
     }
 
+    // Skip a top-up already credited by hand for the same order.
+    topUpCredits.forEach((c) => {
+      const dup = entries.some(
+        (e) => e.amount > 0 && String(e.orderId).trim() === c.orderId && /top-?up/i.test(e.reason || ""),
+      );
+      if (!dup) entries.push(c);
+    });
     const withLock = entries.map((e) => {
       const oid = e.orderId ? String(e.orderId).trim() : "";
       // A DEBIT tied to an order counts (reduces the balance) ONLY once that

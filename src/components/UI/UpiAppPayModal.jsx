@@ -12,7 +12,11 @@ import {
   Smartphone,
   IndianRupee,
   X,
+  Copy,
+  Check,
+  AlertCircle,
 } from "lucide-react";
+import { copyUpiId, downloadUpiQr, lastQrResult } from "@/utils/upiApps";
 import { FaWhatsapp } from "react-icons/fa";
 
 const VERIFY_SECONDS = 300; // 5 minutes
@@ -32,8 +36,29 @@ export default function UpiAppPayModal({
   onClose,
   onLaunch,
   onWhatsApp,
+  upiId = "",
 }) {
   const [stage, setStage] = useState(initialStage);
+  const [copied, setCopied] = useState(false);
+  const [qrState, setQrState] = useState("pending"); // pending | ok | failed
+  useEffect(() => {
+    const t = setTimeout(() => setQrState(lastQrResult()), 0);
+    // No result after 3s (e.g. page reloaded mid-download) → show the normal
+    // saved state; a late failure still flips it to failed.
+    const t2 = setTimeout(() => setQrState((q) => (q === "pending" ? "ok" : q)), 3000);
+    const on = (e) => setQrState(e.detail?.ok ? "ok" : "failed");
+    window.addEventListener("tbx:qr-download", on);
+    return () => {
+      clearTimeout(t);
+      clearTimeout(t2);
+      window.removeEventListener("tbx:qr-download", on);
+    };
+  }, []);
+  const saveQrAgain = () => {
+    setQrState("pending");
+    downloadUpiQr({ amount, upiId, advance });
+    setTimeout(() => setQrState((q) => (q === "pending" ? "ok" : q)), 3000);
+  };
   const [left, setLeft] = useState(VERIFY_SECONDS);
   const timerRef = useRef(null);
 
@@ -155,12 +180,36 @@ export default function UpiAppPayModal({
         {stage === "ready" && (
           <div className="upm-body">
             <div className="upm-checks">
-              <span className="upm-check">
-                <span className="upm-check-ic">
-                  <Download size={14} />
+              {qrState === "failed" ? (
+                <span className="upm-check fail" role="alert">
+                  <span className="upm-check-ic">
+                    <AlertCircle size={14} />
+                  </span>
+                  <span className="upm-check-txt">QR download failed</span>
+                  <button type="button" className="upm-check-btn" onClick={saveQrAgain} data-no-busy>
+                    <Download size={14} /> Download QR
+                  </button>
                 </span>
-                QR code saved to your device
-              </span>
+              ) : (
+                <span className="upm-check">
+                  <span className="upm-check-ic">
+                    <Download size={14} />
+                  </span>
+                  <span className="upm-check-txt">
+                    {qrState === "pending" ? "Saving QR to your device…" : "QR code saved to your device"}
+                  </span>
+                  <button
+                    type="button"
+                    className="upm-check-icbtn"
+                    onClick={saveQrAgain}
+                    aria-label="Download QR again"
+                    title="Didn't get it? Download again"
+                    data-no-busy
+                  >
+                    <Download size={15} />
+                  </button>
+                </span>
+              )}
               <span className="upm-check">
                 <span className="upm-check-ic">
                   <ClipboardCheck size={14} />
@@ -223,6 +272,44 @@ export default function UpiAppPayModal({
               Hang tight — this can take a few minutes. Keep this screen open; it
               stays open even if you switch apps.
             </p>
+            {/* Not paid yet? Pay from here: QR + UPI ID + download. */}
+            <div className="upm-qrpay">
+              <span className="upm-qrpay-cap">Haven&apos;t paid yet? Scan &amp; pay ₹{amount}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/books/uskillbook.png" alt="TheBookX UPI QR code" className="upm-qrpay-img" />
+              {upiId && (
+                <div className="upm-qrpay-id">
+                  <span>{upiId}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      copyUpiId(upiId);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1800);
+                    }}
+                    data-no-busy
+                  >
+                    {copied ? (
+                      <>
+                        <Check size={13} strokeWidth={3} /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={13} /> Copy ID
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+              <button
+                type="button"
+                className="upm-qrpay-dl"
+                onClick={saveQrAgain}
+                data-no-busy
+              >
+                <Download size={15} /> Download QR
+              </button>
+            </div>
             <button type="button" className="upm-ghost" onClick={onLaunch}>
               Open {appLabel} again
             </button>

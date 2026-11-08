@@ -17,6 +17,7 @@ import {
   X,
   MapPin,
   AlertCircle,
+  BadgeCheck,
   User,
   Home,
   Zap,
@@ -67,6 +68,13 @@ import { rewardNote } from "@/utils/orderRewards";
 import { encodeAddonsField } from "@/utils/addonsField";
 
 const PINCODE_DATA_KEY = "user_pincode";
+// UPI apps on the Payment options sheet.
+const UPI_APPS = [
+  { k: "Google Pay", c: "#1a73e8" },
+  { k: "PhonePe", c: "#5f259f" },
+  { k: "Paytm", c: "#00baf2" },
+  { k: "Other UPI apps", c: "#fb8500" },
+];
 
 // All Indian States & Union Territories — used for the checkout State dropdown
 // when the pincode lookup can't resolve a state automatically.
@@ -159,6 +167,7 @@ export default function AddressModal({
   notifyTelegram,
   standardDeliveryCharge = 0,
   fasterDeliveryCharge = 119,
+  walletTopUp = 0,
   fasterUnavailable = false,
   totalWithStandardDelivery = 0,
   giftWrapCharge = 0,
@@ -321,6 +330,22 @@ export default function AddressModal({
   // "Pay online" method chooser (UPI apps + Cards/gift-card for overseas users)
   const [showPayMethod, setShowPayMethod] = useState(false);
   const [payMethodStage, setPayMethodStage] = useState("choose"); // choose|giftcard
+  // Payment options: preferred UPI app (remembered) and the picked one.
+  const [prefUpi, setPrefUpi] = useState("Google Pay");
+  const [selUpi, setSelUpi] = useState("");
+  // One selection across "Preferred" and "Any UPI app" (starts on preferred).
+  const activeUpi = selUpi || prefUpi;
+  useEffect(() => {
+    const t = setTimeout(() => {
+      try {
+        const p = localStorage.getItem("tbx_pref_upi");
+        if (p && UPI_APPS.some((a) => a.k === p)) setPrefUpi(p);
+      } catch {
+        /* ignore */
+      }
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
   const [giftMethod, setGiftMethod] = useState(""); // selected card/voucher label
   const [giftCode, setGiftCode] = useState("");
   const [successPaymentLabel, setSuccessPaymentLabel] = useState("");
@@ -919,6 +944,9 @@ export default function AddressModal({
     totalDiscounted >= 1000 ? 4 : totalDiscounted >= 500 ? 3 : 2;
   const bookmarkExtra = Math.max(0, bookmarkQty - freeBookmarks);
   const bookmarkCharge = bookmarkExtra * BOOKMARK_UNIT;
+  // Small-gap wallet top-up chosen in the bag: paid with this order, credited
+  // to the shopper's wallet (once the order qualifies) for their next order.
+  const topUp = Math.max(0, Math.round(Number(walletTopUp) || 0));
   // Bookmark cap by payment type — 1 on Cash on Delivery orders, 2 on online
   // paid orders (prepaid customers can add one extra).
   const maxBookmarks = paySel === "COD" ? 1 : 2;
@@ -927,7 +955,7 @@ export default function AddressModal({
   // to EVERY flow (online, two-parts, COD) as real line items — never folded
   // into a discount. Free-tier bookmarks add ₹0.
   const bookmarkFreeApplied = Math.min(bookmarkQty, freeBookmarks);
-  const addOnsCharge = (giftWrap ? giftWrapCharge : 0) + bookmarkCharge;
+  const addOnsCharge = (giftWrap ? giftWrapCharge : 0) + bookmarkCharge + topUp;
 
   // Raw UPI bill (goods after wallet-on-goods + delivery + add-ons), BEFORE the
   // full-use wallet coupon covers the remaining charges.
@@ -968,6 +996,12 @@ export default function AddressModal({
   // — used for display and when storing the order.
   const walletAppliedTotal =
     (walletApplied || 0) + couponWalletExtra(upiRawTotal);
+
+  // Payment options sheet: amount due now, and what "pay on delivery" costs
+  // (Standard delivery + COD fee — the same sum the COD order records).
+  const payNowAmount = advanceMode ? codAdvanceAmount : getTotalWithDelivery(fasterDelivery) + addOnsCharge;
+  const codPayLaterRaw = netPayable + getDeliveryCharge(false) + addOnsCharge + codFeeAmount;
+  const codPayLaterAmount = Math.max(0, codPayLaterRaw - couponWalletExtra(codPayLaterRaw));
 
   // Only ONE ₹1 book is allowed per order. Count the total quantity of
   // ₹1-priced books; if it's more than one, checkout is blocked.
@@ -1136,7 +1170,8 @@ export default function AddressModal({
       setDistrict(saved.district || "");
       setArea(saved.area || "");
       setState(saved.state || "");
-      setFasterDelivery(saved.fasterDelivery || false);
+      // Faster is chosen fresh on the payment step each time (Standard by default).
+      setFasterDelivery(false);
       try {
         const em = localStorage.getItem("checkoutEmail");
         if (em && !email) setEmail(em);
@@ -1152,7 +1187,7 @@ export default function AddressModal({
         String(saved.address || "").trim().length > ADDRESS_MIN_CHARS;
       if (ok) {
         setPaySel("UPI");
-        setFasterDelivery(true);
+        setFasterDelivery(false);
         setTimeout(() => setShowPaySelect(true), 250);
       }
     }
@@ -1264,7 +1299,7 @@ export default function AddressModal({
     const gift = giftWrap || giftWrapSelected ? giftWrapCharge : 0;
     const codFee = advance ? 0 : paymentType === "COD" ? codFeeAmount : 0;
     const raw =
-      netPayable + getDeliveryCharge(isFaster) + gift + bookmarkCharge + codFee;
+      netPayable + getDeliveryCharge(isFaster) + gift + bookmarkCharge + topUp + codFee;
     const extraWallet = couponWalletExtra(raw);
     const total = Math.max(0, raw - extraWallet);
     const advanceAmt = advance ? 99 : 0;
@@ -1284,6 +1319,7 @@ export default function AddressModal({
       gift: n0(gift),
       bookmarkQty: n0(bookmarkQty),
       bookmarkCharge: n0(bookmarkCharge),
+      walletTopUp: n0(topUp),
       codFee: n0(codFee),
       total: n0(total),
       advance: n0(advanceAmt),
@@ -1333,6 +1369,7 @@ export default function AddressModal({
         deliveryChargeForOrder +
         giftWrapAmt +
         bookmarkCharge +
+        topUp +
         feeForThisOrder;
       // Full-use wallet coupon: the wallet also covers these charges.
       const extraWalletForOrder = couponWalletExtra(rawTotalForOrder);
@@ -1392,6 +1429,7 @@ export default function AddressModal({
         "Wallet Applied": String(n0(walletForOrder)),
         "Bookmark Qty": String(n0(bookmarkQty)),
         "Bookmark Charge": String(n0(bookmarkCharge)),
+        "Wallet Top-up": String(n0(topUp)),
         "QuickReads Total": String(n0((quickReadItems || []).length * 19)),
         "COD Fee": String(n0(feeForThisOrder)),
         // Handling & Care fee — applies on carts above ₹1000 (the 20% band) and
@@ -1454,7 +1492,8 @@ export default function AddressModal({
         netPayable +
         deliveryChargeForOrder +
         giftWrapAmountForOrder +
-        bookmarkAmountForOrder;
+        bookmarkAmountForOrder +
+        topUp;
       const feeForThisOrder = advance
         ? 0
         : paymentType === "COD"
@@ -1494,6 +1533,7 @@ export default function AddressModal({
         totalWithDelivery: Math.max(0, rawTotalAppend - extraWalletAppend),
         bookmarkSelected: bookmarkQty > 0,
         bookmarkCharge: bookmarkAmountForOrder,
+        walletTopUp: topUp,
         bookmarkQty,
         bookmarkFree: bookmarkFreeApplied,
         // Itemised values, match what the user sees in the success modal
@@ -1513,7 +1553,11 @@ export default function AddressModal({
         giftWrapCharge: giftWrapAmountForOrder,
         codHandlingFee: feeForThisOrder,
         advancePaid: advance,
-        orderComment: [resellNote, rewardNote(totalDiscounted)]
+        orderComment: [
+          resellNote,
+          rewardNote(totalDiscounted),
+          topUp ? `Wallet top-up ₹${topUp} (credit to wallet)` : "",
+        ]
           .filter(Boolean)
           .join(" · "),
         coupon: appliedCoupon?.code || "",
@@ -1826,6 +1870,11 @@ export default function AddressModal({
   // Chose a specific UPI app (Paytm / PhonePe / GPay / Other) → log the order
   // with that app as the source, then show the existing UPI QR modal.
   const chooseUpiApp = (app) => {
+    try {
+      localStorage.setItem("tbx_pref_upi", app);
+    } catch {
+      /* ignore */
+    }
     const ref = ensureCheckoutOid();
     setChosenUpiApp(app);
     setUpiOrderRef(ref);
@@ -2483,7 +2532,7 @@ export default function AddressModal({
                   >
                     <CheckCircle2 size={14} className="af-loc-ic" aria-hidden="true" />
                     <span className="af-loc-txt">
-                      Delivering to <b>{city}, {state}</b> · COD available
+                      Delivering to <b>{city}, {state}</b>
                     </span>
                     <button type="button" className="af-loc-edit" onClick={() => setLocEditing(true)} data-no-busy>
                       Edit
@@ -2766,9 +2815,9 @@ export default function AddressModal({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
                     onClick={() => scrollMore(addrBodyRef)}
-                    aria-label="Scroll to the bottom"
+                    aria-label="More below"
                   >
-                    <ChevronDown size={18} strokeWidth={2.6} />
+                    More below <ChevronDown size={14} strokeWidth={2.6} />
                   </motion.button>
                 )}
               </AnimatePresence>
@@ -2786,38 +2835,29 @@ export default function AddressModal({
                 </div>
               )}
 
-              <div className="ps-foot-total">
-                <span className="ps-foot-total-l">
-                  <small>Total payable</small>
-                  <b>₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}</b>
+              {/* One short pinned row: amount + View bill · Proceed */}
+              <div className="af-foot">
+                <span className="af-foot-l">
+                  <span className="af-foot-amt">
+                    <b>₹{getTotalWithDelivery(false) + addOnsCharge}</b>
+                    {(offerSaving > 0 || mrpSaving > 0) && (
+                      <small>₹{offerSaving > 0 ? offerSaving : mrpSaving} saved</small>
+                    )}
+                  </span>
                   {onViewBill && (
                     <button
                       type="button"
-                      className="ps-foot-bill"
-                      onClick={onViewBill}
+                      className="af-foot-bill"
+                      onClick={() => onViewBill(buildBillSnapshot("UPI", false))}
+                      data-no-busy
                     >
-                      <Receipt size={14} /> View bill
-                      <ChevronRight size={14} />
+                      View bill <ChevronRight size={14} />
                     </button>
                   )}
                 </span>
-                {offerSaving > 0 ? (
-                  <span className="ps-foot-saved">
-                    You save ₹{offerSaving}
-                  </span>
-                ) : (
-                  mrpSaving > 0 && (
-                    <span className="ps-foot-saved ps-foot-mrp">
-                      <TrendingDown size={13} /> ₹{mrpSaving} saved
-                      <small>on MRP</small>
-                    </span>
-                  )
-                )}
-              </div>
-
               {pincodeReady && (
                 <LoadingButton
-                  className="pri-big-btn width100"
+                  className="pri-mid-btn af-proceed"
                   onClick={() => {
                     if (!isFormValid()) {
                       setTouched({
@@ -2830,9 +2870,9 @@ export default function AddressModal({
                       return;
                     }
                     setPaySel("UPI"); // online payment selected by default
-                    // Straight to payment; Faster delivery starts ticked there
-                    // (they can untick it on the same sheet).
-                    setFasterDelivery(true);
+                    // Straight to payment with Standard delivery; Faster is an
+                    // opt-in tick on that sheet (and only then joins the bill).
+                    setFasterDelivery(false);
                     setShowPaySelect(true);
                   }}
                 >
@@ -2842,6 +2882,7 @@ export default function AddressModal({
                   </span>
                 </LoadingButton>
               )}
+              </div>
             </div>
           </motion.div>
         </motion.div>
@@ -3112,37 +3153,51 @@ export default function AddressModal({
                 {/* Current delivery type — a highlighted stripe above Faster
                     delivery so shoppers always see the included standard option
                     (free, 4–9 days). Dims when Faster is the active choice. */}
-                <div className={`dstripe${fasterDelivery ? " muted" : ""}`}>
-                  <span className="dstripe-ic" aria-hidden="true">
-                    <Truck size={15} />
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={!fasterDelivery}
+                  className={`dstripe dstripe-pick${fasterDelivery ? " muted" : " on"}`}
+                  onClick={() => {
+                    if (fasterDelivery) {
+                      setFasterDelivery(false);
+                      buzz(8);
+                    }
+                  }}
+                  data-no-busy
+                >
+                  <span className={`dstripe-radio${!fasterDelivery ? " on" : ""}`} aria-hidden="true">
+                    {!fasterDelivery && <Check size={12} strokeWidth={3.5} />}
                   </span>
-                  <span className="dstripe-txt">
-                    <span className="dstripe-title">Standard delivery</span>
-                    <span className="dstripe-sub">Arrives in 4–9 days</span>
+                  <span className="fdx-txt">
+                    <span className="fdx-title">
+                      <Truck size={15} className="fdx-zap std" /> Standard delivery
+                    </span>
+                    <span className="fdx-sub">Arrives in 4–9 days</span>
                   </span>
-                  <span className="dstripe-free">FREE</span>
-                </div>
+                  <span className="fdx-price std">FREE</span>
+                </button>
 
-                {/* Faster delivery — ticked by default on arrival; the bill
-                    updates live. Not available with Cash on Delivery. */}
+                {/* Faster delivery — opt-in (Standard by default); ticking it
+                    adds the priority fee to the bill live. Not with COD. */}
                 <div
                   className={`fdx${fasterDelivery ? " on" : ""}${paySel === "COD" ? " off" : ""}`}
                 >
                   <button
                     type="button"
                     className="fdx-main"
-                    role="checkbox"
+                    role="radio"
                     aria-checked={fasterDelivery}
                     aria-disabled={paySel === "COD"}
                     disabled={paySel === "COD"}
                     onClick={() => {
-                      if (paySel === "COD") return;
-                      setFasterDelivery((v) => !v);
+                      if (paySel === "COD" || fasterDelivery) return;
+                      setFasterDelivery(true);
                       buzz(8);
                     }}
                   >
-                    <span className="fdx-box" aria-hidden="true">
-                      {fasterDelivery && <Check size={14} strokeWidth={3.2} />}
+                    <span className={`dstripe-radio fdx-radio${fasterDelivery ? " on" : ""}`} aria-hidden="true">
+                      {fasterDelivery && <Check size={12} strokeWidth={3.5} />}
                     </span>
                     <span className="fdx-txt">
                       <span className="fdx-title">
@@ -3151,9 +3206,7 @@ export default function AddressModal({
                       <span className="fdx-sub">
                         {paySel === "COD"
                           ? "Not available with Cash on Delivery"
-                          : fasterDelivery
-                            ? "Arrives in 1–6 days"
-                            : "Standard: arrives in 5–9 days"}
+                          : "Arrives in 1–6 days"}
                       </span>
                     </span>
                     <span className="fdx-price">
@@ -3194,8 +3247,6 @@ export default function AddressModal({
                   <button
                     type="button"
                     onClick={() => {
-                      // Coming back from COD → Faster starts ticked again.
-                      if (paySel === "COD") setFasterDelivery(true);
                       setPaySel("UPI");
                     }}
                     className={`pay-method pm2${paySel === "UPI" ? " selected" : ""}`}
@@ -3667,9 +3718,9 @@ export default function AddressModal({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 6 }}
                       onClick={() => scrollMore(paySelRef)}
-                      aria-label="Scroll to the bottom"
+                      aria-label="More options below"
                     >
-                      <ChevronDown size={18} strokeWidth={2.6} />
+                      More options <ChevronDown size={14} strokeWidth={2.6} />
                     </motion.button>
                   )}
                 </AnimatePresence>
@@ -3679,54 +3730,47 @@ export default function AddressModal({
                     extra ₹1 book{oneRupeeQty > 2 ? "s" : ""} to continue.
                   </div>
                 )}
-                <div className="ps-foot-total">
-                  <span className="ps-foot-total-l">
-                    <small>Total payable</small>
-                    <b>
-                      ₹
-                      {isZeroPayable
-                        ? 0
-                        : paySel === "COD"
-                          ? codTotalWithFee
-                          : upiTotalForFlow}
-                    </b>
+                <div className="pay-sel-footer-row af-foot">
+                  <span className="af-foot-l">
+                    <span className="af-foot-amt">
+                      <b>
+                        ₹{isZeroPayable ? 0 : paySel === "COD" ? codTotalWithFee : upiTotalForFlow}
+                      </b>
+                      {(offerSaving > 0 || mrpSaving > 0) && (
+                        <small>₹{offerSaving > 0 ? offerSaving : mrpSaving} saved</small>
+                      )}
+                    </span>
                     {onViewBill && (
                       <button
                         type="button"
-                        className="ps-foot-bill"
-                        onClick={onViewBill}
+                        className="af-foot-bill"
+                        onClick={() =>
+                          onViewBill(
+                            paySel === "COD"
+                              ? buildBillSnapshot("COD", false)
+                              : paySel === "ADV"
+                                ? buildBillSnapshot("COD", fasterDelivery, true)
+                                : buildBillSnapshot("UPI", fasterDelivery),
+                          )
+                        }
+                        data-no-busy
                       >
-                        <Receipt size={14} /> View bill
-                        <ChevronRight size={14} />
+                        View bill <ChevronRight size={14} />
                       </button>
                     )}
                   </span>
-                  {offerSaving > 0 ? (
-                    <span className="ps-foot-saved">
-                      You save ₹{offerSaving}
-                    </span>
-                  ) : (
-                    mrpSaving > 0 && (
-                      <span className="ps-foot-saved ps-foot-mrp">
-                        <TrendingDown size={13} /> ₹{mrpSaving} saved
-                        <small>on MRP</small>
-                      </span>
-                    )
-                  )}
-                </div>
-                <div className="pay-sel-footer-row">
                   <button
                     type="button"
-                    className="sec-big-btn pay-sel-wa"
+                    className="pay-sel-wa-ic"
                     onClick={() => setSupportOpen(true)}
-                    aria-label="Need support?"
+                    aria-label="Need support? Chat on WhatsApp"
+                    title="Need support?"
                   >
-                    <FaWhatsapp size={18} color="#25D366" />
-                    <span>Need support?</span>
+                    <FaWhatsapp size={20} color="#25D366" />
                   </button>
                   <button
                     type="button"
-                    className="pri-big-btn pay-confirm-btn"
+                    className="pri-mid-btn pay-confirm-btn af-proceed"
                     disabled={(!paySel && !isZeroPayable) || tooManyOneRupee}
                     onClick={() =>
                       (paySel || isZeroPayable) &&
@@ -4326,7 +4370,15 @@ export default function AddressModal({
                       {giftMethod}
                     </>
                   ) : (
-                    "Choose how to pay"
+                    <span className="po-head">
+                      <b>Payment options</b>
+                      <small>
+                        {(cartBooks || []).reduce((n, b) => n + (b.qty || 1), 0)} item
+                        {(cartBooks || []).reduce((n, b) => n + (b.qty || 1), 0) === 1 ? "" : "s"} · Total ₹
+                        {payNowAmount}
+                        {advanceMode ? " now" : ""}
+                      </small>
+                    </span>
                   )}
                 </span>
                 <span
@@ -4338,94 +4390,149 @@ export default function AddressModal({
               </div>
 
               {payMethodStage === "choose" ? (
-                <div className="paymeth">
-                  {/* Social-proof trust stripe */}
-                  <div className="pay-trust">
-                    <span className="pay-trust-faces" aria-hidden="true">
-                      {[1, 2, 3].map((n) => (
-                        <img
-                          key={n}
-                          src={`/review/promotions/member-${n}.jpeg`}
-                          alt=""
-                          className="pay-trust-face"
-                          loading="lazy"
-                        />
-                      ))}
+                <div className="po">
+                  {/* Route: TheBookX → delivery address */}
+                  <div className="po-route">
+                    <span className="po-route-line" aria-hidden="true">
+                      <i />
+                      <i />
                     </span>
-                    <span className="pay-trust-txt">
-                      <strong>Most people</strong> opt for online mode —
-                      you&apos;re in trusted company!
+                    <span className="po-route-txt">
+                      <span>
+                        <b>TheBookX</b> · Ships within a day
+                      </span>
+                      <span className="po-route-addr">
+                        <b>{(name || "Home").split(" ")[0]}</b> · {fullAddress || `${city} ${pincode}`}
+                      </span>
+                      <span className="po-route-eta">
+                        Delivery in{" "}
+                        <b>
+                          {fasterDelivery
+                            ? "1–6 days"
+                            : /^4[0-4]/.test(String(pincode)) && !String(pincode).startsWith("403")
+                              ? "1–5 days"
+                              : "4–9 days"}
+                        </b>
+                      </span>
                     </span>
                   </div>
 
-                  {/* UPI apps */}
-                  <div className="paymeth-group">
-                    <span className="paymeth-group-title">Pay via UPI</span>
-                    <div className="paymeth-apps">
-                      {[
-                        { k: "Paytm", c: "#00baf2" },
-                        { k: "PhonePe", c: "#5f259f" },
-                        { k: "Google Pay", c: "#1a73e8" },
-                        { k: "Other UPI apps", c: "#fb8500" },
-                      ].map((app) => (
+                  {/* Preferred payment: last UPI app used on this device */}
+                  <span className="po-cap">Preferred payment</span>
+                  <div className="po-card">
+                    <button
+                      type="button"
+                      className={`po-row${activeUpi === prefUpi ? " on" : ""}`}
+                      onClick={() => setSelUpi(prefUpi)}
+                      aria-pressed={activeUpi === prefUpi}
+                    >
+                      <span className="po-app-ic" style={{ background: UPI_APPS.find((a) => a.k === prefUpi)?.c }}>
+                        {prefUpi === "Other UPI apps" ? <Smartphone size={17} /> : prefUpi[0]}
+                      </span>
+                      <span className="po-row-nm">{prefUpi}</span>
+                      <span className={`po-radio${activeUpi === prefUpi ? " on" : ""}`} aria-hidden="true">
+                        {activeUpi === prefUpi && <Check size={12} strokeWidth={3.5} />}
+                      </span>
+                    </button>
+                    {activeUpi === prefUpi && (
+                      <button type="button" className="po-pay" onClick={() => chooseUpiApp(prefUpi)}>
+                        Pay ₹{payNowAmount} via {prefUpi === "Other UPI apps" ? "UPI" : prefUpi}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Any UPI app */}
+                  <span className="po-cap">
+                    Pay by any UPI app
+                  </span>
+                  <div className="po-card">
+                    {UPI_APPS.filter((a) => a.k !== prefUpi).map((app) => (
+                      <div key={app.k} className="po-opt">
                         <button
-                          key={app.k}
                           type="button"
-                          className="paymeth-app"
-                          onClick={() => chooseUpiApp(app.k)}
+                          className={`po-row${activeUpi === app.k ? " on" : ""}`}
+                          onClick={() => setSelUpi(app.k)}
+                          aria-pressed={activeUpi === app.k}
                         >
-                          <span
-                            className="paymeth-app-ic"
-                            style={{ background: app.c }}
-                          >
-                            {app.k === "Other UPI apps" ? (
-                              <Smartphone size={18} />
-                            ) : (
-                              app.k[0]
-                            )}
+                          <span className="po-app-ic" style={{ background: app.c }}>
+                            {app.k === "Other UPI apps" ? <Smartphone size={17} /> : app.k[0]}
                           </span>
-                          <span className="paymeth-app-nm">{app.k}</span>
+                          <span className="po-row-nm">{app.k}</span>
+                          <span className={`po-radio${activeUpi === app.k ? " on" : ""}`} aria-hidden="true">
+                            {activeUpi === app.k && <Check size={12} strokeWidth={3.5} />}
+                          </span>
                         </button>
-                      ))}
-                    </div>
+                        <AnimatePresence initial={false}>
+                          {activeUpi === app.k && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="po-pay-wrap"
+                            >
+                              <button type="button" className="po-pay" onClick={() => chooseUpiApp(app.k)}>
+                                Pay ₹{payNowAmount} via {app.k === "Other UPI apps" ? "UPI" : app.k}
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ))}
                   </div>
 
-                  {/* Cards & net banking → gift-card flow */}
-                  <div className="paymeth-group">
-                    <span className="paymeth-group-title">
-                      Cards &amp; net banking
-                    </span>
-                    <div className="paymeth-cards">
-                      {["Credit card", "Debit card", "Net banking"].map((m) => (
-                        <button
-                          key={m}
-                          type="button"
-                          className="paymeth-row"
-                          onClick={() => chooseGiftMethod(m)}
-                        >
-                          <CreditCard size={18} className="paymeth-row-ic" />
-                          <span className="paymeth-row-nm">{m}</span>
-                          <ChevronRight size={16} className="paymeth-row-chev" />
-                        </button>
-                      ))}
-                    </div>
+                  {/* More payment options */}
+                  <span className="po-cap">More payment options</span>
+                  <div className="po-card po-list">
+                    {["Credit card", "Debit card", "Net banking"].map((m) => (
+                      <button key={m} type="button" className="po-more" onClick={() => chooseGiftMethod(m)}>
+                        <span className="po-more-ic">
+                          <CreditCard size={17} />
+                        </span>
+                        <span className="po-more-txt">
+                          <b>{m}</b>
+                          <small>Pay with an Amazon gift card</small>
+                        </span>
+                        <ChevronRight size={16} className="po-more-chev" />
+                      </button>
+                    ))}
+                    <button type="button" className="po-more" onClick={() => chooseGiftMethod("Amazon Gift Voucher")}>
+                      <span className="po-more-ic">
+                        <Gift size={17} />
+                      </span>
+                      <span className="po-more-txt">
+                        <b>Amazon Gift Voucher</b>
+                        <small>Already have one? Redeem it</small>
+                      </span>
+                      <ChevronRight size={16} className="po-more-chev" />
+                    </button>
+                    {!advanceMode && (
+                      <button
+                        type="button"
+                        className="po-more"
+                        onClick={() => {
+                          setShowPayMethod(false);
+                          if (fasterDelivery) {
+                            setFasterDelivery(false);
+                            showToast("Cash on Delivery uses Standard delivery", "info");
+                          }
+                          setPaySel("COD");
+                        }}
+                      >
+                        <span className="po-more-ic">
+                          <Banknote size={17} />
+                        </span>
+                        <span className="po-more-txt">
+                          <b>Pay on delivery</b>
+                          <small>Pay cash or UPI at your door · ₹{codPayLaterAmount}</small>
+                        </span>
+                        <ChevronRight size={16} className="po-more-chev" />
+                      </button>
+                    )}
                   </div>
-
-                  {/* Amazon gift voucher */}
-                  <button
-                    type="button"
-                    className="paymeth-amazon"
-                    onClick={() => chooseGiftMethod("Amazon Gift Voucher")}
-                  >
-                    <span className="paymeth-amazon-ic">
-                      <Gift size={18} />
-                    </span>
-                    <span className="paymeth-amazon-txt">
-                      <strong>Amazon Gift Voucher</strong>
-                      <small>Already have an Amazon gift card? Redeem it.</small>
-                    </span>
-                    <ChevronRight size={16} className="paymeth-row-chev" />
-                  </button>
+                  <p className="po-safe">
+                    <ShieldCheck size={13} /> 100% secure payments · Most shoppers pay online
+                  </p>
                 </div>
               ) : (
                 <div className="paymeth-gift">
@@ -4841,6 +4948,7 @@ export default function AddressModal({
             onSwitchToCOD={switchToCODFromUPI}
             onCheckStatus={handleCheckUPIStatus}
             onTryAgain={handleTryAgainUpi}
+            codLaterAmount={codPayLaterAmount}
             summaryName={name}
             summaryItems={(cartBooks || []).map((b) => ({
               name: b.name,
@@ -6064,6 +6172,7 @@ export function UPIPaymentModal({
   onTryAgain,
   summaryName = "",
   summaryItems = [],
+  codLaterAmount = 0,
 }) {
   // Success tick + failed screens replace the QR body for those two phases.
   if (upiPhase === "success" || upiPhase === "failed") {
@@ -6087,57 +6196,60 @@ export function UPIPaymentModal({
         >
           <div className={`upiv3-result ${failed ? "is-failed" : "is-success"}`}>
             <div className="upiv3-result-icon">
-              {failed ? <X size={44} strokeWidth={3} /> : <Check size={44} strokeWidth={3} />}
+              {failed ? <AlertCircle size={40} strokeWidth={2.6} /> : <Check size={44} strokeWidth={3} />}
             </div>
-            <h3 className="upiv3-result-title">
-              {failed ? "Payment failed" : "Payment confirmed"}
-            </h3>
-            <p className="upiv3-result-sub">
-              {failed
-                ? "We couldn't confirm this payment. No worries — you can try again."
-                : "Thank you! Taking you to your order…"}
-            </p>
+            {failed ? (
+              <>
+                <p className="pf-kicker">Your payment didn&apos;t go through</p>
+                <h3 className="upiv3-result-title pf-title">
+                  Don&apos;t worry, we won&apos;t let your books wait!
+                </h3>
+              </>
+            ) : (
+              <>
+                <h3 className="upiv3-result-title">Payment confirmed</h3>
+                <p className="upiv3-result-sub">Thank you! Taking you to your order…</p>
+              </>
+            )}
 
             {failed && (
               <>
-                <div className="upiv3-result-summary">
-                  <div className="upiv3-result-sum-head">
-                    <span>{summaryName || "Your order"}</span>
-                    <b>₹{totalToPay}</b>
+                {/* Instamart-style recovery: place the order now, pay later. */}
+                <div className="pf-steps">
+                  <div className="pf-step done">
+                    <span className="pf-dot" />
+                    <b>Place your order now</b>
                   </div>
-                  <div className="upiv3-result-items">
-                    {summaryItems.slice(0, 6).map((it, i) => (
-                      <div className="upiv3-result-item" key={i}>
-                        <span className="upiv3-result-item-nm">
-                          {it.name}
-                          {it.qty > 1 ? ` ×${it.qty}` : ""}
-                        </span>
-                        <span className="upiv3-result-item-pr">
-                          ₹{it.price}
-                        </span>
-                      </div>
-                    ))}
-                    {summaryItems.length > 6 && (
-                      <div className="upiv3-result-item muted">
-                        +{summaryItems.length - 6} more
-                      </div>
-                    )}
+                  <div className="pf-step">
+                    <span className="pf-dot" />
+                    <span>Pay by cash or UPI when your books arrive</span>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  className="pri-big-btn width100 flex flex-row items-center justify-center gap-6"
-                  onClick={onTryAgain}
-                >
-                  <RefreshCw size={16} /> Try again
+                <div className="pf-sum">
+                  <span>
+                    {summaryItems.reduce((n, it) => n + (it.qty || 1), 0)} item
+                    {summaryItems.reduce((n, it) => n + (it.qty || 1), 0) === 1 ? "" : "s"}
+                    {summaryName ? ` · ${summaryName}` : ""}
+                  </span>
+                  <span className="pf-sum-names">
+                    {summaryItems.slice(0, 3).map((it) => it.name).join(", ")}
+                    {summaryItems.length > 3 ? ` +${summaryItems.length - 3} more` : ""}
+                  </span>
+                </div>
+                {onSwitchToCOD && !advanceMode && (
+                  <button type="button" className="pf-primary" onClick={onSwitchToCOD}>
+                    Order now &amp; pay ₹{codLaterAmount || totalToPay} later
+                  </button>
+                )}
+                <button type="button" className="pf-secondary" onClick={onTryAgain}>
+                  <RefreshCw size={15} /> Try paying online again · ₹{totalToPay}
                 </button>
-                <button
-                  type="button"
-                  className="upiv3-cod-link"
-                  onClick={onClose}
-                >
-                  Close
+                <button type="button" className="pf-skip" onClick={onClose}>
+                  Don&apos;t place order
                 </button>
+                {onSwitchToCOD && !advanceMode && codLaterAmount > totalToPay && (
+                  <p className="pf-note">Pay on delivery ships Standard and includes the COD fee.</p>
+                )}
               </>
             )}
           </div>
@@ -6164,24 +6276,24 @@ export function UPIPaymentModal({
       >
         <div className="bill-header">
           <span className="weight-600 font-16">Pay with UPI</span>
-          <span className="cursor-pointer" onClick={onClose}>
-            <X size={16} />
+          <span className="upiv3-head-r">
+            <a
+              className="upiv3-help"
+              href={`https://wa.me/917710892108?text=${encodeURIComponent(
+                `Hi TheBookX, I'm facing an issue with online payment for my order of ₹${totalToPay}. Please help.`,
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaWhatsapp size={14} /> Help
+            </a>
+            <span className="cursor-pointer" onClick={onClose}>
+              <X size={16} />
+            </span>
           </span>
         </div>
 
         <div className="upiv3 upiv3-scroll">
-          {/* Payee (merchant) card */}
-          <div className="upiv3-payee">
-            <span className="upiv3-payee-logo">TB</span>
-            <div className="upiv3-payee-info">
-              <span className="upiv3-payee-name">TheBookX</span>
-              <span className="upiv3-payee-upi">{upiId}</span>
-            </div>
-            <span className="upiv3-verified">
-              <ShieldCheck size={11} /> Verified
-            </span>
-          </div>
-
           {/* QR shows immediately; a 2s loader blurs it while it "generates" */}
           <motion.div
             className="upiv3-qr"
@@ -6192,9 +6304,16 @@ export function UPIPaymentModal({
             {/* QR card */}
             <div className="upiv3-qr-card">
               <div className="upiv3-qr-top">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icon-192.png" alt="" className="upiv3-qr-logo" />
                 <div className="upiv3-qr-top-l">
                   <span className="upiv3-qr-payee-lbl">Paying to</span>
-                  <span className="upiv3-qr-payee">TheBookX</span>
+                  <span className="upiv3-qr-payee">
+                    TheBookX
+                    <span className="upiv3-qr-verified" title="Verified merchant">
+                      <BadgeCheck size={14} />
+                    </span>
+                  </span>
                 </div>
                 <span className="upiv3-qr-amt">
                   ₹{totalToPay}
@@ -6204,6 +6323,41 @@ export function UPIPaymentModal({
                 </span>
               </div>
 
+              {/* How to use the QR: scan from another phone, or upload it */}
+              <div className="upiv3-hints" aria-label="Two ways to pay with this QR">
+                <span className="upiv3-hint l">
+                  <span className="upiv3-hint-txt">
+                    <Smartphone size={15} />
+                    <span className="upiv3-hint-2l">
+                      <small>Scan from</small>
+                      <b>another phone</b>
+                    </span>
+                  </span>
+                  <svg className="upiv3-hint-arrow" viewBox="0 0 60 44" aria-hidden="true">
+                    <path d="M6 4 C 10 26, 26 36, 50 38" />
+                    <path d="M42 31 L 51 38 L 41 43" />
+                  </svg>
+                </span>
+                <span className="upiv3-hint r">
+                  <button
+                    type="button"
+                    className="upiv3-hint-txt upiv3-hint-dl"
+                    onClick={onDownloadQR}
+                    disabled={!qrUnlocked}
+                    data-no-busy
+                  >
+                    <span className="upiv3-hint-2l">
+                      <small>Or upload it in your app</small>
+                      <b>Download QR</b>
+                    </span>
+                    <Download size={15} />
+                  </button>
+                  <svg className="upiv3-hint-arrow" viewBox="0 0 60 44" aria-hidden="true">
+                    <path d="M54 4 C 50 26, 34 36, 10 38" />
+                    <path d="M18 31 L 9 38 L 19 43" />
+                  </svg>
+                </span>
+              </div>
               <div
                 className={`upiv3-qr-img${qrUnlocked ? " ready" : " loading"}`}
               >
@@ -6234,6 +6388,33 @@ export function UPIPaymentModal({
                   ? "Scan with any UPI app to pay"
                   : "Hang tight — preparing your QR"}
               </span>
+              <div className="upiv3-idrow">
+                <span className="upiv3-idrow-txt">
+                  <small>UPI ID</small>
+                  <b>{upiId}</b>
+                </span>
+                <button
+                  type="button"
+                  className="upiv3-icbtn"
+                  onClick={onCopyUpi}
+                  aria-label={upiCopied ? "UPI ID copied" : "Copy UPI ID"}
+                  title="Copy UPI ID"
+                  data-no-busy
+                >
+                  {upiCopied ? <Check size={16} strokeWidth={3} /> : <Copy size={16} />}
+                </button>
+                <button
+                  type="button"
+                  className="upiv3-icbtn"
+                  onClick={onDownloadQR}
+                  disabled={!qrUnlocked}
+                  aria-label="Save QR"
+                  title="Save QR"
+                  data-no-busy
+                >
+                  <Download size={16} />
+                </button>
+              </div>
 
               {/* Live status — flips to a reassuring "confirmed" once the
                   shopper taps Check again / I've paid */}
@@ -6251,16 +6432,6 @@ export function UPIPaymentModal({
             </div>
           </motion.div>
 
-          {/* Works with — real UPI apps */}
-          <div className="upiv3-apps" aria-hidden="true">
-            <span className="upiv3-apps-lbl">Works with</span>
-            <span className="upiv3-app-chip gpay">GPay</span>
-            <span className="upiv3-app-chip phonepe">PhonePe</span>
-            <span className="upiv3-app-chip paytm">Paytm</span>
-            <span className="upiv3-app-chip bhim">BHIM</span>
-            <span className="upiv3-apps-more">+ all UPI</span>
-          </div>
-
           {/* Trust footer */}
           <div className="upiv3-trust">
             <span>
@@ -6274,68 +6445,9 @@ export function UPIPaymentModal({
 
         {/* Fixed footer — UPI id / Save QR + verify actions + COD link */}
         <div className="upiv3-footer">
-          <div className="upiv3-id-row">
-            <button type="button" className="upiv3-link" onClick={onCopyUpi}>
-              {upiCopied ? <Check size={14} /> : <Copy size={14} />}
-              {upiCopied ? "Copied!" : "Copy UPI ID"}
-            </button>
-            <span className="upiv3-link-sep">|</span>
-            <button
-              type="button"
-              className="upiv3-link"
-              onClick={onDownloadQR}
-              disabled={!qrUnlocked}
-            >
-              <Download size={14} /> Save QR
-            </button>
-          </div>
 
-          <div className="upiv3-actions-row">
-            {upiPhase === "await" || upiPhase === "counting" ? (
-              // QR generating ("await") + the initial 30s counter ("counting")
-              // BOTH show the loader — no buttons yet. This stops the buttons
-              // from flashing for the first ~2s before the counter starts.
-              <span className="sec-big-btn width100 is-loading flex flex-row items-center justify-center gap-6">
-                <span className="upiv3-spin dark" />{" "}
-                {upiPhase === "await" ? (
-                  <>Preparing secure QR…</>
-                ) : (
-                  <>Verifying payment… {verifyCountdown}s</>
-                )}
-              </span>
-            ) : (
-              // After the counter: "Verify status" + WhatsApp, always both shown
-              // on the same row. While re-checking, a 30s countdown sits inside
-              // the Verify button; the WhatsApp button stays active throughout.
-              <div className="upiv3-verify-btns">
-                <button
-                  type="button"
-                  className="sec-big-btn flex flex-row items-center justify-center gap-6"
-                  onClick={onVerifyStatus}
-                  disabled={upiPhase === "rechecking"}
-                >
-                  {upiPhase === "rechecking" ? (
-                    <>
-                      <span className="upiv3-spin dark" /> Checking…{" "}
-                      {verifyCountdown}s
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck size={16} /> Verify status
-                    </>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  className="pri-big-btn upiv3-wa-verify flex flex-row items-center justify-center gap-6"
-                  onClick={onWhatsAppFallback}
-                >
-                  <FaWhatsapp size={16} /> Verify via WhatsApp
-                </button>
-              </div>
-            )}
-          </div>
 
+          {/* Primary: open the UPI app */}
           {qrUnlocked && (
             <UpiAppLaunchRow
               upiId={upiId}
@@ -6346,15 +6458,47 @@ export function UPIPaymentModal({
             />
           )}
 
-          {onSwitchToCOD && (
-            <button
-              type="button"
-              className="upiv3-cod-link"
-              onClick={onSwitchToCOD}
-            >
-              Can&apos;t pay online? Continue with Cash on Delivery
+          {/* Secondary: one verify button (loader while preparing/checking) */}
+          <div className="upiv3-actions-row">
+            {upiPhase === "await" || upiPhase === "counting" ? (
+              <span className="upiv3-verify is-loading">
+                <span className="upiv3-spin dark" />
+                {upiPhase === "await" ? "Preparing secure QR…" : `Checking for your payment… ${verifyCountdown}s`}
+              </span>
+            ) : (
+              <button
+                type="button"
+                className="upiv3-verify"
+                onClick={onVerifyStatus}
+                disabled={upiPhase === "rechecking"}
+              >
+                {upiPhase === "rechecking" ? (
+                  <>
+                    <span className="upiv3-spin dark" /> Checking… {verifyCountdown}s
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck size={16} /> I&apos;ve paid, verify
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
+          {/* Quiet links */}
+          <div className="upiv3-links">
+            <button type="button" onClick={onWhatsAppFallback}>
+              <FaWhatsapp size={13} /> Verify on WhatsApp
             </button>
-          )}
+            {onSwitchToCOD && (
+              <>
+                <span aria-hidden="true">·</span>
+                <button type="button" onClick={onSwitchToCOD}>
+                  Pay on delivery instead
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </motion.div>
     </motion.div>

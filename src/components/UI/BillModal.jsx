@@ -42,7 +42,22 @@ export default function BillModal({
   quickReadItems = [],
   quickReadUnitPrice = 0,
   quickReadTotal = 0,
+  // Small-gap wallet top-up (paid now, credited to the wallet for next order).
+  walletTopUp = 0,
+  // Exact bill from checkout (buildBillSnapshot). When present it drives every
+  // line and the total, so View bill always matches the checkout footer.
+  snapshot = null,
 }) {
+  const S = snapshot;
+  if (S) {
+    offerDiscount = S.offer || 0;
+    walletApplied = S.wallet || 0;
+    isFasterDelivery = !!S.faster;
+    giftWrapSelected = (S.gift || 0) > 0;
+    giftWrapCharge = S.gift || 0;
+    walletTopUp = S.walletTopUp || 0;
+    hideDeliveryCharges = false;
+  }
   useTrackView(
     EVENTS.BILL_MODAL_VIEWED,
     {
@@ -94,7 +109,8 @@ export default function BillModal({
   // Only add gift wrap when it's actually selected.
   const qrTotal = quickReadTotal || 0;
   const gwCharge = giftWrapSelected ? giftWrapCharge : 0;
-  const finalTotal =
+  const topUp = Number(walletTopUp) || 0;
+  let finalTotal = topUp +
     (hideDeliveryCharges
       ? finalPayable + gwCharge
       : totalWithDelivery !== null
@@ -108,11 +124,18 @@ export default function BillModal({
     totalOriginal > 0 ? Math.round((totalSaving / totalOriginal) * 100) : 0;
   // Split delivery: Handling & Care (big carts) and the Faster priority fee
   // are shown as their own lines, never lumped together.
-  const handlingAmt = isHandling ? standardDeliveryCharge : 0;
-  const stdDeliveryAmt = isHandling ? 0 : standardDeliveryCharge;
-  const fasterExtra = isFasterDelivery
+  let handlingAmt = isHandling ? standardDeliveryCharge : 0;
+  let stdDeliveryAmt = isHandling ? 0 : standardDeliveryCharge;
+  let fasterExtra = isFasterDelivery
     ? Math.max(0, fasterDeliveryCharge - standardDeliveryCharge)
     : 0;
+
+  if (S) {
+    handlingAmt = S.handling || 0;
+    stdDeliveryAmt = S.deliveryStd || 0;
+    fasterExtra = S.priority || 0;
+    finalTotal = S.total || 0;
+  }
 
   return createPortal(
     <div
@@ -176,7 +199,13 @@ export default function BillModal({
               <span className="green">− ₹{offerDiscount}</span>
             </div>
           )}
-          {unlockedOffer && onApplyOffer && (
+          {S?.couponDiscount > 0 && (
+            <div className="bill-row">
+              <span>Coupon{S.coupon ? ` (${S.coupon})` : ""}</span>
+              <span className="green">− ₹{S.couponDiscount}</span>
+            </div>
+          )}
+          {!S && unlockedOffer && onApplyOffer && (
             <button
               type="button"
               className="bm2-apply"
@@ -268,10 +297,28 @@ export default function BillModal({
               )}
             </>
           )}
+          {topUp > 0 && (
+            <div className="bill-row">
+              <span>Wallet top-up (back in your wallet for next order)</span>
+              <span>₹{topUp}</span>
+            </div>
+          )}
           {giftWrapSelected && giftWrapCharge > 0 && (
             <div className="bill-row">
               <span>Gift wrap</span>
               <span className="orange">+ ₹{giftWrapCharge}</span>
+            </div>
+          )}
+          {S?.bookmarkCharge > 0 && (
+            <div className="bill-row">
+              <span>Extra bookmarks</span>
+              <span className="orange">+ ₹{S.bookmarkCharge}</span>
+            </div>
+          )}
+          {S?.codFee > 0 && (
+            <div className="bill-row">
+              <span>Cash on Delivery fee</span>
+              <span className="orange">+ ₹{S.codFee}</span>
             </div>
           )}
           {quickReadItems.length > 0 && (

@@ -47,6 +47,7 @@ const SHEET_HEADERS = {
   walletApplied: "Wallet Applied",
   bookmarkQtyCol: "Bookmark Qty",
   bookmarkChargeCol: "Bookmark Charge",
+  walletTopUpCol: "Wallet Top-up",
   quickReadsTotalCol: "QuickReads Total",
   codFeeCol: "COD Fee",
   handlingCareCol: "Handling & Care",
@@ -385,6 +386,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     // Chargeable bookmark add-on (no dedicated sheet column — noted in offer field).
     bookmarkSelected = false,
     bookmarkCharge: bookmarkChargeIn = 0,
+    walletTopUp: walletTopUpIn = 0,
     // How many bookmarks the customer chose (free tier + paid extras).
     bookmarkQty = 0,
     // How many of those bookmarks fell inside the free tier (rest are charged).
@@ -571,6 +573,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     walletApplied: n0(walletUsed),
     bookmarkQtyCol: n0(bookmarkQty),
     bookmarkChargeCol: n0(bookmarkChargeIn),
+    walletTopUpCol: n0(walletTopUpIn),
     quickReadsTotalCol: quickReadsTotalVal,
     codFeeCol: codFeeVal,
     handlingCareCol: handlingCareVal,

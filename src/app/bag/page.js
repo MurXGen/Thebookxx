@@ -11,6 +11,7 @@ import BagQuickAdd from "@/components/BagQuickAdd";
 import { fetchProStatus, cachedProStatus } from "@/utils/proPlan";
 import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
+import { SavedBanner, TopUpCard, BillCard, PolicyNote } from "@/components/BagSections";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import OrderSuccessCard from "@/components/UI/OrderSuccessCard";
 import BillModal from "@/components/UI/BillModal";
@@ -111,6 +112,43 @@ function BagContent() {
   const [showQrCheckout, setShowQrCheckout] = useState(false);
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  // Small-gap wallet top-up (Instamart-style): remembered for this visit.
+  const [topUpOn, setTopUpOn] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      try {
+        setTopUpOn(sessionStorage.getItem("tbx_topup_on") === "1");
+      } catch {
+        /* ignore */
+      }
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
+  const [deliveryEta, setDeliveryEta] = useState("Delivery in 4–9 days");
+  useEffect(() => {
+    const t = setTimeout(() => {
+      try {
+        const pin = String(localStorage.getItem("delivery_pincode") || "");
+        const city = localStorage.getItem("delivery_city") || "";
+        if (pin.length === 6) {
+          const mh = /^4[0-4]/.test(pin) && !pin.startsWith("403");
+          setDeliveryEta(`${mh ? "1–5" : "4–9"} days to ${city || pin}`);
+        }
+      } catch {
+        /* ignore */
+      }
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
+  const toggleTopUp = () =>
+    setTopUpOn((v) => {
+      try {
+        sessionStorage.setItem("tbx_topup_on", v ? "0" : "1");
+      } catch {
+        /* ignore */
+      }
+      return !v;
+    });
   // Pending checkouts — carts the shopper started but didn't finish paying.
   const [pending, setPending] = useState([]);
   const pendingIdRef = useRef(null);
@@ -123,6 +161,8 @@ function BagContent() {
   // Mirror the add-on choices made inside the Address modal so the shared
   // Bill modal shows the same delivery + gift-wrap charges.
   const [billFaster, setBillFaster] = useState(false);
+  // Checkout's exact bill when View bill is opened from inside checkout.
+  const [billSnap, setBillSnap] = useState(null);
   const [billGiftWrap, setBillGiftWrap] = useState(false);
   const [successCtx, setSuccessCtx] = useState(null); // interactive success modal
   const [upsellAccepted, setUpsellAccepted] = useState(false);
@@ -612,17 +652,41 @@ function BagContent() {
   }
 
   const finalPayable = totalDiscounted - offerDiscount;
+
+  // ── Small-gap wallet top-up ────────────────────────────────────────────
+  // Cart a little short of the checkout minimum or of free delivery → the
+  // shopper can pay that small gap as wallet credit (used on their next order)
+  // instead of a delivery fee. Shown only when the gap is ≤ ₹TOPUP_MAX.
+  const TOPUP_MAX = 50;
+  const FREE_DELIVERY_AT = hasOneRupeeItem ? 399 : 199;
+  const baseCheckoutValue = totalDiscounted + (giftWrap ? GIFT_WRAP_CHARGE : 0);
+  const baseDeliveryFee = getDeliveryCharge(totalDiscounted, false, hasOneRupeeItem);
+  let topUpGap = 0;
+  let topUpReason = null;
+  if (cartBooks.length > 0) {
+    if (baseCheckoutValue < MIN_CHECKOUT_AMOUNT) {
+      topUpGap = MIN_CHECKOUT_AMOUNT - baseCheckoutValue;
+      topUpReason = "minimum";
+    } else if (baseDeliveryFee > 0 && totalDiscounted < FREE_DELIVERY_AT) {
+      topUpGap = FREE_DELIVERY_AT - totalDiscounted;
+      topUpReason = "delivery";
+    }
+  }
+  const topUpOffer = topUpGap > 0 && topUpGap <= TOPUP_MAX ? topUpGap : 0;
+  const walletTopUp = topUpOn && topUpOffer ? topUpOffer : 0;
+  const totalSaved = Math.max(0, totalOriginal - totalDiscounted) + offerDiscount;
   // Gift wrap (+₹25) counts toward the checkout minimum, so a ₹149 cart can
   // reach the ₹199 minimum by opting into gift wrapping.
-  const checkoutValue = totalDiscounted + (giftWrap ? GIFT_WRAP_CHARGE : 0);
+  const checkoutValue = baseCheckoutValue + walletTopUp;
   const canCheckout = checkoutValue >= MIN_CHECKOUT_AMOUNT;
   const amountNeededToCheckout = Math.max(
     0,
     MIN_CHECKOUT_AMOUNT - checkoutValue,
   );
 
+  // The top-up counts toward free delivery.
   const standardDeliveryCharge = getDeliveryCharge(
-    totalDiscounted,
+    totalDiscounted + walletTopUp,
     false,
     hasOneRupeeItem,
   );
@@ -633,7 +697,7 @@ function BagContent() {
   // Gift wrap add-on price by order value: +₹15 up to ₹500, +₹35 above.
   const giftWrapChargeEff = totalDiscounted > 500 ? 35 : 15;
   const fasterDeliveryCharge = getDeliveryCharge(
-    totalDiscounted,
+    totalDiscounted + walletTopUp,
     true,
     hasOneRupeeItem,
   );
@@ -656,7 +720,7 @@ function BagContent() {
     );
   };
 
-  const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
+  const totalWithStandardDelivery = finalPayable + standardDeliveryCharge + walletTopUp;
 
   // QuickReads ride on the same physical-book bill (one combined checkout).
   const hasBundledQr = cartBooks.length > 0 && qrItems.length > 0;
@@ -1401,14 +1465,24 @@ ${itemsBlock}${qrLines}
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
         <>
+          {cartBooks.length > 0 && <SavedBanner amount={totalSaved} />}
           {cartBooks.length > 0 && (
-            <CartOfferStrip discountedAmount={totalDiscounted} />
+            // The wallet top-up counts toward free delivery, so the strip
+            // reflects it too.
+            <CartOfferStrip discountedAmount={totalDiscounted + walletTopUp} />
           )}
 
           {/* Bookmark achievements (2 → 3 → 4 free, Mystery Box at ₹3000) */}
           {cartBooks.length > 0 && <OrderRewards amount={totalDiscounted} />}
 
-          <div className="cart-items-panel">
+          <div className="cart-items-panel bg-cart">
+            <div className="bg-cart-head">
+              <b>{deliveryEta}</b>
+              <span>
+                {cartBooks.reduce((n, b) => n + b.qty, 0) + qrItems.length} item
+                {cartBooks.reduce((n, b) => n + b.qty, 0) + qrItems.length === 1 ? "" : "s"}
+              </span>
+            </div>
             <div className="cart-items-list">
               {cartBooks.map((book) => (
                 <CartItemRow key={book.id} book={book} />
@@ -1482,7 +1556,24 @@ ${itemsBlock}${qrLines}
                 </div>
               ))}
             </div>
+            <div className="bg-cart-foot">
+              <span>Missed a book?</span>
+              <Link href="/books">Add more</Link>
+              <button type="button" onClick={() => setShowRecommendationModal(true)} data-no-busy>
+                <Sparkle size={12} /> Suggest me
+              </button>
+            </div>
           </div>
+
+          {cartBooks.length > 0 && (
+            <TopUpCard
+              gap={topUpOffer}
+              reason={topUpReason}
+              deliveryFee={baseDeliveryFee}
+              on={topUpOn && topUpOffer > 0}
+              onToggle={toggleTopUp}
+            />
+          )}
 
           {/* Pending checkouts — carts started but not paid for. Tap to resume. */}
           {pending.length > 0 && (
@@ -1556,6 +1647,23 @@ ${itemsBlock}${qrLines}
             <BagQuickAdd cartBooks={cartBooks} amount={totalDiscounted} />
           )}
 
+          {cartBooks.length > 0 && (
+            <BillCard
+              totalOriginal={totalOriginal}
+              totalDiscounted={totalDiscounted}
+              offerDiscount={offerDiscount}
+              offerLabel={offerLabel}
+              deliveryFee={standardDeliveryCharge}
+              deliveryFeeWithout={baseDeliveryFee}
+              freeAt={FREE_DELIVERY_AT}
+              topUp={walletTopUp}
+              quickReads={bundledQrTotal}
+              toPay={totalWithStandardDelivery + bundledQrTotal}
+              onViewBill={() => setShowBill(true)}
+            />
+          )}
+          {cartBooks.length > 0 && <PolicyNote />}
+
           {recommendedBooks.length > 0 && (
             <div className="cart-sep">
               <span className="cart-sep-line" />
@@ -1583,56 +1691,27 @@ ${itemsBlock}${qrLines}
 
           {cartBooks.length > 0 ? (
             <div
-              className={`fixed-bill-bar flex flex-col${showRecommendationModal ? " reco-open" : ""}`}
+              className={`fixed-bill-bar bg-paybar${showRecommendationModal ? " reco-open" : ""}`}
             >
-              <div className="flex flex-row justify-between width100 items-center">
-                <div className="bill-left">
-                  <span className="font-12 dark-50">Total</span>
-                  <div className="flex flex-col">
-                    <div className="flex flex-row gap-8 items-center">
-                      <span className="font-16 weight-600 discounted">
-                        ₹{finalPayable + bundledQrTotal}
-                      </span>
-                      {offerDiscount > 0 && (
-                        <span className="strike dark-50 original">
-                          ₹{totalDiscounted + bundledQrTotal}
-                        </span>
-                      )}
-                    </div>
-
-                    {appliedOffer && (
-                      <span className="font-14 green weight-600">
-                        {offerLabel} applied
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex flex-row items-center gap-12">
-                  <span
-                    type="button"
-                    onClick={() => setShowRecommendationModal(true)}
-                    className="tertiary-btn flex flex-row gap-4 items-center"
-                    aria-label="Get book suggestions"
-                  >
-                    <Sparkle size={12} />
-                    Suggest Me
-                  </span>
-                  <button
-                    type="button"
-                    className="pri-big-btn"
-                    onClick={handleConfirmOrderClick}
-                    aria-disabled={isCheckoutDisabled}
-                    style={
-                      isCheckoutDisabled
-                        ? { opacity: 0.6, cursor: "not-allowed" }
-                        : undefined
-                    }
-                  >
-                    {isShortening ? "Preparing…" : "Confirm Order"}
-                  </button>
-                </div>
-              </div>
+              <button type="button" className="bg-paybar-left" onClick={() => setShowBill(true)} data-no-busy>
+                <small>
+                  To pay{totalSaved > 0 ? ` · ₹${totalSaved} saved` : ""}
+                </small>
+                <b>₹{totalWithStandardDelivery + bundledQrTotal}</b>
+                <em>View bill ▴</em>
+              </button>
+              <button
+                type="button"
+                className="pri-mid-btn bg-paybar-btn"
+                onClick={handleConfirmOrderClick}
+                aria-disabled={isCheckoutDisabled}
+              >
+                {isShortening
+                  ? "Preparing…"
+                  : canCheckout
+                    ? `Proceed to pay ₹${totalWithStandardDelivery + bundledQrTotal}`
+                    : `Add ₹${amountNeededToCheckout} more`}
+              </button>
             </div>
           ) : (
             <div
@@ -1852,6 +1931,7 @@ ${itemsBlock}${qrLines}
         fasterDeliveryLabel={fasterDeliveryLabel}
         fasterUnavailable={fasterUnavailable}
         totalWithStandardDelivery={totalWithStandardDelivery}
+        walletTopUp={walletTopUp}
         giftWrapCharge={giftWrapChargeEff}
         giftWrapSelected={false}
         handleCODCheckout={handleCODCheckout}
@@ -1869,14 +1949,22 @@ ${itemsBlock}${qrLines}
         quickReadItems={hasBundledQr ? qrItems : []}
         quickReadUnitPrice={QUICKREAD_PRICE}
         quickReadTotal={bundledQrTotal}
-        onViewBill={() => setShowBill(true)}
+        onViewBill={(snap) => {
+          setBillSnap(snap || null);
+          setShowBill(true);
+        }}
         onDeliveryChoiceChange={setBillFaster}
         onGiftWrapChange={setBillGiftWrap}
       />
 
       <BillModal
         open={showBill}
-        onClose={() => setShowBill(false)}
+        onClose={() => {
+          setShowBill(false);
+          setBillSnap(null);
+        }}
+        snapshot={billSnap}
+        walletTopUp={walletTopUp}
         totalOriginal={totalOriginal}
         totalDiscounted={totalDiscounted}
         offerDiscount={offerDiscount}
@@ -1890,9 +1978,9 @@ ${itemsBlock}${qrLines}
         fasterUnavailable={fasterUnavailable}
         totalWithStandardDelivery={totalWithStandardDelivery}
         cartBooks={cartBooks}
-        isFasterDelivery={billFaster}
+        isFasterDelivery={false}
         giftWrapCharge={giftWrapChargeEff}
-        giftWrapSelected={billGiftWrap}
+        giftWrapSelected={false}
         hideDeliveryCharges={needsShippingNudge}
         quickReadItems={hasBundledQr ? qrItems : []}
         quickReadUnitPrice={QUICKREAD_PRICE}

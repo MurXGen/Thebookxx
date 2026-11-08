@@ -88,6 +88,7 @@ export default function UpiAppLaunchRow({
       onClose={() => setPayOpen(false)}
       onLaunch={() => launchUpiApp(activeApp, upiId)}
       onWhatsApp={onWhatsApp}
+      upiId={upiId}
     />
   );
 

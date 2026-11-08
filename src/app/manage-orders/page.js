@@ -1,7 +1,7 @@
 // app/manage-orders/page.js
 "use client";
 
-import TimersPanel from "@/components/manage-orders/TimersPanel";
+import VisitorsPanel from "@/components/manage-orders/VisitorsPanel";
 import {
   useState,
   useEffect,
@@ -1423,7 +1423,7 @@ const SECTION_TABS = [
   { key: "book", label: "Dispatch", short: "Dispatch", Icon: Package },
   { key: "users", label: "Users", short: "Users", Icon: Users },
   { key: "track", label: "Track orders", short: "Track", Icon: Radar },
-  { key: "timers", label: "Offer timers", short: "Timers", Icon: Timer },
+  { key: "timers", label: "Visitors", short: "Visitors", Icon: Timer },
 ];
 
 // Custom confetti — small coloured paper bits. `once` makes a single full-
@@ -17615,8 +17615,8 @@ export default function ManageOrdersPage() {
           </div>
         )}
 
-        {/* ===== Offer timers (2-hour device offer) ===== */}
-        {activeTab === "timers" && <TimersPanel />}
+        {/* ===== Visitors: devices joined across tabs + offer timers ===== */}
+        {activeTab === "timers" && <VisitorsPanel />}
 
         {/* ===== Track orders ===== */}
         {activeTab === "track" && (

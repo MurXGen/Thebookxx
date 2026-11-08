@@ -72,6 +72,9 @@ export default function TimersPanel() {
   const [busy, setBusy] = useState(""); // deviceId being saved
   const [custom, setCustom] = useState({}); // deviceId → datetime-local value
   const [toast, setToast] = useState("");
+  const [needCode, setNeedCode] = useState(false);
+  const [pending, setPending] = useState(null); // { deviceId, action, endsAt, what }
+  const [codeInput, setCodeInput] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -81,6 +84,13 @@ export default function TimersPanel() {
         headers: { "x-admin-code": adminCode() },
         cache: "no-store",
       });
+      if (r.status === 401) {
+        // Console was unlocked before the code was stored (old "Remember me").
+        setNeedCode(true);
+        setRows([]);
+        return;
+      }
+      setNeedCode(false);
       const d = await r.json();
       if (!d.success) setErr(d.error || "Could not load timers");
       setRows(d.rows || []);
@@ -105,17 +115,29 @@ export default function TimersPanel() {
     setTimeout(() => setToast(""), 2600);
   };
 
-  const save = async (r, action, endsAt, label) => {
+  // Step 1: tap an action → the card shows an inline confirm (native confirm()
+  // dialogs are blocked in some in-app browsers, so they're not used).
+  const save = (r, action, endsAt, label) => {
     const what =
       action === "end-now"
-        ? `End the offer now for ${shortOf(r.deviceId)}? Their prices go up by ₹20.`
-        : `Set the offer for ${shortOf(r.deviceId)} to end ${new Date(endsAt).toLocaleString("en-IN", {
+        ? `End the offer now? Prices go up by ₹20 for ${shortOf(r.deviceId)}.`
+        : `Offer ends ${new Date(endsAt).toLocaleString("en-IN", {
             day: "numeric",
             month: "short",
             hour: "numeric",
             minute: "2-digit",
-          })}? (${label})`;
-    if (!window.confirm(what)) return;
+          })} (${label})?`;
+    setPending({ deviceId: r.deviceId, action, endsAt, what });
+  };
+
+  // Step 2: confirmed → write to the sheet.
+  const doSave = async () => {
+    const p = pending;
+    if (!p) return;
+    setPending(null);
+    const r = rows.find((x) => x.deviceId === p.deviceId);
+    if (!r) return;
+    const { action, endsAt } = p;
     setBusy(r.deviceId);
     try {
       const res = await fetch("/api/admin/timers", {
@@ -123,6 +145,11 @@ export default function TimersPanel() {
         headers: { "Content-Type": "application/json", "x-admin-code": adminCode() },
         body: JSON.stringify({ action, deviceId: r.deviceId, endsAt }),
       });
+      if (res.status === 401) {
+        setNeedCode(true);
+        flash("Enter your admin code first");
+        return;
+      }
       const d = await res.json();
       if (!d.success) {
         flash(d.error || "Couldn't save");
@@ -185,16 +212,6 @@ export default function TimersPanel() {
 
   return (
     <div className="tmr">
-      <div className="tmr-head">
-        <div>
-          <h2 className="tmr-title">Offer timers</h2>
-          <p className="tmr-sub">2-hour offer per device · after it ends, books cost ₹20 more on that device</p>
-        </div>
-        <button type="button" className="tmr-refresh" onClick={load} disabled={loading} data-no-busy>
-          {loading ? <Loader2 size={15} className="tmr-spin" /> : <RefreshCw size={15} />} Refresh
-        </button>
-      </div>
-
       <div className="tmr-stats">
         <div className={`tmr-stat${counts.waiting ? " hot" : ""}`}>
           <b>{counts.waiting}</b>
@@ -247,11 +264,46 @@ export default function TimersPanel() {
             </button>
           )}
         </label>
+        <button type="button" className="tmr-refresh" onClick={load} disabled={loading} data-no-busy>
+          {loading ? <Loader2 size={15} className="tmr-spin" /> : <RefreshCw size={15} />} Refresh
+        </button>
       </div>
+
+      {needCode && (
+        <form
+          className="tmr-code"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const c = codeInput.trim();
+            if (!c) return;
+            try {
+              localStorage.setItem(ADMIN_CODE_KEY, c);
+              sessionStorage.setItem(ADMIN_CODE_KEY, c);
+            } catch {
+              /* ignore */
+            }
+            setCodeInput("");
+            load();
+          }}
+        >
+          <span>Enter your admin code once to manage offer timers on this device.</span>
+          <input
+            type="password"
+            value={codeInput}
+            onChange={(e) => setCodeInput(e.target.value)}
+            placeholder="Admin code"
+            autoComplete="current-password"
+            aria-label="Admin code"
+          />
+          <button type="submit" data-no-busy>
+            Unlock
+          </button>
+        </form>
+      )}
 
       {err && <p className="tmr-err">{err}. Check that the Timers tab exists with the header row.</p>}
 
-      {!loading && !err && list.length === 0 && (
+      {!loading && !err && !needCode && list.length === 0 && (
         <p className="tmr-empty">
           {filter === "waiting" ? "No one is waiting for an extension." : "Nothing here yet."}
         </p>
@@ -336,6 +388,17 @@ export default function TimersPanel() {
                 )}
                 {isBusy && <Loader2 size={15} className="tmr-spin" aria-label="Saving" />}
               </div>
+              {pending?.deviceId === r.deviceId && (
+                <div className="tmr-confirm" role="alertdialog" aria-label="Confirm change">
+                  <span>{pending.what}</span>
+                  <button type="button" className="yes" onClick={doSave} data-no-busy>
+                    Confirm
+                  </button>
+                  <button type="button" onClick={() => setPending(null)} data-no-busy>
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}

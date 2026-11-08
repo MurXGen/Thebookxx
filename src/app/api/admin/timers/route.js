@@ -8,6 +8,7 @@
 // The shopper's site re-reads "Ends At" on its next page load / tab focus.
 
 import { isValidAdminCode } from "@/lib/adminCode";
+import { parseSheetTime } from "@/lib/sheetTime";
 import { gvizQuery, tableToObjects, timerUpdate, timerRowByDevice, TIMERS_SHEET_NAME } from "@/lib/serverSheets";
 
 const fmtTs = (d) => {
@@ -26,21 +27,6 @@ const fmtTs = (d) => {
   return `${g("day")}/${g("month")}/${g("year")} ${hh}:${g("minute")}:${g("second")}`;
 };
 
-// Same parser as /api/timers: "DD/MM/YYYY HH:MM[:SS]" IST or gviz Date(...).
-function parseSheetTime(v) {
-  const str = String(v ?? "").trim();
-  let m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
-  if (m) {
-    const [, d, mo, y, h = "23", mi = "59", se = "0"] = m;
-    return Date.UTC(+y, +mo - 1, +d, +h, +mi, +se) - 330 * 60 * 1000;
-  }
-  m = str.match(/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+)(?:,(\d+))?)?\)/);
-  if (m) {
-    const [, y, mo, d, h = "0", mi = "0", se = "0"] = m;
-    return Date.UTC(+y, +mo, +d, +h, +mi, +se) - 330 * 60 * 1000;
-  }
-  return null;
-}
 
 const deny = () => Response.json({ success: false, error: "unauthorized" }, { status: 401 });
 const authed = (req) => isValidAdminCode(req.headers.get("x-admin-code"));
@@ -100,7 +86,9 @@ export async function POST(request) {
     const data = { "Ends At": fmtTs(new Date(end)) };
     if (action === "end-now") data.Status = "Expired";
     else if (end > Date.now() && String(row.Status || "") === "Expired") data.Status = "Extended";
-    await timerUpdate(deviceId, data);
+    const res = await timerUpdate(deviceId, data);
+    if (!res?.success)
+      return Response.json({ success: false, error: res?.error || "The sheet didn't accept the update" });
     return Response.json({ success: true, endsAt: end, endsAtText: data["Ends At"], status: data.Status || row.Status });
   } catch {
     return Response.json({ success: false, error: "Could not update the sheet" }, { status: 200 });

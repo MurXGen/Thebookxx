@@ -52,6 +52,7 @@ import StoreReviews from "./StoreReviews";
 import LiveOrdersStrip from "./LiveOrdersStrip";
 import CartConfetti from "./UI/Confetti";
 import { shareContent } from "./UI/ShareSheet";
+import { startOffer, PRICE_RISE, requestExtension } from "@/lib/offerTimer";
 import { isMaharashtraPin, openPincodeSheet } from "./DeliveryCheckBar";
 import { BASE_FREE_BOOKMARKS } from "@/utils/orderRewards";
 import {
@@ -212,9 +213,9 @@ function FrequentlyBought({ book, companion, cart, onAdd }) {
   );
 }
 
-// Counts down to a REAL offer end (book.offerEndsAt or SALE_ENDS_AT) and hides
-// itself once it passes. Never resets, so the deadline stays truthful.
-function OfferTimer({ endsAt, compact = false }) {
+// "Offer price ends in 01h 58m 16s, then ₹149" + "Extend offer for me".
+// Counts down to this device's real end (from the Timers sheet) and hides at 0.
+function OfferTimer({ endsAt, after = null, compact = false }) {
   const [left, setLeft] = useState(null);
   useEffect(() => {
     const tick = () => setLeft(Math.max(0, endsAt - Date.now()));
@@ -234,19 +235,46 @@ function OfferTimer({ endsAt, compact = false }) {
     [Math.floor((s % 3600) / 60), "m"],
     [s % 60, "s"],
   ];
+  const hms = parts.map(([v]) => String(v).padStart(2, "0")).join(":");
   return (
-    <div className={`pdp-timer${compact ? " compact" : ""}`} role="timer" aria-live="off">
-      <span className="pdp-timer-lbl">
-        <Clock size={15} /> Offer ends in
-      </span>
-      <span className="pdp-timer-clock">
-        {parts.map(([v, u]) => (
-          <span key={u} className="pdp-timer-seg">
-            <b>{String(v).padStart(2, "0")}</b>
-            <small>{u}</small>
-          </span>
-        ))}
-      </span>
+    <div className={`pdp-ot${compact ? " compact" : ""}`} role="timer" aria-live="off">
+      <p className="pdp-ot-main">
+        <Clock size={13} className="pdp-ot-ic" aria-hidden="true" />
+        <span>Offer ends</span>
+        <b className="pdp-ot-time" aria-label={`in ${hms}`}>
+          {/* Each digit re-mounts when it changes, so it slides in; colons stay put. */}
+          {hms.split("").map((ch, i) =>
+            ch === ":" ? (
+              <span key={`c${i}`} className="pdp-ot-colon" aria-hidden="true">:</span>
+            ) : (
+              <span key={`${i}-${ch}`} className="pdp-ot-dig" aria-hidden="true">
+                {ch}
+              </span>
+            ),
+          )}
+        </b>
+        {after && <span className="pdp-ot-then">· then ₹{after}</span>}
+        {after && (
+          <button type="button" className="pdp-ot-link" onClick={requestExtension} data-no-busy>
+            Extend
+          </button>
+        )}
+      </p>
+    </div>
+  );
+}
+
+// After the device's offer ended: same band, with the extend link.
+function OfferEnded({ compact = false }) {
+  return (
+    <div className={`pdp-ot ended${compact ? " compact" : ""}`}>
+      <p className="pdp-ot-main">
+        <Clock size={14} className="pdp-ot-ic" aria-hidden="true" />
+        <span>Offer price ended</span>
+        <button type="button" className="pdp-ot-link" onClick={requestExtension} data-no-busy>
+          Extend offer
+        </button>
+      </p>
     </div>
   );
 }
@@ -300,7 +328,10 @@ function useDeliveryPin() {
   return pin;
 }
 
-export default function BookDetailsModal({ book }) {
+export default function BookDetailsModal({ book: bookProp }) {
+  // Use the shared client copy of this book (the server prop is a serialized
+  // snapshot), so the device's post-offer price applies here too.
+  const book = books.find((b) => b.id === bookProp.id) || bookProp;
   const {
     cart,
     addToCart,
@@ -399,7 +430,20 @@ export default function BookDetailsModal({ book }) {
     return d;
   }, [hasRealReviews, reviews, reviewCount]);
 
-  const offerEnd = offerEndFor(book);
+  // Device offer: starts on the first book-page visit, lasts 2 hours. A real
+  // site-wide sale end (SALE_ENDS_AT / book.offerEndsAt) is used if one is set.
+  const [deviceEnd, setDeviceEnd] = useState(0);
+  const [deviceExpired, setDeviceExpired] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const s = startOffer(book);
+      setDeviceEnd(s.started && !s.expired ? s.endsAt : 0);
+      setDeviceExpired(s.started && s.expired);
+    }, 0);
+    return () => clearTimeout(t);
+  }, [book]);
+  const offerEnd = offerEndFor(book) || deviceEnd || null;
+  const priceAfter = deviceEnd && price > 1 ? Math.min(price + PRICE_RISE, mrp || Infinity) : null;
   const mh = pin.code && isMaharashtraPin(pin.code);
   const freeDelivery = price >= FREE_DELIVERY_MIN;
 
@@ -679,7 +723,11 @@ export default function BookDetailsModal({ book }) {
               </div>
               <p className="pdp-price-mrp">Inclusive of all taxes</p>
 
-              {offerEnd && <OfferTimer endsAt={offerEnd} />}
+              {offerEnd ? (
+                <OfferTimer endsAt={offerEnd} after={priceAfter} />
+              ) : (
+                deviceExpired && price > 1 && <OfferEnded />
+              )}
 
               {pct > 0 && (
                 <div className="pdp-bd2" aria-label={`MRP ₹${mrp}, discount ₹${save}, you pay ₹${price}`}>
@@ -1133,7 +1181,9 @@ export default function BookDetailsModal({ book }) {
       <div className="bd-sticky-bottom pdp-bar">
         <CartConfetti trigger={confetti} />
         {offerEnd ? (
-          <OfferTimer endsAt={offerEnd} compact />
+          <OfferTimer endsAt={offerEnd} after={priceAfter} compact />
+        ) : deviceExpired && price > 1 ? (
+          <OfferEnded compact />
         ) : (
           <div className="bd-sticky-orders">
             <LiveOrdersStrip />

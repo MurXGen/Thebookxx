@@ -9,6 +9,7 @@ import {
   useRef,
 } from "react";
 import { books } from "@/utils/book";
+import { priceMode } from "@/lib/offerTimer";
 import {
   getOneRupeeOfferData,
   permanentlyUnlockOffer,
@@ -111,7 +112,15 @@ export function StoreProvider({ children }) {
   // setState. The old effect caused a SECOND full re-render of every cart
   // consumer on each add-to-cart (setCart → render, then setCartTotal → render
   // again), which is what made adding feel laggy.
-  const cartTotal = useMemo(() => calculateCartTotal(cart), [cart]);
+  // Bumped when the post-offer price rise is applied (see OfferPricing).
+  const [priceVersion, setPriceVersion] = useState(0);
+  useEffect(() => {
+    const bump = () => setPriceVersion((n) => n + 1);
+    window.addEventListener("tbx:prices-changed", bump);
+    return () => window.removeEventListener("tbx:prices-changed", bump);
+  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const cartTotal = useMemo(() => calculateCartTotal(cart), [cart, priceVersion]);
 
   // Load one rupee offer data on mount
   useEffect(() => {
@@ -301,6 +310,15 @@ export function StoreProvider({ children }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "convert", deviceId, orderId, phone: digits }),
+          keepalive: true,
+        }).catch(() => {});
+      // Same device in the Timers tab → Converted = Yes, with the price it paid
+      // (offer price, or after the +₹20 rise).
+      if (deviceId)
+        fetch("/api/timers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "convert", deviceId, orderId, phone: digits, priceMode: priceMode() }),
           keepalive: true,
         }).catch(() => {});
     } catch {}

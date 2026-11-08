@@ -83,6 +83,7 @@ export const ABANDONED_CART_SHEET_NAME =
 // Pincodes entered in the delivery stripe (one row per device).
 export const PINCODES_SHEET_NAME =
   process.env.PINCODES_SHEET_NAME || "Pincodes";
+export const TIMERS_SHEET_NAME = process.env.TIMERS_SHEET_NAME || "Timers";
 
 // Our return pickup destination (printed as the "to" address on the request).
 export const RETURN_TO_ADDRESS =
@@ -760,6 +761,31 @@ export async function pincodeRowByDevice(deviceId) {
         (r) => String(r["Device ID"] ?? "").trim() === id,
       ) || null
     );
+  } catch {
+    return null;
+  }
+}
+
+// ── Offer timers (2-hour device offer on book pages) ───────────────────────
+// One row per device, keyed by "Device ID".
+export function timerAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, { action: "append", sheet: TIMERS_SHEET_NAME, data });
+}
+export function timerUpdate(deviceId, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: TIMERS_SHEET_NAME,
+    matchColumn: "Device ID",
+    matchValue: String(deviceId),
+    data,
+  });
+}
+export async function timerRowByDevice(deviceId) {
+  const id = String(deviceId || "").trim();
+  if (!id) return null;
+  try {
+    const table = await gvizQuery({ sheet: TIMERS_SHEET_NAME });
+    return tableToObjects(table).find((r) => String(r["Device ID"] ?? "").trim() === id) || null;
   } catch {
     return null;
   }

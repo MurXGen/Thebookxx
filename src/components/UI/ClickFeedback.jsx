@@ -94,6 +94,23 @@ export default function ClickFeedback() {
       ov.style.borderRadius = getComputedStyle(el).borderRadius;
     };
     const reposition = () => busy.forEach((s, el) => s.overlay && place(el, s.overlay));
+    // Sheets and modals slide/resize with animations, so a spinner placed once
+    // drifts off its button. Follow the element every frame while any spinner
+    // is visible.
+    let raf = 0;
+    const follow = () => {
+      let any = false;
+      busy.forEach((st, el) => {
+        if (!st.overlay) return;
+        any = true;
+        if (!el.isConnected) st.overlay.style.display = "none";
+        else place(el, st.overlay);
+      });
+      raf = any ? requestAnimationFrame(follow) : 0;
+    };
+    const startFollow = () => {
+      if (!raf) raf = requestAnimationFrame(follow);
+    };
 
     const markBusy = (el) => {
       if (!el || !el.isConnected) return () => {};
@@ -110,6 +127,7 @@ export default function ClickFeedback() {
           document.body.appendChild(ov);
           s.overlay = ov;
           place(el, ov);
+          startFollow();
           el.setAttribute("aria-busy", "true");
         }, SHOW_DELAY);
         s.maxT = setTimeout(() => clear(el), MAX_BUSY);
@@ -204,6 +222,7 @@ export default function ClickFeedback() {
       document.removeEventListener("click", onClick, true);
       window.removeEventListener("scroll", reposition, { capture: true });
       window.removeEventListener("resize", reposition);
+      if (raf) cancelAnimationFrame(raf);
       if (window.fetch === hooked) window.fetch = origFetch;
       clearInterval(barTimer);
       clearTimeout(barStopTimer);

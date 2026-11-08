@@ -57,6 +57,7 @@ import {
   fetchWalletBalance,
   updateOrderRow,
 } from "@/utils/googleFormOrder";
+import { lookupPincode, cachedPincode, stripePincode } from "@/lib/pincodeLookup";
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
@@ -225,6 +226,7 @@ export default function AddressModal({
   const [billItemsOpen, setBillItemsOpen] = useState(false); // book summary accordion
   const [isValidPincode, setIsValidPincode] = useState(true);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+  const [locEditing, setLocEditing] = useState(false);
   const [pincodeError, setPincodeError] = useState("");
   const [showContactFields, setShowContactFields] = useState(false);
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
@@ -464,6 +466,17 @@ export default function AddressModal({
 
   useEffect(() => {
     if (open) {
+      // No pincode yet → use the one entered in the navbar delivery stripe.
+      const fromStripe = stripePincode();
+      if (fromStripe && !pincode && !localStorage.getItem(PINCODE_DATA_KEY)) {
+        let draftPin = "";
+        try {
+          draftPin = JSON.parse(localStorage.getItem("checkoutAddress") || "null")?.pincode || "";
+        } catch {
+          /* ignore */
+        }
+        if (!draftPin) setPincode(fromStripe);
+      }
       const savedPincodeData = localStorage.getItem(PINCODE_DATA_KEY);
       if (savedPincodeData) {
         try {
@@ -474,9 +487,6 @@ export default function AddressModal({
               source: "localStorage",
             });
             setPincode(parsedData.pincode);
-            if (parsedData.pincode.length === 6) {
-              fetchLocationByPincode(parsedData.pincode);
-            }
           }
           if (parsedData.city && !city) setCity(parsedData.city);
           if (parsedData.area && !area) setArea(parsedData.area);
@@ -494,6 +504,7 @@ export default function AddressModal({
     if (newPincode.length === 6 && pincode.length !== 6) {
       trackFunnelEvent(EVENTS.PINCODE_MANUAL_ENTRY, { pincode: newPincode });
     }
+    if (newPincode !== pincode) setLocEditing(false);
     setPincode(newPincode);
   };
 
@@ -966,50 +977,64 @@ export default function AddressModal({
   );
   const tooManyOneRupee = oneRupeeQty > 1;
 
-  const fetchLocationByPincode = async (pincodeValue) => {
-    if (!pincodeValue || pincodeValue.length !== 6) return;
-    setIsFetchingLocation(true);
-    setPincodeError("");
-    try {
-      const response = await fetch(
-        `https://api.postalpincode.in/pincode/${pincodeValue}`,
-      );
-      const data = await response.json();
-      if (data && data[0] && data[0].Status === "Success") {
-        const postOffice = data[0].PostOffice[0];
-        setCity(postOffice.District);
-        setDistrict(postOffice.District);
-        setArea(postOffice.Name);
-        // Auto-fill State from the India Post lookup. If the API returns one,
-        // lock the field; otherwise leave it blank + editable for the shopper.
-        setState(postOffice.State || "");
-        setStateAutoFilled(!!postOffice.State);
-        setIsValidPincode(true);
-        setPincodeError("");
-      } else {
-        setIsValidPincode(true);
-        setPincodeError(
-          "Pincode could not be verified, but you can still proceed.",
-        );
-        setArea("");
-        setCity("");
-        setDistrict("");
-        setStateAutoFilled(false);
+  // Cached, de-duplicated pincode lookup (shared with the delivery stripe).
+  // A pincode is fetched from India Post once per browser; repeat lookups are
+  // instant and show no loader.
+  const lastPinRef = useRef("");
+  const applyPincodeResult = (pin, r) => {
+    if (r.ok) {
+      setCity(r.city);
+      setDistrict(r.district);
+      setArea(r.area);
+      setState(r.state || "");
+      setStateAutoFilled(!!r.state);
+      setIsValidPincode(true);
+      setPincodeError("");
+      // Keep the navbar stripe and book pages on the same pincode.
+      try {
+        localStorage.setItem("delivery_pincode", pin);
+        localStorage.setItem("delivery_city", r.city || "");
+        localStorage.setItem("delivery_state", r.state || "");
+        window.dispatchEvent(new Event("tbx:pincode-set"));
+      } catch {
+        /* ignore */
       }
-    } catch (error) {
-      console.error("Error fetching pincode details:", error);
+    } else if (r.ok === false) {
+      setIsValidPincode(true);
+      setPincodeError("Pincode could not be verified, but you can still proceed.");
+      setArea("");
+      setCity("");
+      setDistrict("");
+      setStateAutoFilled(false);
+    } else {
       setIsValidPincode(true);
       setPincodeError("Unable to verify pincode. You can still proceed.");
       setStateAutoFilled(false);
-    } finally {
-      setIsFetchingLocation(false);
     }
+  };
+  const fetchLocationByPincode = async (pincodeValue) => {
+    if (!pincodeValue || pincodeValue.length !== 6) return;
+    if (lastPinRef.current === pincodeValue) return; // already applied
+    lastPinRef.current = pincodeValue;
+    setPincodeError("");
+    const hit = cachedPincode(pincodeValue);
+    if (hit) {
+      applyPincodeResult(pincodeValue, hit);
+      return;
+    }
+    setIsFetchingLocation(true);
+    const r = await lookupPincode(pincodeValue);
+    if (r.ok === null) lastPinRef.current = ""; // allow a retry later
+    // Ignore a late answer if the shopper has typed another pincode meanwhile.
+    if (lastPinRef.current === pincodeValue || r.ok === null) applyPincodeResult(pincodeValue, r);
+    setIsFetchingLocation(false);
   };
 
   useEffect(() => {
     if (pincode.length === 6) {
       fetchLocationByPincode(pincode);
     } else if (pincode.length > 0 && pincode.length < 6) {
+      lastPinRef.current = "";
       setPincodeError("Please enter a complete 6-digit pincode");
       setIsValidPincode(true);
     } else {
@@ -1106,7 +1131,7 @@ export default function AddressModal({
       setName(saved.name || "");
       setPhone(normalizePhone(saved.phone || ""));
       setCity(saved.city || "");
-      setPincode(saved.pincode || "");
+      setPincode(saved.pincode || stripePincode() || "");
       applySavedAddress(saved.address || "", true);
       setDistrict(saved.district || "");
       setArea(saved.area || "");
@@ -1626,12 +1651,14 @@ export default function AddressModal({
       paymentId: `COD-${Date.now()}`,
     });
     // Now log the CONFIRMED order (plain name, no "(unconfirmed)" tag).
-    submitToGoogleForm("COD", fasterDelivery, true, oid);
-    triggerCODSuccess(fasterDelivery, oid);
+    // COD always ships Standard (Faster is online-only).
+    setFasterDelivery(false);
+    submitToGoogleForm("COD", false, true, oid);
+    triggerCODSuccess(false, oid);
     // Push the COD order to Telegram (previously only UPI notified — the COD
     // success modal never invoked its onContinue handler). Fire-and-forget so
     // it never blocks the success screen.
-    notifyCODToTelegram(fasterDelivery);
+    notifyCODToTelegram(false);
   };
 
   // Sends the Telegram notification for a COD order (no WhatsApp redirect).
@@ -1767,7 +1794,8 @@ export default function AddressModal({
       setShowPayMethod(true);
     } else if (method === "COD") {
       const oid = ensureCheckoutOid();
-      codConfirmRef.current = { oid, isFaster };
+      // COD always ships Standard (Faster is online-only).
+      codConfirmRef.current = { oid, isFaster: false };
       // --- COD confirmation / review sheet DISABLED for a smoother,
       //     block-free checkout. Previously we wrote the order as
       //     "(unconfirmed)" and showed the COD review sheet, flipping it to
@@ -2201,6 +2229,7 @@ export default function AddressModal({
 
   // From the UPI page: shopper has no online-payment option switch to COD
   // and place the order directly (skips the fee-disclosure step).
+  // "Can't pay online? Continue with Cash on Delivery" on the UPI screen.
   const switchToCODFromUPI = () => {
     setShowUPIPayment(false);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
@@ -2212,8 +2241,13 @@ export default function AddressModal({
       totalAmount: netPayable,
       paymentId: `COD-${Date.now()}`,
     });
-    submitToGoogleForm("COD", fasterDelivery, true, oid);
-    triggerCODSuccess(fasterDelivery, oid);
+    // Faster delivery is online-only: a COD order always ships Standard, so it
+    // is placed (and charged) without the Faster fee.
+    setFasterDelivery(false);
+    setPaySel("COD");
+    submitToGoogleForm("COD", false, true, oid);
+    triggerCODSuccess(false, oid);
+    notifyCODToTelegram(false);
   };
 
   // Combine the structured parts into one deliverable address string.
@@ -2251,6 +2285,9 @@ export default function AddressModal({
     Boolean(city && address.trim().length > ADDRESS_MIN_CHARS);
   // Progressive reveal: pincode first → address+contact → add-ons + CTA.
   const pincodeReady = pincode.length === 6 && isValidPincode;
+  // City & state found from the pincode → show one confirmation line instead
+  // of two inputs (tap Edit to change them).
+  const locLocked = pincodeReady && !isFetchingLocation && !locEditing && !!city && !!state && stateAutoFilled;
   const contactReady = name.trim().length > 0 && phone.length === 10;
 
   // Accuracy rules for the delivery form (shown inline once a field is left).
@@ -2356,20 +2393,29 @@ export default function AddressModal({
               </div>
               {/* Pincode → City → State on one equal-width row. City & State
                   stay collapsed until a valid 6-digit pincode, then glide in. */}
-              <div className={`addr-loc-row${pincodeReady ? " ready" : ""}`}>
+              <div className={`addr-loc-row${pincodeReady ? " ready" : ""}${locLocked ? " locked" : ""}`}>
                 <div className="input-group addr-loc-cell">
                   <label className="flex flex-row gap-4 flex-center items-center">
                     <MapPin size={14} />
                     Pincode
                   </label>
-                  <input
-                    className={`sec-mid-btn width100 ${!isValidPincode && pincode ? "error-border" : ""}`}
-                    placeholder="Enter 6 digit pincode"
-                    value={pincode}
-                    maxLength={6}
-                    onChange={handlePincodeChange}
-                    inputMode="numeric"
-                  />
+                  <span className="af-pin-field">
+                    <input
+                      className={`sec-mid-btn width100 ${!isValidPincode && pincode ? "error-border" : ""}`}
+                      placeholder="Enter 6 digit pincode"
+                      value={pincode}
+                      maxLength={6}
+                      onChange={handlePincodeChange}
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      aria-busy={isFetchingLocation}
+                    />
+                    {isFetchingLocation ? (
+                      <Loader2 size={17} className="af-pin-spin" aria-label="Finding your area" />
+                    ) : pincodeReady && city ? (
+                      <CheckCircle2 size={17} className="af-pin-ok" aria-hidden="true" />
+                    ) : null}
+                  </span>
                 </div>
 
                 <div
@@ -2426,25 +2472,22 @@ export default function AddressModal({
                 </div>
               </div>
 
-              {isFetchingLocation && (
-                <span className="addr-hint dd-fetching">
-                  <Loader2 size={13} className="lb-spinner" /> Finding your
-                  area…
-                </span>
-              )}
-              <AnimatePresence>
-                {pincodeReady && city && state && !isFetchingLocation && (
+              <AnimatePresence initial={false}>
+                {locLocked && (
                   <motion.div
-                    className="dd-route"
+                    className="af-loc-line"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.22 }}
                   >
-                    <CheckCircle2 size={14} aria-hidden="true" />
-                    <span className="dd-route-txt">
-                      Delivers to <b>{city}</b> · Cash on Delivery available
+                    <CheckCircle2 size={14} className="af-loc-ic" aria-hidden="true" />
+                    <span className="af-loc-txt">
+                      Delivering to <b>{city}, {state}</b> · COD available
                     </span>
+                    <button type="button" className="af-loc-edit" onClick={() => setLocEditing(true)} data-no-busy>
+                      Edit
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>

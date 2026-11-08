@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Truck, Zap, MapPin, ChevronDown, X, Loader2 } from "lucide-react";
+import { lookupPincode } from "@/lib/pincodeLookup";
 
 // Maharashtra pincodes start 40–44 (400xxx–444xxx), except 403xxx which is Goa.
 // Intra-state orders ship fast, so Maharashtra sees a single 1–5 day estimate.
@@ -27,18 +28,12 @@ export function openPincodeSheet() {
 }
 const CITY_KEY = "delivery_city";
 
+// Shared cached lookup: { city, state } for a real pincode, null if unknown,
+// empty strings when offline (accept without a city).
 async function lookupCity(pin) {
-  try {
-    const r = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
-    const d = await r.json();
-    if (d?.[0]?.Status === "Success") {
-      const po = d[0].PostOffice?.[0] || {};
-      return { city: po.District || "", state: po.State || "" };
-    }
-    return null; // not a real pincode
-  } catch {
-    return { city: "", state: "" }; // offline / API down: accept without a city
-  }
+  const r = await lookupPincode(pin);
+  if (r.ok === false) return null;
+  return { city: r.city || "", state: r.state || "" };
 }
 
 // Log the check to the "Pincodes" sheet tab (one row per device). Same device id
@@ -107,6 +102,22 @@ export default function DeliveryCheckBar() {
   };
 
   useEffect(() => {
+    const reread = () => {
+      try {
+        const saved = String(localStorage.getItem(PIN_KEY) || "").replace(/\D/g, "");
+        if (saved.length === 6) {
+          setPin(saved);
+          setCity(localStorage.getItem(CITY_KEY) || "");
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener("tbx:pincode-set", reread);
+    return () => window.removeEventListener("tbx:pincode-set", reread);
+  }, []);
+
+  useEffect(() => {
     const onOpen = () => {
       setDraft(String(localStorage.getItem(PIN_KEY) || "").replace(/\D/g, "").slice(0, 6));
       setErr("");
@@ -134,6 +145,7 @@ export default function DeliveryCheckBar() {
     try {
       localStorage.setItem(PIN_KEY, draft);
       localStorage.setItem(CITY_KEY, found.city);
+      localStorage.setItem("delivery_state", found.state || "");
     } catch {
       /* ignore */
     }

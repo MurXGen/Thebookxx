@@ -9,6 +9,7 @@ import SplashScreen from "@/components/UI/SplashScreen";
 import GlobalHaptics from "@/components/UI/GlobalHaptics";
 import ClickFeedback from "@/components/UI/ClickFeedback";
 import ShareSheetHost from "@/components/UI/ShareSheet";
+import OfferPricing from "@/components/OfferPricing";
 import { Suspense } from "react";
 import RainEffect from "@/components/UI/RainEffect";
 import { PLProvider } from "@/context/PLContext";
@@ -251,7 +252,9 @@ export default function RootLayout({ children }) {
               {/* Monsoon rain effect — temporarily disabled. Re-enable by
                   uncommenting the line below. */}
               {/* <RainEffect /> */}
-              <div className="app-shell">{children}</div>
+              <div className="app-shell">
+                <OfferPricing>{children}</OfferPricing>
+              </div>
             </PLProvider>
           </StoreProvider>
         </ToastProvider>

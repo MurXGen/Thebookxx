@@ -55,7 +55,10 @@ const addToRecentlyViewed = (bookId) => {
   }
 };
 
-function BookCard({ book }) {
+function BookCard({ book: bookProp }) {
+  // Prefer the shared client copy (server pages pass serialized snapshots), so
+  // the device's post-offer price shows on every card.
+  const book = books.find((b) => b.id === bookProp?.id) || bookProp;
   const [confetti, setConfetti] = useState(false);
   const { cart, wishlist, addToCart, decreaseQty, toggleWishlist, cartTotal } =
     useStore();

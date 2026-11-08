@@ -15,6 +15,7 @@ import WishlistButton from "./UI/WishListButton";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
 import { showToast } from "@/context/ToastContext";
+import { shareContent } from "./UI/ShareSheet";
 
 // Helper function to get full URL
 const getFullUrl = (path) => {
@@ -210,32 +211,7 @@ function BookCard({ book }) {
       url: fullUrl,
     };
 
-    try {
-      if (navigator.share && window.innerWidth <= 768) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(fullUrl);
-        const tempMessage = document.createElement("div");
-        tempMessage.textContent = "Link copied to clipboard!";
-        tempMessage.style.position = "fixed";
-        tempMessage.style.bottom = "20px";
-        tempMessage.style.left = "50%";
-        tempMessage.style.transform = "translateX(-50%)";
-        tempMessage.style.backgroundColor = "#1a1a1a";
-        tempMessage.style.color = "white";
-        tempMessage.style.padding = "8px 16px";
-        tempMessage.style.borderRadius = "40px";
-        tempMessage.style.fontSize = "12px";
-        tempMessage.style.zIndex = "9999";
-        document.body.appendChild(tempMessage);
-        setTimeout(() => {
-          tempMessage.remove();
-        }, 2000);
-      }
-    } catch (error) {
-      console.error("Error sharing:", error);
-      navigator.clipboard.writeText(fullUrl);
-    }
+    await shareContent(shareData);
   };
 
   return (

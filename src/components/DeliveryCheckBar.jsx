@@ -11,7 +11,7 @@ import { Truck, Zap, MapPin, ChevronDown, X, Loader2 } from "lucide-react";
 
 // Maharashtra pincodes start 40–44 (400xxx–444xxx), except 403xxx which is Goa.
 // Intra-state orders ship fast, so Maharashtra sees a single 1–5 day estimate.
-function isMaharashtraPin(pin) {
+export function isMaharashtraPin(pin) {
   const p = String(pin || "").replace(/\D/g, "");
   if (p.length < 6) return false;
   if (p.slice(0, 3) === "403") return false; // Goa
@@ -19,6 +19,12 @@ function isMaharashtraPin(pin) {
 }
 
 const PIN_KEY = "delivery_pincode";
+const OPEN_EVENT = "tbx:open-pincode";
+
+// Lets other parts of the site (e.g. the book page) open the pincode sheet.
+export function openPincodeSheet() {
+  window.dispatchEvent(new Event(OPEN_EVENT));
+}
 const CITY_KEY = "delivery_city";
 
 async function lookupCity(pin) {
@@ -100,6 +106,16 @@ export default function DeliveryCheckBar() {
     setOpen(true);
   };
 
+  useEffect(() => {
+    const onOpen = () => {
+      setDraft(String(localStorage.getItem(PIN_KEY) || "").replace(/\D/g, "").slice(0, 6));
+      setErr("");
+      setOpen(true);
+    };
+    window.addEventListener(OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_EVENT, onOpen);
+  }, []);
+
   const submit = async (e) => {
     e?.preventDefault();
     if (draft.length !== 6) {
@@ -122,6 +138,7 @@ export default function DeliveryCheckBar() {
       /* ignore */
     }
     if (draft !== pin) logPincode(draft, found.city, found.state);
+    window.dispatchEvent(new Event("tbx:pincode-set"));
     setOpen(false);
   };
 

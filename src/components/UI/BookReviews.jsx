@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
   MessageSquare,
+  BadgeCheck,
 } from "lucide-react";
 import { getReviewsByBook, getAverageRating } from "@/utils/reviews";
 
@@ -33,36 +34,32 @@ export default function BookReviews({ bookId, bookName, authorName }) {
   const visibleReviews = reviews.slice(0, visibleCount);
   const hasMore = visibleCount < totalReviews;
 
-  // Lazy loading with Intersection Observer
-  const loadMoreReviews = () => {
-    if (isLoading) return;
-    setIsLoading(true);
-    setTimeout(() => {
-      setVisibleCount((prev) => Math.min(prev + 6, totalReviews));
-      setIsLoading(false);
-    }, 300);
-  };
-
+  // Lazy loading: a skeleton card at the END of the horizontal row. More
+  // reviews load only when the shopper swipes it into view, so the page never
+  // jumps, and fixed-size skeletons hold the space while cards arrive.
+  const rowRef = useRef(null);
   useEffect(() => {
-    if (!loadMoreRef.current || !hasMore) return;
-
+    const el = loadMoreRef.current;
+    if (!el || !hasMore) return;
+    let t;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !isLoading) {
-          loadMoreReviews();
-        }
+        if (!entries[0].isIntersecting) return;
+        observer.disconnect();
+        setIsLoading(true);
+        t = setTimeout(() => {
+          setVisibleCount((prev) => Math.min(prev + 6, totalReviews));
+          setIsLoading(false);
+        }, 250);
       },
-      { threshold: 0.1, rootMargin: "100px" },
+      { root: rowRef.current, rootMargin: "0px 200px 0px 0px", threshold: 0.01 },
     );
-
-    observer.observe(loadMoreRef.current);
-
+    observer.observe(el);
     return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
+      observer.disconnect();
+      clearTimeout(t);
     };
-  }, [hasMore, isLoading, visibleCount]);
+  }, [hasMore, visibleCount, totalReviews]);
 
   // Generate JSON-LD structured data for reviews
   const generateReviewStructuredData = () => {
@@ -125,22 +122,8 @@ export default function BookReviews({ bookId, bookName, authorName }) {
         {/* Structured data is emitted as JSON-LD in the product page's main
             Product/Book schema, so no (error-prone) microdata is used here. */}
 
-        {/* Hidden SEO content for better keyword density */}
-        <div
-          className="seo-hidden-content"
-          style={{ display: "none" }}
-          aria-hidden="true"
-        >
-          <p>
-            Read {totalReviews} verified reviews for "{bookName}" by{" "}
-            {authorName}. Real readers share their experiences with this
-            transformative self-help book. Average rating of {avgRating} out of
-            5 stars.
-          </p>
-        </div>
-
         {/* Reviews Grid */}
-        <div className="flex flex-row gap-12" style={{ overflow: "scroll" }}>
+        <div className="brv-row" ref={rowRef}>
           {visibleReviews.map((review) => {
             const isExpanded = expandedReviews[review.id];
             const shouldTruncate = review.comment.length > 180;
@@ -149,95 +132,64 @@ export default function BookReviews({ bookId, bookName, authorName }) {
               : review.comment.substring(0, 180);
 
             return (
-              <div
-                key={review.id}
-                style={{
-                  minWidth: "300px",
-                  padding: "12px",
-                  border: "1px solid var(--dark-20)",
-                  borderRadius: "12px",
-                }}
-                className="flex flex-col gap-12"
-              >
-                <div className="review-header">
-                  <div className="reviewer-info flex flex-row gap-12 items-center">
-                    <div className="reviewer-avatar">
-                      {review.reviewerImage ? (
-                        <Image
-                          src={review.reviewerImage}
-                          alt={`${review.reviewerName} - verified review for ${bookName} by ${authorName}`}
-                          width={48}
-                          height={48}
-                          className="reviewer-image"
-                          title={`${review.reviewerName} gave ${review.rating} stars to ${bookName}`}
-                        />
-                      ) : (
-                        <div className="avatar-placeholder">
-                          {review.reviewerName.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="reviewer-details">
-                      <h4 className="reviewer-name">{review.reviewerName}</h4>
-                      <div className="review-meta font-12">
-                        <div className="review-stars flex flex-row gap-8">
-                          <div className="rating-value">{review.rating}.0</div>
-                          <div>
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                size={14}
-                                fill={
-                                  star <= review.rating ? "#FFB800" : "none"
-                                }
-                                color="#FFB800"
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <span className="review-date">{review.date}</span>
-                      </div>
-                    </div>
-                  </div>
+              <article key={review.id} className="brv-card">
+                <div className="brv-top">
+                  <span className="brv-stars" aria-label={`${review.rating} out of 5 stars`}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        size={15}
+                        fill={star <= review.rating ? "currentColor" : "none"}
+                        strokeWidth={1.8}
+                      />
+                    ))}
+                  </span>
                   {review.verified && (
-                    <span className="verified-badge"> Verified</span>
+                    <span className="brv-verified">
+                      <BadgeCheck size={13} /> Verified buyer
+                    </span>
                   )}
                 </div>
 
-                <div className="review-content font-16 flex flex-col gap-12">
-                  <p className="review-comment">
-                    {displayComment}
-                    {shouldTruncate && !isExpanded && (
-                      <span
-                        onClick={() => toggleExpand(review.id)}
-                        className="tertiary-btn"
-                      >
-                        ... read more
-                      </span>
-                    )}
-                    {isExpanded && (
-                      <span
-                        onClick={() => toggleExpand(review.id)}
-                        className="tertiary-btn"
-                      >
-                        show less
-                      </span>
-                    )}
-                  </p>
-                </div>
+                <p className="brv-text">
+                  {displayComment}
+                  {shouldTruncate && !isExpanded && "… "}
+                  {shouldTruncate && (
+                    <button type="button" className="brv-more" onClick={() => toggleExpand(review.id)}>
+                      {isExpanded ? " Show less" : "Read more"}
+                    </button>
+                  )}
+                </p>
 
-                {/* <div className="review-footer">
-                  <button
-                    className="sec-mid-btn flex flex-row items-center gap-8"
-                    aria-label={`Mark as helpful (${review.helpful} people found this helpful)`}
-                  >
-                    <ThumbsUp size={14} />
-                    <span>Helpful ({review.helpful})</span>
-                  </button>
-                </div> */}
-              </div>
+                <div className="brv-who">
+                  {review.reviewerImage ? (
+                    <Image
+                      src={review.reviewerImage}
+                      alt={`${review.reviewerName}, reader of ${bookName}`}
+                      width={40}
+                      height={40}
+                      loading="lazy"
+                      className="brv-avatar"
+                    />
+                  ) : (
+                    <span className="brv-avatar brv-initial">{review.reviewerName.charAt(0)}</span>
+                  )}
+                  <span className="brv-who-txt">
+                    <b>{review.reviewerName}</b>
+                    <small>{review.date}</small>
+                  </span>
+                </div>
+              </article>
             );
           })}
+          {hasMore && (
+            <div ref={loadMoreRef} className="brv-card brv-skel" aria-hidden="true">
+              <span className="brv-skel-head" />
+              <span className="brv-skel-line" />
+              <span className="brv-skel-line" />
+              <span className="brv-skel-line short" />
+            </div>
+          )}
         </div>
 
         <div className="reviews-header flex flex-col gap-24 width100">
@@ -271,20 +223,6 @@ export default function BookReviews({ bookId, bookName, authorName }) {
             Write a Review
           </button>
         </div>
-
-        {/* Lazy Loading Trigger */}
-        {hasMore && (
-          <div ref={loadMoreRef} className="lazy-load-trigger">
-            {isLoading ? (
-              <div className="loading-indicator">
-                <div className="loading-spinner"></div>
-                <span>Loading more reviews...</span>
-              </div>
-            ) : (
-              <div className="scroll-trigger"></div>
-            )}
-          </div>
-        )}
 
         {/* All reviews loaded message */}
         {/* {!hasMore && visibleReviews.length > 0 && (

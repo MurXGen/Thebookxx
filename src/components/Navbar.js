@@ -23,6 +23,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import InstallPWA from "./InstallPWA";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useStore } from "@/context/StoreContext";
 import { trackEvent } from "@/lib/ga";
 
@@ -85,6 +86,7 @@ function RotatingTrust() {
 export default function Navbar() {
   const [index, setIndex] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
+  const isHome = usePathname() === "/";
   // When the page is opened with a ?q= (or ?search=) param, we auto-open the
   // search overlay and seed it with that term so searches are shareable/deep
   // linkable. Cleared when the user opens search manually.
@@ -250,6 +252,21 @@ export default function Navbar() {
 
           {/* RIGHT — WhatsApp, profile, cart */}
           <div className="nav-right">
+            {/* Phones, every page but home: search icon beside WhatsApp */}
+            {!isHome && (
+              <button
+                type="button"
+                className="nav-ic nav-search-ic"
+                aria-label="Search books"
+                data-no-busy
+                onClick={() => {
+                  setSearchInitialQuery("");
+                  setSearchOpen(true);
+                }}
+              >
+                <Search size={23} />
+              </button>
+            )}
             <a
               href="https://wa.me/917710892108"
               target="_blank"

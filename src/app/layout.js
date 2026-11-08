@@ -8,6 +8,7 @@ import RegisterSW from "@/components/RegisterSW";
 import SplashScreen from "@/components/UI/SplashScreen";
 import GlobalHaptics from "@/components/UI/GlobalHaptics";
 import ClickFeedback from "@/components/UI/ClickFeedback";
+import ShareSheetHost from "@/components/UI/ShareSheet";
 import { Suspense } from "react";
 import RainEffect from "@/components/UI/RainEffect";
 import { PLProvider } from "@/context/PLContext";
@@ -245,6 +246,7 @@ export default function RootLayout({ children }) {
               <Suspense fallback={null}>
                 <ClickFeedback />
               </Suspense>
+              <ShareSheetHost />
               <AnalyticsTracker />
               {/* Monsoon rain effect — temporarily disabled. Re-enable by
                   uncommenting the line below. */}

@@ -4,15 +4,17 @@ import { books } from "@/utils/book";
 import { notFound, redirect } from "next/navigation";
 import BookDetailsModal from "@/components/BookDeatilsModel";
 import BookAvailabilityGate from "@/components/BookAvailabilityGate";
-
-// Slugify function
-function slugify(text) {
-  return text
-    ?.toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
+import {
+  SITE,
+  FREE_DELIVERY_MIN,
+  slugify,
+  titleCase,
+  bookUrl as pageUrlOf,
+  seoNameOf,
+  discountOf,
+  aboutLine,
+  bookJsonLd,
+} from "@/lib/bookSeo";
 
 // Metadata (also handles redirect case)
 export async function generateMetadata({ params }) {
@@ -33,7 +35,7 @@ export async function generateMetadata({ params }) {
         title: "Redirecting...",
         robots: { index: false, follow: false },
         alternates: {
-          canonical: `https://thebookx.in/books/${correctSlug}`,
+          canonical: `${SITE}/books/${correctSlug}`,
         },
       };
     }
@@ -45,69 +47,53 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const bookUrl = `https://www.thebookx.in/books/${slugify(book.name)}`;
-  // No trailing "| TheBookX" here, the root template appends it once,
-  // which fixes the previous doubled "| TheBookX | TheBookX" suffix.
-  // Title/meta surface the actual price + value keywords ("lowest price",
-  // "cash on delivery") to rank for price-led searches.
-  // Kept concise (~60 chars incl. the "| TheBookX" the root template appends)
-  // so Google displays it verbatim instead of rewriting a long promo title,
-  // while still carrying the "from ₹1" price hook.
-  // Series tagging — when a book belongs to a named series (e.g. the Diary of a
-  // Wimpy Kid volumes) whose own title doesn't spell it out, we append the
-  // series name so searches like "diary of a wimpy kid fight or flight" surface
-  // the volume. `seoName` carries the series into every title/description/OG tag.
-  const seriesInName =
-    book.series &&
-    book.name.toLowerCase().includes(book.series.toLowerCase());
-  const seriesTag = book.series && !seriesInName ? book.series : "";
-  const seoName = seriesTag ? `${book.name} (${seriesTag})` : book.name;
+  const bookUrl = pageUrlOf(book);
+  const { seoName, seriesTag } = seoNameOf(book);
+  const { price, mrp, pct } = discountOf(book);
+  const by = book.author ? ` by ${book.author}` : "";
 
-  // Author is embedded in the title for every book so the author's name ranks
-  // alongside the title across search surfaces.
-  const title = book.author
-    ? `${seoName} by ${book.author} - Books from ₹1`
-    : `${seoName} - Books from ₹1`;
+  // Title leads with the book + author (what people search), then the real
+  // price and discount, which lifts click-through on price-led searches.
+  // Kept near 60 chars incl. the "| TheBookX" the root template appends.
+  const priceTag = `₹${price}${pct ? `, ${pct}% off` : ""}`;
+  const base = `${seoName}${by}`;
+  const title =
+    `${base}: ${priceTag}`.length <= 52
+      ? `${base}: Buy at ${priceTag}`
+      : `${base}: ${priceTag}`.length <= 60
+        ? `${base}: ${priceTag}`
+        : base.length <= 58
+          ? base
+          : seoName;
 
-  // Human-readable genre/category labels (drive audience-intent keywords).
-  const cats = (book.catalogue || []).map((c) =>
-    String(c)
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (ch) => ch.toUpperCase()),
-  );
-  const genrePhrase = cats.length ? cats.join(", ") : "bestselling books";
+  const cats = (book.catalogue || []).map(titleCase);
   const isHindi = /hindi/i.test(book.language || "");
   const langLabel = isHindi ? "Hindi" : book.language || "English";
+  const about = aboutLine(book);
+  const delivery =
+    price >= FREE_DELIVERY_MIN ? "Free delivery" : `Free delivery above ₹${FREE_DELIVERY_MIN}`;
 
-  const description = `Buy ${seoName}${book.author ? ` by ${book.author}` : ""} (${langLabel}${cats[0] ? `, ${cats[0]}` : ""}) online at the lowest price on TheBookX. Free delivery, Cash on Delivery & easy 7-day returns across India. ${book.description.substring(0, 70)}`;
+  const description = `Buy ${seoName}${by} (${langLabel}${
+    book.size ? ` ${book.size.toLowerCase()}` : ""
+  }) at ₹${price}${pct ? `, ${pct}% off the ₹${mrp} MRP` : ""}. ${
+    about && about.length < 110 ? `${about} ` : ""
+  }${delivery}, Cash on Delivery and 7-day returns across India.`;
 
-  // Aggressive, audience-targeted keyword set: exact title, author-fan,
-  // price-intent, genre/category, language, and India buy-intent terms.
   const keywords = [
     book.name,
     book.author,
     book.author && `${book.author} books`,
     book.author && `${book.name} by ${book.author}`,
     `${book.name} book`,
-    `${book.name} price`,
-    `${book.name} lowest price`,
+    `${book.name} book price`,
+    `${book.name} paperback`,
     `buy ${book.name} online`,
-    `${book.name} cash on delivery`,
     `${book.name} online India`,
-    // Series keywords so every volume ranks for the series name too.
-    seriesTag && seriesTag,
-    seriesTag && `${seriesTag} ${book.name}`,
-    seriesTag && `${book.name} ${seriesTag}`,
+    seriesTag,
     seriesTag && `${seriesTag} books`,
-    seriesTag && `buy ${seriesTag} online India`,
     isHindi && `${book.name} Hindi book`,
-    isHindi && `Hindi books online`,
-    ...cats,
-    ...cats.map((c) => `${c} books online India`),
+    ...cats.map((c) => `${c} books`),
     "buy books online India",
-    "cheap books online",
-    "low price books",
-    "book shopping online",
     "TheBookX",
   ]
     .filter(Boolean)
@@ -128,12 +114,11 @@ export async function generateMetadata({ params }) {
       images: [
         {
           url: book.image,
-          width: 1200,
-          height: 630,
-          alt: `${book.name} book cover`,
+          alt: `${book.name}${by} book cover`,
         },
       ],
       type: "book",
+      locale: "en_IN",
     },
     twitter: {
       card: "summary_large_image",
@@ -145,16 +130,15 @@ export async function generateMetadata({ params }) {
     // aggressive product markup e-commerce leaders emit) so crawlers and
     // social/shopping surfaces read price + stock straight from the head.
     other: {
-      "og:type": "product",
-      "product:brand": "TheBookX",
+      "product:brand": book.author || "TheBookX",
       "product:availability": book.stock > 0 ? "in stock" : "out of stock",
       "product:condition": "new",
-      "product:price:amount": String(book.discountedPrice),
+      "product:price:amount": String(price),
       "product:price:currency": "INR",
-      "og:price:amount": String(book.discountedPrice),
+      "og:price:amount": String(price),
       "og:price:currency": "INR",
-      ...(book.originalPrice > book.discountedPrice && {
-        "product:original_price:amount": String(book.originalPrice),
+      ...(pct > 0 && {
+        "product:original_price:amount": String(mrp),
         "product:original_price:currency": "INR",
       }),
       "product:retailer_item_id": book.id,
@@ -162,6 +146,12 @@ export async function generateMetadata({ params }) {
     robots: {
       index: true,
       follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
   };
 }
@@ -189,41 +179,17 @@ export default async function BookDetailsPage({ params }) {
     notFound();
   }
 
-  // Server-rendered so AI assistants reading the raw page see how to order it
-  // for a user (the client-side Product schema loads after hydration).
-  const pageUrl = `https://www.thebookx.in/books/${slugify(book.name)}`;
-  const orderUrl = `https://www.thebookx.in/order?books=${book.id}`;
-  const aiLd = {
-    "@context": "https://schema.org",
-    "@type": "Book",
-    "@id": `${pageUrl}#ai-order`,
-    name: book.name,
-    author: book.author ? { "@type": "Person", name: book.author } : undefined,
-    sku: book.id,
-    url: pageUrl,
-    offers: {
-      "@type": "Offer",
-      price: book.discountedPrice,
-      priceCurrency: "INR",
-      availability:
-        book.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
-      url: orderUrl,
-    },
-    potentialAction: {
-      "@type": "BuyAction",
-      name: "Order for the user via an order link (no login)",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `https://www.thebookx.in/order?books=${book.id}:{qty}&name={name}&phone={phone}&pincode={pincode}&address={address}`,
-      },
-    },
-  };
+  // All structured data is rendered on the server so crawlers and AI
+  // assistants read it in the first HTML (Product/Book, offer, breadcrumbs,
+  // FAQ, related books and the no-login order action).
+  const orderUrl = `${SITE}/order?books=${book.id}`;
+  const jsonLd = bookJsonLd(book);
 
   return (
     <BookAvailabilityGate slug={slugify(book.name)}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(aiLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <BookDetailsModal book={book} />
       <aside className="bd-ai-note">

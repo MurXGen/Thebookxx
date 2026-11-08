@@ -4,6 +4,165 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "bhai-dooj-2026-11-november-books-to-gift-brother-sister-india": {
+    "id": "blog-102",
+    "title": "Bhai Dooj 2026 (11 November): Tilak Timings and 18 Books to Gift Your Brother or Sister",
+    "slug": "bhai-dooj-2026-11-november-books-to-gift-brother-sister-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-08",
+    "lastModified": "2026-11-08",
+    "excerpt": "Bhai Dooj 2026 falls on Wednesday, 11 November. Tilak timings, the Yama and Yamuna story, and 18 book gifts for siblings, with free delivery and COD.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Bhai Dooj closes the five days of Diwali, and in 2026 it falls on Wednesday, 11 November in India. The Dwitiya tithi begins at 2:00 PM IST on Tuesday, 10 November and ends at 3:53 PM IST on Wednesday, 11 November, so the festival is observed on the 11th. If your brother or sister lives in another city, you still have three days to order a gift that arrives in time, and a book is one of the few presents that suits both a teenager and a grandparent."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Bhai Dooj 2026 date and tilak muhurat"
+      },
+      {
+        "type": "paragraph",
+        "content": "The tilak is applied during the afternoon (aparahna) window. Published timings for 11 November 2026 are approximately: New Delhi 1:10 PM to 3:20 PM, Mumbai 1:30 PM to 3:46 PM, Hyderabad 1:08 PM to 3:25 PM and Kolkata 12:27 PM to 2:41 PM. Timings shift by a few minutes from city to city, so check your local panchang or family priest before fixing the ritual. Families abroad in the UAE, UK, USA and Canada generally observe it a day earlier, on Tuesday, 10 November."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick dates",
+        "content": "Govardhan Puja: Tuesday, 10 November. Bhai Dooj (Yama Dwitiya): Wednesday, 11 November 2026 in India. Tithi ends 3:53 PM IST on the 11th."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The story behind Bhai Dooj"
+      },
+      {
+        "type": "paragraph",
+        "content": "The festival is also called Yama Dwitiya. According to the traditional story, Yama, the lord of death, visited his sister Yamuna on this day. She welcomed him with a tilak, an aarti and a meal she had cooked herself. Moved by her care, Yama granted a boon: brothers who receive a tilak and food from their sisters on this day will be remembered kindly. Over time the day became a celebration of the sibling bond in general, with sisters applying tilak, brothers giving gifts and the family sharing a meal. If the epics interest you, <a href=\"/books/mahagatha-100-tales-from-the-puranas\" style=\"color:#fb8500;font-weight:600\">Mahagatha: 100 Tales from the Puranas</a> collects stories of this kind in short, readable form, and <a href=\"/books/the-immortals-of-meluha\" style=\"color:#fb8500;font-weight:600\">The Immortals of Meluha</a> is a good pick for a brother who prefers fast-moving mythological fiction."
+      },
+      {
+        "type": "blockquote",
+        "content": "A sibling is the one person who remembers the same childhood you do. A book with a note inside it lets you hand that memory back."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books to gift your brother"
+      },
+      {
+        "type": "paragraph",
+        "content": "Brothers are often the hardest to shop for, which is exactly why a well-picked book works. For a brother starting his career, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> are safe, useful choices, and <a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> suits one who has just earned his first salary. For a younger brother who is a student, <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam is a lasting source of motivation. For a brother who likes stories, <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> is short enough to finish in a weekend, and <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> gives plenty to talk about afterwards."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books to gift your sister"
+      },
+      {
+        "type": "paragraph",
+        "content": "For a sister who reads fiction, <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> retells the Mahabharata through Draupadi and is hard to put down, <a href=\"/books/a-thousand-splendid-suns\" style=\"color:#fb8500;font-weight:600\">A Thousand Splendid Suns</a> is a moving novel about friendship and endurance, and <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> suits an older sibling who enjoys emotional, character-led stories. For a sister who likes to understand her own mind, <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is a calm introduction to finding purpose. Younger sisters often love <a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a>, a true story about the right to learn."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for the whole family and younger siblings"
+      },
+      {
+        "type": "paragraph",
+        "content": "If you want one gift that two siblings can share, a series works well. <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">The Harry Potter series set (Books 1 to 7)</a> and <a href=\"/books/the-hunger-games-trilogy-set\" style=\"color:#fb8500;font-weight:600\">The Hunger Games trilogy set</a> are good for brothers and sisters of school age, and <a href=\"/books/diary-of-a-wimpy-kid\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid</a> is a reliable choice for the youngest reader at home. Grandparents and little cousins will enjoy <a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> read aloud during the family meal."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A gift that comes from the person giving it"
+      },
+      {
+        "type": "paragraph",
+        "content": "Many siblings spend years texting each other without ever talking about what is really on their minds. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical book on clearing mental clutter, thinking more calmly and communicating plainly. It makes an easy, non-awkward gift between siblings, especially for a brother or sister who is going through a busy or stressful year."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to choose in five minutes"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "<strong>Pick by their current life, not their childhood.</strong> A new job calls for a money or habits book; exams call for a motivational read.",
+          "<strong>Choose one book, not three.</strong> A single book with a personal note feels more thoughtful than a pile.",
+          "<strong>Add a line on the first page.</strong> A date, a shared memory and your name are what make it a keepsake.",
+          "<strong>Use delivery to your advantage.</strong> Place a separate order for each address and send the gift straight to your sibling's door.",
+          "<strong>Keep a small backup.</strong> Books start from ₹1 on TheBookX, so adding a second small gift for a niece or nephew costs very little."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Order in time for 11 November",
+        "content": "TheBookX has books from ₹1, free delivery and Cash on Delivery across India. Add gift wrapping for +₹25 per book, and order by the evening of 8 November to give the courier the best chance of arriving before Bhai Dooj."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> and the other books above are all available on TheBookX, and each one can be sent to a different address as a separate order."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "The tilak lasts a few hours, but a book your sibling reads and re-reads lasts for years. Choose one that sounds like them, write a line inside it, and let the afternoon of 11 November carry the rest."
+      }
+    ],
+    "coverImage": "/blogs/bhai-dooj-2026-11-november-books-to-gift-brother-sister-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/bhai-dooj-2026-11-november-books-to-gift-brother-sister-india.jpeg",
+        "alt": "A young woman and her younger brother sitting together on a sofa, smiling as he opens a book gift, with brass diyas and marigolds on a table beside them in warm afternoon light",
+        "caption": "A book with a personal note is a Bhai Dooj gift that outlasts the sweets",
+        "category": "Festivals & Gifting"
+      }
+    ],
+    "keywords": [
+      "bhai dooj 2026",
+      "bhai dooj 2026 date",
+      "bhai dooj gift ideas",
+      "books to gift brother",
+      "books to gift sister",
+      "bhai dooj tilak muhurat 2026",
+      "yama dwitiya 2026",
+      "rakhi and bhai dooj book gifts",
+      "buy books online india",
+      "gift wrapping books india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Festivals & Gifting",
+      "Gift Guides",
+      "Family & Relationships"
+    ],
+    "faqs": [
+      {
+        "question": "When is Bhai Dooj 2026?",
+        "answer": "Bhai Dooj 2026 is on Wednesday, 11 November in India. The Dwitiya tithi starts at 2:00 PM IST on 10 November and ends at 3:53 PM IST on 11 November. Families in the UAE, UK, USA and Canada generally observe it on 10 November."
+      },
+      {
+        "question": "What is the tilak time for Bhai Dooj 2026?",
+        "answer": "The afternoon window on 11 November is roughly 1:10 PM to 3:20 PM in New Delhi, 1:30 PM to 3:46 PM in Mumbai, 1:08 PM to 3:25 PM in Hyderabad and 12:27 PM to 2:41 PM in Kolkata. Check your local panchang for exact timing."
+      },
+      {
+        "question": "What are good Bhai Dooj gifts for a brother or sister?",
+        "answer": "A book is a thoughtful, affordable choice. Atomic Habits, The Psychology of Money and Wings of Fire suit brothers, while The Palace of Illusions, Ikigai and I Am Malala suit sisters. The Art of Clarity by Murthy Thevar is a good pick for either. Books start from ₹1 on TheBookX."
+      },
+      {
+        "question": "Can I send a Bhai Dooj gift to another city from TheBookX?",
+        "answer": "Yes. TheBookX offers free delivery and Cash on Delivery across India, and you can place a separate order for each delivery address. Gift wrapping is available at +₹25 per book. Order a few days early to allow for courier timelines."
+      }
+    ]
+  },
   "kamaladevi-chattopadhyay-nif-book-prize-2026-shortlist-nonfiction-books-to-read-india": {
     "id": "blog-101",
     "title": "Kamaladevi Chattopadhyay NIF Book Prize 2026 Shortlist: Five Non-Fiction Books on Modern India and What to Read Alongside",

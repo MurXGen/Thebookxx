@@ -1,16 +1,12 @@
-// app/books/page.js — Browse by category (grid of category cards, no book list).
-"use client";
+// app/books/page.js — Browse all book categories.
+// Server component: real <title>/meta and JSON-LD in the first HTML; the
+// interactive browser (filter, sort, search) is a client component.
 
-import { useMemo, useState } from "react";
-import Script from "next/script";
-import { ArrowLeft, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { books } from "@/utils/book";
-import CartBar from "@/components/CartBar";
-import MobileBottomNav from "@/components/MobileBottomNav";
-import SearchOverlay from "@/components/SearchOverlay";
-import CatalogueCard from "@/components/UI/CatalogueCard";
 import { getCatalogueData, getBooksByCategory } from "@/utils/catalogueUtils";
+import BooksBrowser from "@/components/BooksBrowser";
+
+const SITE = "https://www.thebookx.in";
 
 function slugify(text) {
   return text
@@ -20,115 +16,81 @@ function slugify(text) {
     .replace(/(^-|-$)/g, "");
 }
 
-export default function BooksPage() {
-  const router = useRouter();
-  const [searchOpen, setSearchOpen] = useState(false);
+function buildCategories() {
+  return getCatalogueData().map((cat) => {
+    const list = getBooksByCategory(cat.key).filter((b) => b.stock !== 0);
+    // "From ₹X": cheapest regular-priced book (₹1 deals are shown separately).
+    const prices = list.map((b) => b.discountedPrice).filter((p) => p > 1);
+    return {
+      key: cat.key,
+      slug: slugify(cat.key),
+      label: cat.label,
+      color: cat.color,
+      count: cat.count,
+      from: prices.length ? Math.min(...prices) : null,
+      covers: list
+        .filter((b) => typeof b.image === "string" && b.image)
+        .slice(0, 3)
+        .map((b) => b.image),
+    };
+  });
+}
 
-  // All categories, each enriched with a few real book covers for the card.
-  const categories = useMemo(
-    () =>
-      getCatalogueData().map((cat) => ({
-        ...cat,
-        covers: getBooksByCategory(cat.key)
-          .filter((b) => b.image)
-          .slice(0, 3)
-          .map((b) => b.image),
-      })),
-    [],
-  );
+export const metadata = {
+  title: "All Book Categories: Fiction, Self-Help, Business & More",
+  description: `Browse ${books.length}+ books across every category on TheBookX: fiction, self-help, business, finance, thrillers, romance, children's books and more. Genuine copies, Cash on Delivery and free delivery above ₹199.`,
+  alternates: { canonical: `${SITE}/books` },
+  openGraph: {
+    title: "All Book Categories | TheBookX",
+    description:
+      "Find your next read by category: fiction, self-help, business, thrillers, romance and more.",
+    url: `${SITE}/books`,
+    siteName: "TheBookX",
+    type: "website",
+  },
+};
+
+export default function BooksPage() {
+  const categories = buildCategories();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${SITE}/books`,
+        url: `${SITE}/books`,
+        name: "All Book Categories",
+        description: metadata.description,
+        isPartOf: { "@type": "WebSite", name: "TheBookX", url: SITE },
+        mainEntity: {
+          "@type": "ItemList",
+          numberOfItems: categories.length,
+          itemListElement: categories.map((c, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: `${c.label} books`,
+            url: `${SITE}/category/${c.slug}`,
+          })),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+          { "@type": "ListItem", position: 2, name: "Categories", item: `${SITE}/books` },
+        ],
+      },
+    ],
+  };
 
   return (
     <>
-      <Script
-        id="books-collection-schema"
+      <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "@id": "https://thebookx.in/books",
-            name: "Browse Book Categories | TheBookX",
-            description:
-              "Browse books by category on TheBookX — novels, self-help, business, finance, thriller, romance and more. Books starting at ₹1 with free shipping across India.",
-            url: "https://thebookx.in/books",
-            publisher: {
-              "@type": "Organization",
-              name: "TheBookX",
-              url: "https://thebookx.in",
-            },
-            mainEntity: {
-              "@type": "ItemList",
-              itemListElement: categories.map((c, i) => ({
-                "@type": "ListItem",
-                position: i + 1,
-                name: c.label,
-                url: `https://thebookx.in/category/${slugify(c.key)}`,
-              })),
-              numberOfItems: categories.length,
-            },
-          }),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <Script
-        id="books-breadcrumb-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://thebookx.in" },
-              { "@type": "ListItem", position: 2, name: "Categories", item: "https://thebookx.in/books" },
-            ],
-          }),
-        }}
-      />
-
-      <header className="books-page-header">
-        <div className="header-content">
-          <h1 className="page-title flex flex-row items-center">
-            <button
-              type="button"
-              className="page-header-back"
-              onClick={() => router.push("/")}
-              aria-label="Go back"
-            >
-              <ArrowLeft size={20} />
-            </button>
-            Browse Categories
-            <span className="page-title-count">{categories.length} categories</span>
-          </h1>
-          <div className="header-actions">
-            <button
-              type="button"
-              className="nav-ic"
-              onClick={() => setSearchOpen(true)}
-              aria-label="Search books"
-            >
-              <Search size={24} />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <div className="section-1200">
-        <div className="books-cat-grid">
-          {categories.map((cat) => (
-            <CatalogueCard
-              key={cat.key}
-              label={cat.label}
-              count={cat.count}
-              covers={cat.covers}
-              color={cat.color}
-              onClick={() => router.push(`/category/${slugify(cat.key)}`)}
-            />
-          ))}
-        </div>
-      </div>
-
-      <CartBar />
-      <MobileBottomNav />
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <BooksBrowser categories={categories} totalBooks={books.length} />
     </>
   );
 }

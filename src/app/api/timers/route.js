@@ -43,6 +43,19 @@ const tsOrNow = (v) => {
   return Number.isFinite(n) && Math.abs(n - Date.now()) < 864e5 * 1.2 ? new Date(n) : new Date();
 };
 
+// Device IDs whose "start" this server instance handled in the last few
+// minutes. The sheet read lags the append, so two near-simultaneous starts
+// for one device would otherwise both add a row.
+const recentStarts = new Map();
+const START_DEDUPE_MS = 5 * 60 * 1000;
+function claimStart(id) {
+  const now = Date.now();
+  for (const [k, t] of recentStarts) if (now - t > START_DEDUPE_MS) recentStarts.delete(k);
+  if (recentStarts.has(id)) return false;
+  recentStarts.set(id, now);
+  return true;
+}
+
 export async function POST(request) {
   const ip = clientIp(request);
   const rl = rateLimit(`timers:${ip}`, { limit: 20, windowMs: 60000 });
@@ -65,6 +78,7 @@ export async function POST(request) {
 
     if (action === "start") {
       if (row) return Response.json({ success: true, already: true });
+      if (!claimStart(deviceId)) return Response.json({ success: true, already: true });
       const start = tsOrNow(body.startedAt);
       const res = await timerAppend({
         "Device ID": deviceId,
@@ -82,6 +96,7 @@ export async function POST(request) {
         "Extend Requested": "",
       });
       if (!res?.success) {
+        recentStarts.delete(deviceId); // let a retry through
         console.error("[timers] append failed", res?.error || res);
         return Response.json({ success: false, error: "sheet append failed" });
       }

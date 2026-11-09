@@ -65,7 +65,14 @@ function log(action, extra = {}) {
 
 const LOGGED_OK_KEY = "tbx_offer_row"; // "1" once the sheet has this device's row
 
+const START_SENT_KEY = "tbx_offer_start_sent"; // when "start" was last sent
+
 function logStart(start, end, book, page) {
+  try {
+    localStorage.setItem(START_SENT_KEY, String(Date.now()));
+  } catch {
+    /* ignore */
+  }
   return log("start", { startedAt: start, endsAt: end, book, page }).then((ok) => {
     try {
       if (ok) localStorage.setItem(LOGGED_OK_KEY, "1");
@@ -122,7 +129,11 @@ export async function syncOfferFromSheet({ force = false } = {}) {
     const end = Number(d?.endsAt || 0);
     // Self-heal: the device's timer is running but the sheet has no row (the
     // first "start" was lost) → send it again. The server ignores duplicates.
+    // Skip when a start went out in the last 2 minutes: on the first book
+    // page the start POST and this check race, and both would append a row.
     if (!d?.found) {
+      const sentAt = Number(localStorage.getItem(START_SENT_KEY) || 0);
+      if (localStorage.getItem(LOGGED_OK_KEY) === "1" || Date.now() - sentAt < 2 * 60 * 1000) return false;
       const s0 = Number(localStorage.getItem(START_KEY) || 0);
       let first = {};
       try {

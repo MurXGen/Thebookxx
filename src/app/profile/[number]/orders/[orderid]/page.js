@@ -71,6 +71,8 @@ import {
 import { parseAddonsField } from "@/utils/addonsField";
 import { isGiftOrder } from "@/utils/giftOrder";
 import { showToast } from "@/context/ToastContext";
+import { isPaymentPending, pendingSince, PENDING_NUDGE_MS } from "@/lib/paymentPending";
+import { parseSheetTime } from "@/lib/sheetTime";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { books as ALL_BOOKS } from "@/utils/book";
 import {
@@ -297,6 +299,11 @@ function statusLabel(order) {
     };
   if (/cancel/.test(st))
     return { title: "Cancelled", sub: "This order was cancelled" };
+  if (isPaymentPending(st))
+    return {
+      title: "Order is still processing",
+      sub: "It will be processed within the next few minutes or hours",
+    };
   if (/unconfirmed|pending/.test(st)) {
     return {
       title: "Awaiting confirmation",
@@ -1065,6 +1072,39 @@ export default function OrderDetailPage() {
     };
   }, [orderId, number]);
 
+  // UPI payment the shopper says they made but we haven't verified yet. The
+  // sheet write can land a moment after they arrive here, so this device's own
+  // "pending" mark counts too while the row still reads plain "Unconfirmed".
+  const rawStatus = String(order?.["Order Status"] || "");
+  const payPending =
+    !!order &&
+    (isPaymentPending(rawStatus) ||
+      (/^\s*unconfirmed\s*$/i.test(rawStatus) && pendingSince(orderId) > 0));
+  const [nowTs, setNowTs] = useState(() => Date.now());
+  useEffect(() => {
+    if (!payPending) return;
+    // Tick for the 15-minute WhatsApp nudge, and re-read the order so the page
+    // flips to "Preparing your order" as soon as we confirm the payment.
+    const tick = setInterval(() => setNowTs(Date.now()), 15000);
+    const poll = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `/api/order?orderId=${encodeURIComponent(orderId)}${/^\d{10}$/.test(number) ? `&phone=${number}` : ""}`,
+          { cache: "no-store" },
+        );
+        const row = (await res.json())?.order;
+        if (row && String(row["Order Status"] || "") !== rawStatus)
+          setOrder((o) => (o ? { ...o, ...row } : o));
+      } catch {
+        /* ignore */
+      }
+    }, 30000);
+    return () => {
+      clearInterval(tick);
+      clearInterval(poll);
+    };
+  }, [payPending, orderId, number, rawStatus]);
+
   // Geocode the receiver address once the order is known; fall back to a
   // previously-shared location saved for this number.
   useEffect(() => {
@@ -1540,6 +1580,28 @@ export default function OrderDetailPage() {
     };
   }, [mapFull]);
 
+  // Pending since: this device's "verify status" tap, else the order time.
+  const pendingFrom =
+    pendingSince(orderId) ||
+    parseSheetTime(order?.["Timestamp (D)"] || order?.["Timestamp"] || order?.["Timestamp(D)"]) ||
+    0;
+  const payPendingLong = payPending && pendingFrom > 0 && nowTs - pendingFrom >= PENDING_NUDGE_MS;
+  const notifyPendingPayment = () => {
+    const link =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/profile/${number}/orders/${encodeURIComponent(orderId)}`
+        : "";
+    const amt = String(order?.["Total Amount"] || "").trim();
+    const mins = pendingFrom ? Math.round((nowTs - pendingFrom) / 60000) : 0;
+    const msg =
+      `Hi TheBookX, I paid online via UPI but my order still shows processing.\n` +
+      `Order: ${orderId}\n` +
+      (amt ? `Amount: ₹${amt}\n` : "") +
+      (mins ? `Waiting for: ${mins} min\n` : "") +
+      `Please verify my payment.\n${link}`;
+    window.open(`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+  };
+
   const contactSupport = () => {
     const link =
       typeof window !== "undefined"
@@ -1980,7 +2042,9 @@ export default function OrderDetailPage() {
     )
     .filter(Boolean)
     .join(", ");
-  const stLabel = statusLabel(order);
+  const stLabel = payPending
+    ? { title: "Order is still processing", sub: "It will be processed within the next few minutes or hours" }
+    : statusLabel(order);
   // Live India Post tracking status (pushed from the booking-report upload).
   // Stored as "<status>||<ISO time>" in the single "Tracking detail" column.
   // When present it overrides our manual status label on this page.
@@ -2626,8 +2690,36 @@ export default function OrderDetailPage() {
         </div>
       )}
 
+      {/* Paid online, not verified yet — "still processing", and WhatsApp
+          only once it's been pending for 15+ minutes. */}
+      {order && payPending && (
+        <div className="od-unconf-banner od-paypend">
+          <span className="od-unconf-ic">
+            <span className="od-paypend-spin" aria-hidden="true" />
+          </span>
+          <div className="od-unconf-txt">
+            <strong>Order is still processing</strong>
+            <span>
+              We&apos;re confirming your payment. Your order will be processed
+              within the next few minutes or hours — this page updates on its own.
+            </span>
+            {payPendingLong && (
+              <>
+                <span className="od-paypend-late">
+                  It&apos;s been over 15 minutes. Send us a quick message so we can
+                  check your payment right away.
+                </span>
+                <button type="button" className="od-unconf-btn" onClick={notifyPendingPayment}>
+                  <FaWhatsapp size={15} /> Message us on WhatsApp
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Unconfirmed order — payment-pending / needs attention. */}
-      {order && unconfirmed && (
+      {order && unconfirmed && !payPending && (
           <div className="od-unconf-banner">
             <span className="od-unconf-ic">
               <AlertCircle size={18} />

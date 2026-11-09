@@ -65,6 +65,11 @@ import { showToast } from "@/context/ToastContext";
 import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
 import { rewardNote } from "@/utils/orderRewards";
+import { PAYMENT_PENDING_STATUS, markPaymentPending } from "@/lib/paymentPending";
+
+// WhatsApp buttons on the UPI QR screen are hidden for now; the order page
+// offers WhatsApp once a pending payment is 15+ minutes old.
+const SHOW_UPI_WHATSAPP = false;
 import { encodeAddonsField } from "@/utils/addonsField";
 
 const PINCODE_DATA_KEY = "user_pincode";
@@ -577,7 +582,7 @@ export default function AddressModal({
   // success card (which shows its own animated tick). No separate splash.
   // Called DIRECTLY (synchronously) from each success point so it always runs.
   const successHandedRef = useRef(false);
-  const finishToSuccess = (oidArg, payment) => {
+  const finishToSuccess = (oidArg, payment, { pending = false } = {}) => {
     if (successHandedRef.current) return;
     successHandedRef.current = true;
     const digits = String(phone || "").replace(/\D/g, "").slice(-10);
@@ -604,6 +609,9 @@ export default function AddressModal({
       faster: fasterDelivery,
       bookmarkQty,
       freeBookmarks,
+      // Payment not verified yet: the bag sends them straight to the order
+      // page (which shows "still processing") instead of the success card.
+      pending,
     };
     // NOTE: do NOT clear the cart here — the bag early-returns an empty-bag view
     // when the cart is empty, which would unmount the success card before it can
@@ -616,7 +624,8 @@ export default function AddressModal({
     // shopper entered a valid email. Fire-and-forget so it never blocks success.
     try {
       const em = String(email || "").trim();
-      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+      // No confirmation email while the payment is still being verified.
+      if (!pending && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
         const isCODish = pay === "COD" || pay === "ADV";
         const advAmt = pay === "ADV" ? codAdvanceAmount : 0;
         const grand = ctx.baseTotal;
@@ -2183,6 +2192,43 @@ export default function AddressModal({
   const triggerUpiFailed = () => {
     clearUpiTimers();
     setUpiPhase("failed");
+  };
+
+  // "I've paid, verify status" (after the 30s counter): show a 3s "Checking
+  // payment status" loader with one last check. Confirmed → success, Failed →
+  // failed screen. Otherwise the order becomes "Unconfirmed (Payment Pending)"
+  // — still unconfirmed everywhere (never treated as paid), but the team sees
+  // the shopper says they paid — and we move them to their order page.
+  const handleVerifyPending = async () => {
+    if (upiPhase === "rechecking" || successHandedRef.current) return;
+    clearUpiTimers();
+    setUpiPhase("rechecking");
+    const oid = String(upiOrderRef || "").trim();
+    const t0 = Date.now();
+    let r = null;
+    try {
+      if (oid) r = await fetchOrderStatusById(oid);
+    } catch {}
+    await new Promise((res) => setTimeout(res, Math.max(0, 3000 - (Date.now() - t0))));
+    if (r?.confirmed) return finalizeUPISuccess();
+    if (r?.failed) return triggerUpiFailed();
+    if (oid) {
+      fetch("/api/order-write", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true, // the page navigates right after
+        body: JSON.stringify({
+          action: "update",
+          orderId: oid,
+          data: { "Order Status": PAYMENT_PENDING_STATUS },
+        }),
+      }).catch(() => {});
+      markPaymentPending(oid);
+    }
+    persistLogin();
+    setSuccessPayment("UPI");
+    setShowUPIPayment(false);
+    finishToSuccess(oid, advanceMode ? "ADV" : "UPI", { pending: true });
   };
 
   // From the failed screen: clear the failed tag back to plain "Unconfirmed"
@@ -4933,7 +4979,7 @@ export default function AddressModal({
             verifyCountdown={verifyCountdown}
             reassured={upiReassured}
             chosenApp={chosenUpiApp}
-            onVerifyStatus={handleVerifyStatus}
+            onVerifyStatus={handleVerifyPending}
             upiId={UPI_ID}
             onRevealQR={handleUPIPaymentClick}
             onCopyUpi={handleCopyUpiId}
@@ -6277,6 +6323,7 @@ export function UPIPaymentModal({
         <div className="bill-header">
           <span className="weight-600 font-16">Pay with UPI</span>
           <span className="upiv3-head-r">
+            {SHOW_UPI_WHATSAPP && (
             <a
               className="upiv3-help"
               href={`https://wa.me/917710892108?text=${encodeURIComponent(
@@ -6287,6 +6334,7 @@ export function UPIPaymentModal({
             >
               <FaWhatsapp size={14} /> Help
             </a>
+            )}
             <span className="cursor-pointer" onClick={onClose}>
               <X size={16} />
             </span>
@@ -6454,7 +6502,7 @@ export function UPIPaymentModal({
               amount={totalToPay}
               chosenApp={chosenApp}
               advance={advanceMode}
-              onWhatsApp={onWhatsAppFallback}
+              onWhatsApp={SHOW_UPI_WHATSAPP ? onWhatsAppFallback : undefined}
             />
           )}
 
@@ -6474,11 +6522,11 @@ export function UPIPaymentModal({
               >
                 {upiPhase === "rechecking" ? (
                   <>
-                    <span className="upiv3-spin dark" /> Checking… {verifyCountdown}s
+                    <span className="upiv3-spin dark" /> Checking payment status…
                   </>
                 ) : (
                   <>
-                    <ShieldCheck size={16} /> I&apos;ve paid, verify
+                    <ShieldCheck size={16} /> I&apos;ve paid, verify status
                   </>
                 )}
               </button>
@@ -6487,12 +6535,14 @@ export function UPIPaymentModal({
 
           {/* Quiet links */}
           <div className="upiv3-links">
-            <button type="button" onClick={onWhatsAppFallback}>
-              <FaWhatsapp size={13} /> Verify on WhatsApp
-            </button>
+            {SHOW_UPI_WHATSAPP && (
+              <button type="button" onClick={onWhatsAppFallback}>
+                <FaWhatsapp size={13} /> Verify on WhatsApp
+              </button>
+            )}
             {onSwitchToCOD && (
               <>
-                <span aria-hidden="true">·</span>
+                {SHOW_UPI_WHATSAPP && <span aria-hidden="true">·</span>}
                 <button type="button" onClick={onSwitchToCOD}>
                   Pay on delivery instead
                 </button>

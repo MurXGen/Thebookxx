@@ -68391,3 +68391,10 @@ h2.od-reco-title {
 .srs-later { border: 0; background: none; padding: 10px 16px; color: #7c4a03; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .srs-rays, .srs-float, .srs-card .scratch-card, .srs-hint svg, .srs-confetti i { animation: none; } .srs-confetti { display: none; } }
 .srs-card.lose .scratch-card.festive .scratch-reveal-main { font-size: 20px; color: #1c1917; }
+
+/* Order page — online payment awaiting verification */
+.od-paypend .od-unconf-ic { background: #fff4e5; }
+.od-paypend-spin { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(251,133,0,.25); border-top-color: #fb8500; animation: od-paypend-rot .9s linear infinite; }
+@keyframes od-paypend-rot { to { transform: rotate(360deg); } }
+.od-paypend-late { display: block; margin-top: 6px; font-weight: 600; color: #9a3412; }
+@media (prefers-reduced-motion: reduce) { .od-paypend-spin { animation-duration: 2.5s; } }

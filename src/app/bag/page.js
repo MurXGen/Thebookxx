@@ -1920,6 +1920,17 @@ ${itemsBlock}${qrLines}
             markCartConverted &&
               markCartConverted(ctx?.orderId, ctx?.phone);
           } catch {}
+          // Payment still being verified → straight to the order page, which
+          // shows "Order is still processing" (no success card yet).
+          if (ctx?.pending && ctx.phone?.length === 10 && ctx.orderId) {
+            try {
+              clearCart && clearCart();
+            } catch {}
+            window.location.assign(
+              `/profile/${ctx.phone}/orders/${encodeURIComponent(ctx.orderId)}`,
+            );
+            return;
+          }
           setSuccessCtx(ctx);
         }}
         proActive={proActive}

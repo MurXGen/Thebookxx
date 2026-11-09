@@ -264,21 +264,6 @@ function OfferTimer({ endsAt, after = null, compact = false }) {
   );
 }
 
-// After the device's offer ended: same band, with the extend link.
-function OfferEnded({ compact = false }) {
-  return (
-    <div className={`pdp-ot ended${compact ? " compact" : ""}`}>
-      <p className="pdp-ot-main">
-        <Clock size={14} className="pdp-ot-ic" aria-hidden="true" />
-        <span>Offer price ended</span>
-        <button type="button" className="pdp-ot-link" onClick={requestExtension} data-no-busy>
-          Extend offer
-        </button>
-      </p>
-    </div>
-  );
-}
-
 function ReviewsSummary({ rating, count, dist }) {
   return (
     <div className="pdp-rs">
@@ -433,12 +418,10 @@ export default function BookDetailsModal({ book: bookProp }) {
   // Device offer: starts on the first book-page visit, lasts 2 hours. A real
   // site-wide sale end (SALE_ENDS_AT / book.offerEndsAt) is used if one is set.
   const [deviceEnd, setDeviceEnd] = useState(0);
-  const [deviceExpired, setDeviceExpired] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => {
       const s = startOffer(book);
       setDeviceEnd(s.started && !s.expired ? s.endsAt : 0);
-      setDeviceExpired(s.started && s.expired);
     }, 0);
     return () => clearTimeout(t);
   }, [book]);
@@ -723,11 +706,7 @@ export default function BookDetailsModal({ book: bookProp }) {
               </div>
               <p className="pdp-price-mrp">Inclusive of all taxes</p>
 
-              {offerEnd ? (
-                <OfferTimer endsAt={offerEnd} after={priceAfter} />
-              ) : (
-                deviceExpired && price > 1 && <OfferEnded />
-              )}
+              {offerEnd && <OfferTimer endsAt={offerEnd} after={priceAfter} />}
 
               {pct > 0 && (
                 <div className="pdp-bd2" aria-label={`MRP ₹${mrp}, discount ₹${save}, you pay ₹${price}`}>
@@ -1182,8 +1161,6 @@ export default function BookDetailsModal({ book: bookProp }) {
         <CartConfetti trigger={confetti} />
         {offerEnd ? (
           <OfferTimer endsAt={offerEnd} after={priceAfter} compact />
-        ) : deviceExpired && price > 1 ? (
-          <OfferEnded compact />
         ) : (
           <div className="bd-sticky-orders">
             <LiveOrdersStrip />

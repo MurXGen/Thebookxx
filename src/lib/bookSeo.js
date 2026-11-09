@@ -147,7 +147,7 @@ export function faqsOf(book) {
     },
     {
       q: `Is this an original copy, and can I return it?`,
-      a: `Every copy is new and genuine, packed in protective wrapping. If something is wrong you can return it within 7 days of delivery.`,
+      a: `Every copy is a genuine published edition, quality-checked and packed in protective wrapping. If it arrives damaged, defective or wrong, report it within 7 days of delivery for a replacement or refund.`,
     },
   ];
   return list.filter(Boolean);

@@ -41,7 +41,7 @@ export async function GET() {
 
   const text = `# TheBookX
 
-> TheBookX (https://thebookx.in) is one of India's most trusted and affordable online bookstores. We sell genuine, brand-new books across self-help, finance, fiction, business, children's, graphic novels and more — with bestselling titles starting at just ₹1, free delivery, Cash on Delivery (COD), and easy 7-day returns across India. Formerly known as Uskillbook.
+> TheBookX (https://thebookx.in) is one of India's most trusted and affordable online bookstores. We sell genuine books (legitimate published editions sourced from trusted retailers) across self-help, finance, fiction, business, children's, graphic novels and more — with bestselling titles starting at just ₹1, free delivery from ₹199, Cash on Delivery (COD), and 7-day replacement on damaged or wrong books across India. Formerly known as Uskillbook.
 
 _Last updated: ${today} · auto-generated from the live catalogue on each deployment._
 
@@ -50,7 +50,7 @@ _Last updated: ${today} · auto-generated from the live catalogue on each deploy
 - **Name:** TheBookX (formerly Uskillbook)
 - **Website:** https://thebookx.in
 - **What we do:** Online bookstore delivering authentic, affordable books across India.
-- **Why shoppers choose us:** Lowest prices online (books from ₹1), 100% genuine copies, free shipping, Cash on Delivery, delivery in 5–9 days (Faster: 1–6 days) via Delhivery and India Post, easy 7-day returns, and a free collectible bookmark with every order.
+- **Why shoppers choose us:** Lowest prices online (books from ₹1), 100% genuine copies, free delivery from ₹199, Cash on Delivery, delivery in 5–9 days (Faster: 1–6 days) via Delhivery and India Post, 7-day replacement on damaged or wrong books, and a free collectible bookmark with every order.
 - **Catalogue size:** ${books.length}+ titles.
 - **Coverage:** Ships pan-India.
 - **Currency:** INR (₹).
@@ -101,8 +101,8 @@ ${blogs
 
 ## Policies
 
-- [Shipping Policy](${ORIGIN}/shipping): Free shipping across India; delivery in 5–9 days (Faster: 1–6 days) via Delhivery and India Post.
-- [Refund & Returns](${ORIGIN}/refund): Easy 7-day returns for a full refund.
+- [Shipping Policy](${ORIGIN}/shipping): Free standard delivery on orders of ₹199–₹1,000 (₹69 below ₹199; Handling & Care fee above ₹1,000); delivery in 5–9 days (Faster: 1–6 days) via Delhivery and India Post.
+- [Refund & Returns](${ORIGIN}/refund): Free cancellation before dispatch; damaged, defective or wrong books replaced or refunded based on the issue (report within 7 days). Refunds go to the TheBookX wallet, or to the bank where eligible.
 - [Privacy Policy](${ORIGIN}/privacy)
 - [Terms & Conditions](${ORIGIN}/terms)
 

@@ -1,4 +1,4 @@
-"use client";
+import Link from "next/link";
 
 import {
   Mail,
@@ -14,6 +14,15 @@ import {
   Wallet,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
+import { SUPPORT, mailto } from "@/lib/policy";
+import { BusinessCard, GrievanceCard } from "@/components/legal/LegalBits";
+
+export const metadata = {
+  title: "Contact Us",
+  description:
+    "Talk to TheBookX on WhatsApp, phone or email. Order help, delivery, refunds, privacy requests and our Grievance Officer's details.",
+  alternates: { canonical: "https://www.thebookx.in/contact-us" },
+};
 
 export default function ContactUs() {
   return (
@@ -22,9 +31,8 @@ export default function ContactUs() {
       <div className="legal-header">
         <h1>Contact Us</h1>
         <div className="legal-header-meta">
-          <span className="last-updated">Effective Date: 1 May 2026</span>
           <p className="legal-intro">
-            We're here to help. Whether you have a question about an order, a
+            We&apos;re here to help. Whether you have a question about an order, a
             product, a return, or a general inquiry, our customer support team
             is available through the channels listed below. We aim to respond to
             all queries within one business day.
@@ -51,19 +59,19 @@ export default function ContactUs() {
               <span className="contact-card-title">WhatsApp</span>
               <span className="contact-card-value">+91 77108 92108</span>
               <span className="contact-card-meta">
-                Fastest response · 10 AM-7 PM
+                Fastest response · Mon–Sat, 10 AM–7 PM
               </span>
             </div>
           </a>
 
           {/* Email */}
-          <a href="mailto:uskillbook@gmail.com" className="contact-card-link">
+          <a href={mailto} className="contact-card-link">
             <div className="contact-card-icon contact-icon-email">
               <Mail size={20} />
             </div>
             <div className="contact-card-body">
               <span className="contact-card-title">Email</span>
-              <span className="contact-card-value">uskillbook@gmail.com</span>
+              <span className="contact-card-value">{SUPPORT.email}</span>
               <span className="contact-card-meta">
                 Reply within 1 business day
               </span>
@@ -79,7 +87,7 @@ export default function ContactUs() {
               <span className="contact-card-title">Phone</span>
               <span className="contact-card-value">+91 77108 92108</span>
               <span className="contact-card-meta">
-                Mon-Sat, 10 AM-7 PM IST
+                Mon–Sat, 10 AM–7 PM IST
               </span>
             </div>
           </a>
@@ -98,12 +106,8 @@ export default function ContactUs() {
           </thead>
           <tbody>
             <tr>
-              <td>Monday-Friday</td>
-              <td>10:00 AM-7:00 PM</td>
-            </tr>
-            <tr>
-              <td>Saturday</td>
-              <td>10:00 AM-5:00 PM</td>
+              <td>Monday–Saturday</td>
+              <td>10:00 AM–7:00 PM</td>
             </tr>
             <tr>
               <td>Sunday &amp; Public Holidays</td>
@@ -142,7 +146,7 @@ export default function ContactUs() {
               <span className="contact-topic-title">Delivery Issues</span>
               <p>
                 Delayed, missing, or damaged shipment, see our{" "}
-                <a href="/shipping">Shipping Policy</a>
+                <Link href="/shipping">Shipping Policy</Link>
               </p>
             </div>
           </div>
@@ -153,7 +157,7 @@ export default function ContactUs() {
               <span className="contact-topic-title">Refunds &amp; Returns</span>
               <p>
                 Cancellations, refunds, returns, see our{" "}
-                <a href="/refund">Refund Policy</a>
+                <Link href="/refund">Refund Policy</Link>
               </p>
             </div>
           </div>
@@ -172,7 +176,7 @@ export default function ContactUs() {
               <span className="contact-topic-title">Privacy &amp; Data</span>
               <p>
                 Access, correction, or deletion of personal data, see our{" "}
-                <a href="/privacy">Privacy Policy</a>
+                <Link href="/privacy">Privacy Policy</Link>
               </p>
             </div>
           </div>
@@ -198,28 +202,35 @@ export default function ContactUs() {
         </p>
         <ul>
           <li>
-            <a href="/terms">Terms &amp; Conditions</a>
+            <Link href="/terms">Terms &amp; Conditions</Link>
           </li>
           <li>
-            <a href="/privacy">Privacy Policy</a>
+            <Link href="/privacy">Privacy Policy</Link>
           </li>
           <li>
-            <a href="/refund">Refund &amp; Cancellation Policy</a>
+            <Link href="/refund">Refund &amp; Cancellation Policy</Link>
           </li>
           <li>
-            <a href="/shipping">Shipping &amp; Delivery Policy</a>
+            <Link href="/shipping">Shipping &amp; Delivery Policy</Link>
           </li>
         </ul>
       </section>
 
-      <div className="legal-disclaimer">
+      <section id="business-details">
+        <h2>Business details</h2>
+        <BusinessCard />
+      </section>
+
+      <section id="grievance">
+        <h2>Grievance Officer</h2>
         <p>
-          TheBookX is operated as a sole proprietorship, with its registered
-          place of business in Mumbai, Maharashtra, India. All communications
-          are subject to applicable Indian laws and the exclusive jurisdiction
-          of the competent courts located in Mumbai, Maharashtra.
+          Not happy with how something was handled? Write to our Grievance
+          Officer. Every complaint is acknowledged within 48 hours and resolved
+          within one month, as required under the Consumer Protection
+          (E-Commerce) Rules, 2020.
         </p>
-      </div>
+        <GrievanceCard />
+      </section>
     </main>
   );
 }

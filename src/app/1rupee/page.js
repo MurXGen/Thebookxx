@@ -20,14 +20,14 @@ const CANONICAL = "https://www.thebookx.in/1rupee";
 export const metadata = {
   title: "Buy Books at Just ₹1 Online in India | ₹1 Book Sale — TheBookX",
   description:
-    "Grab bestselling books at just ₹1 on TheBookX! Limited-time ₹1 book sale with free delivery, Cash on Delivery (COD) and easy 7-day returns across India. Add one ₹1 book to every order — shop now before stock runs out.",
+    "Grab bestselling books at just ₹1 on TheBookX! Limited-time ₹1 book sale with free delivery from ₹399, Cash on Delivery (COD) and 7-day replacement on damaged books across India. Add one ₹1 book to every order — shop now before stock runs out.",
   keywords:
     "1 rupee books, ₹1 books, books at 1 rupee, 1 rupee book sale, cheap books online India, buy books at 1 rupee, lowest price books, free book offer, books starting at ₹1, TheBookX",
   alternates: { canonical: CANONICAL },
   openGraph: {
     title: "Buy Books at Just ₹1 Online in India | TheBookX ₹1 Book Sale",
     description:
-      "Bestselling books at just ₹1 — limited time. Free delivery, COD and 7-day returns across India. Shop the ₹1 book sale on TheBookX now.",
+      "Bestselling books at just ₹1 — limited time. Free delivery from ₹399, COD and 7-day replacement across India. Shop the ₹1 book sale on TheBookX now.",
     url: CANONICAL,
     siteName: "TheBookX",
     type: "website",
@@ -44,7 +44,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Buy Books at Just ₹1 Online in India | TheBookX",
     description:
-      "Bestselling books at just ₹1 — limited time. Free delivery + COD across India.",
+      "Bestselling books at just ₹1 — limited time. Free delivery from ₹399 + COD across India.",
   },
   robots: { index: true, follow: true },
 };
@@ -61,7 +61,7 @@ export default function OneRupeePage() {
     },
     {
       q: "Is delivery free on ₹1 books?",
-      a: "Add a few more books to your order and enjoy free delivery across India, with Cash on Delivery (COD) and easy 7-day returns.",
+      a: "Add a few more books to your order and enjoy free delivery from ₹399, with Cash on Delivery (COD) and 7-day replacement on damaged or wrong books.",
     },
     {
       q: "What condition are the ₹1 books in?",

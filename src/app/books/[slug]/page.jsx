@@ -77,7 +77,7 @@ export async function generateMetadata({ params }) {
     book.size ? ` ${book.size.toLowerCase()}` : ""
   }) at ₹${price}${pct ? `, ${pct}% off the ₹${mrp} MRP` : ""}. ${
     about && about.length < 110 ? `${about} ` : ""
-  }${delivery}, Cash on Delivery and 7-day returns across India.`;
+  }${delivery}, Cash on Delivery and 7-day replacement across India.`;
 
   const keywords = [
     book.name,

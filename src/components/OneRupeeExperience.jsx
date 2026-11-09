@@ -48,7 +48,7 @@ export default function OneRupeeExperience() {
               Bestselling books at just <span className="or-price-tag">₹1</span>
             </h1>
             <p className="or-hero-sub">
-              Pick a genuine, brand-new book for a single rupee — then add more
+              Pick a genuine book for a single rupee — then add more
               to unlock free delivery across India.
             </p>
             <div className="or-trust">
@@ -59,7 +59,7 @@ export default function OneRupeeExperience() {
                 <Wallet size={15} /> Cash on Delivery
               </span>
               <span className="or-trust-item">
-                <ShieldCheck size={15} /> 7-day returns
+                <ShieldCheck size={15} /> 7-day replacement
               </span>
             </div>
           </section>

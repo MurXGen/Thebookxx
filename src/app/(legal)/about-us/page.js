@@ -11,12 +11,12 @@ import {
 export const metadata = {
   title: "About TheBookX, India's Friendly Online Bookstore",
   description:
-    "TheBookX makes great books affordable for every Indian reader, curated bestsellers at the lowest prices, free delivery, Cash on Delivery, and books starting at ₹1.",
+    "TheBookX makes great books affordable for every Indian reader: genuine bestsellers at the lowest prices, free delivery from ₹199, Cash on Delivery, and books starting at ₹1.",
   alternates: { canonical: "https://www.thebookx.in/about-us" },
   openGraph: {
     title: "About TheBookX, India's Friendly Online Bookstore",
     description:
-      "Curated bestsellers at the lowest prices, free delivery, Cash on Delivery, and books starting at ₹1, delivered across India.",
+      "Genuine bestsellers at the lowest prices, free delivery from ₹199, Cash on Delivery, and books starting at ₹1, delivered across India.",
     url: "https://www.thebookx.in/about-us",
     type: "website",
   },
@@ -30,23 +30,23 @@ const PROMISES = [
   },
   {
     icon: Truck,
-    title: "Free delivery, pan-India",
-    text: "Shipped securely via Delhivery and India Post, reaching you in great condition anywhere in India.",
+    title: "Free delivery from ₹199",
+    text: "Shipped securely via Delhivery and India Post to almost every pincode in India, free on orders of ₹199–₹1,000.",
   },
   {
     icon: Wallet,
     title: "Cash on Delivery",
-    text: "Pay at your doorstep with COD, or use fast UPI with no extra charges.",
+    text: "Pay at your doorstep with COD (small handling fee), or pay by UPI with no extra charge.",
   },
   {
     icon: RotateCcw,
-    title: "Easy 7-day returns",
-    text: "Not the right read? Our straightforward 7-day return policy keeps every order risk-free.",
+    title: "Free cancellation & 7-day replacement",
+    text: "Cancel free before dispatch. Damaged, defective or wrong book? Report it within 7 days and we replace it or refund you.",
   },
   {
     icon: ShieldCheck,
-    title: "Good-quality paperbacks",
-    text: "Genuine paperback editions sourced from trusted shops and retailers, quality-checked and carefully packed.",
+    title: "Genuine, honestly sourced",
+    text: "Legitimate published paperbacks from trusted shops and distributors (never photocopies), quality-checked and carefully packed. That is how we keep prices this low.",
   },
   {
     icon: BookOpen,
@@ -64,7 +64,7 @@ export default function AboutUs() {
           <p className="legal-intro">
             TheBookX is an India-first online bookstore on a simple mission: make
             great books affordable for every reader. From timeless classics to
-            the self-help and fiction everyone's talking about, we bring you a
+            the self-help and fiction everyone&apos;s talking about, we bring you a
             hand-picked collection at prices that make it easy to keep reading.
           </p>
         </div>
@@ -75,13 +75,13 @@ export default function AboutUs() {
         <p>
           We started TheBookX (formerly Uskillbook) because we believe price
           should never be the reason someone stops reading. Books change how we
-          think, work and live, and they should be within everyone's reach.
+          think, work and live, and they should be within everyone&apos;s reach.
           That belief is why we run our headline ₹1 book sale and keep our
           everyday prices honest and low.
         </p>
         <p>
           Today, readers across India trust us for a tight, curated catalogue,
-          fast and secure delivery, and friendly support that's only a WhatsApp
+          fast and secure delivery, and friendly support that&apos;s only a WhatsApp
           message away.
         </p>
       </section>
@@ -108,7 +108,7 @@ export default function AboutUs() {
           shares reading lists and practical ideas on clarity, focus and
           self-improvement, including writing by{" "}
           <Link href="/author/murthy-thevar">Murthy Thevar</Link>, author of{" "}
-          <em>The Art of Clarity</em>. It's our way of helping you find your next
+          <em>The Art of Clarity</em>. It&apos;s our way of helping you find your next
           great read.
         </p>
       </section>
@@ -116,7 +116,7 @@ export default function AboutUs() {
       <section id="about-cta">
         <h2>Start reading for less</h2>
         <p>
-          Browse the full collection, or reach out any time, we're happy to help
+          Browse the full collection, or reach out any time, we&apos;re happy to help
           you find the right book.
         </p>
         <div className="about-cta-row">

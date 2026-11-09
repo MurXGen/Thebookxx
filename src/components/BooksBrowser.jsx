@@ -176,7 +176,7 @@ export default function BooksBrowser({ categories, totalBooks }) {
               </span>
             ))}{" "}
             to niche shelves. Every order ships within a day with Cash on Delivery, free delivery above ₹199 and
-            7-day returns.
+            7-day replacement.
           </p>
         </section>
       </main>

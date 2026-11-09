@@ -93,7 +93,7 @@ export default function ForAI() {
         <li>One ₹1 book per order. Orders with a ₹1 book need ₹199+ in books; other orders ₹99+.</li>
         <li>Standard delivery: 5–9 days, free from ₹199 (₹69 below).</li>
         <li>Faster delivery: 1–6 days for a small extra. It is pre-selected on the payment step and the user can switch it off.</li>
-        <li>Cash on Delivery is available with standard delivery (small handling fee). 7-day returns.</li>
+        <li>Cash on Delivery is available with standard delivery (small handling fee). 7-day replacement.</li>
         <li>The user always confirms and pays themselves. The link never places an order on its own.</li>
       </ul>
 

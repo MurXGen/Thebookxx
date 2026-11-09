@@ -70,7 +70,7 @@ export async function GET() {
   <channel>
     <title>TheBookX — Book Catalogue</title>
     <link>${SITE}</link>
-    <description>Books from TheBookX, starting at just ₹1. Free delivery and Cash on Delivery across India.</description>
+    <description>Books from TheBookX, starting at just ₹1. Free delivery from ₹199 and Cash on Delivery across India.</description>
 ${items}
   </channel>
 </rss>`;

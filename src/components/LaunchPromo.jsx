@@ -41,8 +41,8 @@ export default function LaunchPromo() {
           <p className="launch-sub">
             The wait is over. Grab {book.name}
             {book.author ? ` by ${book.author}` : ""} at the lowest price in
-            India — authentic paperback, free delivery, Cash on Delivery &amp;
-            easy 7-day returns.
+            India — authentic paperback, free delivery from ₹199, Cash on Delivery &amp;
+            7-day replacement on damaged or wrong books.
           </p>
 
           <div className="launch-price-row">

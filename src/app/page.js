@@ -198,6 +198,9 @@ export default function HomePage() {
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <HomeHero />
 
+      {/* Real reader photos — the first thing under the hero, for trust */}
+      <ReviewGallery />
+
       {/* Shop by category — one swipeable row right under the hero. */}
       <CatalogueSection />
 
@@ -221,8 +224,6 @@ export default function HomePage() {
         books={RAIL_ONE_RUPEE}
       />
 
-      {/* Review-photo trust gallery — replaces the Bestseller carousel */}
-      <ReviewGallery />
 
 
       {/* Compact 2-row ₹1 books rail — above the review gallery. */}

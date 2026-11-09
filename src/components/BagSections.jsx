@@ -157,7 +157,7 @@ export function PolicyNote() {
   return (
     <section className="bg-note">
       <p>
-        <Info size={14} /> <b>Note:</b> Wrong or damaged copy? Return it within 7 days of delivery. Orders can&apos;t be
+        <Info size={14} /> <b>Note:</b> Wrong or damaged copy? Report it within 7 days of delivery for a replacement or refund. Orders can&apos;t be
         changed once packed.
       </p>
       <Link href="/refund" className="bg-link">

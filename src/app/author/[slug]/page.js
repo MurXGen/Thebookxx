@@ -47,8 +47,8 @@ export async function generateMetadata({ params }) {
     : `${author.name} Books | Buy ${author.name} Online at Lowest Price | Books Starting at ₹1`;
 
   const description = author.isRich
-    ? `Discover ${author.name}, bestselling author of “${firstBook?.name}”. Browse all books by ${author.name} at TheBookX at the lowest prices in India, with free shipping, Cash on Delivery and books starting at just ₹1.`
-    : `Browse all ${count} book${count === 1 ? "" : "s"} by ${author.name} at TheBookX. Buy ${author.name}'s titles online at the lowest prices in India, with free delivery, Cash on Delivery and books starting at just ₹1.`;
+    ? `Discover ${author.name}, bestselling author of “${firstBook?.name}”. Browse all books by ${author.name} at TheBookX at the lowest prices in India, with free delivery from ₹199, Cash on Delivery and books starting at just ₹1.`
+    : `Browse all ${count} book${count === 1 ? "" : "s"} by ${author.name} at TheBookX. Buy ${author.name}'s titles online at the lowest prices in India, with free delivery from ₹199, Cash on Delivery and books starting at just ₹1.`;
 
   return {
     title,
@@ -537,7 +537,7 @@ export default async function AuthorPage({ params }) {
               Explore books by {author.name}, starting at ₹1
             </h2>
             <p className="apx-cta-sub">
-              Lowest prices in India · Free shipping · Cash on Delivery
+              Lowest prices in India · Free delivery from ₹199 · Cash on Delivery
             </p>
             <Link href="/books" className="apx-cta-btn">
               Browse all books

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { FaWhatsapp } from "react-icons/fa";
+import Image from "next/image";
 import {
   Star,
   ArrowRight,
@@ -17,6 +18,18 @@ import {
 // image is skipped, and the carousel loops infinitely. Edit name/city/text to
 // match each photo; ratings are 1–5.
 const REVIEWS = [
+  {
+    img: "/review/bookreviews/thebookx-reader-order-ikigai-midnight-library-alchemist-monk-who-sold-his-ferrari.jpg",
+    caption: "A 7-book TheBookX order, delivered sealed in shrink-wrap",
+    books: ["Ikigai", "Myth = Mithya", "The Midnight Library", "Red Flags and Rishtas", "The Monk Who Sold His Ferrari", "The Alchemist"],
+    alt: "TheBookX customer order: Ikigai, Myth = Mithya, The Midnight Library, Red Flags and Rishtas, The Monk Who Sold His Ferrari and The Alchemist, sealed in shrink-wrap with a free bookmark",
+  },
+  {
+    img: "/review/bookreviews/thebookx-reader-order-psychology-of-money-mindset-manifest-art-of-reading-minds.jpg",
+    caption: "Self-help picks from a reader's TheBookX order",
+    books: ["The Psychology of Money", "Mindset", "Manifest", "The Art of Reading Minds"],
+    alt: "TheBookX customer order: The Psychology of Money by Morgan Housel, Mindset by Carol Dweck, Manifest by Roxie Nafousi and The Art of Reading Minds by Henrik Fexeus",
+  },
   {
     img: "/review/bookreviews/review-1.jpeg",
     name: "Aarav Mehta",
@@ -146,12 +159,21 @@ export default function ReviewGallery() {
 
   const isAnimating = isPlaying && inView;
 
-  // Auto-advance one photo at a time — loops forever via modulo.
+  // Auto-advance: scroll the row by one card while it's on screen and the
+  // shopper isn't touching it; wrap to the start at the end.
+  const stripRef = useRef(null);
+  const scrollByCard = (dir) => {
+    const el = stripRef.current;
+    if (!el) return;
+    const card = el.querySelector(".rg3-card");
+    const w = card ? card.getBoundingClientRect().width + 14 : 280;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
+    if (dir > 0 && atEnd) el.scrollTo({ left: 0, behavior: "smooth" });
+    else el.scrollBy({ left: dir * w, behavior: "smooth" });
+  };
   useEffect(() => {
     if (reviews.length < 2 || !isAnimating) return;
-    const t = setInterval(() => {
-      setCurrentIndex((i) => (i + 1) % reviews.length);
-    }, SWAP_INTERVAL);
+    const t = setInterval(() => scrollByCard(1), SWAP_INTERVAL);
     return () => clearInterval(t);
   }, [reviews.length, isAnimating]);
 
@@ -161,11 +183,9 @@ export default function ReviewGallery() {
   const safeIndex = currentIndex % total;
   const active = reviews[safeIndex];
 
-  const step = (dir) =>
-    setCurrentIndex((i) => (i + dir + total) % total);
+  const step = (dir) => scrollByCard(dir);
 
-  // Duplicate the photos so the marquee scrolls seamlessly.
-  const strip = [...reviews, ...reviews];
+  const strip = reviews;
 
   const features = [
     { icon: Bookmark, label: "Free bookmarks" },
@@ -173,99 +193,118 @@ export default function ReviewGallery() {
     { icon: Zap, label: "Faster delivery" },
   ];
 
+  // Search: describe the photos as an image gallery (honest, no star ratings
+  // attached to placeholder names).
+  const galleryLd = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    name: "Real photos from TheBookX readers",
+    description:
+      "Unfiltered photos customers shared after their TheBookX orders arrived: genuine books, sealed packaging and free bookmarks.",
+    url: "https://www.thebookx.in/#reader-photos",
+    image: reviews.map((r) => ({
+      "@type": "ImageObject",
+      contentUrl: `https://www.thebookx.in${r.img}`,
+      caption: r.caption || r.text,
+      description: r.alt || `Book photo shared by a TheBookX reader${r.city ? ` from ${r.city}` : ""}`,
+    })),
+  };
+
   return (
-    <section ref={sectionRef} className="rg2-wrapper">
+    <section ref={sectionRef} className="rg2-wrapper rg3" id="reader-photos" aria-labelledby="rg3-h">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(galleryLd) }} />
       <div className="section-1200 rg2-inner">
-        {/* Header — SEO heading unchanged, arrows step the quote */}
-        <div className="rg2-header">
-          <div className="rg2-heads">
-            <h2 className="rg2-title">Real photos from real readers</h2>
-            <p className="rg2-subtitle">
-              Unfiltered snaps our customers sent in after their books arrived
-            </p>
+        <div className="rg3-head">
+          <div className="rg3-heads">
+            <span className="rg3-kicker">
+              <Star size={13} fill="#ffb703" stroke="#ffb703" /> Loved by readers across India
+            </span>
+            <h2 id="rg3-h" className="rg2-title">Real photos from real readers</h2>
+            <p className="rg2-subtitle">Unfiltered snaps our customers sent after their books arrived</p>
           </div>
           {total > 1 && (
             <div className="rg2-arrows">
-              <button
-                type="button"
-                className="rg2-arrow"
-                onClick={() => step(-1)}
-                aria-label="Previous review"
-              >
+              <button type="button" className="rg2-arrow" onClick={() => step(-1)} aria-label="Previous photo">
                 <ChevronLeft size={18} />
               </button>
-              <button
-                type="button"
-                className="rg2-arrow"
-                onClick={() => step(1)}
-                aria-label="Next review"
-              >
+              <button type="button" className="rg2-arrow" onClick={() => step(1)} aria-label="Next photo">
                 <ChevronRight size={18} />
               </button>
             </div>
           )}
         </div>
 
-        {/* Smooth one-by-one horizontal photo marquee */}
-        <div className="rg2-strip">
-          <div className="rg2-strip-mask left" />
-          <div className="rg2-strip-mask right" />
-          <div
-            className={`rg2-track${isAnimating ? " run" : " paused"}`}
-            style={{ ["--rg2-count"]: total }}
-          >
-            {strip.map((r, i) => (
-              <div className="rg2-photo" key={`${r.img}-${i}`}>
-                <img
-                  src={r.img}
-                  alt={`Book photo shared by ${r.name}`}
-                  loading="lazy"
-                  draggable={false}
-                  onError={() =>
-                    setBroken((prev) => ({ ...prev, [r.img]: true }))
-                  }
-                />
-              </div>
-            ))}
+        {/* Big photo cards, each with its own feedback on the photo */}
+        <div
+          className="rg3-strip"
+          ref={stripRef}
+          onTouchStart={() => setIsPlaying(false)}
+          onTouchEnd={() => setTimeout(() => setIsPlaying(true), 4000)}
+        >
+          <div className="rg3-track">
+            {strip.map((r, i) => {
+              return (
+                <figure
+                  className="rg3-card"
+                  key={r.img}
+                  onMouseEnter={() => setIsPlaying(false)}
+                  onMouseLeave={() => setIsPlaying(true)}
+                >
+                  <Image
+                    src={r.img}
+                    alt={r.alt || `Book photo shared by a TheBookX reader${r.city ? ` from ${r.city}` : ""}`}
+                    width={480}
+                    height={600}
+                    sizes="(max-width: 767px) 64vw, 280px"
+                    quality={70}
+                    priority={i < 2}
+                    loading={i < 2 ? undefined : "lazy"}
+                    draggable={false}
+                    onError={() => setBroken((prev) => ({ ...prev, [r.img]: true }))}
+                  />
+                  <figcaption className="rg3-cap">
+                    {r.text ? (
+                      <>
+                        <Stars rating={r.rating} />
+                        <span className="rg3-quote">“{r.text}”</span>
+                        <span className="rg3-who">
+                          {r.name}
+                          {r.city ? ` · ${r.city}` : ""}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="rg3-tag">Customer photo</span>
+                        <span className="rg3-quote">{r.caption}</span>
+                        {r.books && <span className="rg3-who">{r.books.slice(0, 3).join(" · ")}{r.books.length > 3 ? ` +${r.books.length - 3}` : ""}</span>}
+                      </>
+                    )}
+                  </figcaption>
+                </figure>
+              );
+            })}
           </div>
         </div>
 
-        {/* Current review quote (clamped by height) + fixed Review-us button */}
-        <div className="rg2-quote-row">
-          <div className="rg2-quote">
-            <Stars rating={active.rating} />
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={active.img}
-                className="rg2-quote-text"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.3 }}
-              >
-                “{active.text}”
-                <span className="rg2-quote-author"> — {active.name}</span>
-              </motion.p>
-            </AnimatePresence>
+        <div className="rg3-foot">
+          <div className="rg2-badges">
+            {features.map(({ icon: Icon, label }) => (
+              <span key={label} className="rg2-badge">
+                <Icon size={15} className="rg2-badge-ic" />
+                {label}
+              </span>
+            ))}
           </div>
           <a
-            href="https://www.thebookx.in/review"
+            href={`https://wa.me/917710892108?text=${encodeURIComponent(
+              "Hi TheBookX! Sharing a photo of the books I received 📚",
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
             className="rg2-review-btn"
           >
-            Review us <ArrowRight size={16} />
+            <FaWhatsapp size={16} /> Share your photo
           </a>
-        </div>
-
-        {/* Feature badges — what customers love */}
-        <div className="rg2-badges">
-          {features.map(({ icon: Icon, label }) => (
-            <span key={label} className="rg2-badge">
-              <Icon size={15} className="rg2-badge-ic" />
-              {label}
-            </span>
-          ))}
         </div>
       </div>
     </section>

@@ -356,7 +356,7 @@ export default function BillModal({
             <Truck size={15} /> Doorstep delivery, tracked
           </span>
           <span>
-            <RotateCcw size={15} /> Easy 7-day returns
+            <RotateCcw size={15} /> 7-day replacement
           </span>
           <span>
             <ShieldCheck size={15} /> 100% genuine books

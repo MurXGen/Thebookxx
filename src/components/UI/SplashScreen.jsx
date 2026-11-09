@@ -80,7 +80,7 @@ export default function SplashScreen() {
                 <Truck size={15} /> COD available
               </span>
               <span className="splash-badge">
-                <RotateCcw size={15} /> 7-day returns
+                <RotateCcw size={15} /> 7-day replacement
               </span>
             </div>
           </motion.div>

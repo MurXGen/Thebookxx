@@ -19,7 +19,7 @@ export async function generateMetadata({ params }) {
   return {
     // Brand suffix added once by the root title template ("%s | TheBookX").
     title: `${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} Books | Buy Online at Lowest Prices, Starting at ₹1`,
-    description: `Shop the best ${categoryName} books online at TheBookX. Wide collection of ${categoryName} books at the lowest prices, starting at just ₹1. Free shipping across India!`,
+    description: `Shop the best ${categoryName} books online at TheBookX. Wide collection of ${categoryName} books at the lowest prices, starting at just ₹1. Free delivery from ₹199 across India!`,
     alternates: {
       canonical: `https://www.thebookx.in/category/${slug}`,
     },
@@ -85,7 +85,7 @@ export default async function CategoryPage({ params }) {
             "@id": `https://www.thebookx.in/category/${slug}`,
             url: `https://www.thebookx.in/category/${slug}`,
             name: `${displayName} Books`,
-            description: `Shop the best ${categoryName} books online at TheBookX at the lowest prices, starting at ₹1, with free delivery and Cash on Delivery across India.`,
+            description: `Shop the best ${categoryName} books online at TheBookX at the lowest prices, starting at ₹1, with free delivery from ₹199 and Cash on Delivery across India.`,
             isPartOf: { "@id": "https://www.thebookx.in/#website" },
             mainEntity: {
               "@type": "ItemList",

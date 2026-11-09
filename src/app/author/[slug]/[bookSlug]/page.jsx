@@ -50,7 +50,7 @@ export async function generateMetadata({ params }) {
   // Canonical points to the primary book URL so ranking is consolidated there.
   const canonical = `https://www.thebookx.in/books/${bookSlug}`;
   const title = `Buy ${book.name} by ${book.author} Online at the Lowest Price | Books Starting at ₹1`;
-  const description = `Buy ${book.name} by ${book.author} online at the lowest price on TheBookX. Free delivery, Cash on Delivery and easy 7-day returns across India.`;
+  const description = `Buy ${book.name} by ${book.author} online at the lowest price on TheBookX. Free delivery from ₹199, Cash on Delivery and 7-day replacement on damaged or wrong books across India.`;
 
   return {
     title,

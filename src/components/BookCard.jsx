@@ -401,11 +401,11 @@ function BookCard({ book: bookProp }) {
 
               <meta
                 itemProp="hasMerchantReturnPolicy"
-                content="7-day return policy"
+                content="7-day replacement for damaged or wrong books"
               />
               <meta
                 itemProp="shippingDetails"
-                content="Free shipping across India"
+                content="Free delivery from ₹199 across India"
               />
 
               {savings > 0 && (

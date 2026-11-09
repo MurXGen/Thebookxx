@@ -823,7 +823,7 @@ export default function BookDetailsModal({ book: bookProp }) {
               </li>
               <li>
                 <RotateCcw size={16} />
-                <span>7-day returns</span>
+                <span>7-day replacement</span>
               </li>
               <li>
                 <ShieldCheck size={16} />
@@ -1020,8 +1020,8 @@ export default function BookDetailsModal({ book: bookProp }) {
               <li>
                 <RotateCcw size={18} />
                 <span>
-                  <b>7-day returns</b>
-                  Something wrong with your copy? Return it within 7 days of delivery.{" "}
+                  <b>7-day replacement</b>
+                  Damaged or wrong copy? Report it within 7 days of delivery for a replacement or refund.{" "}
                   <Link href="/refund">Return policy</Link>
                 </span>
               </li>

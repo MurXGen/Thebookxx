@@ -23,7 +23,7 @@ export default function InlineBookAd({ book, label = "Editor's pick" }) {
         </Link>
         {book.author && <span className="bia-author">by {book.author}</span>}
         <p className="bia-pitch">
-          A reader favourite on TheBookX — free delivery &amp; Cash on Delivery
+          A reader favourite on TheBookX — free delivery from ₹199 &amp; Cash on Delivery
           across India.
         </p>
         <div className="bia-cta-row">

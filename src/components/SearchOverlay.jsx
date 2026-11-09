@@ -980,7 +980,7 @@ export default function SearchOverlay({
                               <Truck size={13} /> Cash on Delivery
                             </span>
                             <span>
-                              <RotateCcw size={13} /> 7-day returns
+                              <RotateCcw size={13} /> 7-day replacement
                             </span>
                           </div>
                         </motion.div>

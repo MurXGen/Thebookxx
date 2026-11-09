@@ -40,7 +40,7 @@ export default function CombosClient() {
           {combos.length} handpicked book bundles across bestsellers, romance,
           thrillers, business, self-help, author collections and more. Every
           combo drops the whole set into your bag in one tap — with prices from
-          ₹1, Cash on Delivery and free delivery across India.
+          ₹1, Cash on Delivery and free delivery from ₹199.
         </p>
       </header>
 

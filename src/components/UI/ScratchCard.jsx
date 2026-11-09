@@ -12,6 +12,8 @@ export default function ScratchCard({
   revealText = "Better luck next time",
   revealSub = "Thanks for reviewing ",
   completeAt = 0.55,
+  cover = "plain", // "plain" | "festive" (₹ pattern, sparkles, coin)
+  revealIcon,
   onComplete,
 }) {
   const canvasRef = useRef(null);
@@ -32,11 +34,55 @@ export default function ScratchCard({
     g.addColorStop(1, "#ffb703");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.font = "bold 16px Poppins, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(" Scratch here ", width / 2, height / 2);
+    if (cover === "festive") {
+      // Diagonal ₹ pattern
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,0.16)";
+      ctx.font = "800 15px Poppins, sans-serif";
+      for (let y = 10; y < height + 20; y += 28) {
+        for (let x = (y / 28) % 2 ? 6 : 20; x < width + 20; x += 30) ctx.fillText("₹", x, y);
+      }
+      ctx.restore();
+      // Sparkles
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      [[0.12, 0.2, 4], [0.86, 0.18, 3], [0.9, 0.78, 4], [0.1, 0.82, 3], [0.7, 0.12, 2.5]].forEach(([px, py, r]) => {
+        const cx = px * width, cy = py * height;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - r * 2);
+        ctx.quadraticCurveTo(cx, cy, cx + r * 2, cy);
+        ctx.quadraticCurveTo(cx, cy, cx, cy + r * 2);
+        ctx.quadraticCurveTo(cx, cy, cx - r * 2, cy);
+        ctx.quadraticCurveTo(cx, cy, cx, cy - r * 2);
+        ctx.fill();
+      });
+      // Coin
+      const cx = width / 2, cy = height / 2 - 18;
+      const cg = ctx.createRadialGradient(cx - 6, cy - 8, 2, cx, cy, 26);
+      cg.addColorStop(0, "#fff3c4");
+      cg.addColorStop(1, "#f59e0b");
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 24, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = "#b45309";
+      ctx.stroke();
+      ctx.fillStyle = "#92400e";
+      ctx.font = "900 22px Poppins, sans-serif";
+      ctx.fillText("₹", cx, cy + 1);
+      ctx.fillStyle = "#fff";
+      ctx.font = "800 17px Poppins, sans-serif";
+      ctx.fillText("Scratch here", width / 2, height / 2 + 30);
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.font = "600 11px Poppins, sans-serif";
+      ctx.fillText("Reveal your wallet cash", width / 2, height / 2 + 50);
+    } else {
+      ctx.fillStyle = "rgba(255,255,255,0.95)";
+      ctx.font = "bold 16px Poppins, sans-serif";
+      ctx.fillText(" Scratch here ", width / 2, height / 2);
+    }
 
     let drawing = false;
     let done = false;
@@ -103,8 +149,9 @@ export default function ScratchCard({
   }, []);
 
   return (
-    <div className="scratch-card" style={{ width, height }}>
+    <div className={`scratch-card${cover === "festive" ? " festive" : ""}${revealed ? " revealed" : ""}`} style={{ width, height }}>
       <div className="scratch-reveal">
+        {revealIcon && <span className="scratch-reveal-ic">{revealIcon}</span>}
         <span className="scratch-reveal-main">{revealText}</span>
         {revealSub && <span className="scratch-reveal-sub">{revealSub}</span>}
       </div>

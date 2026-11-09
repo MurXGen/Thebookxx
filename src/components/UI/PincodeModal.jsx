@@ -7,12 +7,14 @@ import {
   MapPin,
   Truck,
   ShieldCheck,
+  Check,
   Clock,
   Phone,
   Gift,
 } from "lucide-react";
 import LoadingButton from "./LoadingButton";
 import { trackFunnelEvent } from "@/lib/analytics";
+import { showToast } from "@/context/ToastContext";
 import { EVENTS } from "@/lib/trackingEvents";
 import { useTrackView } from "@/lib/trackingHooks";
 import { trackPincodeToGoogleForm } from "@/utils/googleForm";
@@ -256,6 +258,12 @@ export default function PincodeModal() {
     // Phone is now REQUIRED; pincode is optional.
     if (phoneNumber.length !== 10) {
       setError("Please enter a valid 10-digit mobile number");
+      showToast(
+        phoneNumber.length === 0
+          ? "Enter your 10-digit mobile number"
+          : `Enter all 10 digits (${phoneNumber.length}/10 entered)`,
+        "error",
+      );
       trackFunnelEvent(EVENTS.PINCODE_SUBMITTED, {
         status: "error",
         error_reason: "invalid_phone",
@@ -441,7 +449,7 @@ export default function PincodeModal() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="bill-modal"
+              className={`bill-modal${stage === "teaser" ? "" : " pinfs-modal"}`}
               onClick={(e) => e.stopPropagation()}
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -497,198 +505,112 @@ export default function PincodeModal() {
                   </div>
                 </>
               ) : (
-                <>
-                  {/* Header */}
-                  <div className="bill-header">
-                    <span className="weight-600 font-16">
-                      {event.emoji} Enter your number to unlock
-                    </span>
-                    <span className="cursor-pointer" onClick={handleSkip}>
-                      <X size={16} />
+                <div className="pinfs">
+                  {/* Sunburst + floating coins/books */}
+                  <div className="pinfs-rays" aria-hidden="true" />
+                  <span className="pinfs-float c1" aria-hidden="true">₹</span>
+                  <span className="pinfs-float c2" aria-hidden="true">₹</span>
+                  <span className="pinfs-float c3" aria-hidden="true">₹</span>
+                  <span className="pinfs-float b1" aria-hidden="true">📚</span>
+                  <span className="pinfs-float b2" aria-hidden="true">🔖</span>
+
+                  <button type="button" className="pinfs-x" onClick={handleSkip} aria-label="Close">
+                    <X size={20} />
+                  </button>
+
+                  <div className="pinfs-top">
+                    <span className="pinfs-brand">TheBookX</span>
+                    <h2 className="pinfs-h">
+                      Scratch &amp; win
+                      <br />
+                      <em>wallet cash</em>
+                    </h2>
+                    <p className="pinfs-sub">Add your mobile number to unlock your scratch card</p>
+                  </div>
+
+                  <div className="pinfs-badge" aria-hidden="true">
+                    <span className="pinfs-crown">{event.emoji || "🪔"}</span>
+                    <span className="pinfs-badge-in">
+                      <b>Scratch</b>
+                      <b>&amp; Win</b>
                     </span>
                   </div>
 
-                  <div className="address-form-content flex flex-col gap-12">
-                    <div className="flex flex-col">
-                      {/* Phone Number (only field now — no pincode) */}
-                      <div className="input-group">
-                        <label className="flex flex-row gap-4 flex-center items-center">
-                          <Phone size={14} />
-                          Mobile Number <span className="red">*</span>
-                        </label>
-                        <input
-                          className={`sec-mid-btn ${error ? "error-border" : ""}`}
-                          placeholder="Enter 10-digit mobile number"
-                          value={phoneNumber}
-                          maxLength={10}
-                          inputMode="numeric"
-                          onChange={(e) =>
-                            setPhoneNumber(e.target.value.replace(/\D/g, ""))
-                          }
-                          onKeyPress={(e) =>
-                            e.key === "Enter" && handleSubmit()
-                          }
-                        />
-                        {error && (
-                          <span className="font-12 red flex items-center gap-4 mt-4">
-                            <span></span>
-                            {error}
-                          </span>
-                        )}
-                        <span className="font-10 gray-500 mt-4">
-                          Get notified about special offers and delivery updates
-                        </span>
-
-                        {/* 3D teaser stripe — nudges the shopper to add their number
-                      so they can win a wallet reward on submit */}
-                        <div className="pin-win-stripe">
-                          <svg
-                            className="pin-scratch-ic"
-                            viewBox="0 0 24 24"
-                            width="16"
-                            height="16"
-                            aria-hidden="true"
-                          >
-                            <rect
-                              x="2.5"
-                              y="4.5"
-                              width="19"
-                              height="15"
-                              rx="3"
-                              fill="#fb8500"
-                            />
-                            <rect
-                              x="5"
-                              y="7"
-                              width="14"
-                              height="10"
-                              rx="2"
-                              fill="#ffe0a3"
-                            />
-                            <path
-                              d="M6.5 12h9"
-                              stroke="#c25e00"
-                              strokeWidth="1.6"
-                              strokeLinecap="round"
-                              strokeDasharray="1.5 2.4"
-                            />
-                            <circle
-                              cx="17.5"
-                              cy="7"
-                              r="3.4"
-                              fill="#ffd166"
-                              stroke="#c25e00"
-                              strokeWidth="1"
-                            />
-                          </svg>
-                          <span>
-                            Fill your details &amp;{" "}
-                            <span className="pin-win-emph">
-                              WIN A SCRATCH CARD
-                            </span>
-                          </span>
-                        </div>
-                      </div>
+                  <div className="pinfs-form">
+                    <label className="pinfs-lbl" htmlFor="pinfs-phone">
+                      Mobile number
+                    </label>
+                    <div className={`pinfs-phone${error ? " err" : ""}`}>
+                      <span className="pinfs-cc">+91</span>
+                      <input
+                        id="pinfs-phone"
+                        placeholder="10-digit mobile number"
+                        value={phoneNumber}
+                        maxLength={10}
+                        inputMode="numeric"
+                        autoComplete="tel-national"
+                        onChange={(e) => {
+                          setPhoneNumber(e.target.value.replace(/\D/g, ""));
+                          if (error) setError("");
+                        }}
+                        onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+                      />
+                      {phoneNumber.length === 10 && <Check size={18} className="pinfs-ok" />}
                     </div>
+                    {error ? (
+                      <span className="pinfs-err">{error}</span>
+                    ) : (
+                      <span className="pinfs-help">For offers, order updates &amp; your wallet</span>
+                    )}
 
-                    {/* Optional: where did you hear about us? (chip badges) */}
-                    <div className="pin-source">
-                      <span className="pin-source-label">
-                        Where did you find us?{" "}
-                        <span className="pin-source-opt">(optional)</span>
-                      </span>
-                      <div className="pin-source-chips">
-                        {SOURCE_CHIPS.map((c) => (
-                          <button
-                            type="button"
-                            key={c}
-                            className={`pin-source-chip${source === c ? " active" : ""}`}
-                            onClick={() => {
-                              setSource(c);
-                              setShowOtherSource(false);
-                            }}
-                          >
-                            {c}
-                          </button>
-                        ))}
+                    <span className="pinfs-lbl2">
+                      Where did you find us? <small>(optional)</small>
+                    </span>
+                    <div className="pinfs-chips">
+                      {[...SOURCE_CHIPS, "Others"].map((c) => (
                         <button
                           type="button"
-                          className={`pin-source-chip${source === "Others" ? " active" : ""}`}
+                          key={c}
+                          className={`pinfs-chip${source === c ? " on" : ""}`}
                           onClick={() => {
-                            setSource("Others");
-                            setShowOtherSource(true);
+                            setSource(c);
+                            setShowOtherSource(c === "Others");
                           }}
                         >
-                          Others
+                          {c}
                         </button>
-                      </div>
-                      {showOtherSource && (
-                        <input
-                          className="sec-mid-btn pin-source-other"
-                          placeholder="Tell us where (e.g. friend, WhatsApp)"
-                          value={otherSource}
-                          maxLength={40}
-                          onChange={(e) => setOtherSource(e.target.value)}
-                        />
-                      )}
+                      ))}
                     </div>
-
-                    {/* Benefits — scrolling marquee, items split by a dot */}
-                    <div className="pin-marquee">
-                      <div className="pin-marquee-track">
-                        {[0, 1].map((k) => (
-                          <span
-                            className="pin-marquee-group"
-                            key={k}
-                            aria-hidden={k === 1}
-                          >
-                            <span className="pin-marquee-item">
-                              Check delivery availability
-                            </span>
-                            <span className="pin-marquee-sep">•</span>
-                            <span className="pin-marquee-item">
-                              Estimated delivery time
-                            </span>
-                            <span className="pin-marquee-sep">•</span>
-                            <span className="pin-marquee-item">
-                              Better recommendations
-                            </span>
-                            <span className="pin-marquee-sep">•</span>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="dashed-border my-12"></div>
-
-                    {/* Buttons */}
-                    <div className="flex flex-row gap-12">
-                      <button
-                        className="sec-mid-btn width100"
-                        onClick={handleSkip}
-                      >
-                        Skip for now
-                      </button>
-                      <LoadingButton
-                        className="pri-big-btn width100"
-                        onClick={handleSubmit}
-                        disabled={loading || phoneNumber.length !== 10}
-                      >
-                        {loading ? "Unlocking..." : "Unlock & scratch "}
-                      </LoadingButton>
-                    </div>
-
+                    {showOtherSource && (
+                      <input
+                        className="pinfs-other"
+                        placeholder="Tell us where (e.g. friend, WhatsApp)"
+                        value={otherSource}
+                        maxLength={40}
+                        onChange={(e) => setOtherSource(e.target.value)}
+                      />
+                    )}
                     {locationData && (
-                      <div className="flex flex-row flex-center gap-4 green items-center infoMessage mt-12">
-                        <span></span>
-                        <span className="font-12">
-                          Delivery available to {locationData.city},{" "}
-                          {locationData.state}
-                        </span>
-                      </div>
+                      <span className="pinfs-loc">
+                        Delivery available to {locationData.city}, {locationData.state}
+                      </span>
                     )}
                   </div>
-                </>
+
+                  <div className="pinfs-foot">
+                    <small className="pinfs-tc">*T&amp;C apply</small>
+                    <LoadingButton
+                      className="pinfs-cta"
+                      onClick={handleSubmit}
+                      disabled={loading}
+                    >
+                      {loading ? "Unlocking…" : "Unlock & scratch"}
+                    </LoadingButton>
+                    <button type="button" className="pinfs-skip" onClick={handleSkip}>
+                      Skip for now
+                    </button>
+                  </div>
+                </div>
               )}
             </motion.div>
           </motion.div>
@@ -716,8 +638,8 @@ export default function PincodeModal() {
             </>
           ) : (
             <>
-              You already have wallet credit waiting for you. Use it on your
-              next order!
+              No reward this time. Your books are still at the lowest prices, so happy
+              shopping!
             </>
           )
         }

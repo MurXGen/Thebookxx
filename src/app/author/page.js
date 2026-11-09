@@ -14,7 +14,7 @@ function slugify(text) {
 export const metadata = {
   title: "All Authors — Browse Books by Author | Books Starting at ₹1",
   description:
-    "Browse every author at TheBookX and explore all their books. Buy books online at the lowest prices in India — free shipping, Cash on Delivery, with books starting at just ₹1.",
+    "Browse every author at TheBookX and explore all their books. Buy books online at the lowest prices in India — free delivery from ₹199, Cash on Delivery, with books starting at just ₹1.",
   keywords:
     "authors, book authors, browse by author, buy books online India, lowest price books, books starting at ₹1, TheBookX",
   alternates: { canonical: "https://thebookx.in/author" },
@@ -22,7 +22,7 @@ export const metadata = {
   openGraph: {
     title: "All Authors — Browse Books by Author | Books Starting at ₹1",
     description:
-      "Explore every author at TheBookX and all their books — lowest prices in India, free shipping, books starting at ₹1.",
+      "Explore every author at TheBookX and all their books — lowest prices in India, free delivery from ₹199, books starting at ₹1.",
     url: "https://thebookx.in/author",
     siteName: "TheBookX",
     locale: "en_IN",

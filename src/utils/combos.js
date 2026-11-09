@@ -28,7 +28,7 @@ export const combos = [
       "bk-007"
     ],
     "seoTitle": "Bestseller Power Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Bestseller Power Pack combo (The Art of Clarity, Atomic Habits, The Psychology of Money, Surrounded by Idiots) online at the lowest price on TheBookX. 4 handpicked books for just ₹579 (MRP ₹870) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Bestseller Power Pack combo (The Art of Clarity, Atomic Habits, The Psychology of Money, Surrounded by Idiots) online at the lowest price on TheBookX. 4 handpicked books for just ₹579 (MRP ₹870) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-002",
@@ -43,7 +43,7 @@ export const combos = [
       "bk-014"
     ],
     "seoTitle": "Must-Read Bestsellers — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Must-Read Bestsellers combo (The Subtle Art of Not Giving a F*ck, The Laws of Human Nature, The 48 Laws of Power, Diary of a CEO) online at the lowest price on TheBookX. 4 handpicked books for just ₹959 (MRP ₹1430) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Must-Read Bestsellers combo (The Subtle Art of Not Giving a F*ck, The Laws of Human Nature, The 48 Laws of Power, Diary of a CEO) online at the lowest price on TheBookX. 4 handpicked books for just ₹959 (MRP ₹1430) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-003",
@@ -57,7 +57,7 @@ export const combos = [
       "bk-018"
     ],
     "seoTitle": "Bestsellers of the Year — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Bestsellers of the Year combo (The Inmate, The Housemaid, The Housemaid's Secret) online at the lowest price on TheBookX. 3 handpicked books for just ₹429 (MRP ₹640) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Bestsellers of the Year combo (The Inmate, The Housemaid, The Housemaid's Secret) online at the lowest price on TheBookX. 3 handpicked books for just ₹429 (MRP ₹640) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-004",
@@ -72,7 +72,7 @@ export const combos = [
       "bk-024"
     ],
     "seoTitle": "Reader-Favourite Bestsellers — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Reader-Favourite Bestsellers combo (The Housemaid Is Watching, Never Lie, Days at the Morisaki Bookshop, All He'll Ever Be) online at the lowest price on TheBookX. 4 handpicked books for just ₹659 (MRP ₹990) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Reader-Favourite Bestsellers combo (The Housemaid Is Watching, Never Lie, Days at the Morisaki Bookshop, All He'll Ever Be) online at the lowest price on TheBookX. 4 handpicked books for just ₹659 (MRP ₹990) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-005",
@@ -87,7 +87,7 @@ export const combos = [
       "bk-041"
     ],
     "seoTitle": "The Big Bestseller Box — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the The Big Bestseller Box combo (The 5 Types of Wealth, The Let Them Theory, The First 90 Days, The Kite Runner) online at the lowest price on TheBookX. 4 handpicked books for just ₹749 (MRP ₹1110) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the The Big Bestseller Box combo (The 5 Types of Wealth, The Let Them Theory, The First 90 Days, The Kite Runner) online at the lowest price on TheBookX. 4 handpicked books for just ₹749 (MRP ₹1110) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-006",
@@ -101,7 +101,7 @@ export const combos = [
       "bk-045"
     ],
     "seoTitle": "Trending Bestseller Bundle — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Trending Bestseller Bundle combo (A Thousand Splendid Suns, And the Mountains Echoed, Before the Coffee Gets Cold) online at the lowest price on TheBookX. 3 handpicked books for just ₹469 (MRP ₹700) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Trending Bestseller Bundle combo (A Thousand Splendid Suns, And the Mountains Echoed, Before the Coffee Gets Cold) online at the lowest price on TheBookX. 3 handpicked books for just ₹469 (MRP ₹700) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-007",
@@ -115,7 +115,7 @@ export const combos = [
       "bk-027"
     ],
     "seoTitle": "Romance Lovers Box — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Romance Lovers Box combo (Red Flags and Rishtas, Was I Ever Enough, Can We Be Strangers Again) online at the lowest price on TheBookX. 3 handpicked books for just ₹1 with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Romance Lovers Box combo (Red Flags and Rishtas, Was I Ever Enough, Can We Be Strangers Again) online at the lowest price on TheBookX. 3 handpicked books for just ₹1 with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-008",
@@ -130,7 +130,7 @@ export const combos = [
       "bk-050"
     ],
     "seoTitle": "Swoon-Worthy Romance Set — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Swoon-Worthy Romance Set combo (Thank You for Leaving, Too Good to Be True, I Don't Love You Anymore, Twisted Love) online at the lowest price on TheBookX. 4 handpicked books for just ₹559 (MRP ₹830) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Swoon-Worthy Romance Set combo (Thank You for Leaving, Too Good to Be True, I Don't Love You Anymore, Twisted Love) online at the lowest price on TheBookX. 4 handpicked books for just ₹559 (MRP ₹830) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-009",
@@ -144,7 +144,7 @@ export const combos = [
       "bk-053"
     ],
     "seoTitle": "Heartbreak & Healing Reads — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Heartbreak & Healing Reads combo (Twisted Games, Twisted Hate, Twisted Lies) online at the lowest price on TheBookX. 3 handpicked books for just ₹539 (MRP ₹810) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Heartbreak & Healing Reads combo (Twisted Games, Twisted Hate, Twisted Lies) online at the lowest price on TheBookX. 3 handpicked books for just ₹539 (MRP ₹810) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-010",
@@ -159,7 +159,7 @@ export const combos = [
       "bk-057"
     ],
     "seoTitle": "Spicy Romance Bundle — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Spicy Romance Bundle combo (King of Wrath, King of Pride, King of Greed, King of Sloth) online at the lowest price on TheBookX. 4 handpicked books for just ₹699 (MRP ₹1040) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Spicy Romance Bundle combo (King of Wrath, King of Pride, King of Greed, King of Sloth) online at the lowest price on TheBookX. 4 handpicked books for just ₹699 (MRP ₹1040) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-011",
@@ -174,7 +174,7 @@ export const combos = [
       "bk-093"
     ],
     "seoTitle": "Modern Love Stories Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Modern Love Stories Pack combo (Ugly Love, White Nights, Haunting Adeline, Hunting Adeline) online at the lowest price on TheBookX. 4 handpicked books for just ₹689 (MRP ₹1020) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Modern Love Stories Pack combo (Ugly Love, White Nights, Haunting Adeline, Hunting Adeline) online at the lowest price on TheBookX. 4 handpicked books for just ₹689 (MRP ₹1020) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-012",
@@ -188,7 +188,7 @@ export const combos = [
       "bk-101"
     ],
     "seoTitle": "Slow-Burn Romance Set — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Slow-Burn Romance Set combo (Pride and Prejudice, Red, White & Royal Blue, The Love Hypothesis) online at the lowest price on TheBookX. 3 handpicked books for just ₹509 (MRP ₹760) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Slow-Burn Romance Set combo (Pride and Prejudice, Red, White & Royal Blue, The Love Hypothesis) online at the lowest price on TheBookX. 3 handpicked books for just ₹509 (MRP ₹760) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-013",
@@ -203,7 +203,7 @@ export const combos = [
       "bk-064"
     ],
     "seoTitle": "Edge-of-Your-Seat Thrillers — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Edge-of-Your-Seat Thrillers combo (Talking with Psychopaths, The Locked Door, Dark Matter, Verity) online at the lowest price on TheBookX. 4 handpicked books for just ₹659 (MRP ₹980) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Edge-of-Your-Seat Thrillers combo (Talking with Psychopaths, The Locked Door, Dark Matter, Verity) online at the lowest price on TheBookX. 4 handpicked books for just ₹659 (MRP ₹980) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-014",
@@ -218,7 +218,7 @@ export const combos = [
       "bk-111"
     ],
     "seoTitle": "Midnight Thriller Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Midnight Thriller Pack combo (The Hidden Hindu, Family of Liars, Agatha Christie Classic Collection Set, Dark Verse Series Set) online at the lowest price on TheBookX. 4 handpicked books for just ₹1959 (MRP ₹2930) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Midnight Thriller Pack combo (The Hidden Hindu, Family of Liars, Agatha Christie Classic Collection Set, Dark Verse Series Set) online at the lowest price on TheBookX. 4 handpicked books for just ₹1959 (MRP ₹2930) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-015",
@@ -232,7 +232,7 @@ export const combos = [
       "bk-119"
     ],
     "seoTitle": "Crime & Mystery Bundle — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Crime & Mystery Bundle combo (A Good Girl's Guide to Murder Series Set, Chainsaw Man Set (Volumes 1-11+), The Hunger Games Trilogy Set) online at the lowest price on TheBookX. 3 handpicked books for just ₹3659 (MRP ₹5480) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Crime & Mystery Bundle combo (A Good Girl's Guide to Murder Series Set, Chainsaw Man Set (Volumes 1-11+), The Hunger Games Trilogy Set) online at the lowest price on TheBookX. 3 handpicked books for just ₹3659 (MRP ₹5480) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-016",
@@ -247,7 +247,7 @@ export const combos = [
       "bk-124"
     ],
     "seoTitle": "Psychological Thriller Set — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Psychological Thriller Set combo (A Good Girl's Guide to Murder, Good Girl, Bad Blood, As Good As Dead, And Then There Were None) online at the lowest price on TheBookX. 4 handpicked books for just ₹719 (MRP ₹1070) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Psychological Thriller Set combo (A Good Girl's Guide to Murder, Good Girl, Bad Blood, As Good As Dead, And Then There Were None) online at the lowest price on TheBookX. 4 handpicked books for just ₹719 (MRP ₹1070) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-017",
@@ -262,7 +262,7 @@ export const combos = [
       "bk-128"
     ],
     "seoTitle": "Unputdownable Thrillers — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Unputdownable Thrillers combo (The Murder of Roger Ackroyd, Murder on the Orient Express, Death on the Nile, The A.B.C. Murders) online at the lowest price on TheBookX. 4 handpicked books for just ₹639 (MRP ₹960) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Unputdownable Thrillers combo (The Murder of Roger Ackroyd, Murder on the Orient Express, Death on the Nile, The A.B.C. Murders) online at the lowest price on TheBookX. 4 handpicked books for just ₹639 (MRP ₹960) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-018",
@@ -276,7 +276,7 @@ export const combos = [
       "bk-009"
     ],
     "seoTitle": "Self-Help Starter Pack — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Self-Help Starter Pack combo (The Art of Spending Money, Don't sweat the small stuff, The Courage to Be Disliked) online at the lowest price on TheBookX. 3 handpicked books for just ₹449 (MRP ₹670) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Self-Help Starter Pack combo (The Art of Spending Money, Don't sweat the small stuff, The Courage to Be Disliked) online at the lowest price on TheBookX. 3 handpicked books for just ₹449 (MRP ₹670) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-019",
@@ -291,7 +291,7 @@ export const combos = [
       "bk-034"
     ],
     "seoTitle": "Mindset & Growth Bundle — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Mindset & Growth Bundle combo (Don't Believe Everything You Think, The Art of Not Overthinking, The Art of Laziness, The Art of Being Alone) online at the lowest price on TheBookX. 4 handpicked books for just ₹509 (MRP ₹750) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Mindset & Growth Bundle combo (Don't Believe Everything You Think, The Art of Not Overthinking, The Art of Laziness, The Art of Being Alone) online at the lowest price on TheBookX. 4 handpicked books for just ₹509 (MRP ₹750) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-020",
@@ -306,7 +306,7 @@ export const combos = [
       "bk-044"
     ],
     "seoTitle": "Habits & Discipline Set — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Habits & Discipline Set combo (The Art of Reading People's Mind, Life's Amazing Secret, Energize Your Mind, The Mountain Is You) online at the lowest price on TheBookX. 4 handpicked books for just ₹569 (MRP ₹850) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Habits & Discipline Set combo (The Art of Reading People's Mind, Life's Amazing Secret, Energize Your Mind, The Mountain Is You) online at the lowest price on TheBookX. 4 handpicked books for just ₹569 (MRP ₹850) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-021",
@@ -320,7 +320,7 @@ export const combos = [
       "bk-097"
     ],
     "seoTitle": "Confidence Booster Pack — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Confidence Booster Pack combo (Make Epic Money, Do Epic Shit, Get Epic Shit Done) online at the lowest price on TheBookX. 3 handpicked books for just ₹539 (MRP ₹800) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Confidence Booster Pack combo (Make Epic Money, Do Epic Shit, Get Epic Shit Done) online at the lowest price on TheBookX. 3 handpicked books for just ₹539 (MRP ₹800) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-022",
@@ -335,7 +335,7 @@ export const combos = [
       "bk-132"
     ],
     "seoTitle": "Level-Up Your Life Box — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Level-Up Your Life Box combo (Dark Psychology, The Almanack of Naval Ravikant, Crucial Conversations: Tools for Talking When Stakes Are High, Breaking the Habit of Being Yourself) online at the lowest price on TheBookX. 4 handpicked books for just ₹669 (MRP ₹1000) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Level-Up Your Life Box combo (Dark Psychology, The Almanack of Naval Ravikant, Crucial Conversations: Tools for Talking When Stakes Are High, Breaking the Habit of Being Yourself) online at the lowest price on TheBookX. 4 handpicked books for just ₹669 (MRP ₹1000) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-023",
@@ -350,7 +350,7 @@ export const combos = [
       "bk-068"
     ],
     "seoTitle": "Business Mastery Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Business Mastery Pack combo (Zero to One, The $100 Startup, The Lean Startup, The Hard Thing About Hard Things) online at the lowest price on TheBookX. 4 handpicked books for just ₹649 (MRP ₹960) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Business Mastery Pack combo (Zero to One, The $100 Startup, The Lean Startup, The Hard Thing About Hard Things) online at the lowest price on TheBookX. 4 handpicked books for just ₹649 (MRP ₹960) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-024",
@@ -364,7 +364,7 @@ export const combos = [
       "bk-162"
     ],
     "seoTitle": "Startup & Hustle Bundle — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Startup & Hustle Bundle combo (Blue Ocean Strategy, Influence: The Psychology of Persuasion, Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future) online at the lowest price on TheBookX. 3 handpicked books for just ₹589 (MRP ₹870) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Startup & Hustle Bundle combo (Blue Ocean Strategy, Influence: The Psychology of Persuasion, Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future) online at the lowest price on TheBookX. 3 handpicked books for just ₹589 (MRP ₹870) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-025",
@@ -379,7 +379,7 @@ export const combos = [
       "bk-254"
     ],
     "seoTitle": "Leadership Reads Set — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Leadership Reads Set combo (Lean In: Women, Work, and the Will to Lead, Shoe Dog, Build, Don't Talk, Execution) online at the lowest price on TheBookX. 4 handpicked books for just ₹689 (MRP ₹1030) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Leadership Reads Set combo (Lean In: Women, Work, and the Will to Lead, Shoe Dog, Build, Don't Talk, Execution) online at the lowest price on TheBookX. 4 handpicked books for just ₹689 (MRP ₹1030) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-026",
@@ -394,7 +394,7 @@ export const combos = [
       "bk-308"
     ],
     "seoTitle": "Money & Business Box — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Money & Business Box combo (The Art of War, The Intelligent Investor, Deep Work, The 7 Habits of Highly Effective People: Powerful Lessons in Personal Change) online at the lowest price on TheBookX. 4 handpicked books for just ₹759 (MRP ₹1140) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Money & Business Box combo (The Art of War, The Intelligent Investor, Deep Work, The 7 Habits of Highly Effective People: Powerful Lessons in Personal Change) online at the lowest price on TheBookX. 4 handpicked books for just ₹759 (MRP ₹1140) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-027",
@@ -408,7 +408,7 @@ export const combos = [
       "bk-517"
     ],
     "seoTitle": "Understand People Pack — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Understand People Pack combo (Becoming Supernatural, You Are the Placebo, Thinking, Fast and Slow) online at the lowest price on TheBookX. 3 handpicked books for just ₹609 (MRP ₹900) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Understand People Pack combo (Becoming Supernatural, You Are the Placebo, Thinking, Fast and Slow) online at the lowest price on TheBookX. 3 handpicked books for just ₹609 (MRP ₹900) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-028",
@@ -423,7 +423,7 @@ export const combos = [
       "bk-164"
     ],
     "seoTitle": "Psychology Reads Bundle — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Psychology Reads Bundle combo (Master Your Emotions, The Courage to Be Happy, Mindset: The New Psychology of Success, The Design of Everyday Things) online at the lowest price on TheBookX. 4 handpicked books for just ₹659 (MRP ₹980) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Psychology Reads Bundle combo (Master Your Emotions, The Courage to Be Happy, Mindset: The New Psychology of Success, The Design of Everyday Things) online at the lowest price on TheBookX. 4 handpicked books for just ₹659 (MRP ₹980) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-029",
@@ -438,7 +438,7 @@ export const combos = [
       "bk-175"
     ],
     "seoTitle": "Human Behaviour Box — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Human Behaviour Box combo (Men Are from Mars, Women Are from Venus, Why We Sleep, The Subtle Art of Not Giving a F*ck (Price Drop), Don't Believe Everything You Think (Price Drop)) online at the lowest price on TheBookX. 4 handpicked books for just ₹389 (MRP ₹580) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Human Behaviour Box combo (Men Are from Mars, Women Are from Venus, Why We Sleep, The Subtle Art of Not Giving a F*ck (Price Drop), Don't Believe Everything You Think (Price Drop)) online at the lowest price on TheBookX. 4 handpicked books for just ₹389 (MRP ₹580) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-030",
@@ -452,7 +452,7 @@ export const combos = [
       "bk-316"
     ],
     "seoTitle": "Money & Wealth Pack — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Money & Wealth Pack combo (The Psychology of Money (Price Drop), Advice & Dissent, Against the Gods) online at the lowest price on TheBookX. 3 handpicked books for just ₹419 (MRP ₹620) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Money & Wealth Pack combo (The Psychology of Money (Price Drop), Advice & Dissent, Against the Gods) online at the lowest price on TheBookX. 3 handpicked books for just ₹419 (MRP ₹620) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-031",
@@ -467,7 +467,7 @@ export const combos = [
       "bk-346"
     ],
     "seoTitle": "Financial Freedom Bundle — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Financial Freedom Bundle combo (Bulls, Bears and Other Beasts, Capital Ideas, Chaos and Order in the Capital Markets, Coffee Can Investing) online at the lowest price on TheBookX. 4 handpicked books for just ₹1079 (MRP ₹1610) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Financial Freedom Bundle combo (Bulls, Bears and Other Beasts, Capital Ideas, Chaos and Order in the Capital Markets, Coffee Can Investing) online at the lowest price on TheBookX. 4 handpicked books for just ₹1079 (MRP ₹1610) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-032",
@@ -482,7 +482,7 @@ export const combos = [
       "bk-389"
     ],
     "seoTitle": "Get Rich Reads Box — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Get Rich Reads Box combo (Fault Lines, Global Tilt, Globalization and Its Discontents, HDFC Bank 2.0) online at the lowest price on TheBookX. 4 handpicked books for just ₹839 (MRP ₹1240) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Get Rich Reads Box combo (Fault Lines, Global Tilt, Globalization and Its Discontents, HDFC Bank 2.0) online at the lowest price on TheBookX. 4 handpicked books for just ₹839 (MRP ₹1240) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-033",
@@ -496,7 +496,7 @@ export const combos = [
       "bk-108"
     ],
     "seoTitle": "Fantasy & Sci-Fi Box — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Fantasy & Sci-Fi Box combo (Forest of Enhancement, The Naga Warrior, Jujutsu Kaisen Set (Volumes 1-21)) online at the lowest price on TheBookX. 3 handpicked books for just ₹2599 (MRP ₹3890) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Fantasy & Sci-Fi Box combo (Forest of Enhancement, The Naga Warrior, Jujutsu Kaisen Set (Volumes 1-21)) online at the lowest price on TheBookX. 3 handpicked books for just ₹2599 (MRP ₹3890) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-034",
@@ -511,7 +511,7 @@ export const combos = [
       "bk-235"
     ],
     "seoTitle": "Epic Fantasy Bundle — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Epic Fantasy Bundle combo (Harry Potter Series Set (Books 1-7), The Lord of the Rings Trilogy Set, Fourth Wing, Iron Flame) online at the lowest price on TheBookX. 4 handpicked books for just ₹2339 (MRP ₹3500) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Epic Fantasy Bundle combo (Harry Potter Series Set (Books 1-7), The Lord of the Rings Trilogy Set, Fourth Wing, Iron Flame) online at the lowest price on TheBookX. 4 handpicked books for just ₹2339 (MRP ₹3500) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-035",
@@ -526,7 +526,7 @@ export const combos = [
       "bk-267"
     ],
     "seoTitle": "Worlds Beyond Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Worlds Beyond Pack combo (Onyx Storm, Circe, Once Upon a Broken Heart, Project Hail Mary) online at the lowest price on TheBookX. 4 handpicked books for just ₹779 (MRP ₹1160) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Worlds Beyond Pack combo (Onyx Storm, Circe, Once Upon a Broken Heart, Project Hail Mary) online at the lowest price on TheBookX. 4 handpicked books for just ₹779 (MRP ₹1160) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-036",
@@ -540,7 +540,7 @@ export const combos = [
       "bk-071"
     ],
     "seoTitle": "Spiritual Growth Pack — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Spiritual Growth Pack combo (The Palace of Illusions, Ram Sita Raavan, Ram: Scion of Ikshvaku) online at the lowest price on TheBookX. 3 handpicked books for just ₹829 (MRP ₹1240) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Spiritual Growth Pack combo (The Palace of Illusions, Ram Sita Raavan, Ram: Scion of Ikshvaku) online at the lowest price on TheBookX. 3 handpicked books for just ₹829 (MRP ₹1240) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-037",
@@ -555,7 +555,7 @@ export const combos = [
       "bk-075"
     ],
     "seoTitle": "Inner Peace Bundle — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Inner Peace Bundle combo (Sita: Warrior of Mithila, Raavan: Enemy of Aryavarta, The Shiva Trilogy: Meluha, Nagas & Vayaputra, The Immortals of Meluha) online at the lowest price on TheBookX. 4 handpicked books for just ₹1049 (MRP ₹1560) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Inner Peace Bundle combo (Sita: Warrior of Mithila, Raavan: Enemy of Aryavarta, The Shiva Trilogy: Meluha, Nagas & Vayaputra, The Immortals of Meluha) online at the lowest price on TheBookX. 4 handpicked books for just ₹1049 (MRP ₹1560) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-038",
@@ -570,7 +570,7 @@ export const combos = [
       "bk-080"
     ],
     "seoTitle": "Mindful Living Box — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Mindful Living Box combo (The Secret of the Nagas, The Oath of the Vayaputras, Mahagatha: 100 Tales from the Puranas, The Gita: For Children) online at the lowest price on TheBookX. 4 handpicked books for just ₹739 (MRP ₹1100) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Mindful Living Box combo (The Secret of the Nagas, The Oath of the Vayaputras, Mahagatha: 100 Tales from the Puranas, The Gita: For Children) online at the lowest price on TheBookX. 4 handpicked books for just ₹739 (MRP ₹1100) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-039",
@@ -584,7 +584,7 @@ export const combos = [
       "bk-199"
     ],
     "seoTitle": "Kids Favourites Pack — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Kids Favourites Pack combo (Diary of a Wimpy Kid Series Set, Grandma's Bag of Stories, Grandparents' Bag of Stories) online at the lowest price on TheBookX. 3 handpicked books for just ₹2089 (MRP ₹3130) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Kids Favourites Pack combo (Diary of a Wimpy Kid Series Set, Grandma's Bag of Stories, Grandparents' Bag of Stories) online at the lowest price on TheBookX. 3 handpicked books for just ₹2089 (MRP ₹3130) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-040",
@@ -599,7 +599,7 @@ export const combos = [
       "bk-203"
     ],
     "seoTitle": "Little Readers Bundle — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Little Readers Bundle combo (The Magic of the Lost Temple, The Gopi Diaries (Series), How I Taught My Grandmother to Read, The Bird with Golden Wings) online at the lowest price on TheBookX. 4 handpicked books for just ₹559 (MRP ₹840) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Little Readers Bundle combo (The Magic of the Lost Temple, The Gopi Diaries (Series), How I Taught My Grandmother to Read, The Bird with Golden Wings) online at the lowest price on TheBookX. 4 handpicked books for just ₹559 (MRP ₹840) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-041",
@@ -614,7 +614,7 @@ export const combos = [
       "bk-207"
     ],
     "seoTitle": "Bedtime Stories Box — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Bedtime Stories Box combo (The Magic Drum, How the Earth Got Its Beauty, How the Sea Became Salty, How the Onion Got Its Layers) online at the lowest price on TheBookX. 4 handpicked books for just ₹559 (MRP ₹840) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Bedtime Stories Box combo (The Magic Drum, How the Earth Got Its Beauty, How the Sea Became Salty, How the Onion Got Its Layers) online at the lowest price on TheBookX. 4 handpicked books for just ₹559 (MRP ₹840) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-042",
@@ -628,7 +628,7 @@ export const combos = [
       "bk-047"
     ],
     "seoTitle": "Fiction Lovers Box — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Fiction Lovers Box combo (More Days at the Morisaki Bookshop, Tales from the Cafe, Before Your Memory Fades) online at the lowest price on TheBookX. 3 handpicked books for just ₹419 (MRP ₹630) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Fiction Lovers Box combo (More Days at the Morisaki Bookshop, Tales from the Cafe, Before Your Memory Fades) online at the lowest price on TheBookX. 3 handpicked books for just ₹419 (MRP ₹630) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-043",
@@ -643,7 +643,7 @@ export const combos = [
       "bk-060"
     ],
     "seoTitle": "Timeless Fiction Set — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Timeless Fiction Set combo (Before We Say Goodbye, Before We Forget Kindness, The God of Small Things, The Last Queen) online at the lowest price on TheBookX. 4 handpicked books for just ₹629 (MRP ₹940) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Timeless Fiction Set combo (Before We Say Goodbye, Before We Forget Kindness, The God of Small Things, The Last Queen) online at the lowest price on TheBookX. 4 handpicked books for just ₹629 (MRP ₹940) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-044",
@@ -658,7 +658,7 @@ export const combos = [
       "bk-085"
     ],
     "seoTitle": "Contemporary Fiction Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Contemporary Fiction Pack combo (A Little Life, Myth = Mythya, Mahabharat Unraveled, Ramayan Unraveled) online at the lowest price on TheBookX. 4 handpicked books for just ₹809 (MRP ₹1210) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Contemporary Fiction Pack combo (A Little Life, Myth = Mythya, Mahabharat Unraveled, Ramayan Unraveled) online at the lowest price on TheBookX. 4 handpicked books for just ₹809 (MRP ₹1210) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-045",
@@ -672,7 +672,7 @@ export const combos = [
       "bk-088"
     ],
     "seoTitle": "Storyteller Bundle — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Storyteller Bundle combo (The Metamorphosis, The Trial, Notes from Underground) online at the lowest price on TheBookX. 3 handpicked books for just ₹349 (MRP ₹510) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Storyteller Bundle combo (The Metamorphosis, The Trial, Notes from Underground) online at the lowest price on TheBookX. 3 handpicked books for just ₹349 (MRP ₹510) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-046",
@@ -687,7 +687,7 @@ export const combos = [
       "bk-278"
     ],
     "seoTitle": "Laugh-Out-Loud Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Laugh-Out-Loud Pack combo (Anxious People, Diary of a Wimpy Kid, Rodrick Rules, The Last Straw) online at the lowest price on TheBookX. 4 handpicked books for just ₹599 (MRP ₹900) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Laugh-Out-Loud Pack combo (Anxious People, Diary of a Wimpy Kid, Rodrick Rules, The Last Straw) online at the lowest price on TheBookX. 4 handpicked books for just ₹599 (MRP ₹900) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-047",
@@ -702,7 +702,7 @@ export const combos = [
       "bk-161"
     ],
     "seoTitle": "Inspiring Lives Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Inspiring Lives Pack combo (Letters to Milena, Everything I Know About Love, Can't Hurt Me, Ignited Minds: Unleashing the Power Within India) online at the lowest price on TheBookX. 4 handpicked books for just ₹649 (MRP ₹970) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Inspiring Lives Pack combo (Letters to Milena, Everything I Know About Love, Can't Hurt Me, Ignited Minds: Unleashing the Power Within India) online at the lowest price on TheBookX. 4 handpicked books for just ₹649 (MRP ₹970) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-048",
@@ -716,7 +716,7 @@ export const combos = [
       "bk-214"
     ],
     "seoTitle": "Memoirs & Biographies Box — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Memoirs & Biographies Box combo (Here, There and Everywhere, Wings of Fire, The Diary of a Young Girl) online at the lowest price on TheBookX. 3 handpicked books for just ₹439 (MRP ₹650) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Memoirs & Biographies Box combo (Here, There and Everywhere, Wings of Fire, The Diary of a Young Girl) online at the lowest price on TheBookX. 3 handpicked books for just ₹439 (MRP ₹650) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-049",
@@ -731,7 +731,7 @@ export const combos = [
       "bk-309"
     ],
     "seoTitle": "History Buff Bundle — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the History Buff Bundle combo (Mossad: The Greatest Missions of the Israeli Secret Service, Commando, As Long as the Lemon Trees Grow, Sapiens: A Brief History of Humankind) online at the lowest price on TheBookX. 4 handpicked books for just ₹829 (MRP ₹1230) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the History Buff Bundle combo (Mossad: The Greatest Missions of the Israeli Secret Service, Commando, As Long as the Lemon Trees Grow, Sapiens: A Brief History of Humankind) online at the lowest price on TheBookX. 4 handpicked books for just ₹829 (MRP ₹1230) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-050",
@@ -746,7 +746,7 @@ export const combos = [
       "bk-372"
     ],
     "seoTitle": "YA Favourites Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the YA Favourites Pack combo (You've Reached Sam, I Fell in Love with Hope, As Good as Dead, Flawed) online at the lowest price on TheBookX. 4 handpicked books for just ₹799 (MRP ₹1190) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the YA Favourites Pack combo (You've Reached Sam, I Fell in Love with Hope, As Good as Dead, Flawed) online at the lowest price on TheBookX. 4 handpicked books for just ₹799 (MRP ₹1190) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-051",
@@ -760,7 +760,7 @@ export const combos = [
       "bk-442"
     ],
     "seoTitle": "Coming-of-Age Bundle — 3 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Coming-of-Age Bundle combo (Girl in Pieces, Insurgent, Shatter Me Series) online at the lowest price on TheBookX. 3 handpicked books for just ₹1639 (MRP ₹2450) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Coming-of-Age Bundle combo (Girl in Pieces, Insurgent, Shatter Me Series) online at the lowest price on TheBookX. 3 handpicked books for just ₹1639 (MRP ₹2450) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-052",
@@ -775,7 +775,7 @@ export const combos = [
       "bk-188"
     ],
     "seoTitle": "Curious Minds Non-Fiction Pack — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Curious Minds Non-Fiction Pack combo (The Bhagavad Gita, Wise and Otherwise: A Salute to Life, Three Thousand Stitches, The Day I Stopped Drinking Milk) online at the lowest price on TheBookX. 4 handpicked books for just ₹709 (MRP ₹1060) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Curious Minds Non-Fiction Pack combo (The Bhagavad Gita, Wise and Otherwise: A Salute to Life, Three Thousand Stitches, The Day I Stopped Drinking Milk) online at the lowest price on TheBookX. 4 handpicked books for just ₹709 (MRP ₹1060) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-053",
@@ -790,7 +790,7 @@ export const combos = [
       "bk-215"
     ],
     "seoTitle": "Big Ideas Non-Fiction Box — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Big Ideas Non-Fiction Box combo (The Old Man and His God, Something Happened on the Way to Heaven, Common Yet Uncommon, Autobiography of a Yogi) online at the lowest price on TheBookX. 4 handpicked books for just ₹629 (MRP ₹940) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Big Ideas Non-Fiction Box combo (The Old Man and His God, Something Happened on the Way to Heaven, Common Yet Uncommon, Autobiography of a Yogi) online at the lowest price on TheBookX. 4 handpicked books for just ₹629 (MRP ₹940) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-054",
@@ -805,7 +805,7 @@ export const combos = [
       "bk-189"
     ],
     "seoTitle": "Sudha Murthy Collection — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Sudha Murthy Collection combo (Wise and Otherwise: A Salute to Life, Three Thousand Stitches, The Day I Stopped Drinking Milk, The Old Man and His God) online at the lowest price on TheBookX. 4 handpicked books for just ₹559 (MRP ₹840) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Sudha Murthy Collection combo (Wise and Otherwise: A Salute to Life, Three Thousand Stitches, The Day I Stopped Drinking Milk, The Old Man and His God) online at the lowest price on TheBookX. 4 handpicked books for just ₹559 (MRP ₹840) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-055",
@@ -820,7 +820,7 @@ export const combos = [
       "bk-278"
     ],
     "seoTitle": "Jeff Kinney Collection — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Jeff Kinney Collection combo (Diary of a Wimpy Kid Series Set, Diary of a Wimpy Kid, Rodrick Rules, The Last Straw) online at the lowest price on TheBookX. 4 handpicked books for just ₹2229 (MRP ₹3340) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Jeff Kinney Collection combo (Diary of a Wimpy Kid Series Set, Diary of a Wimpy Kid, Rodrick Rules, The Last Straw) online at the lowest price on TheBookX. 4 handpicked books for just ₹2229 (MRP ₹3340) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-056",
@@ -835,7 +835,7 @@ export const combos = [
       "bk-019"
     ],
     "seoTitle": "Freida McFadden Collection — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Freida McFadden Collection combo (The Inmate, The Housemaid, The Housemaid's Secret, The Housemaid Is Watching) online at the lowest price on TheBookX. 4 handpicked books for just ₹569 (MRP ₹850) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Freida McFadden Collection combo (The Inmate, The Housemaid, The Housemaid's Secret, The Housemaid Is Watching) online at the lowest price on TheBookX. 4 handpicked books for just ₹569 (MRP ₹850) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-057",
@@ -850,7 +850,7 @@ export const combos = [
       "bk-053"
     ],
     "seoTitle": "Ana Huang Collection — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Ana Huang Collection combo (Twisted Love, Twisted Games, Twisted Hate, Twisted Lies) online at the lowest price on TheBookX. 4 handpicked books for just ₹699 (MRP ₹1050) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Ana Huang Collection combo (Twisted Love, Twisted Games, Twisted Hate, Twisted Lies) online at the lowest price on TheBookX. 4 handpicked books for just ₹699 (MRP ₹1050) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-058",
@@ -865,7 +865,7 @@ export const combos = [
       "bk-396"
     ],
     "seoTitle": "Colleen Hoover Collection — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Colleen Hoover Collection combo (Ugly Love, Verity, Heart Bones, It Starts with Us) online at the lowest price on TheBookX. 4 handpicked books for just ₹679 (MRP ₹1010) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Colleen Hoover Collection combo (Ugly Love, Verity, Heart Bones, It Starts with Us) online at the lowest price on TheBookX. 4 handpicked books for just ₹679 (MRP ₹1010) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-059",
@@ -880,7 +880,7 @@ export const combos = [
       "bk-074"
     ],
     "seoTitle": "Amish Tripathi Collection — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Amish Tripathi Collection combo (Ram: Scion of Ikshvaku, Sita: Warrior of Mithila, Raavan: Enemy of Aryavarta, The Shiva Trilogy: Meluha, Nagas & Vayaputra) online at the lowest price on TheBookX. 4 handpicked books for just ₹1049 (MRP ₹1560) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Amish Tripathi Collection combo (Ram: Scion of Ikshvaku, Sita: Warrior of Mithila, Raavan: Enemy of Aryavarta, The Shiva Trilogy: Meluha, Nagas & Vayaputra) online at the lowest price on TheBookX. 4 handpicked books for just ₹1049 (MRP ₹1560) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-060",
@@ -895,7 +895,7 @@ export const combos = [
       "bk-126"
     ],
     "seoTitle": "Agatha Christie Collection — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Agatha Christie Collection combo (Agatha Christie Classic Collection Set, And Then There Were None, The Murder of Roger Ackroyd, Murder on the Orient Express) online at the lowest price on TheBookX. 4 handpicked books for just ₹1189 (MRP ₹1780) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Agatha Christie Collection combo (Agatha Christie Classic Collection Set, And Then There Were None, The Murder of Roger Ackroyd, Murder on the Orient Express) online at the lowest price on TheBookX. 4 handpicked books for just ₹1189 (MRP ₹1780) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-061",
@@ -910,7 +910,7 @@ export const combos = [
       "bk-554"
     ],
     "seoTitle": "Ali Hazelwood Collection — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Ali Hazelwood Collection combo (The Love Hypothesis, Love, Theoretically, Two Can Play, Not in Love) online at the lowest price on TheBookX. 4 handpicked books for just ₹699 (MRP ₹1040) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Ali Hazelwood Collection combo (The Love Hypothesis, Love, Theoretically, Two Can Play, Not in Love) online at the lowest price on TheBookX. 4 handpicked books for just ₹699 (MRP ₹1040) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   },
   {
     "id": "combo-062",
@@ -925,7 +925,7 @@ export const combos = [
       "bk-177"
     ],
     "seoTitle": "Franz Kafka Collection — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Franz Kafka Collection combo (Letters to Milena, The Metamorphosis, The Trial, The Metamorphosis (Price Drop)) online at the lowest price on TheBookX. 4 handpicked books for just ₹379 (MRP ₹560) with free delivery, Cash on Delivery and easy returns across India."
+    "seoDescription": "Buy the Franz Kafka Collection combo (Letters to Milena, The Metamorphosis, The Trial, The Metamorphosis (Price Drop)) online at the lowest price on TheBookX. 4 handpicked books for just ₹379 (MRP ₹560) with Cash on Delivery and 7-day replacement on damaged or wrong books across India."
   }
 ];
 

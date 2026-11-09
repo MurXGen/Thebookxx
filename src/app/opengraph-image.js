@@ -55,7 +55,7 @@ export default function OpengraphImage() {
             color: "#e9edf4",
           }}
         >
-          Free shipping · Cash on Delivery · Trusted by 50,000+ readers
+          Free delivery from ₹199 · Cash on Delivery · Trusted by 50,000+ readers
         </div>
         <div
           style={{

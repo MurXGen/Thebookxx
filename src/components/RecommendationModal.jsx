@@ -723,7 +723,7 @@ export default function RecommendationModal({
                     <div className="rq-trust">
                       <span><Star size={13} /> 4.4 rated</span>
                       <span><Truck size={13} /> Cash on Delivery</span>
-                      <span><RotateCcw size={13} /> 7-day returns</span>
+                      <span><RotateCcw size={13} /> 7-day replacement</span>
                     </div>
                   </motion.div>
                 )}

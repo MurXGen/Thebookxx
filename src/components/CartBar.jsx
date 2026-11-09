@@ -329,7 +329,7 @@ export default function CartBar({ tab = "books" }) {
   const shareSite = async () => {
     const data = {
       title: "TheBookX",
-      text: "Buy books online in India, starting at ₹1 — free shipping & Cash on Delivery. 📚",
+      text: "Buy books online in India, starting at ₹1 — free delivery from ₹199 & Cash on Delivery. 📚",
       url: SITE_URL,
     };
     if (typeof navigator !== "undefined" && navigator.share) {

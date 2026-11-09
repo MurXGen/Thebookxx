@@ -17,7 +17,7 @@
 // To extend a device's offer, edit its "Ends At" cell (DD/MM/YYYY HH:MM, IST).
 
 import { timerAppend, timerUpdate, timerRowByDevice } from "@/lib/serverSheets";
-import { parseSheetTime } from "@/lib/sheetTime";
+import { parseSheetTime, fmtTs } from "@/lib/sheetTime";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 

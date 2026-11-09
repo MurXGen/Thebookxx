@@ -8,24 +8,9 @@
 // The shopper's site re-reads "Ends At" on its next page load / tab focus.
 
 import { isValidAdminCode } from "@/lib/adminCode";
-import { parseSheetTime } from "@/lib/sheetTime";
+import { parseSheetTime, fmtTs } from "@/lib/sheetTime";
 import { gvizQuery, tableToObjects, timerUpdate, timerRowByDevice, TIMERS_SHEET_NAME } from "@/lib/serverSheets";
 
-const fmtTs = (d) => {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Asia/Kolkata",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  }).formatToParts(d);
-  const g = (t) => parts.find((p) => p.type === t)?.value || "";
-  const hh = g("hour") === "24" ? "00" : g("hour");
-  return `${g("day")}/${g("month")}/${g("year")} ${hh}:${g("minute")}:${g("second")}`;
-};
 
 
 const deny = () => Response.json({ success: false, error: "unauthorized" }, { status: 401 });

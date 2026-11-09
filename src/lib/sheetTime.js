@@ -14,3 +14,20 @@ export function parseSheetTime(v) {
   }
   return null;
 }
+
+// Epoch/Date → "DD/MM/YYYY HH:MM:SS" in IST (how the sheets store times).
+export const fmtTs = (d) => {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(d);
+  const g = (t) => parts.find((p) => p.type === t)?.value || "";
+  const hh = g("hour") === "24" ? "00" : g("hour");
+  return `${g("day")}/${g("month")}/${g("year")} ${hh}:${g("minute")}:${g("second")}`;
+};

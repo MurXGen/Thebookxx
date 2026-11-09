@@ -66,7 +66,7 @@ export async function POST(request) {
     if (action === "start") {
       if (row) return Response.json({ success: true, already: true });
       const start = tsOrNow(body.startedAt);
-      await timerAppend({
+      const res = await timerAppend({
         "Device ID": deviceId,
         "Started At": fmtTs(start),
         "Ends At": fmtTs(new Date(start.getTime() + 2 * 3600 * 1000)),
@@ -81,6 +81,10 @@ export async function POST(request) {
         Phone: "",
         "Extend Requested": "",
       });
+      if (!res?.success) {
+        console.error("[timers] append failed", res?.error || res);
+        return Response.json({ success: false, error: "sheet append failed" });
+      }
       return Response.json({ success: true });
     }
 
@@ -113,7 +117,8 @@ export async function POST(request) {
       ...(only10(body.phone) ? { Phone: only10(body.phone) } : {}),
     });
     return Response.json({ success: true });
-  } catch {
+  } catch (e) {
+    console.error("[timers] error", e);
     return Response.json({ success: false }, { status: 200 });
   }
 }

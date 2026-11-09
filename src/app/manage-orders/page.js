@@ -10,6 +10,8 @@ import {
   useRef,
   useLayoutEffect,
   Fragment,
+  createContext,
+  useContext,
 } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -1220,82 +1222,44 @@ const SLIDE = {
   transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
 };
 
-// A numbered analytics group — names the question its cards answer, so the
-// dashboard reads top-down as a story — and collapses as one unit. Open state
-// is remembered per group; on phones only the first group starts open.
+// Analytics views — one view on screen at a time, picked from the switcher
+// at the top. Each An2Group belongs to one view (its step) and renders only
+// while that view is active, so the page stays short and every card is open.
+const AN_VIEWS = [
+  { id: "1", label: "Overview" },
+  { id: "2", label: "Sales" },
+  { id: "3", label: "Fulfilment" },
+  { id: "4", label: "Products" },
+  { id: "5", label: "Customers" },
+];
+const AnViewCtx = createContext("1");
+
 function An2Group({ step, title, sub, children }) {
-  const key = `mo_an_group_${step}`;
-  const [open, setOpen] = useState(() => {
-    try {
-      const saved = localStorage.getItem(key);
-      if (saved != null) return saved === "1";
-      return step === "1" || !window.matchMedia("(max-width: 720px)").matches;
-    } catch {
-      return true;
-    }
-  });
-  const toggle = () =>
-    setOpen((o) => {
-      try {
-        localStorage.setItem(key, o ? "0" : "1");
-      } catch {}
-      return !o;
-    });
+  const view = useContext(AnViewCtx);
+  if (view !== step) return null;
   return (
-    <section className={`an2-grp${open ? " open" : ""}`}>
-      <button
-        type="button"
-        className="an2-group"
-        onClick={toggle}
-        aria-expanded={open}
-      >
-        <span className="an2-group-step">{step}</span>
-        <span className="an2-group-text">
-          <span className="an2-group-title">{title}</span>
-          {sub ? <span className="an2-group-sub">{sub}</span> : null}
-        </span>
-        <ChevronDown size={18} className="an2-group-chev" />
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div className="an2-grp-body" {...SLIDE}>
-            <div className="an2-grp-inner">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <section className="an2-grp open an3-view">
+      <header className="an3-view-head">
+        <h2 className="an3-view-title">{title}</h2>
+        {sub ? <p className="an3-view-sub">{sub}</p> : null}
+      </header>
+      <div className="an2-grp-inner an3-view-body">{children}</div>
     </section>
   );
 }
 
-function An2Section({ title, sub, right, defaultOpen = true, children }) {
-  const [open, setOpen] = useState(defaultOpen);
+// A titled analytics card. Always open — the view switcher does the hiding.
+function An2Section({ title, sub, right, wide, children }) {
   return (
-    <section className={`an2-card an2-acc${open ? " open" : ""}`}>
-      <button
-        type="button"
-        className="an2-acc-head"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-      >
+    <section className={`an2-card an2-acc open an3-card${wide ? " wide" : ""}`}>
+      <div className="an2-acc-head an3-card-head">
         <div className="an2-acc-titles">
           <h3 className="an2-card-title">{title}</h3>
           {sub ? <p className="an2-card-sub">{sub}</p> : null}
         </div>
-        <div className="an2-acc-right">
-          {right}
-          <ChevronDown
-            size={18}
-            className={`an2-acc-chev${open ? " open" : ""}`}
-          />
-        </div>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div style={{ overflow: "hidden" }} {...SLIDE}>
-            <div className="an2-acc-body">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {right ? <div className="an2-acc-right">{right}</div> : null}
+      </div>
+      <div className="an2-acc-body">{children}</div>
     </section>
   );
 }
@@ -3859,6 +3823,23 @@ export default function ManageOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [ordersFetchedAt, setOrdersFetchedAt] = useState(0);
+  const [liveNow, setLiveNow] = useState(() => Date.now());
+  const [anLiveBusy, setAnLiveBusy] = useState(false);
+  const [anView, setAnView] = useState(() => {
+    try {
+      const v = localStorage.getItem("mo_an_view");
+      return AN_VIEWS.some((x) => x.id === v) ? v : "1";
+    } catch {
+      return "1";
+    }
+  });
+  const pickAnView = (id) => {
+    setAnView(id);
+    try {
+      localStorage.setItem("mo_an_view", id);
+    } catch {}
+  };
   // First-visit lead-capture rows (phone + source), for the conversion section.
   const [leads, setLeads] = useState([]);
   const [leadsLoading, setLeadsLoading] = useState(true);
@@ -7187,8 +7168,11 @@ export default function ManageOrdersPage() {
   });
 
   // Fetch orders from Google Sheet
-  const fetchOrders = useCallback(async () => {
-    setLoading(true);
+  const fetchOrders = useCallback(async (opts) => {
+    // `silent` refreshes in place (analytics live mode) without the
+    // full-page loader.
+    const silent = opts?.silent === true;
+    if (!silent) setLoading(true);
     try {
       const response = await fetch(SHEET_API_URL);
       const text = await response.text();
@@ -7246,6 +7230,7 @@ export default function ManageOrdersPage() {
       const sorted = sortByDateDesc(named);
 
       setOrders(sorted);
+      setOrdersFetchedAt(Date.now());
       fetchedRef.current = true;
       // Note: we intentionally DON'T seed filteredOrders with the full list —
       // the filter effect below runs immediately and populates it per the
@@ -7312,6 +7297,41 @@ export default function ManageOrdersPage() {
   useEffect(() => {
     fetchReturns();
   }, [fetchReturns]);
+
+  // Analytics live mode — refresh the sheet in place every 2 minutes while
+  // the Analytics tab is open and visible. Skipped while status edits are
+  // queued (a refetch would drop those local, unpushed changes).
+  const liveRefresh = useCallback(async () => {
+    setAnLiveBusy(true);
+    try {
+      await fetchOrders({ silent: true });
+    } finally {
+      setAnLiveBusy(false);
+    }
+  }, [fetchOrders]);
+  useEffect(() => {
+    if (activeTab !== "analytics") return;
+    const id = setInterval(() => {
+      setLiveNow(Date.now());
+      if (document.visibilityState !== "visible") return;
+      if (Object.keys(pendingStatus).length) return;
+      if (Date.now() - ordersFetchedAt >= 120000) liveRefresh();
+    }, 15000);
+    return () => clearInterval(id);
+  }, [activeTab, pendingStatus, ordersFetchedAt, liveRefresh]);
+  // Publish the sticky topbar's height so the analytics view switcher can
+  // stick right beneath it (the topbar wraps taller on phones).
+  useEffect(() => {
+    if (activeTab !== "analytics" || typeof ResizeObserver === "undefined") return;
+    const bar = document.querySelector(".mo-topbar");
+    const root = bar?.closest(".my-orders-page");
+    if (!bar || !root) return;
+    const ro = new ResizeObserver(() =>
+      root.style.setProperty("--mo-topbar-h", `${bar.offsetHeight}px`),
+    );
+    ro.observe(bar);
+    return () => ro.disconnect();
+  }, [activeTab, loading]);
 
   // Reset the card view to the first page when the pick filter changes.
   useEffect(() => {
@@ -13518,12 +13538,161 @@ export default function ManageOrdersPage() {
                 moPortalTarget(),
               )}
 
+            {/* View switcher + live status — sticky, one view at a time. */}
+            <div className="an3-bar">
+              <div className="an3-tabs" role="tablist" aria-label="Analytics views">
+                {AN_VIEWS.map((v) => {
+                  const on = anView === v.id;
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={on}
+                      className={`an3-tab${on ? " on" : ""}`}
+                      onClick={() => pickAnView(v.id)}
+                    >
+                      {on && (
+                        <motion.span
+                          layoutId="an3-tab-pill"
+                          className="an3-tab-pill"
+                          transition={PILL_SPRING}
+                        />
+                      )}
+                      <span className="an3-tab-t">{v.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                className={`an3-live${anLiveBusy ? " busy" : ""}`}
+                onClick={liveRefresh}
+                disabled={anLiveBusy}
+                title="Live from the orders sheet · refreshes every 2 min · tap to refresh now"
+              >
+                <span className="an3-live-dot" aria-hidden="true" />
+                <span className="an3-live-t">
+                  {anLiveBusy
+                    ? "Refreshing…"
+                    : (() => {
+                        const m = ordersFetchedAt
+                          ? Math.floor((liveNow - ordersFetchedAt) / 60000)
+                          : null;
+                        return m == null
+                          ? "Live"
+                          : m < 1
+                            ? "Live · just now"
+                            : `Live · ${m}m ago`;
+                      })()}
+                </span>
+                <RefreshCw size={13} className="an3-live-ic" />
+              </button>
+            </div>
+
+            <AnViewCtx.Provider value={anView}>
+
             <An2Group
               step="1"
-              title="Pulse"
-              sub="This month's pace, where it lands, and the period at a glance">
+              title="Overview"
+              sub="Headline numbers, this month's pace and where it lands">
+  {/* Overview stats — headline KPIs with the change vs the
+                  comparison period (same elapsed span of the previous one). */}
+              <div className="an2-stats-head">
+                <span>
+                  {periodWindow.label}
+                  {prevOverview ? ` · ${prevOverview.label}` : ""}
+                </span>
+              </div>
+              <div className="an2-stats">
+                <KpiTile
+                  icon={IndianRupee}
+                  label="Revenue"
+                  value={`₹${overview.revenue.toLocaleString()}`}
+                  cur={overview.revenue}
+                  prev={prevOverview?.revenue}
+                  sub={`₹${overview.aov.toLocaleString()} avg order`}
+                  spark={pulseSeries.revenue}
+                  sparkLabels={pulseSeries.labels}
+                  sparkFmt={(v) => `₹${Math.round(v).toLocaleString()}`}
+                />
+                <KpiTile
+                  icon={ShoppingBag}
+                  label="Orders"
+                  value={overview.n.toLocaleString()}
+                  cur={overview.n}
+                  prev={prevOverview?.n}
+                  sub={`${overview.units} books · ${overview.unitsPerOrder}/order`}
+                  spark={pulseSeries.orders}
+                  sparkLabels={pulseSeries.labels}
+                  sparkFmt={(v) => `${v} order${v === 1 ? "" : "s"}`}
+                />
+                <KpiTile
+                  icon={overview.profit >= 0 ? TrendingUp : TrendingDown}
+                  label={overview.profit >= 0 ? "Gross profit" : "Gross loss"}
+                  value={`${overview.profit >= 0 ? "" : "−"}₹${Math.abs(overview.profit).toLocaleString()}`}
+                  cur={overview.profit}
+                  prev={prevOverview?.profit}
+                  sub={`${overview.margin}% margin · net ${netProfit >= 0 ? "" : "−"}₹${Math.abs(netProfit).toLocaleString()}`}
+                  spark={pulseSeries.profit}
+                  sparkLabels={pulseSeries.labels}
+                  sparkFmt={(v) => `${v < 0 ? "−" : ""}₹${Math.abs(Math.round(v)).toLocaleString()}`}
+                />
+                <KpiTile
+                  icon={Package}
+                  label="Total cost"
+                  value={`₹${overview.cost.toLocaleString()}`}
+                  cur={overview.cost}
+                  prev={prevOverview?.cost}
+                  lowerIsBetter
+                  sub={`incl. ₹${overview.delivery.toLocaleString()} postage`}
+                  spark={pulseSeries.cost}
+                  sparkLabels={pulseSeries.labels}
+                  sparkFmt={(v) => `₹${Math.round(v).toLocaleString()}`}
+                />
+                <KpiTile
+                  icon={CheckCircle}
+                  label="Delivery success"
+                  value={`${overview.successRate}%`}
+                  cur={overview.successRate}
+                  prev={prevOverview?.successRate}
+                  unit="pts"
+                  sub={`${overview.delivered} delivered · ${overview.openN} still open`}
+                  meter={{ pct: overview.successRate, tone: "good" }}
+                />
+                <KpiTile
+                  icon={RotateCcw}
+                  label="Cancel & return"
+                  value={`${overview.cancelRate}%`}
+                  cur={overview.cancelRate}
+                  prev={prevOverview?.cancelRate}
+                  unit="pts"
+                  lowerIsBetter
+                  sub={`${overview.cancelled} orders lost`}
+                  meter={{ pct: overview.cancelRate, tone: "bad" }}
+                />
+                <KpiTile
+                  icon={ShieldCheck}
+                  label="Prepaid share"
+                  value={`${overview.prepaidRate}%`}
+                  cur={overview.prepaidRate}
+                  prev={prevOverview?.prepaidRate}
+                  unit="pts"
+                  sub={`${overview.upiN} UPI · ${overview.advN} ₹99 advance`}
+                  meter={{ pct: overview.prepaidRate, tone: "c1" }}
+                />
+                <KpiTile
+                  icon={Wallet}
+                  label="Wallet outstanding"
+                  value={`₹${walletUsers.total.toLocaleString()}`}
+                  sub={`${walletUsers.count} customer${walletUsers.count === 1 ? "" : "s"} hold balance`}
+                />
+              </div>
+
+              <div className="an3-main">
               {/* Monthly run rate — one line per month, plotted by day-of-month */}
               <An2Section
+                wide
                 title={`Live month · run rate ${monthlyRunRate.year}`}
                 sub={`Cumulative ${
                   runRateMetric === "revenue" ? "revenue" : "orders"
@@ -13902,185 +14071,7 @@ export default function ManageOrdersPage() {
                 })()}
               </An2Section>
 
-  {/* Overview stats — headline KPIs with the change vs the
-                  comparison period (same elapsed span of the previous one). */}
-              <div className="an2-stats-head">
-                <span>
-                  {periodWindow.label}
-                  {prevOverview ? ` · ${prevOverview.label}` : ""}
-                </span>
-              </div>
-              {pulseSeries.pace && (() => {
-                const p = pulseSeries.pace;
-                const revPct = p.prevRev ? Math.round((overview.revenue / p.prevRev) * 100) : null;
-                const ordPct = p.prevN ? Math.round((overview.n / p.prevN) * 100) : null;
-                const Row = ({ k, v, pct, tone, mark }) => (
-                  <div className="an2-pace-row">
-                    <div className="an2-pace-top">
-                      <span className="an2-pace-k">{k}</span>
-                      <span className="an2-pace-v">{v}</span>
-                    </div>
-                    <span className={`an2-pace-bar ${tone}`}>
-                      <i style={{ width: `${Math.min(100, pct)}%` }} />
-                      {mark != null && <b style={{ left: `${Math.min(100, mark)}%` }} title="Time elapsed" />}
-                    </span>
-                  </div>
-                );
-                return (
-                  <div className="an2-pace">
-                    <Row k="Period elapsed" v={`Day ${p.dayNo} of ${p.totalDays} · ${p.timePct}%`} pct={p.timePct} tone="time" />
-                    {revPct != null && (
-                      <Row
-                        k={`Revenue vs all of ${p.prevLabel}`}
-                        v={`₹${overview.revenue.toLocaleString()} of ₹${p.prevRev.toLocaleString()} · ${revPct}%`}
-                        pct={revPct}
-                        tone={revPct >= p.timePct ? "ahead" : "behind"}
-                        mark={p.timePct}
-                      />
-                    )}
-                    {ordPct != null && (
-                      <Row
-                        k={`Orders vs all of ${p.prevLabel}`}
-                        v={`${overview.n} of ${p.prevN} · ${ordPct}%`}
-                        pct={ordPct}
-                        tone={ordPct >= p.timePct ? "ahead" : "behind"}
-                        mark={p.timePct}
-                      />
-                    )}
-                  </div>
-                );
-              })()}
-              <div className="an2-stats">
-                <KpiTile
-                  icon={IndianRupee}
-                  label="Revenue"
-                  value={`₹${overview.revenue.toLocaleString()}`}
-                  cur={overview.revenue}
-                  prev={prevOverview?.revenue}
-                  sub={`₹${overview.aov.toLocaleString()} avg order`}
-                  spark={pulseSeries.revenue}
-                  sparkLabels={pulseSeries.labels}
-                  sparkFmt={(v) => `₹${Math.round(v).toLocaleString()}`}
-                />
-                <KpiTile
-                  icon={ShoppingBag}
-                  label="Orders"
-                  value={overview.n.toLocaleString()}
-                  cur={overview.n}
-                  prev={prevOverview?.n}
-                  sub={`${overview.units} books · ${overview.unitsPerOrder}/order`}
-                  spark={pulseSeries.orders}
-                  sparkLabels={pulseSeries.labels}
-                  sparkFmt={(v) => `${v} order${v === 1 ? "" : "s"}`}
-                />
-                <KpiTile
-                  icon={overview.profit >= 0 ? TrendingUp : TrendingDown}
-                  label={overview.profit >= 0 ? "Gross profit" : "Gross loss"}
-                  value={`${overview.profit >= 0 ? "" : "−"}₹${Math.abs(overview.profit).toLocaleString()}`}
-                  cur={overview.profit}
-                  prev={prevOverview?.profit}
-                  sub={`${overview.margin}% margin · net ${netProfit >= 0 ? "" : "−"}₹${Math.abs(netProfit).toLocaleString()}`}
-                  spark={pulseSeries.profit}
-                  sparkLabels={pulseSeries.labels}
-                  sparkFmt={(v) => `${v < 0 ? "−" : ""}₹${Math.abs(Math.round(v)).toLocaleString()}`}
-                />
-                <KpiTile
-                  icon={Package}
-                  label="Total cost"
-                  value={`₹${overview.cost.toLocaleString()}`}
-                  cur={overview.cost}
-                  prev={prevOverview?.cost}
-                  lowerIsBetter
-                  sub={`incl. ₹${overview.delivery.toLocaleString()} postage`}
-                  spark={pulseSeries.cost}
-                  sparkLabels={pulseSeries.labels}
-                  sparkFmt={(v) => `₹${Math.round(v).toLocaleString()}`}
-                />
-                <KpiTile
-                  icon={CheckCircle}
-                  label="Delivery success"
-                  value={`${overview.successRate}%`}
-                  cur={overview.successRate}
-                  prev={prevOverview?.successRate}
-                  unit="pts"
-                  sub={`${overview.delivered} delivered · ${overview.openN} still open`}
-                  meter={{ pct: overview.successRate, tone: "good" }}
-                />
-                <KpiTile
-                  icon={RotateCcw}
-                  label="Cancel & return"
-                  value={`${overview.cancelRate}%`}
-                  cur={overview.cancelRate}
-                  prev={prevOverview?.cancelRate}
-                  unit="pts"
-                  lowerIsBetter
-                  sub={`${overview.cancelled} orders lost`}
-                  meter={{ pct: overview.cancelRate, tone: "bad" }}
-                />
-                <KpiTile
-                  icon={ShieldCheck}
-                  label="Prepaid share"
-                  value={`${overview.prepaidRate}%`}
-                  cur={overview.prepaidRate}
-                  prev={prevOverview?.prepaidRate}
-                  unit="pts"
-                  sub={`${overview.upiN} UPI · ${overview.advN} ₹99 advance`}
-                  meter={{ pct: overview.prepaidRate, tone: "c1" }}
-                />
-                <KpiTile
-                  icon={Wallet}
-                  label="Wallet outstanding"
-                  value={`₹${walletUsers.total.toLocaleString()}`}
-                  sub={`${walletUsers.count} customer${walletUsers.count === 1 ? "" : "s"} hold balance`}
-                />
-              </div>
-
-              {/* Mix at a glance — status, payment, and where revenue goes. */}
-              <div className="an2-donuts">
-                <An2Donut
-                  title="Order status"
-                  sub={`${overview.n} orders`}
-                  center={`${overview.successRate}%`}
-                  centerSub="delivery success"
-                  slices={[
-                    { label: "Delivered", value: overview.delivered, cls: "s-good" },
-                    { label: "In progress", value: overview.openN, cls: "s-open" },
-                    { label: "Cancelled / returned", value: overview.cancelled, cls: "s-bad" },
-                    ...(overview.preCancelled
-                      ? [{ label: "Pre-cancelled", value: overview.preCancelled, cls: "s-pre" }]
-                      : []),
-                  ]}
-                />
-                <An2Donut
-                  title="Payment mix"
-                  sub="How customers paid"
-                  center={`${overview.prepaidRate}%`}
-                  centerSub="prepaid"
-                  slices={[
-                    { label: "UPI · paid online", value: overview.upiN, cls: "c1" },
-                    { label: "COD + ₹99 advance", value: overview.advN, cls: "c2" },
-                    { label: "Cash on delivery", value: overview.codN - overview.advN, cls: "c3" },
-                  ]}
-                />
-                <An2Donut
-                  title="Where revenue goes"
-                  sub={`₹${overview.revenue.toLocaleString()} revenue`}
-                  center={`${overview.margin}%`}
-                  centerSub="margin"
-                  fmt={(v) => `₹${Math.round(v).toLocaleString()}`}
-                  slices={[
-                    { label: "Books & packing", value: Math.max(0, overview.cost - overview.delivery), cls: "c1" },
-                    { label: "Postage", value: overview.delivery, cls: "c2" },
-                    { label: "Profit", value: Math.max(0, overview.profit), cls: "c3" },
-                  ]}
-                  note={
-                    overview.profit < 0
-                      ? `Running at a loss of ₹${Math.abs(overview.profit).toLocaleString()} — costs exceed revenue.`
-                      : null
-                  }
-                />
-              </div>
-
+                <div className="an3-side">
               {/* Projections & run rate */}
               <An2Section
                 title="Projections & run rate"
@@ -14164,6 +14155,99 @@ export default function ManageOrdersPage() {
                   </div>
                 )}
               </An2Section>
+                  {pulseSeries.pace && (
+                  <An2Section title="Pace" sub="How far through the period, and how sales keep up">
+              {pulseSeries.pace && (() => {
+                const p = pulseSeries.pace;
+                const revPct = p.prevRev ? Math.round((overview.revenue / p.prevRev) * 100) : null;
+                const ordPct = p.prevN ? Math.round((overview.n / p.prevN) * 100) : null;
+                const Row = ({ k, v, pct, tone, mark }) => (
+                  <div className="an2-pace-row">
+                    <div className="an2-pace-top">
+                      <span className="an2-pace-k">{k}</span>
+                      <span className="an2-pace-v">{v}</span>
+                    </div>
+                    <span className={`an2-pace-bar ${tone}`}>
+                      <i style={{ width: `${Math.min(100, pct)}%` }} />
+                      {mark != null && <b style={{ left: `${Math.min(100, mark)}%` }} title="Time elapsed" />}
+                    </span>
+                  </div>
+                );
+                return (
+                  <div className="an2-pace">
+                    <Row k="Period elapsed" v={`Day ${p.dayNo} of ${p.totalDays} · ${p.timePct}%`} pct={p.timePct} tone="time" />
+                    {revPct != null && (
+                      <Row
+                        k={`Revenue vs all of ${p.prevLabel}`}
+                        v={`₹${overview.revenue.toLocaleString()} of ₹${p.prevRev.toLocaleString()} · ${revPct}%`}
+                        pct={revPct}
+                        tone={revPct >= p.timePct ? "ahead" : "behind"}
+                        mark={p.timePct}
+                      />
+                    )}
+                    {ordPct != null && (
+                      <Row
+                        k={`Orders vs all of ${p.prevLabel}`}
+                        v={`${overview.n} of ${p.prevN} · ${ordPct}%`}
+                        pct={ordPct}
+                        tone={ordPct >= p.timePct ? "ahead" : "behind"}
+                        mark={p.timePct}
+                      />
+                    )}
+                  </div>
+                );
+              })()}
+                  </An2Section>
+                  )}
+                </div>
+              </div>
+
+              {/* Mix at a glance — status, payment, and where revenue goes. */}
+              <div className="an2-donuts">
+                <An2Donut
+                  title="Order status"
+                  sub={`${overview.n} orders`}
+                  center={`${overview.successRate}%`}
+                  centerSub="delivery success"
+                  slices={[
+                    { label: "Delivered", value: overview.delivered, cls: "s-good" },
+                    { label: "In progress", value: overview.openN, cls: "s-open" },
+                    { label: "Cancelled / returned", value: overview.cancelled, cls: "s-bad" },
+                    ...(overview.preCancelled
+                      ? [{ label: "Pre-cancelled", value: overview.preCancelled, cls: "s-pre" }]
+                      : []),
+                  ]}
+                />
+                <An2Donut
+                  title="Payment mix"
+                  sub="How customers paid"
+                  center={`${overview.prepaidRate}%`}
+                  centerSub="prepaid"
+                  slices={[
+                    { label: "UPI · paid online", value: overview.upiN, cls: "c1" },
+                    { label: "COD + ₹99 advance", value: overview.advN, cls: "c2" },
+                    { label: "Cash on delivery", value: overview.codN - overview.advN, cls: "c3" },
+                  ]}
+                />
+                <An2Donut
+                  title="Where revenue goes"
+                  sub={`₹${overview.revenue.toLocaleString()} revenue`}
+                  center={`${overview.margin}%`}
+                  centerSub="margin"
+                  fmt={(v) => `₹${Math.round(v).toLocaleString()}`}
+                  slices={[
+                    { label: "Books & packing", value: Math.max(0, overview.cost - overview.delivery), cls: "c1" },
+                    { label: "Postage", value: overview.delivery, cls: "c2" },
+                    { label: "Profit", value: Math.max(0, overview.profit), cls: "c3" },
+                  ]}
+                  note={
+                    overview.profit < 0
+                      ? `Running at a loss of ₹${Math.abs(overview.profit).toLocaleString()} — costs exceed revenue.`
+                      : null
+                  }
+                />
+              </div>
+
             </An2Group>
 
             <An2Group
@@ -14357,72 +14441,6 @@ export default function ManageOrdersPage() {
               </An2Section>
 
 
-              {/* Payment mix + customers */}
-              <div className="an2-grid2">
-                <An2Section title="Payment mix" sub="COD · ₹99 paid · online (UPI)">
-                  {(() => {
-                    const codPure = Math.max(0, overview.codN - overview.advN);
-                    const adv = overview.advN;
-                    const upi = overview.upiN;
-                    const tot = codPure + adv + upi || 1;
-                    const pct = (x) => Math.round((x / tot) * 100);
-                    return (
-                      <>
-                        <div className="an2-mix-bar">
-                          <div
-                            className="an2-mix-seg seg-cod"
-                            style={{ width: `${pct(codPure)}%` }}
-                          />
-                          <div
-                            className="an2-mix-seg seg-adv"
-                            style={{ width: `${pct(adv)}%` }}
-                          />
-                          <div
-                            className="an2-mix-seg seg-upi"
-                            style={{ width: `${pct(upi)}%` }}
-                          />
-                        </div>
-                        <div className="an2-mix-legend">
-                          <span className="an2-leg">
-                            <i className="an2-dot d-cod" /> COD · {codPure} (
-                            {pct(codPure)}%)
-                          </span>
-                          <span className="an2-leg">
-                            <i className="an2-dot d-adv" /> ₹99 paid · {adv} (
-                            {pct(adv)}%)
-                          </span>
-                          <span className="an2-leg">
-                            <i className="an2-dot d-upi" /> UPI · {upi} ({pct(upi)}
-                            %)
-                          </span>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </An2Section>
-
-                <An2Section
-                  title="Customers"
-                  sub={`Reach & loyalty this ${analyticsPeriod}`}
-                >
-                  <div className="an2-cust">
-                    <div className="an2-cust-item">
-                      <span className="an2-cust-num">
-                        {insights.uniqueCustomers}
-                      </span>
-                      <span className="an2-cust-lbl">Unique customers</span>
-                    </div>
-                    <div className="an2-cust-item">
-                      <span className="an2-cust-num">{insights.repeat}</span>
-                      <span className="an2-cust-lbl">Repeat buyers</span>
-                    </div>
-                    <div className="an2-cust-item">
-                      <span className="an2-cust-num">{insights.repeatPct}%</span>
-                      <span className="an2-cust-lbl">Repeat rate</span>
-                    </div>
-                  </div>
-                </An2Section>
-              </div>
             </An2Group>
 
             <An2Group
@@ -14471,6 +14489,7 @@ export default function ManageOrdersPage() {
                 </div>
               </An2Section>
 
+              <div className="an2-grid2 an3-pair">
               {/* Fulfillment funnel — where orders leak out on the way to delivery */}
               <An2Section
                 title="Fulfillment funnel"
@@ -14585,7 +14604,9 @@ export default function ManageOrdersPage() {
                   ))}
                 </div>
               </An2Section>
+              </div>
 
+              <div className="an2-grid2 an3-pair">
               {/* Cancelled after shipping — postage lost, per month */}
               <An2Section
                 title="Cancelled losses"
@@ -14691,6 +14712,7 @@ export default function ManageOrdersPage() {
                   ))}
                 </div>
               </An2Section>
+              </div>
 
               <An2Section
                 title="Top delivery pincodes"
@@ -14841,6 +14863,7 @@ export default function ManageOrdersPage() {
                 )}
               </An2Section>
 
+              <div className="an2-grid2 an3-pair">
               {/* Basket size & upsell headroom */}
               <An2Section
                 title="Basket size & upsell"
@@ -14908,12 +14931,36 @@ export default function ManageOrdersPage() {
                   </div>
                 )}
               </An2Section>
+              </div>
             </An2Group>
 
             <An2Group
               step="5"
               title="Customers & demand"
               sub="Who buys, where they come from, and when they order">
+              <div className="an3-cust-top">
+                <An2Section
+                  title="Customers"
+                  sub={`Reach & loyalty this ${analyticsPeriod}`}
+                >
+                  <div className="an2-cust">
+                    <div className="an2-cust-item">
+                      <span className="an2-cust-num">
+                        {insights.uniqueCustomers}
+                      </span>
+                      <span className="an2-cust-lbl">Unique customers</span>
+                    </div>
+                    <div className="an2-cust-item">
+                      <span className="an2-cust-num">{insights.repeat}</span>
+                      <span className="an2-cust-lbl">Repeat buyers</span>
+                    </div>
+                    <div className="an2-cust-item">
+                      <span className="an2-cust-num">{insights.repeatPct}%</span>
+                      <span className="an2-cust-lbl">Repeat rate</span>
+                    </div>
+                  </div>
+                </An2Section>
+              </div>
   {/* Top customers — lifetime value & repeat revenue */}
               <An2Section
                 title="Top customers"
@@ -15035,6 +15082,7 @@ export default function ManageOrdersPage() {
                 )}
               </An2Section>
 
+              <div className="an2-grid2 an3-pair">
               {/* Orders by weekday */}
               <An2Section
                 title="Orders by weekday"
@@ -15094,7 +15142,9 @@ export default function ManageOrdersPage() {
                   );
                 })()}
               </An2Section>
+              </div>
             </An2Group>
+            </AnViewCtx.Provider>
           </div>
         )}
 

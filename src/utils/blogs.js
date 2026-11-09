@@ -4,6 +4,173 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "world-science-day-2026-10-november-science-books-to-read-india": {
+    "id": "blog-103",
+    "title": "World Science Day 2026 (10 November): 20 Science and Ideas Books to Read in India",
+    "slug": "world-science-day-2026-10-november-science-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-09",
+    "lastModified": "2026-11-09",
+    "excerpt": "World Science Day for Peace and Development is on 10 November. Why it matters, plus 20 science and ideas books to read, with free delivery and COD in India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "World Science Day for Peace and Development is observed every year on 10 November, which means it arrives tomorrow. UNESCO proclaimed the day in 2001 and it was first celebrated in 2002, with a simple goal: to remind everyone that science belongs to society, and that shared knowledge is one of the most reliable foundations for peace. Listings for the 2026 observance describe the theme as \"Common ground through science diplomacy\", a nudge to see how cooperation between scientists and countries helps tackle climate change, biodiversity loss and public health."
+      },
+      {
+        "type": "paragraph",
+        "content": "For readers, the day is a good excuse to pick up a book that makes science feel human. You do not need a laboratory or a degree. You need curiosity and a few quiet evenings, and the right book will do the rest."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why science and peace belong together"
+      },
+      {
+        "type": "paragraph",
+        "content": "Science works because its claims can be checked by anyone, in any country, and corrected when they are wrong. That habit of open evidence is what the UNESCO observance celebrates. The objectives it highlights include raising public awareness of how science supports peaceful and sustainable societies, encouraging the sharing of research across borders, and renewing support for the institutions that do the work."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts",
+        "content": "Date: 10 November every year. Proclaimed by UNESCO in 2001, first observed in 2002. 2026 theme as listed: Common ground through science diplomacy."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books that make the universe feel close"
+      },
+      {
+        "type": "paragraph",
+        "content": "Start with the sky. <a href=\"/books/cosmos\" style=\"color:#fb8500;font-weight:600\">Cosmos</a> by Carl Sagan remains one of the most loved introductions to astronomy and to the idea that we are part of something vast, written with the warmth of a storyteller. If you prefer fiction with real scientific puzzles, <a href=\"/books/project-hail-mary\" style=\"color:#fb8500;font-weight:600\">Project Hail Mary</a> by Andy Weir follows a lone astronaut solving problem after problem with nothing but reasoning, and it is hard to put down. <a href=\"/books/dark-matter\" style=\"color:#fb8500;font-weight:600\">Dark Matter</a> by Blake Crouch is a fast thriller built on quantum ideas, and <a href=\"/books/the-first-fifteen-lives-of-harry-august\" style=\"color:#fb8500;font-weight:600\">The First Fifteen Lives of Harry August</a> by Claire North plays with time in a quieter, more literary way."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Indian science and the spirit of enquiry"
+      },
+      {
+        "type": "paragraph",
+        "content": "No Indian reading list for science is complete without Dr A.P.J. Abdul Kalam. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> traces his journey from Rameswaram to India's space and missile programmes, and it is as much about perseverance as about engineering. <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds: Unleashing the Power Within India</a> turns to young people and asks them to dream bigger and work harder. Both are excellent gifts for a school student who is deciding what to study next."
+      },
+      {
+        "type": "blockquote",
+        "content": "Science is not only a body of facts. It is a way of asking better questions and being willing to change your answer."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Understanding ourselves: brain, body and behaviour"
+      },
+      {
+        "type": "paragraph",
+        "content": "Some of the most useful science is about us. <a href=\"/books/why-we-sleep\" style=\"color:#fb8500;font-weight:600\">Why We Sleep</a> by Matthew Walker explains why rest matters for memory, mood and health. <a href=\"/books/outlive\" style=\"color:#fb8500;font-weight:600\">Outlive</a> by Peter Attia looks at how to stay healthy for longer. <a href=\"/books/behave\" style=\"color:#fb8500;font-weight:600\">Behave</a> by Robert Sapolsky tries to explain why humans act the way they do, drawing on biology and psychology. <a href=\"/books/dopamine-nation\" style=\"color:#fb8500;font-weight:600\">Dopamine Nation</a> by Anna Lembke is a sharp look at pleasure, habit and balance in the age of the smartphone. For the thinking behind our decisions, <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman is a landmark."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Science, society and big ideas"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/factfulness\" style=\"color:#fb8500;font-weight:600\">Factfulness</a> by Hans Rosling argues, with data, that the world is better in many ways than we assume, and it trains you to check your instincts against evidence. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari covers the long story of our species. <a href=\"/books/the-god-delusion\" style=\"color:#fb8500;font-weight:600\">The God Delusion</a> by Richard Dawkins is a famous and often debated argument about science and belief, and reading it alongside other views is itself good scientific practice. <a href=\"/books/the-design-of-everyday-things\" style=\"color:#fb8500;font-weight:600\">The Design of Everyday Things</a> by Don Norman shows how careful observation and testing make the objects around us easier to use."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories with a scientist at the heart"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/lessons-in-chemistry\" style=\"color:#fb8500;font-weight:600\">Lessons in Chemistry</a> by Bonnie Garmus follows a brilliant chemist in the 1960s who refuses to be sidelined, and <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> by Kazuo Ishiguro imagines a robot companion learning what it means to care. <a href=\"/books/when-breath-becomes-air\" style=\"color:#fb8500;font-weight:600\">When Breath Becomes Air</a> by Paul Kalanithi is a memoir by a neurosurgeon-scientist facing a terminal illness, thoughtful and deeply moving."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to build a science reading habit"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one book from the list that matches a question you already have, such as space, sleep or the mind.",
+          "Read twenty minutes a day. A short daily window beats a heroic weekend that never happens.",
+          "Keep a notebook of questions. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a useful companion for turning vague thoughts into clear ones, and clarity is half of scientific thinking.",
+          "Pair one deep book with a habit book such as <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> so the reading actually sticks.",
+          "Discuss it with a friend or a child. Explaining an idea is the fastest way to find out if you understand it."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Gifting a curious child",
+        "content": "For students and young readers, a science book or a biography of a scientist makes a lasting gift. Gift wrapping is available at +₹25 per book, and each order can go to a different address."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Buy science and ideas books online in India"
+      },
+      {
+        "type": "paragraph",
+        "content": "TheBookX has books from ₹1, free delivery and Cash on Delivery across India, so a stack of reading for the week of World Science Day does not need to cost much. Add a few titles to your cart today and start a new habit tomorrow."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Science does not need to be intimidating. Pick one curious book, read a chapter tomorrow, and let 10 November be the day you started asking better questions."
+      }
+    ],
+    "coverImage": "/blogs/world-science-day-2026-10-november-science-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-science-day-2026-10-november-science-books-to-read-india.jpeg",
+        "alt": "A cheerful young woman reading a science book on a window seat with a cup of tea, soft afternoon light and a few more books stacked beside her",
+        "caption": "A few quiet pages of science are the best way to mark World Science Day",
+        "category": "Science & Learning"
+      }
+    ],
+    "keywords": [
+      "world science day 2026",
+      "world science day for peace and development",
+      "10 november science day",
+      "science books to read india",
+      "best popular science books",
+      "cosmos carl sagan",
+      "wings of fire",
+      "science books for students",
+      "buy books online india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Science & Learning",
+      "Reading Lists",
+      "Events & Observances"
+    ],
+    "faqs": [
+      {
+        "question": "When is World Science Day for Peace and Development 2026?",
+        "answer": "It is observed every year on 10 November, so in 2026 it falls on Tuesday, 10 November. UNESCO proclaimed the day in 2001 and it was first celebrated in 2002."
+      },
+      {
+        "question": "What is the theme of World Science Day 2026?",
+        "answer": "Listings for 2026 give the theme as Common ground through science diplomacy, focusing on international cooperation in science to address climate change, biodiversity loss and health."
+      },
+      {
+        "question": "Which science books are good for beginners?",
+        "answer": "Cosmos by Carl Sagan, Factfulness by Hans Rosling, Why We Sleep by Matthew Walker and Wings of Fire by A.P.J. Abdul Kalam are accessible starting points, and Project Hail Mary is a fun fiction option."
+      },
+      {
+        "question": "Can I buy these science books with Cash on Delivery in India?",
+        "answer": "Yes. TheBookX offers free delivery and Cash on Delivery across India, with books from ₹1 and gift wrapping at +₹25 per book."
+      }
+    ]
+  },
   "bhai-dooj-2026-11-november-books-to-gift-brother-sister-india": {
     "id": "blog-102",
     "title": "Bhai Dooj 2026 (11 November): Tilak Timings and 18 Books to Gift Your Brother or Sister",

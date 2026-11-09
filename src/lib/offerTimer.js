@@ -45,17 +45,35 @@ export function offerState(now = Date.now()) {
   }
 }
 
+// Send an event to the Timers tab. Resolves true only when the server says the
+// sheet accepted it.
 function log(action, extra = {}) {
   try {
-    fetch("/api/timers", {
+    return fetch("/api/timers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       keepalive: true,
       body: JSON.stringify({ action, deviceId: deviceId(), ...extra }),
-    }).catch(() => {});
+    })
+      .then((r) => r.json())
+      .then((d) => !!d?.success)
+      .catch(() => false);
   } catch {
-    /* ignore */
+    return Promise.resolve(false);
   }
+}
+
+const LOGGED_OK_KEY = "tbx_offer_row"; // "1" once the sheet has this device's row
+
+function logStart(start, end, book, page) {
+  return log("start", { startedAt: start, endsAt: end, book, page }).then((ok) => {
+    try {
+      if (ok) localStorage.setItem(LOGGED_OK_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    return ok;
+  });
 }
 
 // Called from a book page: starts the clock on first visit. Returns the state.
@@ -67,12 +85,12 @@ export function startOffer(book) {
     localStorage.setItem(START_KEY, String(start));
     localStorage.setItem(END_KEY, String(start + OFFER_MS));
     localStorage.setItem(LOGGED_KEY, "start");
-    log("start", {
-      startedAt: start,
-      endsAt: start + OFFER_MS,
-      book: book?.name || "",
-      page: window.location.pathname,
-    });
+    try {
+      localStorage.setItem("tbx_offer_first", JSON.stringify({ book: book?.name || "", page: window.location.pathname }));
+    } catch {
+      /* ignore */
+    }
+    logStart(start, start + OFFER_MS, book?.name || "", window.location.pathname);
     window.dispatchEvent(new Event("tbx:offer-started"));
     return { started: true, endsAt: start + OFFER_MS, expired: false };
   } catch {
@@ -102,7 +120,25 @@ export async function syncOfferFromSheet({ force = false } = {}) {
     const r = await fetch(`/api/timers?deviceId=${encodeURIComponent(deviceId())}`, { cache: "no-store" });
     const d = await r.json();
     const end = Number(d?.endsAt || 0);
-    if (!d?.found || !end) return false;
+    // Self-heal: the device's timer is running but the sheet has no row (the
+    // first "start" was lost) → send it again. The server ignores duplicates.
+    if (!d?.found) {
+      const s0 = Number(localStorage.getItem(START_KEY) || 0);
+      let first = {};
+      try {
+        first = JSON.parse(localStorage.getItem("tbx_offer_first") || "{}") || {};
+      } catch {
+        /* ignore */
+      }
+      if (s0) logStart(s0, offerState().endsAt, first.book || "", first.page || window.location.pathname);
+      return false;
+    }
+    try {
+      localStorage.setItem(LOGGED_OK_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    if (!end) return false;
     const cur = offerState().endsAt;
     if (Math.abs(end - cur) < 30 * 1000) return false;
     const wasExpired = Date.now() >= cur;

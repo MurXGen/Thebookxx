@@ -8127,3 +8127,115 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
 .tmr-confirm span { flex: 1 1 200px; }
 .tmr-confirm button { height: 32px; padding: 0 14px; border: 1px solid rgba(255,255,255,.3); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
 .tmr-confirm button.yes { background: #fb8500; border-color: #fb8500; }
+
+/* ── 51. Analytics v3 — view switcher, open cards, structured grid ───── */
+.my-orders-page.mo-glass .an3-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.my-orders-page.mo-glass .an3-tabs {
+  display: inline-flex; gap: 2px; padding: 3px; border-radius: 12px;
+  background: rgb(var(--g-ink-rgb) / 0.05);
+  border: 1px solid var(--g-hairline);
+  max-width: 100%; overflow-x: auto; scrollbar-width: none;
+}
+.my-orders-page.mo-glass .an3-tabs::-webkit-scrollbar { display: none; }
+.my-orders-page.mo-glass .an3-tab {
+  position: relative; flex: 0 0 auto; border: 0; background: transparent;
+  padding: 7px 14px; border-radius: 9px; cursor: pointer;
+  font-size: 13px; font-weight: 700; color: var(--g-ink-3);
+  transition: color 0.18s var(--g-ease);
+}
+.my-orders-page.mo-glass .an3-tab:hover { color: var(--g-ink); }
+.my-orders-page.mo-glass .an3-tab.on { color: var(--g-ink); }
+.my-orders-page.mo-glass .an3-tab-pill {
+  position: absolute; inset: 0; border-radius: 9px;
+  background: var(--g-surface-solid);
+  box-shadow: 0 1px 2px rgb(var(--g-ink-rgb) / 0.08), 0 0 0 1px var(--g-hairline);
+}
+.my-orders-page.mo-glass .an3-tab-t { position: relative; }
+
+.my-orders-page.mo-glass .an3-live {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 32px; padding: 0 12px; border-radius: 999px;
+  border: 1px solid var(--g-hairline); background: var(--g-surface-3);
+  color: var(--g-ink-2); font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.my-orders-page.mo-glass .an3-live:disabled { cursor: default; }
+.my-orders-page.mo-glass .an3-live-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #0ca30c;
+  box-shadow: 0 0 0 0 rgb(12 163 12 / 0.5); animation: an3-pulse 2s infinite;
+}
+.my-orders-page.mo-glass .an3-live-ic { color: var(--g-ink-3); }
+.my-orders-page.mo-glass .an3-live.busy .an3-live-ic { animation: an3-spin 0.9s linear infinite; }
+@keyframes an3-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(12 163 12 / 0.45); }
+  70% { box-shadow: 0 0 0 7px rgb(12 163 12 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(12 163 12 / 0); }
+}
+@keyframes an3-spin { to { transform: rotate(360deg); } }
+
+/* View heading — plain text, no toggle. */
+.my-orders-page.mo-glass .an3-view-head { padding: 4px 2px 0; }
+.my-orders-page.mo-glass .an3-view-title {
+  margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.01em; color: var(--g-ink);
+}
+.my-orders-page.mo-glass .an3-view-sub { margin: 2px 0 0; font-size: 12.5px; color: var(--g-ink-3); }
+.my-orders-page.mo-glass .an3-view-body { padding-top: 12px; }
+
+/* Cards: quiet, hairline, no toggle affordance. */
+.my-orders-page.mo-glass .an3-card {
+  border: 1px solid var(--g-hairline); box-shadow: none;
+}
+.my-orders-page.mo-glass .an3-card .an3-card-head { cursor: default; }
+.my-orders-page.mo-glass .an3-card .an3-card-head:hover { background: transparent; }
+
+/* Overview: chart left, projections + pace right. */
+.my-orders-page.mo-glass .an3-main {
+  display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+  gap: var(--g-gap); align-items: start;
+}
+.my-orders-page.mo-glass .an3-side { display: flex; flex-direction: column; gap: var(--g-gap); min-width: 0; }
+.my-orders-page.mo-glass .an3-side .an2-proj-tiles { grid-template-columns: 1fr 1fr; }
+.my-orders-page.mo-glass .an3-side .an2-proj-tile.hot { grid-column: 1 / -1; }
+.my-orders-page.mo-glass .an3-side .an2-pace { grid-template-columns: 1fr; border: 0; padding: 0; background: none; }
+.my-orders-page.mo-glass .an3-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+.my-orders-page.mo-glass .an3-cust-top > .an3-card { max-width: none; }
+@media (max-width: 1100px) {
+  .my-orders-page.mo-glass .an3-main { grid-template-columns: 1fr; }
+  .my-orders-page.mo-glass .an3-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .my-orders-page.mo-glass .an3-pair { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .an3-side { grid-template-columns: 1fr; }
+  .my-orders-page.mo-glass .an3-bar { gap: 8px; }
+  .my-orders-page.mo-glass .an3-tabs { width: 100%; }
+  .my-orders-page.mo-glass .an3-tab { flex: 1 0 auto; padding: 7px 10px; }
+  .my-orders-page.mo-glass .an3-live { margin-left: auto; }
+}
+.my-orders-page.mo-glass .an3-main .rr-ins-grid {
+  display: flex; flex-wrap: wrap;
+}
+.my-orders-page.mo-glass .an3-main .rr-ins-grid > .rr-ins-tile { flex: 1 1 150px; }
+/* Switcher sticks under the topbar while a view scrolls. */
+.my-orders-page.mo-glass .an3-bar {
+  position: sticky; top: calc(var(--mo-topbar-h, 0px) + 6px); z-index: 20;
+  padding: 6px 0;
+}
+.my-orders-page.mo-glass .an3-tabs {
+  background: var(--g-surface-solid);
+  box-shadow: 0 4px 14px rgb(var(--g-ink-rgb) / 0.06);
+}
+.my-orders-page.mo-glass .an3-tabs .an3-tab-pill { background: rgb(var(--g-ink-rgb) / 0.07); box-shadow: none; }
+.my-orders-page.mo-glass .an3-live { background: var(--g-surface-solid); }
+@media (max-width: 720px) {
+  .my-orders-page.mo-glass .an3-bar { flex-wrap: nowrap; }
+  .my-orders-page.mo-glass .an3-tabs { width: auto; flex: 1 1 auto; min-width: 0; }
+  .my-orders-page.mo-glass .an3-tab { flex: 0 0 auto; }
+  .my-orders-page.mo-glass .an3-live { flex: 0 0 auto; width: 36px; height: 36px; padding: 0; justify-content: center; gap: 0; margin-left: 0; }
+  .my-orders-page.mo-glass .an3-live-t, .my-orders-page.mo-glass .an3-live .an3-live-ic { display: none; }
+  .my-orders-page.mo-glass .an3-live.busy .an3-live-ic { display: block; }
+  .my-orders-page.mo-glass .an3-live.busy .an3-live-dot { display: none; }
+}

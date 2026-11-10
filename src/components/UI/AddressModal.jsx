@@ -614,8 +614,8 @@ export default function AddressModal({
       faster: fasterDelivery,
       bookmarkQty,
       freeBookmarks,
-      // Payment not verified yet: the bag sends them straight to the order
-      // page (which shows "still processing") instead of the success card.
+      // Payment not verified yet: the success card shows its "Order placed ·
+      // processing in a few minutes" variant (no second loader).
       pending,
     };
     // NOTE: do NOT clear the cart here — the bag early-returns an empty-bag view
@@ -2204,10 +2204,13 @@ export default function AddressModal({
   // failed screen. Otherwise the order becomes "Unconfirmed (Payment Pending)"
   // — still unconfirmed everywhere (never treated as paid), but the team sees
   // the shopper says they paid — and we move them to their order page.
+  const [verifyLoading, setVerifyLoading] = useState(false);
   const handleVerifyPending = async () => {
     if (upiPhase === "rechecking" || successHandedRef.current) return;
     clearUpiTimers();
     setUpiPhase("rechecking");
+    // Same full-screen loader as "Placing your order…", over the QR sheet.
+    setVerifyLoading(true);
     const oid = String(upiOrderRef || "").trim();
     const t0 = Date.now();
     let r = null;
@@ -2215,8 +2218,14 @@ export default function AddressModal({
       if (oid) r = await fetchOrderStatusById(oid);
     } catch {}
     await new Promise((res) => setTimeout(res, Math.max(0, 3000 - (Date.now() - t0))));
-    if (r?.confirmed) return finalizeUPISuccess();
-    if (r?.failed) return triggerUpiFailed();
+    if (r?.confirmed) {
+      setVerifyLoading(false);
+      return finalizeUPISuccess();
+    }
+    if (r?.failed) {
+      setVerifyLoading(false);
+      return triggerUpiFailed();
+    }
     if (oid) {
       fetch("/api/order-write", {
         method: "POST",
@@ -2234,6 +2243,8 @@ export default function AddressModal({
     setSuccessPayment("UPI");
     setShowUPIPayment(false);
     finishToSuccess(oid, advanceMode ? "ADV" : "UPI", { pending: true });
+    // Keep the loader up a beat so it hands straight over to the summary.
+    setTimeout(() => setVerifyLoading(false), 400);
   };
 
   // From the failed screen: clear the failed tag back to plain "Unconfirmed"
@@ -5012,6 +5023,17 @@ export default function AddressModal({
           />
         )}
       </AnimatePresence>
+
+      {/* "I've paid, verify status" → the same loader as placing an order. */}
+      {verifyLoading && (
+        <div className="osc-overlay osc-verify-overlay" key="verify-loader" role="status" aria-live="polite">
+          <div className="osc-placing">
+            <span className="osc-placing-spinner" aria-hidden="true" />
+            <span className="osc-placing-txt">Checking your payment status…</span>
+            <span className="osc-placing-sub">Hang tight — this takes just a few seconds</span>
+          </div>
+        </div>
+      )}
     </AnimatePresence>
   );
 }

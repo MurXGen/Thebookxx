@@ -19,6 +19,7 @@ import {
   Copy,
   Truck,
   Home,
+  Clock3,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import CommunityJoin from "@/components/CommunityJoin";
@@ -27,6 +28,7 @@ import { getDeliveryCharge } from "@/utils/cartOffers";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { encodeAddonsField, BOOKMARK_UNIT } from "@/utils/addonsField";
 import { showToast } from "@/context/ToastContext";
+import { deliveryWindows, isFastRegion } from "@/lib/deliveryEta";
 
 const slugify = (t) =>
   String(t || "")
@@ -69,6 +71,9 @@ export default function OrderSuccessCard({
   faster = false,
   bookmarkQty = 0,
   freeBookmarks = 2,
+  // Payment still being verified ("I've paid, verify status"): no second
+  // loader, no confetti; the copy says it'll be processed in a few minutes.
+  pending = false,
   onTrack,
   onClose,
 }) {
@@ -83,7 +88,7 @@ export default function OrderSuccessCard({
   const [orderBooks, setOrderBooks] = useState(books);
   const [savingKey, setSavingKey] = useState("");
   // "placing" → 2s loader, then "done" → the success content + tick + haptic.
-  const [phase, setPhase] = useState("placing");
+  const [phase, setPhase] = useState(pending ? "done" : "placing");
 
   const [noteOpen, setNoteOpen] = useState(false);
   const [note, setNote] = useState("");
@@ -264,10 +269,14 @@ export default function OrderSuccessCard({
     }
   };
 
-  // Latest expected arrival (Standard 5–9 days, Faster 1–6 days).
+  // Latest expected arrival, by region: a date in the fast-lane regions, a
+  // day range elsewhere (no dates).
+  const regionAddr = { state: address.state, city: address.city, pincode: address.pincode };
+  const regionWin = deliveryWindows(regionAddr)[isFaster ? "faster" : "standard"];
   const arriveBy = (() => {
+    if (!isFastRegion(regionAddr)) return `${regionWin[0]}–${regionWin[1]} days`;
     const d = new Date();
-    d.setDate(d.getDate() + (isFaster ? 6 : 9));
+    d.setDate(d.getDate() + regionWin[1]);
     return d.toLocaleDateString("en-IN", {
       weekday: "short",
       day: "numeric",
@@ -328,6 +337,12 @@ export default function OrderSuccessCard({
   // Show a 2s "Placing your order…" loader, then reveal the success content
   // with the tick, the chime, a light confetti shower and a haptic buzz.
   useEffect(() => {
+    if (pending) {
+      try {
+        if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([18, 40, 40]);
+      } catch {}
+      return;
+    }
     const t = setTimeout(() => {
       setPhase("done");
       try {
@@ -351,6 +366,7 @@ export default function OrderSuccessCard({
       clearTimeout(t);
       clearTimeout(c);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const TR = 30;
   const TC = 2 * Math.PI * TR;
@@ -382,11 +398,12 @@ export default function OrderSuccessCard({
   };
 
   return (
-    <div className="osc-overlay osc-full">
+    <div className={`osc-overlay osc-full${pending ? " osc-pending" : ""}`}>
       <div className="osc-modal">
         {/* ── Top: animated success tick + message ── */}
         <div className="osc-top">
           {/* Light one-time confetti over the summary */}
+          {!pending && (
           <span className="osc-confetti" aria-hidden="true">
             {Array.from({ length: 22 }).map((_, i) => (
               <i
@@ -403,6 +420,7 @@ export default function OrderSuccessCard({
               />
             ))}
           </span>
+          )}
           <motion.span
             className="osc-tick"
             initial={{ scale: 0.9 }}
@@ -465,7 +483,9 @@ export default function OrderSuccessCard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.6 }}
           >
-            Order placed{firstName ? `, ${firstName}` : ""}
+            {pending
+              ? "Order placed successfully"
+              : `Order placed${firstName ? `, ${firstName}` : ""}`}
           </motion.h2>
           <motion.p
             className="osc-top-sub"
@@ -473,8 +493,20 @@ export default function OrderSuccessCard({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.35, delay: 0.7 }}
           >
-            Thank you. We&apos;re getting your books ready.
+            {pending
+              ? "We're confirming your payment. Your order will be processed in a few minutes."
+              : "Thank you. We're getting your books ready."}
           </motion.p>
+          {pending && (
+            <motion.span
+              className="osc-pend-pill"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.72 }}
+            >
+              <span className="osc-pend-dot" aria-hidden="true" /> Payment check in progress
+            </motion.span>
+          )}
           {orderId && (
             <motion.button
               type="button"
@@ -505,7 +537,7 @@ export default function OrderSuccessCard({
               <b>₹{total}</b>
             </span>
             <span className="osc-stat">
-              <small>Arrives by</small>
+              <small>{/days/.test(arriveBy) ? "Arrives in" : "Arrives by"}</small>
               <b>
                 <CalendarDays size={14} /> {arriveBy}
               </b>
@@ -519,7 +551,10 @@ export default function OrderSuccessCard({
           <ol className="osc-steps" aria-label="Order progress">
             {[
               { k: "placed", label: "Placed", Icon: Check, on: true },
-              { k: "packing", label: "Packing", Icon: Package, now: true },
+              ...(pending
+                ? [{ k: "pay", label: "Payment check", Icon: Clock3, now: true }]
+                : []),
+              { k: "packing", label: "Packing", Icon: Package, now: !pending },
               { k: "shipped", label: isFaster ? "Priority ship" : "Shipped", Icon: Truck },
               { k: "home", label: "Delivered", Icon: Home },
             ].map((st) => (
@@ -582,6 +617,7 @@ export default function OrderSuccessCard({
             </div>
           </div>
 
+          {!pending && (<>
           <span className="osc-sec-title">Make this order yours</span>
 
           {/* Add note */}
@@ -745,6 +781,7 @@ export default function OrderSuccessCard({
               )}
             </div>
           )}
+          </>)}
         </div>
 
         {/* ── Bottom: two CTAs ── */}

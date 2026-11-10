@@ -23,8 +23,8 @@ export default function ComboDeals({ limit = 14 }) {
           </span>
           <h2 className="combo-heading">Buy more, save more — book combos</h2>
           <p className="combo-sub">
-            Handpicked bundles of 3–4 books. One tap adds the whole set to your
-            bag.
+            The Art of Clarity + a top bestseller at 10% off, plus handpicked
+            bundles. One tap adds the whole set to your bag.
           </p>
         </div>
         <Link href="/combos" className="combo-viewall">

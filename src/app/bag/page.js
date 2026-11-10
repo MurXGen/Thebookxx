@@ -2,6 +2,7 @@
 
 import BookCard from "@/components/BookCard";
 import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
+import { clarityComboDiscount } from "@/utils/combos";
 import CartItemRow from "@/components/CartItemRow";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
@@ -656,6 +657,15 @@ function BagContent() {
   if (upsellDiscount) {
     offerDiscount += upsellDiscount;
     offerLabel = offerLabel ? `${offerLabel} + ₹40 add-on` : "₹40 book add-on";
+  }
+
+  // The Art of Clarity combos: Clarity + one of the 20 partner bestsellers →
+  // 10% off that pair (same price as the combo card / combo page).
+  const clarityCombo = clarityComboDiscount(cartBooks);
+  if (clarityCombo.discount > 0) {
+    offerDiscount += clarityCombo.discount;
+    const lbl = `Art of Clarity combo 10% off`;
+    offerLabel = offerLabel ? `${offerLabel} + ${lbl}` : lbl;
   }
 
   const finalPayable = totalDiscounted - offerDiscount;

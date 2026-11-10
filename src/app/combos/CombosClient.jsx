@@ -35,9 +35,10 @@ export default function CombosClient() {
         <span className="combo-eyebrow">
           <PackagePlus size={15} /> Combo offers
         </span>
-        <h1>Book Combo Offers — Buy 3+ Books & Save Big</h1>
+        <h1>Book Combo Offers — Buy Together & Save</h1>
         <p>
-          {combos.length} handpicked book bundles across bestsellers, romance,
+          The Art of Clarity paired with 20 top non-fiction bestsellers at 10%
+          off, plus {combos.length - 20} handpicked bundles across bestsellers, romance,
           thrillers, business, self-help, author collections and more. Every
           combo drops the whole set into your bag in one tap — with prices from
           ₹1, Cash on Delivery and free delivery from ₹199.

@@ -9,17 +9,17 @@ const PAGE_URL = "https://www.thebookx.in/combos";
 export async function generateMetadata() {
   // Root layout appends " | TheBookX" via the title template.
   const title =
-    "Book Combo Offers — Buy 3+ Books from ₹1 | Bestseller, Romance & More";
-  const description = `Shop ${combos.length}+ curated book combos on TheBookX. Bundles of 3–4 handpicked books across bestsellers, romance, thrillers, business, self-help and author collections — added to your cart in one tap. Lowest prices online, books from ₹1, free delivery, Cash on Delivery and easy 7-day returns across India.`;
+    "Book Combo Offers — The Art of Clarity Combos, Bestseller Bundles & More";
+  const description = `Shop ${combos.length}+ curated book combos on TheBookX. The Art of Clarity paired with 20 top non-fiction bestsellers at 10% off, plus bundles of 3–4 handpicked books across bestsellers, romance, thrillers, business, self-help and author collections — added to your cart in one tap. Lowest prices online, books from ₹1, free delivery, Cash on Delivery and easy 7-day returns across India.`;
 
   return {
     title,
     description,
     keywords:
-      "book combos, book bundles, combo offers, buy books online, book set offers, bestseller book bundle, romance book combo, thriller book bundle, self-help book pack, business books combo, author collection books, cheap books online India, books from ₹1, TheBookX combos",
+      "The Art of Clarity combo, Art of Clarity and Atomic Habits, book combos, book bundles, combo offers, buy books online, book set offers, bestseller book bundle, romance book combo, thriller book bundle, self-help book pack, business books combo, author collection books, cheap books online India, books from ₹1, TheBookX combos",
     alternates: { canonical: PAGE_URL },
     openGraph: {
-      title: "Book Combo Offers — Buy 3+ Books & Save Big | TheBookX",
+      title: "Book Combo Offers — Buy Together & Save | TheBookX",
       description,
       url: PAGE_URL,
       siteName: "TheBookX",
@@ -73,7 +73,7 @@ function buildJsonLd() {
           category: combo.category,
           image: images.length ? images : [`${PAGE_URL}`],
           brand: { "@type": "Brand", name: "TheBookX" },
-          url: `${PAGE_URL}#${combo.slug}`,
+          url: `${PAGE_URL}/${combo.slug}`,
           offers: {
             "@type": "Offer",
             priceCurrency: "INR",

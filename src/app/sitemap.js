@@ -1,4 +1,5 @@
 import { books } from "@/utils/book";
+import { combos, getComboBooks } from "@/utils/combos";
 import { authorData, getAllAuthors } from "@/utils/author";
 import { reviewsData } from "@/utils/reviews";
 import { getAllBlogs } from "@/utils/blogs";
@@ -435,8 +436,25 @@ export default async function sitemap() {
     images: [blogImage.url],
   }));
 
+  // Combo detail pages (Art of Clarity pairs get top priority) with the
+  // combined share image + each cover for Google Images.
+  const comboRoutes = combos.map((c) => ({
+    url: `${baseUrl}/combos/${c.slug}`,
+    lastModified: now,
+    changeFrequency: "daily",
+    priority: c.discountPct ? 0.95 : 0.8,
+    images: [
+      `${baseUrl}/combos/${c.slug}/opengraph-image`,
+      ...getComboBooks(c)
+        .map((b) => b.image)
+        .filter(Boolean)
+        .map((src) => (src.startsWith("http") ? src : `${baseUrl}${src}`)),
+    ],
+  }));
+
   return [
     ...staticRoutes,
+    ...comboRoutes,
     ...bookRoutes,
     ...bookIdRoutes,
     ...quickReadRoutes,

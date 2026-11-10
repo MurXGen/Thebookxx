@@ -4,6 +4,7 @@ import { books } from "@/utils/book";
 import { notFound, redirect } from "next/navigation";
 import BookDetailsModal from "@/components/BookDeatilsModel";
 import BookAvailabilityGate from "@/components/BookAvailabilityGate";
+import { clarityCombos, getComboPricing, CLARITY_ID } from "@/utils/combos";
 import {
   SITE,
   FREE_DELIVERY_MIN,
@@ -192,6 +193,36 @@ export default async function BookDetailsPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <BookDetailsModal book={book} />
+      {/* Buy-together links to The Art of Clarity combos (internal links for
+          the combo pages; shown on Clarity and on each partner book). */}
+      {(() => {
+        const list =
+          book.id === CLARITY_ID
+            ? clarityCombos
+            : clarityCombos.filter((c) => c.bookIds.includes(book.id));
+        if (!list.length) return null;
+        return (
+          <section className="bd-combo-links" aria-label="Buy together and save">
+            <h2>
+              {book.id === CLARITY_ID
+                ? "Buy The Art of Clarity together & save 10%"
+                : `Buy ${book.name} with The Art of Clarity & save 10%`}
+            </h2>
+            <ul>
+              {list.map((c) => {
+                const { price, comboOff } = getComboPricing(c);
+                return (
+                  <li key={c.id}>
+                    <Link href={`/combos/${c.slug}`}>
+                      {c.title} combo · ₹{price} <span>★ Save ₹{comboOff}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      })()}
       <aside className="bd-ai-note">
         <p>
           <b>Shopping with ChatGPT, Claude or another AI assistant?</b> Ask it

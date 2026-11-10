@@ -929,18 +929,125 @@ export const combos = [
   }
 ];
 
+// ── The Art of Clarity combos ───────────────────────────────────────────────
+// The Art of Clarity paired with each of the top 20 non-fiction bestsellers.
+// Price = both books' prices summed, minus 10% (the bag applies the same 10%
+// automatically whenever The Art of Clarity + one of these books are in it).
+export const CLARITY_ID = "bk-002";
+export const CLARITY_COMBO_PCT = 10;
+export const CLARITY_PARTNER_IDS = [
+  "bk-005", // Atomic Habits
+  "bk-006", // The Psychology of Money
+  "bk-007", // Surrounded by Idiots
+  "bk-010", // The Subtle Art of Not Giving a F*ck
+  "bk-012", // The Laws of Human Nature
+  "bk-013", // The 48 Laws of Power
+  "bk-014", // Diary of a CEO
+  "bk-036", // The 5 Types of Wealth
+  "bk-037", // The Let Them Theory
+  "bk-038", // The First 90 Days
+  "bk-065", // Zero to One
+  "bk-067", // The Lean Startup
+  "bk-068", // The Hard Thing About Hard Things
+  "bk-069", // Blue Ocean Strategy
+  "bk-095", // Make Epic Money
+  "bk-096", // Do Epic Shit
+  "bk-097", // Get Epic Shit Done
+  "bk-130", // The Almanack of Naval Ravikant
+  "bk-133", // Everything I Know About Love
+  "bk-517", // Thinking, Fast and Slow
+];
+
+const comboSlugify = (t) =>
+  String(t || "")
+    .toLowerCase()
+    .replace(/\*/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+// Price of a 10%-off pair (kept in one place so cards, pages and the bag agree).
+export const clarityPairPrice = (sum) => Math.round(sum * (1 - CLARITY_COMBO_PCT / 100));
+
+const CLARITY = bookById[CLARITY_ID];
+export const clarityCombos = CLARITY
+  ? CLARITY_PARTNER_IDS.map((pid, i) => bookById[pid])
+      .filter(Boolean)
+      .map((b, i) => {
+        // i = position in the partner list
+        const sum = (CLARITY.discountedPrice || 0) + (b.discountedPrice || 0);
+        const price = clarityPairPrice(sum);
+        const name = b.name;
+        return {
+          id: `combo-aoc-${String(i + 1).padStart(2, "0")}`,
+          slug: `the-art-of-clarity-and-${comboSlugify(b.name)}-combo`,
+          title: `The Art of Clarity + ${name}`,
+          tagline: `Think clearly, then ${
+            /money|wealth|naval|epic money/i.test(b.name)
+              ? "build wealth"
+              : /startup|zero|hard thing|blue ocean|90 days|ceo/i.test(b.name)
+                ? "build something big"
+                : /power|human nature|idiots/i.test(b.name)
+                  ? "read people better"
+                  : "level up every day"
+          } — two bestsellers, 10% off together.`,
+          category: "Art of Clarity Combos",
+          bookIds: [CLARITY_ID, b.id],
+          discountPct: CLARITY_COMBO_PCT,
+          featured: true,
+          seoTitle: `The Art of Clarity + ${name} Combo: ₹${price}, Save 10%`,
+          seoDescription: `Buy The Art of Clarity by Murthy Thevar and ${name}${
+            b.author ? ` by ${b.author}` : ""
+          } together for ₹${price} (₹${sum - price} off, 10% off both books) on TheBookX. Genuine paperbacks, Cash on Delivery, free delivery from ₹199 and 7-day replacement across India.`,
+        };
+      })
+  : [];
+
+// Clarity combos first (featured), then the curated bundles.
+combos.unshift(...clarityCombos);
+
 export const getComboBooks = (combo) =>
   (combo?.bookIds || []).map((id) => bookById[id]).filter(Boolean);
 
 export const getComboPricing = (combo) => {
   const items = getComboBooks(combo);
   const sum = items.reduce((s, b) => s + (b.discountedPrice || 0), 0);
-  const price = roundTo9(sum);
+  const price = combo?.discountPct
+    ? Math.round(sum * (1 - combo.discountPct / 100))
+    : roundTo9(sum);
   const mrp = items.reduce(
     (s, b) => s + (b.originalPrice || originalOf(b.discountedPrice || 0)),
     0,
   );
-  return { price, mrp, savings: Math.max(0, mrp - price), count: items.length };
+  return {
+    price,
+    mrp,
+    sum, // both books at their usual prices
+    comboOff: Math.max(0, sum - price), // extra saved by buying together
+    savings: Math.max(0, mrp - price),
+    count: items.length,
+  };
+};
+
+// Bag discount: each copy of The Art of Clarity pairs with one partner book
+// (priciest first) and the pair gets 10% off — same maths as the combo price.
+export const clarityComboDiscount = (cartBooks = []) => {
+  const clarityQty = cartBooks
+    .filter((b) => b.id === CLARITY_ID && Number(b.discountedPrice) > 1)
+    .reduce((n, b) => n + (b.qty || 1), 0);
+  if (!clarityQty) return { discount: 0, pairs: 0 };
+  const clarityPrice =
+    Number(cartBooks.find((b) => b.id === CLARITY_ID)?.discountedPrice) ||
+    Number(CLARITY?.discountedPrice) ||
+    0;
+  const partners = [];
+  cartBooks.forEach((b) => {
+    if (!CLARITY_PARTNER_IDS.includes(b.id) || !(Number(b.discountedPrice) > 1)) return;
+    for (let i = 0; i < (b.qty || 1); i++) partners.push(Number(b.discountedPrice));
+  });
+  partners.sort((a, b) => b - a);
+  const used = partners.slice(0, clarityQty);
+  const discount = used.reduce((s, p) => s + (clarityPrice + p - clarityPairPrice(clarityPrice + p)), 0);
+  return { discount, pairs: used.length };
 };
 
 export const getComboBySlug = (slug) =>

@@ -71,8 +71,9 @@ import {
 import { parseAddonsField } from "@/utils/addonsField";
 import { isGiftOrder } from "@/utils/giftOrder";
 import { showToast } from "@/context/ToastContext";
-import { isPaymentPending, pendingSince, PENDING_NUDGE_MS } from "@/lib/paymentPending";
+import { isPaymentPending, isPaymentDue, pendingSince, PENDING_NUDGE_MS } from "@/lib/paymentPending";
 import { parseSheetTime } from "@/lib/sheetTime";
+import { isRefundInProcess, isRefundDone, REFUND_LATE_MS } from "@/lib/refundStatus";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { books as ALL_BOOKS } from "@/utils/book";
 import {
@@ -297,8 +298,20 @@ function statusLabel(order) {
       title: "Cancelled",
       sub: "We tried to deliver this order but it couldn't be completed and came back to us — usually because of an incomplete address or an unreachable phone number. If you'd still like your books, reach out and we'll gladly help you reorder.",
     };
+  if (isRefundInProcess(st))
+    return {
+      title: "Refund processing",
+      sub: "It will be credited to your original payment source within 48–72 hours",
+    };
+  if (isRefundDone(st))
+    return { title: "Refund sent successfully", sub: "Sent to your original payment source" };
   if (/cancel/.test(st))
     return { title: "Cancelled", sub: "This order was cancelled" };
+  if (isPaymentDue(st))
+    return {
+      title: "Payment pending",
+      sub: "Complete the payment and we'll start packing your order",
+    };
   if (isPaymentPending(st))
     return {
       title: "Order is still processing",
@@ -2076,7 +2089,39 @@ export default function OrderDetailPage() {
   // delivered). Hidden while the order is still just confirmed/processing.
   const showOrderNote =
     shipped || inTransit || outForDelivery || delivered;
-  const cancelled = /cancel|return/i.test(order["Order Status"] || "");
+  const refundInProcess = isRefundInProcess(order["Order Status"]);
+  const refundDone = isRefundDone(order["Order Status"]);
+  const refundState = refundInProcess || refundDone;
+  const refundAmount = String(order["Refund Amount"] || order["Total Amount"] || "").replace(/[^\d.]/g, "");
+  // A refunded order is closed like a cancelled one (no route, no address
+  // edits, no delivery ETA); the refund banner + status card explain it.
+  const cancelled = /cancel|return/i.test(order["Order Status"] || "") || refundState;
+  // Still "in process" 72 h after it was started → offer WhatsApp.
+  const refundStartedAt = parseSheetTime(order["Refund Started At"]) || 0;
+  const refundLate = refundInProcess && refundStartedAt > 0 && Date.now() - refundStartedAt > REFUND_LATE_MS;
+  const askAboutRefund = () => {
+    const msg =
+      `Hi TheBookX, my refund for order ${orderId}${refundAmount ? ` (₹${refundAmount})` : ""} hasn't reached me yet. ` +
+      `It's been more than 72 hours. Please check.\n` +
+      (typeof window !== "undefined" ? `${window.location.origin}/profile/${number}/orders/${encodeURIComponent(orderId)}` : "");
+    window.open(`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+  };
+  // "Pending payment" — the customer still owes money on this order. Amount:
+  // the sheet's "Amount Due" if set, else the order total (minus the ₹99
+  // advance when they paid it).
+  const paymentDue = isPaymentDue(order["Order Status"]);
+  const dueTotal = Math.round(Number(bd?.grand) || parseFloat(order["Total Amount"]) || 0);
+  const dueAdvance = /^\s*yes/i.test(String(order["Advance Paid"] || "")) ? 99 : 0;
+  const dueSheet = parseFloat(String(order["Amount Due"] ?? "").replace(/[^\d.]/g, ""));
+  const dueAmount = Number.isFinite(dueSheet) && dueSheet > 0 ? Math.round(dueSheet) : Math.max(0, dueTotal - dueAdvance);
+  const dueFromSheet = Number.isFinite(dueSheet) && dueSheet > 0;
+  const askToPay = () => {
+    const msg =
+      `Hi TheBookX, I'd like to pay ₹${dueAmount} for my order ${orderId}. Please share the payment details.\n` +
+      (typeof window !== "undefined" ? `${window.location.origin}/profile/${number}/orders/${encodeURIComponent(orderId)}` : "");
+    window.open(`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+  };
+
   const isReturned = /return/i.test(order["Order Status"] || "");
   const onHold = /on\s*hold/i.test(order["Order Status"] || "");
   // Payment-pending / needs attention. A plain "Unconfirmed" status is what the
@@ -2388,6 +2433,9 @@ export default function OrderDetailPage() {
   // Badge text for the compact status (per the custom status→badge mapping).
   const psBadge = (() => {
     const st = String(order?.["Order Status"] || "").toLowerCase();
+    if (paymentDue) return "Payment pending";
+    if (refundInProcess) return "Refund processing";
+    if (refundDone) return "Refunded";
     if (cancelled) return "Cancelled";
     if (/on\s*hold/.test(st)) return "On hold";
     if (delivered) return "Delivered"; // includes "money received"
@@ -2690,6 +2738,30 @@ export default function OrderDetailPage() {
         </div>
       )}
 
+      {/* Refund — in process (48–72 h) or sent. */}
+      {order && refundState && (
+        <div className={`od-refund-banner${refundDone ? " done" : ""}`} role="status">
+          <span className="od-refund-ic" aria-hidden="true">
+            {refundDone ? <Check size={18} strokeWidth={3} /> : <RotateCcw size={17} />}
+          </span>
+          <div className="od-refund-txt">
+            <strong>{refundDone ? "Refund sent successfully" : "Refund processing"}</strong>
+            <span>
+              {refundDone
+                ? `${refundAmount ? `₹${refundAmount} has` : "Your refund has"} been sent to your original payment source. It can take a little while to show in your account.`
+                : refundLate
+                  ? `It's been more than 72 hours. If ${refundAmount ? `₹${refundAmount}` : "your refund"} hasn't reached your account yet, message us and we'll check right away.`
+                  : `${refundAmount ? `₹${refundAmount} will` : "Your refund will"} be credited to your original payment source within the next 48–72 hours.`}
+            </span>
+            {refundLate && (
+              <button type="button" className="od-unconf-btn od-refund-btn" onClick={askAboutRefund}>
+                <FaWhatsapp size={15} /> Message us on WhatsApp
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Paid online, not verified yet — "still processing", and WhatsApp
           only once it's been pending for 15+ minutes. */}
       {order && payPending && (
@@ -2719,7 +2791,44 @@ export default function OrderDetailPage() {
       )}
 
       {/* Unconfirmed order — payment-pending / needs attention. */}
-      {order && unconfirmed && !payPending && (
+      {/* Pending payment — how much is left to pay. */}
+      {order && paymentDue && (
+        <section className="od-due" aria-labelledby="od-due-h">
+          <div className="od-due-head">
+            <AlertCircle size={18} aria-hidden="true" />
+            <div>
+              <strong id="od-due-h">Payment pending</strong>
+              <span>
+                Your order is on hold until the payment is done. Pay the amount below and we&apos;ll start
+                packing right away.
+              </span>
+            </div>
+          </div>
+          <dl className="od-due-bill">
+            {!dueFromSheet && dueAdvance > 0 && (
+              <>
+                <div>
+                  <dt>Order total</dt>
+                  <dd>₹{dueTotal}</dd>
+                </div>
+                <div className="paid">
+                  <dt>Advance paid</dt>
+                  <dd>−₹{dueAdvance}</dd>
+                </div>
+              </>
+            )}
+            <div className="total">
+              <dt>Amount to pay</dt>
+              <dd>₹{dueAmount}</dd>
+            </div>
+          </dl>
+          <button type="button" className="od-unconf-btn od-due-btn" onClick={askToPay}>
+            <FaWhatsapp size={15} /> Pay ₹{dueAmount} — get payment details
+          </button>
+        </section>
+      )}
+
+      {order && unconfirmed && !payPending && !paymentDue && (
           <div className="od-unconf-banner">
             <span className="od-unconf-ic">
               <AlertCircle size={18} />
@@ -2873,9 +2982,11 @@ export default function OrderDetailPage() {
               className={`od-map-eta-dot${delivered || trackStage?.idx === 4 ? " done" : cancelled ? " off" : ""}`}
             />
             <div className="od-map-eta-txt">
-              <strong>{trackDetail || stLabel.title}</strong>
+              <strong>{(!refundState && trackDetail) || stLabel.title}</strong>
               <span>
-                {trackDetail ? (
+                {refundState ? (
+                  stLabel.sub
+                ) : trackDetail ? (
                   <>
                     📍 Live tracking status
                     {trackUpdatedTxt ? (
@@ -2903,9 +3014,9 @@ export default function OrderDetailPage() {
               </span>
             </div>
             {psBadge.toLowerCase() !==
-              String(trackDetail || stLabel.title).toLowerCase() && (
+              String((!refundState && trackDetail) || stLabel.title).toLowerCase() && (
               <span
-                className={`od-map-eta-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
+                className={`od-map-eta-badge${delivered || refundDone ? " done" : ""}${cancelled && !refundState ? " cancelled" : ""}`}
               >
                 {psBadge}
               </span>
@@ -3029,7 +3140,7 @@ export default function OrderDetailPage() {
       )}
       <section
         className={`od-map-card${mapFull ? " od-map-full" : ""}`}
-        style={delivered && !mapOpen ? { display: "none" } : undefined}
+        style={(delivered && !mapOpen) || refundState ? { display: "none" } : undefined}
       >
         {geoState === "ok" && receiver ? (
           <>

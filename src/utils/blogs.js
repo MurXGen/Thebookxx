@@ -4,6 +4,192 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "world-kindness-day-2026-13-november-books-on-kindness-and-compassion-india": {
+    "id": "blog-104",
+    "title": "World Kindness Day 2026 (13 November): 17 Books on Kindness and Compassion to Read in India",
+    "slug": "world-kindness-day-2026-13-november-books-on-kindness-and-compassion-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-10",
+    "lastModified": "2026-11-10",
+    "excerpt": "World Kindness Day is on 13 November. Its origins, seven small ways to mark it, and 17 books on kindness and compassion, with free delivery and COD in India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "World Kindness Day is observed every year on 13 November, which makes this Friday, 13 November 2026, the day. It began in 1998, when the World Kindness Movement, a network of kindness organisations from around the world, launched it to encourage small, deliberate acts of goodwill. It is not a public holiday and nobody expects grand gestures. The idea is simple: for one day, pay attention to how you treat the people around you."
+      },
+      {
+        "type": "paragraph",
+        "content": "Kindness can sound soft, but the best books on the subject treat it as a skill that is practised, not a mood that arrives. Below is a reading list built around that idea, covering fiction, memoir, philosophy and self-help, plus a few small ways to act on it this week."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What World Kindness Day is really about"
+      },
+      {
+        "type": "paragraph",
+        "content": "The day has no official theme each year and no single organiser you have to sign up with. That is part of its charm. Schools, workplaces and families mark it in their own way: a note left on a colleague's desk, a call to someone you have been meaning to ring, a book passed on to a friend who needs it. A few quiet minutes of reading about empathy tends to change how you behave for the rest of the day."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts",
+        "content": "Date: Friday, 13 November 2026. Started in 1998 by the World Kindness Movement. No fixed theme, no registration, just a nudge to do one kind thing on purpose."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels that make you softer (in a good way)"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/before-we-forget-kindness\" style=\"color:#fb8500;font-weight:600\">Before We Forget Kindness</a> by Toshikazu Kawaguchi is the most on-theme title in this list. Part of the Café series, it is a gentle story about love, time and the things people leave unsaid, and it reads quickly in a single weekend. <a href=\"/books/anxious-people\" style=\"color:#fb8500;font-weight:600\">Anxious People</a> by Fredrik Backman turns a bungled bank robbery into a warm study of how flawed, frightened people still try to be good to one another."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini is harder going, but its central question, whether it is ever too late to be good, is one of the most powerful in modern fiction. <a href=\"/books/lessons-in-chemistry\" style=\"color:#fb8500;font-weight:600\">Lessons in Chemistry</a> by Bonnie Garmus pairs sharp humour with a story about a woman who refuses to be diminished and gradually builds a circle of people who back her."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Memoir and short reads about compassion"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/tuesdays-with-morrie-an-old-man-a-young-man-and-life-s-greatest-lesson\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> records weekly conversations between a young journalist and his former professor, who is dying and has a lot to say about love, forgiveness and what actually matters. <a href=\"/books/the-boy-the-mole-the-fox-and-the-horse\" style=\"color:#fb8500;font-weight:600\">The Boy, the Mole, the Fox and the Horse</a> by Charlie Mackesy is a short illustrated book of conversations between four unlikely friends, and it can be read in twenty minutes, which makes it ideal for a lunch break or a gift."
+      },
+      {
+        "type": "blockquote",
+        "content": "Kindness is rarely about the big gesture. It is usually the next small thing you do for someone, without being asked."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on understanding people better"
+      },
+      {
+        "type": "paragraph",
+        "content": "Kindness starts with understanding. <a href=\"/books/how-to-win-friends-and-influence-people\" style=\"color:#fb8500;font-weight:600\">How to Win Friends and Influence People</a> by Dale Carnegie is, at heart, a guide to taking a genuine interest in other people, remembering names, listening more than speaking and avoiding criticism for its own sake. <a href=\"/books/the-courage-to-be-happy\" style=\"color:#fb8500;font-weight:600\">The Courage to Be Happy</a> by Ichiro Kishimi and Fumitake Koga uses a dialogue between a philosopher and a young man to explore why we compare ourselves to others and how contributing to people around us leads to happiness."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari offers the wide view: humans dominate the planet largely because we can cooperate in huge numbers, which is a useful reminder that goodwill is not a luxury but one of our core strengths."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Be kind to yourself too"
+      },
+      {
+        "type": "paragraph",
+        "content": "Many people find it easier to be generous with others than with themselves. <a href=\"/books/the-art-of-letting-go\" style=\"color:#fb8500;font-weight:600\">The Art of Letting Go</a> by Nick Trenton and <a href=\"/books/don-t-sweat-the-small-stuff\" style=\"color:#fb8500;font-weight:600\">Don't Sweat the Small Stuff</a> by Richard Carlson help you loosen your grip on grudges and small irritations, which leaves more patience for everyone else. <a href=\"/books/the-art-of-being-alone\" style=\"color:#fb8500;font-weight:600\">The Art of Being Alone</a> by Renuka Gavrani makes a case for solitude as a healthy source of calm, not loneliness, and <a href=\"/books/the-power-of-now\" style=\"color:#fb8500;font-weight:600\">The Power of Now</a> by Eckhart Tolle teaches the habit of staying present, which is where most real listening happens."
+      },
+      {
+        "type": "paragraph",
+        "content": "For a practical, habit-based approach, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear shows how a tiny action repeated daily becomes part of your character, which applies to kindness as much as to exercise. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> by Hector Garcia and Francesc Miralles links a long, contented life to purpose and strong community ties. And <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> (the Eknath Easwaran edition) remains one of the oldest guides to acting with compassion and without attachment to the result."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A clearer way to say what you mean"
+      },
+      {
+        "type": "paragraph",
+        "content": "A lot of unkindness is really miscommunication: a curt message, a half-listened conversation, an assumption nobody checked. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical book on clearing mental clutter and communicating plainly, so what you say lands the way you intended. If you tend to snap when you are overwhelmed, it is a good companion to the titles above."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Seven small ways to mark 13 November"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Send one message to someone you have not spoken to in a while, with no agenda.",
+          "Thank a person whose work usually goes unnoticed, such as a delivery partner, a security guard or a cleaner.",
+          "Listen to someone for five full minutes without offering advice.",
+          "Pass on a book you loved to a friend who might need it.",
+          "Leave a genuine, specific compliment for a colleague.",
+          "Forgive one small thing you have been holding on to.",
+          "Read for twenty quiet minutes and let the book do some of the work."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting kindness"
+      },
+      {
+        "type": "paragraph",
+        "content": "A book is one of the few gifts that says \"I was thinking about you\" without needing a reason. Gift wrapping is available at +₹25 per book, and each order can be shipped to a different address, so a book can reach a friend in another city on the day itself."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "On TheBookX",
+        "content": "Books from ₹1, free delivery and Cash on Delivery across India. Gift wrapping at +₹25 per book."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you can only pick one book to start with, choose <a href=\"/books/before-we-forget-kindness\" style=\"color:#fb8500;font-weight:600\">Before We Forget Kindness</a> for a gentle novel or <a href=\"/books/the-boy-the-mole-the-fox-and-the-horse\" style=\"color:#fb8500;font-weight:600\">The Boy, the Mole, the Fox and the Horse</a> for something you can finish today."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Kindness does not need an audience or a reason. Pick a book, do one kind thing on Friday, and see how the day feels."
+      }
+    ],
+    "coverImage": "/blogs/world-kindness-day-2026-13-november-books-on-kindness-and-compassion-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-kindness-day-2026-13-november-books-on-kindness-and-compassion-india.jpeg",
+        "alt": "A cheerful young woman reading a book on a sunlit window seat with a cup of tea, soft natural light and a few books stacked beside her",
+        "caption": "A few quiet pages are a good way to mark World Kindness Day",
+        "category": "Self-Growth"
+      }
+    ],
+    "keywords": [
+      "world kindness day 2026",
+      "13 november world kindness day",
+      "books on kindness",
+      "books on compassion and empathy",
+      "kindness books india",
+      "before we forget kindness",
+      "tuesdays with morrie",
+      "the art of clarity",
+      "gift books india",
+      "buy books online india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Self-Growth",
+      "Reading Lists",
+      "Events & Observances"
+    ],
+    "faqs": [
+      {
+        "question": "When is World Kindness Day 2026?",
+        "answer": "World Kindness Day is observed every year on 13 November, so in 2026 it falls on Friday, 13 November. It began in 1998, started by the World Kindness Movement."
+      },
+      {
+        "question": "Who started World Kindness Day?",
+        "answer": "It was launched in 1998 by the World Kindness Movement, a network of kindness organisations from around the world."
+      },
+      {
+        "question": "Which books are best for learning about kindness and empathy?",
+        "answer": "Before We Forget Kindness, Tuesdays with Morrie, The Boy, the Mole, the Fox and the Horse, Anxious People and How to Win Friends and Influence People are good starting points, along with The Art of Clarity for clearer, calmer communication."
+      },
+      {
+        "question": "Can I order these books with Cash on Delivery in India?",
+        "answer": "Yes. TheBookX offers free delivery and Cash on Delivery across India, with books from ₹1 and gift wrapping at +₹25 per book."
+      }
+    ]
+  },
   "world-science-day-2026-10-november-science-books-to-read-india": {
     "id": "blog-103",
     "title": "World Science Day 2026 (10 November): 20 Science and Ideas Books to Read in India",

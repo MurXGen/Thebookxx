@@ -5,6 +5,14 @@
 export const PAYMENT_PENDING_STATUS = "Unconfirmed (Payment Pending)";
 export const isPaymentPending = (status) => /payment\s*pending/i.test(String(status || ""));
 
+// "Pending payment" (set from Manage Orders): the customer still has to pay.
+// Different from the above, where they say they paid and we're verifying.
+export const PENDING_PAYMENT_STATUS = "Pending payment";
+export const isPaymentDue = (status) => {
+  const s = String(status || "");
+  return /pending\s*payment/i.test(s) && !/unconfirmed/i.test(s);
+};
+
 // After this long without confirmation the order page offers WhatsApp.
 export const PENDING_NUDGE_MS = 15 * 60 * 1000;
 

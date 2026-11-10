@@ -8239,3 +8239,72 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
   .my-orders-page.mo-glass .an3-live.busy .an3-live-ic { display: block; }
   .my-orders-page.mo-glass .an3-live.busy .an3-live-dot { display: none; }
 }
+
+/* 60 · Card action row — compact & minimal: icon-only 36px buttons, no tinted
+   tiles (labels live in the tooltip / aria-label). State still reads: green
+   icon when booked / queued / parcel complete, amber dot when parcel info is
+   missing. */
+.my-orders-page.mo-glass .mo2-actions { align-items: center; gap: 6px; }
+.my-orders-page.mo-glass .mo2-actions-l {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  grid-template-columns: none;
+  grid-auto-flow: initial;
+}
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn),
+.mo-dark .my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn) {
+  flex: 0 0 36px;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  gap: 0;
+  border-radius: 10px;
+  border: 1px solid rgb(var(--g-ink-rgb) / 0.1);
+  background: transparent;
+  color: var(--g-ink-2);
+  box-shadow: none;
+  transform: none;
+}
+.my-orders-page.mo-glass .mo2-actions .mo-act-l { display: none; }
+.my-orders-page.mo-glass .mo2-actions .mo-act-ic { width: 17px; height: 17px; color: var(--g-ink-2); }
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn):hover {
+  background: rgb(var(--g-ink-rgb) / 0.06);
+  border-color: rgb(var(--g-ink-rgb) / 0.16);
+  transform: none;
+  box-shadow: none;
+}
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn):hover .mo-act-ic { animation: none; color: var(--g-ink); }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-wa:hover .mo-act-ic { color: #16a34a; }
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-ic, .mo-kebab-btn):active { transform: scale(0.94); }
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-book.done, .mo-frame-dispatch.on, .mo-frame-ship.ok) {
+  border-color: rgb(34 197 94 / 0.35);
+  background: transparent;
+}
+.my-orders-page.mo-glass .mo2-actions :is(.mo-frame-book.done, .mo-frame-dispatch.on, .mo-frame-ship.ok) .mo-act-ic { color: #16a34a; }
+.my-orders-page.mo-glass.mo-dark .mo2-actions :is(.mo-frame-book.done, .mo-frame-dispatch.on, .mo-frame-ship.ok) .mo-act-ic { color: #4ade80; }
+.my-orders-page.mo-glass .mo2-actions .mo-frame-dot { top: -3px; right: -3px; width: 9px; height: 9px; }
+.my-orders-page.mo-glass .mo2-actions .mo-kebab-wrap { margin-left: auto; }
+
+/* Read-only "Refund done" line in the More menu */
+.mo-kebab-item.mo-kebab-note { cursor: default; opacity: 0.7; }
+
+/* 61 · Refund modal — Process refund → Mark refund done */
+/* same width/placement as the other bill-modal sheets */
+.mo-refund-steps { display: flex; gap: 8px; margin: 4px 16px 14px; padding: 0; list-style: none; }
+.mo-refund-steps li { flex: 1; display: flex; align-items: center; gap: 8px; padding-top: 8px; border-top: 3px solid rgb(120 120 130 / 0.22); font-size: 12px; font-weight: 600; color: #6b7280; }
+.mo-refund-steps li span { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgb(120 120 130 / 0.16); font-size: 11px; }
+.mo-refund-steps li.on { border-top-color: #0d9488; color: inherit; }
+.mo-refund-steps li.on span { background: #0d9488; color: #fff; }
+.mo-refund-amt { border: 0 !important; padding: 0 !important; background: none !important; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 16px 12px; font-size: 13px; font-weight: 600; }
+.mo-refund-amt-in { display: inline-flex; align-items: center; gap: 4px; height: 40px; padding: 0 12px; border: 1px solid rgb(120 120 130 / 0.35); border-radius: 10px; font-weight: 700; }
+.mo-refund-amt-in:focus-within { border-color: #0d9488; box-shadow: 0 0 0 3px rgb(13 148 136 / 0.15); }
+.mo-refund-amt-in input { width: 90px; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; text-align: right; }
+.mo-refund-sum { margin: 0 16px 12px; font-size: 13px; line-height: 1.5; }
+.mo-refund-preview { display: flex; flex-direction: column; gap: 3px; margin: 0 16px 16px; padding: 12px 14px; border-left: 3px solid #0d9488; border-radius: 0 10px 10px 0; background: rgb(13 148 136 / 0.08); font-size: 13px; line-height: 1.45; }
+.mo-refund-preview-k { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #0f766e; }
+.mo-refund-acts { display: flex; justify-content: flex-end; gap: 8px; padding: 0 16px 16px; }
+.mo-refund-ghost { height: 40px; padding: 0 16px; border: 1px solid rgb(120 120 130 / 0.35); border-radius: 10px; background: transparent; color: inherit; font-weight: 600; cursor: pointer; }
+.mo-refund-go { min-width: 150px; height: 40px; padding: 0 18px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 10px; background: #0d9488; color: #fff; font-weight: 700; cursor: pointer; }
+.mo-refund-go:disabled, .mo-refund-ghost:disabled { opacity: 0.6; cursor: default; }

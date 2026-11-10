@@ -126,6 +126,13 @@ import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
 import {
+  REFUND_IN_PROCESS,
+  REFUND_DONE,
+  isRefundInProcess,
+  isRefundDone,
+} from "@/lib/refundStatus";
+import { fmtTs } from "@/lib/sheetTime";
+import {
   orderEmailFromRow,
   sendOrderStatusEmail,
   reviewBooksFor,
@@ -1469,6 +1476,7 @@ const HOLD_STATUS = "On hold by India Post";
 
 const TRACK_STATUS_OPTIONS = [
   "Unconfirmed",
+  "Pending payment",
   "Pending",
   "Processing",
   "Getting Shipped",
@@ -1480,6 +1488,8 @@ const TRACK_STATUS_OPTIONS = [
   "On hold",
   HOLD_STATUS,
   "Cancelled",
+  REFUND_IN_PROCESS,
+  REFUND_DONE,
 ];
 
 // Active = Getting Shipped OR Processing OR Confirmed OR In Transit without a
@@ -1560,19 +1570,19 @@ const isActiveOrder = (order) => {
 // The fulfilment flow, in order. Every order sits in exactly one phase, so
 // the Orders tab can show the pipeline as a stepper with live counts.
 const ORDER_PHASES = [
-  { key: "confirm", label: "To confirm", hint: "Unconfirmed" },
+  { key: "confirm", label: "To confirm", hint: "Unconfirmed · pending payment" },
   { key: "pack", label: "To pack", hint: "Pending · processing" },
   { key: "ship", label: "To ship", hint: "Needs tracking ID" },
   { key: "transit", label: "In transit", hint: "Shipped · out for delivery" },
   { key: "delivered", label: "Delivered", hint: "Payment not marked" },
   { key: "closed", label: "Paid & closed", hint: "Money received" },
-  { key: "issues", label: "Exceptions", hint: "Hold · cancelled · returned" },
+  { key: "issues", label: "Exceptions", hint: "Hold · cancelled · returned · refunds" },
 ];
 const phaseOf = (order) => {
   const s = String(order["Order Status"] || "").toLowerCase();
   const tracked = String(order["Shipping ID"] || "").trim() !== "";
-  if (/unconfirmed/.test(s)) return "confirm";
-  if (/cancel|return|hold/.test(s)) return "issues";
+  if (/unconfirmed|pending\s*payment/.test(s)) return "confirm";
+  if (/cancel|return|hold|refund/.test(s)) return "issues";
   if (/money received/.test(s)) return "closed";
   if (/delivered/.test(s) && !/out for/.test(s)) return "delivered";
   if (/getting shipped/.test(s) || (/transit|shipped/.test(s) && !tracked))
@@ -1615,6 +1625,8 @@ const isLostStatus = (status) => {
 function moStatusColor(status) {
   const s = String(status || "").toLowerCase();
   if (/unconfirmed/.test(s)) return "#e11d48"; // rose — needs verification
+  if (/refund\s*in\s*process/.test(s)) return "#d97706"; // amber — refund pending
+  if (/refund/.test(s)) return "#0d9488"; // teal — refund sent
   if (/on\s*hold/.test(s)) return "#d97706"; // amber — packaging issue
   if (/cancel|return/.test(s)) return "#dc2626"; // red (returned = cancelled)
   if (/delivered|money received/.test(s)) return "#16a34a"; // green
@@ -4103,6 +4115,11 @@ export default function ManageOrdersPage() {
   }, []);
   const [waPickerOrder, setWaPickerOrder] = useState(null); // WhatsApp picker
   const [cancelChoiceOrder, setCancelChoiceOrder] = useState(null); // cancel modal
+  // Refund flow: { order, step: "start" | "done" } — More → Process refund /
+  // Mark refund done. Sets the status the customer's order page reads.
+  const [refundFlow, setRefundFlow] = useState(null);
+  const [payRefundBusy, setPayRefundBusy] = useState(false);
+  const [refundAmt, setRefundAmt] = useState("");
   const [cancelBusy, setCancelBusy] = useState(false);
   const [waSel, setWaSel] = useState(null); // selected message key in the picker
   // Channel for the picker: WhatsApp or Email. Reset to WhatsApp on open.
@@ -10713,6 +10730,42 @@ export default function ManageOrdersPage() {
     }
   };
 
+  const openPayRefund = (order) => {
+    const st = String(order?.["Order Status"] || "");
+    const paid = String(order?.["Refund Amount"] || order?.["Total Amount"] || "").replace(/[^\d.]/g, "");
+    setRefundAmt(paid);
+    setRefundFlow({ order, step: isRefundInProcess(st) ? "done" : "start" });
+  };
+  const submitPayRefund = async () => {
+    const order = refundFlow?.order;
+    const orderId = order?.["Order ID"];
+    if (!orderId) return;
+    const status = refundFlow.step === "start" ? REFUND_IN_PROCESS : REFUND_DONE;
+    const amt = String(refundAmt || "").replace(/[^\d.]/g, "");
+    const data = { "Order Status": status };
+    if (refundFlow.step === "start") {
+      if (amt) data["Refund Amount"] = amt;
+      // The customer page offers WhatsApp if it's still not done 72 h later.
+      data["Refund Started At"] = fmtTs(new Date());
+    }
+    setPayRefundBusy(true);
+    try {
+      await updateOrderRow(orderId, data);
+      patchLocalOrder(orderId, { ...data, status });
+      showToast(
+        refundFlow.step === "start" ? "Refund started — customer sees “Refund processing”" : "Marked as refunded",
+        "success",
+      );
+      setRefundFlow(null);
+      setTimeout(fetchOrders, 1300);
+    } catch (e) {
+      console.error("Refund status update failed:", e);
+      showToast("Couldn't update the refund status. Please try again.", "error");
+    } finally {
+      setPayRefundBusy(false);
+    }
+  };
+
   // Recompute the full bill breakdown for the edit modal from the current form
   // inputs, preserving the per-order components that aren't edited here
   // (bookmarks, QuickReads, offer/coupon/wallet discounts, MRP). Delivery and
@@ -12543,6 +12596,32 @@ export default function ManageOrdersPage() {
                                       >
                                         <Minus size={14} /> Remove a book
                                       </button>
+                                      <div className="mo-kebab-group">Refund</div>
+                                      {isRefundDone(order["Order Status"]) ? (
+                                        <span className="mo-kebab-item mo-kebab-note">
+                                          <CheckCircle size={14} /> Refund done
+                                        </span>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          role="menuitem"
+                                          className="mo-kebab-item"
+                                          onClick={() => {
+                                            openPayRefund(order);
+                                            setCardMenuId(null);
+                                          }}
+                                        >
+                                          {isRefundInProcess(order["Order Status"]) ? (
+                                            <>
+                                              <CheckCircle size={14} /> Mark refund done
+                                            </>
+                                          ) : (
+                                            <>
+                                              <RotateCcw size={14} /> Process refund
+                                            </>
+                                          )}
+                                        </button>
+                                      )}
                                       <div className="mo-kebab-group">Advanced</div>
                                       <button
                                         type="button"
@@ -23491,6 +23570,114 @@ export default function ManageOrdersPage() {
                 >
                   <span className="mo-cancel-lbl">Cancelled</span>
                   <span className="mo-cancel-sub">Full cancellation</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Refund — start (Refund in process) → finish (Refund done) ===== */}
+      <AnimatePresence>
+        {refundFlow && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !payRefundBusy && setRefundFlow(null)}
+          >
+            <motion.div
+              className="bill-modal mo-refund-modal"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="mo-refund-h"
+            >
+              <div className="bill-header">
+                <div className="flex flex-col">
+                  <span id="mo-refund-h" className="weight-600 font-16 flex items-center gap-8">
+                    {refundFlow.step === "start" ? (
+                      <>
+                        <RotateCcw size={16} /> Process refund
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle size={16} /> Mark refund as done
+                      </>
+                    )}
+                  </span>
+                  <span className="font-12 gray-500">
+                    {refundFlow.order["Order ID"]} · {refundFlow.order["Customer Name"] || "—"} ·{" "}
+                    {refundFlow.order["Payment Type"] || "—"}
+                  </span>
+                </div>
+                <span className="cursor-pointer" onClick={() => !payRefundBusy && setRefundFlow(null)}>
+                  <X size={18} />
+                </span>
+              </div>
+
+              {/* Two-step progress */}
+              <ol className="mo-refund-steps" aria-label="Refund progress">
+                <li className="on">
+                  <span>1</span> Refund in process
+                </li>
+                <li className={refundFlow.step === "done" ? "on" : ""}>
+                  <span>2</span> Refund done
+                </li>
+              </ol>
+
+              {refundFlow.step === "start" ? (
+                <label className="mo-refund-amt">
+                  <span>Refund amount</span>
+                  <span className="mo-refund-amt-in">
+                    ₹
+                    <input
+                      inputMode="decimal"
+                      value={refundAmt}
+                      onChange={(e) => setRefundAmt(e.target.value.replace(/[^\d.]/g, ""))}
+                      aria-label="Refund amount in rupees"
+                    />
+                  </span>
+                </label>
+              ) : (
+                <p className="mo-refund-sum">
+                  Refunding <b>₹{refundFlow.order["Refund Amount"] || refundFlow.order["Total Amount"] || "—"}</b>. Send it
+                  from your payment app first, then mark it done here.
+                </p>
+              )}
+
+              <div className="mo-refund-preview">
+                <span className="mo-refund-preview-k">Customer&apos;s order page will show</span>
+                {refundFlow.step === "start" ? (
+                  <>
+                    <b>Refund processing</b>
+                    <span>It will be credited to your original payment source within the next 48–72 hours.</span>
+                  </>
+                ) : (
+                  <>
+                    <b>Refund sent successfully</b>
+                    <span>The refund has been sent to your original payment source.</span>
+                  </>
+                )}
+              </div>
+
+              <div className="mo-refund-acts">
+                <button type="button" className="mo-refund-ghost" disabled={payRefundBusy} onClick={() => setRefundFlow(null)}>
+                  Not now
+                </button>
+                <button type="button" className="mo-refund-go" disabled={payRefundBusy} onClick={submitPayRefund}>
+                  {payRefundBusy ? (
+                    <Loader2 size={15} className="animate-spin" />
+                  ) : refundFlow.step === "start" ? (
+                    "Start refund"
+                  ) : (
+                    "Mark refund done"
+                  )}
                 </button>
               </div>
             </motion.div>

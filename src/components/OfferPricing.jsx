@@ -16,6 +16,7 @@ import {
   syncOfferFromSheet,
   PRICES_EVENT,
 } from "@/lib/offerTimer";
+import { scheduleAddsSync } from "@/lib/addSource";
 
 export default function OfferPricing({ children }) {
   const [v, setV] = useState(0);
@@ -59,7 +60,13 @@ export default function OfferPricing({ children }) {
       schedule();
       sync();
     }, 0);
-    const onStart = () => schedule();
+    // Send any bag-add counts the sheet hasn't got yet (e.g. adds made before
+    // this device had a Timers row).
+    scheduleAddsSync(8000);
+    const onStart = () => {
+      schedule();
+      scheduleAddsSync(12000); // after the new row has landed
+    };
     // Back from WhatsApp (after "Extend offer for me") → check the sheet.
     const onVisible = () => document.visibilityState === "visible" && sync();
     window.addEventListener("tbx:offer-started", onStart);

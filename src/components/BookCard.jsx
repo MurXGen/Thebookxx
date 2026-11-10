@@ -152,7 +152,7 @@ function BookCard({ book: bookProp }) {
     }
 
     // flyToCart(coverRef.current, { imageSrc: book.image }); // flying-cover animation disabled
-    addToCart(book.id);
+    addToCart(book.id, "card");
     showToast(book.name, "success", {
       title: "Added to your bag",
       icon: "cart",
@@ -186,7 +186,7 @@ function BookCard({ book: bookProp }) {
       return;
     }
     // flyToCart(coverRef.current, { imageSrc: book.image }); // flying-cover animation disabled
-    addToCart(book.id);
+    addToCart(book.id, "card");
     showToast(book.name, "success", {
       title: "Added to your bag",
       icon: "cart",

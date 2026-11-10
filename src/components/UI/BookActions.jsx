@@ -21,7 +21,7 @@ export default function BookActions({ book }) {
       {qty === 0 ? (
         <button
           className="pri-btn"
-          onClick={() => addToCart(book.id)}
+          onClick={() => addToCart(book.id, "card")}
           aria-label={`Add ${book.name} to cart`}
         >
           Add to Cart
@@ -32,7 +32,7 @@ export default function BookActions({ book }) {
             <Minus size={14} />
           </button>
           <span>{qty}</span>
-          <button onClick={() => addToCart(book.id)}>
+          <button onClick={() => addToCart(book.id, "card")}>
             <Plus size={14} />
           </button>
         </div>

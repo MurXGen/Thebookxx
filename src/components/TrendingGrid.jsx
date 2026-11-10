@@ -39,7 +39,7 @@ export default function TrendingGrid() {
     if (loadingId) return;
     setLoadingId(book.id);
     setTimeout(() => {
-      addToCart(book.id);
+      addToCart(book.id, "card");
       setLoadingId(null);
       showToast(`Added to your bag 🎉 “${book.name}”`, "success");
     }, 450);
@@ -89,7 +89,7 @@ export default function TrendingGrid() {
                       <div className="or1-qty" onClick={(e) => e.stopPropagation()}>
                         <button type="button" className="or1-qty-btn" onClick={() => decreaseQty(b.id)} aria-label="Remove one">−</button>
                         <span className="or1-qty-n">{qty}</span>
-                        <button type="button" className="or1-qty-btn" onClick={() => addToCart(b.id)} aria-label="Add one">+</button>
+                        <button type="button" className="or1-qty-btn" onClick={() => addToCart(b.id, "card")} aria-label="Add one">+</button>
                       </div>
                     ) : (
                       <button type="button" className="or1-add" onClick={() => handleAdd(b)} aria-label={`Add ${b.name} to bag`}>

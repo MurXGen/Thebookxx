@@ -8,11 +8,13 @@
 //                                                   moved Ends At later)
 // POST { action: "extend-request", deviceId }     → Extend Requested = time
 // POST { action: "convert", deviceId, orderId, phone, priceMode }
+// POST { action: "adds", deviceId, detail, card }  → Detail Adds / Card Adds
+//      (bag adds from the book page vs from book cards elsewhere)
 //
 // Columns:
 //   Device ID | Started At | Ends At | First Book | First Page | Status |
 //   Expired At | Converted | Order ID | Converted At | Price Paid | Phone |
-//   Extend Requested
+//   Extend Requested | Detail Adds | Card Adds
 //
 // To extend a device's offer, edit its "Ends At" cell (DD/MM/YYYY HH:MM, IST).
 
@@ -69,7 +71,7 @@ export async function POST(request) {
   }
   const action = String(body.action || "");
   const deviceId = clip(body.deviceId, 60);
-  if (!deviceId || !["start", "expired", "resumed", "extend-request", "convert"].includes(action))
+  if (!deviceId || !["start", "expired", "resumed", "extend-request", "convert", "adds"].includes(action))
     return Response.json({ success: false, error: "bad request" }, { status: 400 });
 
   try {
@@ -104,6 +106,16 @@ export async function POST(request) {
     }
 
     if (!row) return Response.json({ success: true, skipped: true });
+
+    if (action === "adds") {
+      // Absolute totals from the device; never lower what's already recorded.
+      const n = (v, cur) => Math.max(Math.min(Math.floor(Number(v) || 0), 100000), Number(cur) || 0);
+      await timerUpdate(deviceId, {
+        "Detail Adds": n(body.detail, row["Detail Adds"]),
+        "Card Adds": n(body.card, row["Card Adds"]),
+      });
+      return Response.json({ success: true });
+    }
 
     if (action === "expired") {
       if (String(row.Status || "") === "Expired") return Response.json({ success: true, already: true });

@@ -63,6 +63,13 @@ export async function GET(request) {
 
   (timers || []).forEach((r) => {
     const d = get(str(r["Device ID"]));
+    // Bag adds by source. Duplicate rows for one device: keep the highest
+    // (updates land on the first matching row).
+    const num = (v) => Number(String(v ?? "").replace(/[^\d.]/g, "")) || 0;
+    d.adds = {
+      detail: Math.max(d.adds?.detail || 0, num(r["Detail Adds"])),
+      card: Math.max(d.adds?.card || 0, num(r["Card Adds"])),
+    };
     d.timer = {
       status: str(r["Status"]),
       endsAt: parseSheetTime(r["Ends At"]),

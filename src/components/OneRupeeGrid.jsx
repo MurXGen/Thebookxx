@@ -50,7 +50,7 @@ export default function OneRupeeGrid() {
     setLoadingId(book.id);
     // Brief loading so the tap feels responsive, then confirm.
     setTimeout(() => {
-      addToCart(book.id);
+      addToCart(book.id, "card");
       setLoadingId(null);
       showToast(`Added for ₹1 🎉 “${book.name}” is in your bag`, "success");
     }, 450);

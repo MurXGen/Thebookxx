@@ -88,6 +88,8 @@ export default function DevicesPanel() {
   const counts = useMemo(() => {
     const c = {};
     FILTERS.forEach(([k]) => (c[k] = devices.filter((d) => match(d, k)).length));
+    c.detailAdds = devices.reduce((n, d) => n + (d.adds?.detail || 0), 0);
+    c.cardAdds = devices.reduce((n, d) => n + (d.adds?.card || 0), 0);
     c.cartValue = devices
       .filter((d) => match(d, "cart"))
       .reduce((n, d) => n + (d.cart?.value || 0), 0);
@@ -124,6 +126,14 @@ export default function DevicesPanel() {
         <div className="vz-stat">
           <b>{counts.known || 0}</b>
           <span>Have a phone</span>
+        </div>
+        <div className="vz-stat">
+          <b>{counts.detailAdds || 0}</b>
+          <span>Bag adds · book page</span>
+        </div>
+        <div className="vz-stat">
+          <b>{counts.cardAdds || 0}</b>
+          <span>Bag adds · book cards</span>
         </div>
       </div>
 
@@ -235,6 +245,16 @@ export default function DevicesPanel() {
                     <ShoppingBag size={12} /> Cart
                   </dt>
                   <dd>{d.cart ? `${d.cart.items} item${d.cart.items === 1 ? "" : "s"} · ${inr(d.cart.value)}` : "—"}</dd>
+                </div>
+                <div>
+                  <dt>
+                    <ShoppingBag size={12} /> Bag adds
+                  </dt>
+                  <dd>
+                    {d.adds && (d.adds.detail || d.adds.card)
+                      ? `Book page ${d.adds.detail} · Cards ${d.adds.card}`
+                      : "—"}
+                  </dd>
                 </div>
                 <div>
                   <dt>

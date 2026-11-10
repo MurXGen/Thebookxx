@@ -9,6 +9,7 @@ import {
   useRef,
 } from "react";
 import { books } from "@/utils/book";
+import { trackAddSource } from "@/lib/addSource";
 import { priceMode } from "@/lib/offerTimer";
 import {
   getOneRupeeOfferData,
@@ -390,7 +391,10 @@ export function StoreProvider({ children }) {
 
   // -------- CART LOGIC --------
 
-  const addToCart = (id) => {
+  // `source` ("detail" = book page, "card" = a book card/grid outside it)
+  // feeds the per-device add counts in the Timers tab.
+  const addToCart = (id, source) => {
+    if (source) trackAddSource(source);
     setCart((prev) => {
       const item = prev.find((i) => i.id === id);
       let newCart;

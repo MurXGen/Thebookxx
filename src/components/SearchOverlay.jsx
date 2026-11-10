@@ -900,7 +900,7 @@ export default function SearchOverlay({
                                         }
                                         onClick={() => {
                                           if (inBag) return;
-                                          addToCart(b.id);
+                                          addToCart(b.id, "card");
                                           showToast(
                                             `Added “${b.name}” to your bag`,
                                             "success",

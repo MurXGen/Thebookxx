@@ -54,7 +54,7 @@ export default function WishlistStrip() {
             <button
               type="button"
               className="wl-card-add"
-              onClick={() => addToCart(b.id)}
+              onClick={() => addToCart(b.id, "card")}
               aria-label={`Add ${b.name} to cart`}
             >
               <ShoppingCart size={15} />

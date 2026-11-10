@@ -445,7 +445,7 @@ export default function BookDetailsModal({ book: bookProp }) {
         if (rupeeTaken) return;
         rupeeTaken = true;
       }
-      addToCart(b.id);
+      addToCart(b.id, "detail");
       added.push(b);
     });
     if (!added.length) {
@@ -489,7 +489,7 @@ export default function BookDetailsModal({ book: bookProp }) {
 
   const handleAddToCart = () => {
     if (!guardAdd()) return;
-    addToCart(book.id);
+    addToCart(book.id, "detail");
     celebrate();
     showToast(book.name, "success", { title: "Added to your bag", icon: "cart" });
   };
@@ -497,7 +497,7 @@ export default function BookDetailsModal({ book: bookProp }) {
   const handleBuyNow = () => {
     if (qtyInCart === 0) {
       if (!guardAdd()) return;
-      addToCart(book.id);
+      addToCart(book.id, "detail");
     }
     router.push("/bag");
   };
@@ -565,7 +565,7 @@ export default function BookDetailsModal({ book: bookProp }) {
           <span>{qtyInCart} in bag</span>
           <button
             type="button"
-            onClick={() => addToCart(book.id)}
+            onClick={() => addToCart(book.id, "detail")}
             aria-label="Increase quantity"
             disabled={isAddDisabled}
           >
@@ -1196,7 +1196,7 @@ export default function BookDetailsModal({ book: bookProp }) {
                 </motion.span>
                 <button
                   type="button"
-                  onClick={() => addToCart(book.id)}
+                  onClick={() => addToCart(book.id, "detail")}
                   aria-label="Increase quantity"
                   disabled={isAddDisabled}
                 >

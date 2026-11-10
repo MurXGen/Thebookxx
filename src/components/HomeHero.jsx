@@ -625,7 +625,7 @@ export default function HomeHero() {
                         className="hpz-book"
                         aria-label={`Add ${b.name} to bag`}
                         onClick={() => {
-                          addToCart(b.id);
+                          addToCart(b.id, "card");
                           showToast(
                             `Added to your bag 🎉 “${b.name}”`,
                             "success",

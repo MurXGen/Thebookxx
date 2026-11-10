@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShieldCheck, Truck, RotateCcw } from "lucide-react";
 
@@ -10,11 +11,16 @@ import { ShieldCheck, Truck, RotateCcw } from "lucide-react";
 const EASE = [0.22, 1, 0.36, 1]; // smooth ease-out-expo-ish
 
 export default function SplashScreen() {
-  const [show, setShow] = useState(true);
+  // Only the homepage gets the launch splash; landing on any other page
+  // (book page, bag, profile, order details…) opens straight to content.
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+  const [timerDone, setTimerDone] = useState(false);
+  const show = onHome && !timerDone;
 
   // Hide after ~1s total (simple fade, no blur).
   useEffect(() => {
-    const t = setTimeout(() => setShow(false), 750);
+    const t = setTimeout(() => setTimerDone(true), 750);
     return () => clearTimeout(t);
   }, []);
 

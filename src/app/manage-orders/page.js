@@ -1571,8 +1571,8 @@ const isActiveOrder = (order) => {
 // the Orders tab can show the pipeline as a stepper with live counts.
 const ORDER_PHASES = [
   { key: "confirm", label: "To confirm", hint: "Unconfirmed · pending payment" },
-  { key: "pack", label: "To pack", hint: "Pending · processing" },
-  { key: "ship", label: "To ship", hint: "Needs tracking ID" },
+  { key: "pack", label: "Pending orders", hint: "Needs action" },
+  { key: "ship", label: "To ship", hint: "Processing · needs tracking ID" },
   { key: "transit", label: "In transit", hint: "Shipped · out for delivery" },
   { key: "delivered", label: "Delivered", hint: "Payment not marked" },
   { key: "closed", label: "Paid & closed", hint: "Money received" },
@@ -1588,7 +1588,10 @@ const phaseOf = (order) => {
   if (/getting shipped/.test(s) || (/transit|shipped/.test(s) && !tracked))
     return "ship";
   if (/shipped|transit|out for delivery/.test(s)) return "transit";
-  return "pack";
+  // "Pending orders" holds only Pending (or blank) status — everything else
+  // still being worked on (Processing, Confirmed…) waits on a tracking ID.
+  if (!s.trim() || /pending/.test(s)) return "pack";
+  return "ship";
 };
 
 // Group a raw "Payment Type" string into a common filter bucket, so the admin

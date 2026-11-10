@@ -1,6 +1,7 @@
 "use client";
 
 import BookCard from "@/components/BookCard";
+import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
 import CartItemRow from "@/components/CartItemRow";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
@@ -132,7 +133,13 @@ function BagContent() {
         const city = localStorage.getItem("delivery_city") || "";
         if (pin.length === 6) {
           const mh = /^4[0-4]/.test(pin) && !pin.startsWith("403");
-          setDeliveryEta(`${mh ? "1–5" : "4–9"} days to ${city || pin}`);
+          const st = localStorage.getItem("delivery_state") || "";
+          const range = mh
+            ? "1–5 days"
+            : isFastRegion({ state: st, city, pincode: pin })
+              ? "4–9 days"
+              : windowText(deliveryWindows({ state: st, city, pincode: pin }).standard);
+          setDeliveryEta(`${range} to ${city || pin}`);
         }
       } catch {
         /* ignore */
@@ -731,7 +738,8 @@ function BagContent() {
     paymentType === "COD" ? COD_HANDLING_FEE : 0;
 
   // Bill lines from checkout's snapshot (same numbers as the saved order row).
-  const billLinesFromSnapshot = (b) => {
+  const billLinesFromSnapshot = (b, addr) => {
+    const w = deliveryWindows(addr || {});
     const out = [];
     out.push(`MRP ₹${b.mrp} · You pay for books ₹${b.subtotal}`);
     if (b.offer > 0) out.push(`${b.offerLabel || "Offer"}: -₹${b.offer}`);
@@ -739,7 +747,7 @@ function BagContent() {
       out.push(`Coupon${b.coupon ? ` (${b.coupon})` : ""}: -₹${b.couponDiscount}`);
     if (b.wallet > 0) out.push(`Wallet used: -₹${b.wallet}`);
     out.push(
-      `Delivery (${b.faster ? "Faster 1–6 days" : "Standard 5–9 days"}): ${
+      `Delivery (${b.faster ? `Faster ${windowText(w.faster)}` : `Standard ${windowText(w.standard)}`}): ${
         b.deliveryStd > 0 ? `+₹${b.deliveryStd}` : "FREE"
       }`,
     );
@@ -861,7 +869,7 @@ ${itemsBlock}${qrBlock}
 *Bill*
 ${
   addressData.bill
-    ? billLinesFromSnapshot(addressData.bill).join("\n")
+    ? billLinesFromSnapshot(addressData.bill, addressData).join("\n")
     : `Subtotal: ₹${totalDiscounted}${offerDiscount > 0 ? `\nOffer discount: -₹${offerDiscount}` : ""}\nDelivery: ${deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}${giftWrapSelected ? `\nGift wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\nCOD handling fee: +₹${codFee}` : ""}`
 }
 *Total: ₹${addressData.bill ? addressData.bill.total + bundledQrTotal : totalWithDelivery}*
@@ -945,14 +953,14 @@ Thank you!
 ${itemsBlock}${qrLines}
 
 🧾 *Bill*
-${billLinesFromSnapshot(snap)
+${billLinesFromSnapshot(snap, addressData)
   .map((l) => `• ${l}`)
   .join("\n")}
 💰 *Total: ₹${grandTotal}*
 💳 ${snapshotPayLine(snap, paymentType)}${
           snap.codCollect > 0 ? `\n💵 *Collect at door: ₹${snap.codCollect}*` : ""
         }
-🚚 ${snap.faster ? "Faster · 1–6 days" : "Standard · 5–9 days"}${
+🚚 ${snap.faster ? `Faster · ${windowText(deliveryWindows(addressData || {}).faster)}` : `Standard · ${windowText(deliveryWindows(addressData || {}).standard)}`}${
           snap.note ? `\n📝 ${snap.note}` : ""
         }${orderId ? `\n\n🆔 ${orderId}` : ""}`
       : `🛒 *New order · TheBookX*

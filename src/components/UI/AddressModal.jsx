@@ -66,6 +66,7 @@ import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
 import { rewardNote } from "@/utils/orderRewards";
 import { PAYMENT_PENDING_STATUS, markPaymentPending } from "@/lib/paymentPending";
+import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
 
 // WhatsApp buttons on the UPI QR screen are hidden for now; the order page
 // offers WhatsApp once a pending payment is 15+ minutes old.
@@ -242,6 +243,10 @@ export default function AddressModal({
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [locEditing, setLocEditing] = useState(false);
   const [pincodeError, setPincodeError] = useState("");
+  // Delivery windows depend on the region (fast lane vs rest of India).
+  const dWin = deliveryWindows({ state, city, district, pincode });
+  const fasterDays = windowText(dWin.faster);
+  const standardDays = windowText(dWin.standard);
   const [showContactFields, setShowContactFields] = useState(false);
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   // Delivery-speed step shown after "Choose payment method" (replaces the inline
@@ -3037,8 +3042,8 @@ export default function AddressModal({
                       <span className="ac-row-lbl">Delivery speed</span>
                       <span className="ac-row-val">
                         {fasterDelivery
-                          ? "Faster delivery · 1–6 days"
-                          : "Standard delivery · 5–9 days"}
+                          ? `Faster delivery · ${fasterDays}`
+                          : `Standard delivery · ${standardDays}`}
                       </span>
                     </span>
                   </div>
@@ -3252,7 +3257,7 @@ export default function AddressModal({
                       <span className="fdx-sub">
                         {paySel === "COD"
                           ? "Not available with Cash on Delivery"
-                          : "Arrives in 1–6 days"}
+                          : `Arrives in ${fasterDays}`}
                       </span>
                     </span>
                     <span className="fdx-price">
@@ -3278,7 +3283,7 @@ export default function AddressModal({
                         exit={{ opacity: 0, y: -4 }}
                         transition={{ duration: 0.18 }}
                       >
-                        Packed first, sent by priority post. Arrives in 1–6 days.
+                        Packed first, sent by priority post. Arrives in {fasterDays}.
                       </motion.p>
                     )}
                   </AnimatePresence>
@@ -3909,7 +3914,7 @@ export default function AddressModal({
                                 Standard Delivery
                               </span>
                             </span>
-                            <span className="dspick-sub">Arrives in 5–9 days</span>
+                            <span className="dspick-sub">Arrives in {standardDays}</span>
                           </span>
                           <span
                             className={`dspick-radio${!fasterDelivery ? " on" : ""}`}
@@ -3941,7 +3946,7 @@ export default function AddressModal({
                               </span>
                             </span>
                             <span className="dspick-sub">
-                              Arrives in 1–6 days · jumps the queue
+                              Arrives in {fasterDays} · jumps the queue
                             </span>
                           </span>
                           <span
@@ -4041,7 +4046,7 @@ export default function AddressModal({
                         </span>
                       )}
                     </span>
-                    <span className="ds-sub">Arrives in 5–9 days</span>
+                    <span className="ds-sub">Arrives in {standardDays}</span>
                     <span className="ds-tags">
                       <span className="ds-tag green">
                         <ShieldCheck size={12} /> Free tracking
@@ -4070,7 +4075,7 @@ export default function AddressModal({
                         +₹{fasterExtra}
                       </span>
                     </span>
-                    <span className="ds-sub">Arrives in 1–6 days</span>
+                    <span className="ds-sub">Arrives in {fasterDays}</span>
                     <span className="ds-tags">
                       <span className="ds-tag orange">
                         <Truck size={12} /> Priority shipping
@@ -4300,8 +4305,8 @@ export default function AddressModal({
                       🗓️ Please be available within{" "}
                       <b>
                         {codConfirmRef.current.isFaster
-                          ? "1–6 days"
-                          : "5–9 days"}
+                          ? fasterDays
+                          : standardDays}
                       </b>{" "}
                       for delivery.
                     </li>
@@ -4454,10 +4459,12 @@ export default function AddressModal({
                         Delivery in{" "}
                         <b>
                           {fasterDelivery
-                            ? "1–6 days"
-                            : /^4[0-4]/.test(String(pincode)) && !String(pincode).startsWith("403")
-                              ? "1–5 days"
-                              : "4–9 days"}
+                            ? fasterDays
+                            : !isFastRegion({ state, city, district, pincode })
+                              ? standardDays
+                              : /^4[0-4]/.test(String(pincode)) && !String(pincode).startsWith("403")
+                                ? "1–5 days"
+                                : "4–9 days"}
                         </b>
                       </span>
                     </span>
@@ -5343,9 +5350,11 @@ export function CODSuccessModal({
   const [downloading, setDownloading] = useState(false);
   const rcptRef = useRef(null);
 
-  // Delivery windows: Faster = 1–6 days, Standard = 5–9 days.
-  const winStart = localFaster ? 1 : 5;
-  const winEnd = localFaster ? 6 : 9;
+  // Delivery windows by region: fast lane (Faster 1–6, Standard 5–9) or the
+  // rest of India (Faster 3–9, Standard 4–12, shown without dates).
+  const fastRegion = isFastRegion({ state: address, city: `${city || ""} ${address || ""}`, pincode });
+  const regionWin = deliveryWindows({ state: address, city: `${city || ""} ${address || ""}`, pincode });
+  const [winStart, winEnd] = localFaster ? regionWin.faster : regionWin.standard;
   const deliveryWindow = `${winStart}-${winEnd} days`;
 
   // Estimated arrival date (end of the delivery window).
@@ -5380,9 +5389,9 @@ export function CODSuccessModal({
   // Faster (1–5 day) arrival range, used in the upgrade-confirm modal.
   const fasterRangeStr = (() => {
     const start = new Date();
-    start.setDate(start.getDate() + 1);
+    start.setDate(start.getDate() + regionWin.faster[0]);
     const end = new Date();
-    end.setDate(end.getDate() + 5);
+    end.setDate(end.getDate() + regionWin.faster[1]);
     const sameMonth = start.getMonth() === end.getMonth();
     const s = start.toLocaleDateString("en-IN", {
       day: "numeric",
@@ -5492,7 +5501,7 @@ export function CODSuccessModal({
     const itemsList = (cartBooks || [])
       .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
       .join("\n");
-    const msg = ` My TheBookX order is confirmed!\n\n Delivery by ${deliveryByDate}\n ${name}, ${address}, ${city} - ${pincode}\n\nItems:\n${itemsList}\n\nTotal: ₹${totalAmount}\n\nShop books from ₹1 https://thebookx.in`;
+    const msg = ` My TheBookX order is confirmed!\n\n ${fastRegion ? `Delivery by ${deliveryByDate}` : `Delivery within ${winStart}–${winEnd} days`}\n ${name}, ${address}, ${city} - ${pincode}\n\nItems:\n${itemsList}\n\nTotal: ₹${totalAmount}\n\nShop books from ₹1 https://thebookx.in`;
     if (navigator.share) {
       navigator
         .share({ title: "My TheBookX order", text: msg })
@@ -5737,12 +5746,18 @@ export function CODSuccessModal({
                           one card for a single, consistent delivery block. */}
                       <div className="ok-eta-group">
                         <strong className="ok-eta-title">
-                          Arriving {deliveryRange}
+                          {fastRegion
+                            ? `Arriving ${deliveryRange}`
+                            : `Arriving within ${winStart}–${winEnd} days`}
                         </strong>
 
                         <div className="ok-eta-meta">
-                          <span className="ok-eta-sub">{deliveryWindow}</span>
-                          <span className="ok-eta-mdot">·</span>
+                          {fastRegion && (
+                            <>
+                              <span className="ok-eta-sub">{deliveryWindow}</span>
+                              <span className="ok-eta-mdot">·</span>
+                            </>
+                          )}
                           <span
                             className={`ok-badge${localFaster ? " fast" : ""}`}
                           >
@@ -5755,8 +5770,16 @@ export function CODSuccessModal({
                         {!localFaster && canEditOrder && fasterDelta > 0 && (
                           <div className="ok-upgrade">
                             <span className="ok-upgrade-txt">
-                              <Zap size={13} /> Faster by{" "}
-                              <b>{fasterRangeStr}</b> · 1–6 days
+                              <Zap size={13} />{" "}
+                              {fastRegion ? (
+                                <>
+                                  Faster by <b>{fasterRangeStr}</b> · {windowText(regionWin.faster)}
+                                </>
+                              ) : (
+                                <>
+                                  Faster · <b>{windowText(regionWin.faster)}</b>
+                                </>
+                              )}
                             </span>
                             <button
                               type="button"
@@ -5780,7 +5803,11 @@ export function CODSuccessModal({
                         <div className="ok-present">
                           <Info size={15} />
                           <span className="ok-present-body">
-                            <strong>Be available on {deliveryRange}</strong>
+                            <strong>
+                              {fastRegion
+                                ? `Be available on ${deliveryRange}`
+                                : `Be available over the next ${winEnd} days`}
+                            </strong>
                             <span className="ok-present-desc">
                               Please be at this address to receive your order.
                               Not available then?{" "}
@@ -5790,7 +5817,7 @@ export function CODSuccessModal({
                                 onClick={() => {
                                   const msg = `Hi TheBookX, I need a different delivery date for my order.${
                                     orderRef ? `\n\nOrder ID: ${orderRef}` : ""
-                                  }\nName: ${name || ""}\nPhone: +91 ${phone || ""}\nCurrent window: ${deliveryRange}`;
+                                  }\nName: ${name || ""}\nPhone: +91 ${phone || ""}\nCurrent window: ${fastRegion ? deliveryRange : `${winStart}–${winEnd} days`}`;
                                   window.open(
                                     `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
                                     "_blank",
@@ -6097,7 +6124,9 @@ export function CODSuccessModal({
 
                     <div className="rcpt-eta-line">
                       {fasterDelivery ? <Zap size={12} /> : <Truck size={12} />}
-                      Est. delivery {deliveryRange} · {deliveryWindow}
+                      {fastRegion
+                        ? `Est. delivery ${deliveryRange} · ${deliveryWindow}`
+                        : `Est. delivery within ${winStart}–${winEnd} days`}
                     </div>
 
                     <div className="rcpt-barcode" aria-hidden="true" />

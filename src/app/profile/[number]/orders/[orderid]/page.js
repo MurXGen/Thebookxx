@@ -75,6 +75,7 @@ import { isPaymentPending, isPaymentDue, pendingSince, PENDING_NUDGE_MS } from "
 import { parseSheetTime } from "@/lib/sheetTime";
 import { isRefundInProcess, isRefundDone, REFUND_LATE_MS } from "@/lib/refundStatus";
 import { getDeliveryCharge } from "@/utils/cartOffers";
+import { deliveryWindows, isFastRegion, addrFromOrder, windowText } from "@/lib/deliveryEta";
 import { books as ALL_BOOKS } from "@/utils/book";
 import {
   orderEmailFromRow,
@@ -2451,9 +2452,28 @@ export default function OrderDetailPage() {
   const progressPct = Math.round(computeProgress(order) * 100);
 
   // Delivery window (min/max days) — used for the support sheet ETA copy.
-  const [etaMin, etaMax] = isFaster ? [1, 6] : [5, 9];
+  // Windows depend on the region: fast lane (Faster 1–6 / Standard 5–9) shows
+  // calendar dates; elsewhere (Faster 3–9 / Standard 4–12) shows only the
+  // day range from the order date — no dates.
+  const orderAddr = addrFromOrder(order);
+  const fastRegion = isFastRegion(orderAddr);
+  const regionWin = deliveryWindows(orderAddr);
+  const [etaMin, etaMax] = isFaster ? regionWin.faster : regionWin.standard;
+  const fasterWinText = windowText(regionWin.faster);
   const etaText = (() => {
     if (!orderDate) return `Reaching you in ${etaMin}–${etaMax} days`;
+    if (!fastRegion) {
+      if (Date.now() > orderDate.getTime() + (etaMax + 1) * 86400000)
+        return "Taking a little longer than usual — it should reach you soon";
+      // Count the window down in days (no calendar dates).
+      const elapsed = Math.max(0, Math.floor((Date.now() - orderDate.getTime()) / 86400000));
+      const left = etaMax - elapsed;
+      const leftMin = Math.max(1, etaMin - elapsed);
+      if (elapsed === 0) return `Reaches you in ${etaMin}–${etaMax} days`;
+      if (etaMin - elapsed > 0) return `Arriving in the next ${leftMin}–${left} days`;
+      if (left <= 1) return "Arriving any time now";
+      return `Arriving any day now · within ${left} days`;
+    }
     const from = new Date(orderDate.getTime() + etaMin * 86400000);
     const by = new Date(orderDate.getTime() + etaMax * 86400000);
     const now = Date.now();
@@ -3584,7 +3604,7 @@ export default function OrderDetailPage() {
                     <strong>Air mode dispatch</strong>
                     <span>
                       Your parcel ships by <b>air</b> on priority — arriving in{" "}
-                      <b>1–6 days</b> instead of {etaMin}–{etaMax} days.
+                      <b>{fasterWinText}</b> instead of {etaMin}–{etaMax} days.
                     </span>
                   </div>
                 </div>
@@ -3595,7 +3615,7 @@ export default function OrderDetailPage() {
                     first
                   </div>
                   <div className="fdu-benefit">
-                    <Truck size={15} /> Faster transit: 1–6 days delivery window
+                    <Truck size={15} /> Faster transit: {fasterWinText} delivery window
                   </div>
                   <div className="fdu-benefit">
                     <ShieldCheck size={15} /> Same safe, tracked handling — end to

@@ -4,13 +4,15 @@
 import { useState } from "react";
 import DevicesPanel from "./DevicesPanel";
 import TimersPanel from "./TimersPanel";
+import InsightsPanel from "./InsightsPanel";
 
-export default function VisitorsPanel() {
-  const [tab, setTab] = useState("devices");
+export default function VisitorsPanel({ orders = [] }) {
+  const [tab, setTab] = useState("insights");
   return (
     <div className="an2 vz-wrap">
       <div className="mo-book-subtabs" role="tablist">
         {[
+          { k: "insights", label: "Insights" },
           { k: "devices", label: "All devices" },
           { k: "timers", label: "Offer timers" },
         ].map((t) => (
@@ -26,7 +28,13 @@ export default function VisitorsPanel() {
           </button>
         ))}
       </div>
-      {tab === "devices" ? <DevicesPanel /> : <TimersPanel />}
+      {tab === "insights" ? (
+        <InsightsPanel orders={orders} />
+      ) : tab === "devices" ? (
+        <DevicesPanel />
+      ) : (
+        <TimersPanel />
+      )}
     </div>
   );
 }

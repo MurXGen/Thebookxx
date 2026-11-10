@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 import { X, Check, CalendarClock } from "lucide-react";
+import { deliveryWindows, isFastRegion, addrFromOrder } from "@/lib/deliveryEta";
 
 // ── date helpers (self-contained so the modal can be reused anywhere) ──
 function parseSheetDate(input) {
@@ -73,7 +74,12 @@ export default function TrackSheet({
 
   const DAY_MS = 24 * 60 * 60 * 1000;
   const orderDate = parseSheetDate(getOrderDateValue(trackOrder));
-  const [minDays, maxDays] = isFaster ? [1, 6] : [5, 9];
+  // Region decides the window; outside the fast-lane regions we show only the
+  // day range (no calendar dates).
+  const orderAddr = addrFromOrder(trackOrder);
+  const fastRegion = isFastRegion(orderAddr);
+  const regionWin = deliveryWindows(orderAddr);
+  const [minDays, maxDays] = isFaster ? regionWin.faster : regionWin.standard;
   const estFrom = orderDate
     ? new Date(orderDate.getTime() + minDays * DAY_MS)
     : null;
@@ -363,12 +369,22 @@ export default function TrackSheet({
                   <>Delivered within the estimated window — as promised.</>
                 ) : (
                   <>
-                    Estimated delivery{" "}
-                    <strong>
-                      {fmtDate(estFrom)} – {fmtDate(estTo)}
-                    </strong>
-                    . {isFaster ? "Express" : "Standard"} orders usually arrive
-                    within {minDays}–{maxDays} days as estimated.
+                    {fastRegion ? (
+                      <>
+                        Estimated delivery{" "}
+                        <strong>
+                          {fmtDate(estFrom)} – {fmtDate(estTo)}
+                        </strong>
+                        . {isFaster ? "Express" : "Standard"} orders usually arrive
+                        within {minDays}–{maxDays} days as estimated.
+                      </>
+                    ) : (
+                      <>
+                        {isFaster ? "Express" : "Standard"} delivery · reaches you
+                        in <strong>{minDays}–{maxDays} days</strong> from your
+                        order date.
+                      </>
+                    )}
                   </>
                 )}
               </span>

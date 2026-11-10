@@ -8172,6 +8172,14 @@ export default function ManageOrdersPage() {
                 if (String(f).startsWith("phase:")) {
                   return phaseOf(order) === f.slice(6);
                 }
+                if (f === "refunds") {
+                  // Refund in process: the status, or a return request whose
+                  // money hasn't been released yet.
+                  if (isRefundInProcess(s)) return true;
+                  const req =
+                    returnsByOrder[String(order["Order ID"] || "").trim()];
+                  return !!req && !req.moneyReleased;
+                }
                 if (f === "returns") {
                   // Orders with a return request still awaiting refund — shown
                   // regardless of their delivery status.
@@ -8264,13 +8272,18 @@ export default function ManageOrdersPage() {
   const phaseCounts = useMemo(() => {
     const c = Object.fromEntries(ORDER_PHASES.map((p) => [p.key, 0]));
     c.active = 0;
+    c.refunds = 0;
     orders.forEach((o) => {
-      if (!String(o["Order ID"] || "").trim()) return;
+      const oid = String(o["Order ID"] || "").trim();
+      if (!oid) return;
       c[phaseOf(o)] += 1;
       if (isActiveOrder(o)) c.active += 1;
+      const req = returnsByOrder[oid];
+      if (isRefundInProcess(o["Order Status"]) || (req && !req.moneyReleased))
+        c.refunds += 1;
     });
     return c;
-  }, [orders]);
+  }, [orders, returnsByOrder]);
 
   const quickStatuses = useMemo(() => {
     const seen = new Set();
@@ -8324,6 +8337,14 @@ export default function ManageOrdersPage() {
       return next;
     });
   };
+  // Lightweight order list for Visitors → Insights (date + books only).
+  const visitorOrders = useMemo(
+    () =>
+      orders
+        .filter((o) => o["Order ID"] && !/cancel|return/i.test(String(o["Order Status"] || "")))
+        .map((o) => ({ at: getOrderDate(o)?.getTime() || 0, books: o.parsedBooks || [] })),
+    [orders],
+  );
   const tidSelCount = tidRows.filter((r) => tidSel.includes(r.orderId)).length;
   const tidCopy = () => {
     const chosen = tidSelCount
@@ -15234,6 +15255,29 @@ export default function ManageOrdersPage() {
         {activeTab === "orders" && (
           <nav className="mo-phases" aria-label="Order phases">
             {(() => {
+              // "Refunds" — refund in process (status or unpaid return request).
+              const on =
+                Array.isArray(statusFilter) &&
+                statusFilter.length === 1 &&
+                statusFilter[0] === "refunds";
+              return (
+                <button
+                  type="button"
+                  className={`mo-phase mo-phase-all is-refunds${on ? " on" : ""}${phaseCounts.refunds ? "" : " empty"}`}
+                  onClick={() => setStatusFilter(on ? ["active"] : ["refunds"])}
+                  aria-pressed={on}
+                  title="Refund in process · return requests awaiting payout"
+                >
+                  <span className="mo-phase-top">
+                    <span className="mo-phase-step">₹</span>
+                    <span className="mo-phase-n">{phaseCounts.refunds.toLocaleString()}</span>
+                  </span>
+                  <span className="mo-phase-label">Refunds</span>
+                  <span className="mo-phase-hint">In process · awaiting payout</span>
+                </button>
+              );
+            })()}
+            {(() => {
               // "Active" — the default working view (confirmed, not yet shipped).
               const on =
                 Array.isArray(statusFilter) &&
@@ -15324,6 +15368,8 @@ export default function ManageOrdersPage() {
                   ? "All"
                   : v === "active"
                     ? "Active"
+                    : v === "refunds"
+                      ? "Refund in process"
                     : v === "intransit-notrack"
                       ? "In Transit · no tracking"
                       : String(v).startsWith("phase:")
@@ -17745,7 +17791,7 @@ export default function ManageOrdersPage() {
         )}
 
         {/* ===== Visitors: devices joined across tabs + offer timers ===== */}
-        {activeTab === "timers" && <VisitorsPanel />}
+        {activeTab === "timers" && <VisitorsPanel orders={visitorOrders} />}
 
         {/* ===== Track orders ===== */}
         {activeTab === "track" && (

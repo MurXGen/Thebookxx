@@ -68847,3 +68847,52 @@ h2.od-reco-title {
 .hd-reached svg { color: #fbbf24; }
 .hd-rail .hd-stop.on .hd-reached ~ .hd-dot { box-shadow: 0 0 0 4px rgba(251, 133, 0, 0.3); }
 .hd-rail:has(.hd-reached) { opacity: 1; }
+
+/* Order page: "Pay now" via the checkout UPI QR flow */
+.od-paynow-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: none; border-radius: 12px; padding: 10px 16px; cursor: pointer;
+  background: #1c1814; color: #fff; font-size: 14px; font-weight: 800;
+  box-shadow: 0 6px 16px rgba(28, 24, 20, 0.18); transition: transform 0.14s ease;
+}
+.od-paynow-btn:active { transform: scale(0.97); }
+.od-paynow-btn svg { color: #fbbf24; }
+.od-paynow-lg { width: 100%; padding: 13px 16px; font-size: 15px; margin-top: 10px; }
+.od-paynow-row {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(28, 24, 20, 0.14);
+}
+.od-paynow-row > span { font-size: 13px; font-weight: 600; color: var(--dark-70, #4b4540); }
+.od-paynow-alt {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 4px 0;
+  border: none; background: none; cursor: pointer; font-size: 12.5px; font-weight: 700;
+  color: #15803d; text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* UPI QR: "More UPI apps" (BHIM, CRED, any other app) */
+.upiopen-more-toggle {
+  display: flex; width: fit-content; align-items: center; gap: 4px; margin: 8px auto 0; padding: 4px 8px;
+  border: none; background: none; cursor: pointer; font-size: 12.5px; font-weight: 700; color: #4b5563;
+}
+.upiopen-more-toggle svg { transition: transform 0.2s ease; }
+.upiopen-more-toggle.open svg { transform: rotate(180deg); }
+.upiopen-more { margin-top: 6px; }
+.upiopen-chip.other { flex-basis: 100%; color: #374151; }
+
+/* WhatsApp tooltip (homepage dock + book page), shown ~4s on arrival */
+.wa-tip {
+  position: absolute; bottom: calc(100% + 10px); right: 0; z-index: 2;
+  display: flex; align-items: center; gap: 8px; white-space: nowrap; pointer-events: none;
+  padding: 9px 12px; border-radius: 12px; background: #1c1814; color: #fff;
+  font-size: 12.5px; font-weight: 700; line-height: 1.25; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+.wa-tip small { display: block; font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.7); }
+.wa-tip svg { color: #25d366; flex: none; }
+.wa-tip::after {
+  content: ""; position: absolute; top: 100%; right: var(--tip-x, 18px);
+  border: 6px solid transparent; border-top-color: #1c1814;
+}
+.hd-fabs .wa-tip { --tip-x: 64px; }
+
+.pdp-wa .wa-tip { opacity: 0; transform: translateY(6px); transition: opacity 0.25s ease, transform 0.25s ease; }
+.pdp-wa .wa-tip.show { opacity: 1; transform: none; }

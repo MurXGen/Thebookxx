@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown, Smartphone } from "lucide-react";
 import { showToast } from "@/context/ToastContext";
 import {
   UPI_APPS,
@@ -28,6 +28,7 @@ export default function UpiAppLaunchRow({
   const [activeApp, setActiveApp] = useState(primary || null);
   const [payOpen, setPayOpen] = useState(false);
   const [payStage, setPayStage] = useState("ready");
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     const check = () => {
@@ -111,7 +112,7 @@ export default function UpiAppLaunchRow({
   return (
     <>
       <div className="upiopen-row">
-        {UPI_APPS.map((a) => (
+        {UPI_APPS.filter((a) => !a.more).map((a) => (
           <button
             key={a.key}
             type="button"
@@ -123,6 +124,33 @@ export default function UpiAppLaunchRow({
           </button>
         ))}
       </div>
+      {/* Other UPI apps: BHIM, CRED, or any app via UPI ID + saved QR */}
+      <button
+        type="button"
+        className={`upiopen-more-toggle${showMore ? " open" : ""}`}
+        onClick={() => setShowMore((v) => !v)}
+        aria-expanded={showMore}
+      >
+        More UPI apps <ChevronDown size={14} />
+      </button>
+      {showMore && (
+        <div className="upiopen-row upiopen-more">
+          {UPI_APPS.filter((a) => a.more).map((a) => (
+            <button
+              key={a.key}
+              type="button"
+              className={`upiopen-chip ${a.key}`}
+              onClick={() => handle(a)}
+            >
+              {a.label}
+              <ArrowRight size={14} />
+            </button>
+          ))}
+          <button type="button" className="upiopen-chip other" onClick={() => handle(null)}>
+            <Smartphone size={14} /> Any other UPI app
+          </button>
+        </div>
+      )}
       {modal}
     </>
   );

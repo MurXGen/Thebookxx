@@ -44,6 +44,7 @@ import {
   Layers,
   GripHorizontal,
   TrainFront,
+  QrCode,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
@@ -72,6 +73,7 @@ import { parseAddonsField } from "@/utils/addonsField";
 import { isGiftOrder } from "@/utils/giftOrder";
 import { showToast } from "@/context/ToastContext";
 import { isPaymentPending, isPaymentDue, pendingSince, PENDING_NUDGE_MS } from "@/lib/paymentPending";
+import OrderPayFlow from "@/components/profile/OrderPayFlow";
 import { parseSheetTime } from "@/lib/sheetTime";
 import { isRefundInProcess, isRefundDone, REFUND_LATE_MS } from "@/lib/refundStatus";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -1095,6 +1097,8 @@ export default function OrderDetailPage() {
     (isPaymentPending(rawStatus) ||
       (/^\s*unconfirmed\s*$/i.test(rawStatus) && pendingSince(orderId) > 0));
   const [nowTs, setNowTs] = useState(() => Date.now());
+  // "Complete payment" UPI QR sheet (same flow as checkout).
+  const [payOpen, setPayOpen] = useState(false);
   useEffect(() => {
     if (!payPending) return;
     // Tick for the 15-minute WhatsApp nudge, and re-read the order so the page
@@ -2133,6 +2137,15 @@ export default function OrderDetailPage() {
   const verifyingPayment = /^\s*unconfirmed\s*$/i.test(
     order["Order Status"] || "",
   );
+  // Online orders whose payment isn't confirmed (failed, still pending, or
+  // never completed) can be paid again right here with the checkout QR flow.
+  const payType = String(order["Payment Type"] || "");
+  const isAdvanceOrder = /advance/i.test(payType);
+  const onlineOrder = /upi|online|advance/i.test(payType);
+  const payFailed = /payment\s*failed/i.test(rawStatus);
+  const canPayNow = paymentDue || ((payPending || payFailed || verifyingPayment) && onlineOrder);
+  const payNowAmount = paymentDue ? dueAmount : isAdvanceOrder ? 99 : dueTotal;
+  const payItems = books.map((b) => ({ name: b.name, qty: b.qty || 1, price: b.total || (b.price || 0) * (b.qty || 1), image: b.image }));
   // Placed-on date + estimated arrival window (calendar dates, not a static
   // "5–9 days" that never counts down).
   const orderDate = parseSheetDate(
@@ -2806,6 +2819,14 @@ export default function OrderDetailPage() {
                 </button>
               </>
             )}
+            {canPayNow && (
+              <div className="od-paynow-row">
+                <span>Payment didn&apos;t go through?</span>
+                <button type="button" className="od-paynow-btn" onClick={() => setPayOpen(true)}>
+                  <QrCode size={15} /> Pay ₹{payNowAmount} now
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -2842,8 +2863,11 @@ export default function OrderDetailPage() {
               <dd>₹{dueAmount}</dd>
             </div>
           </dl>
-          <button type="button" className="od-unconf-btn od-due-btn" onClick={askToPay}>
-            <FaWhatsapp size={15} /> Pay ₹{dueAmount} — get payment details
+          <button type="button" className="od-paynow-btn od-paynow-lg" onClick={() => setPayOpen(true)}>
+            <QrCode size={16} /> Pay ₹{dueAmount} now with UPI
+          </button>
+          <button type="button" className="od-paynow-alt" onClick={askToPay}>
+            <FaWhatsapp size={13} /> Need help paying? Message us
           </button>
         </section>
       )}
@@ -2855,25 +2879,51 @@ export default function OrderDetailPage() {
             </span>
             <div className="od-unconf-txt">
               <strong>
-                {verifyingPayment
-                  ? "We're verifying your payment"
-                  : "This order isn't confirmed yet"}
+                {payFailed
+                  ? "Your payment didn't go through"
+                  : verifyingPayment
+                    ? "We're verifying your payment"
+                    : "This order isn't confirmed yet"}
               </strong>
               <span>
-                {verifyingPayment
+                {payFailed
+                  ? "No worries — your order is saved. Pay again with UPI below and we'll start packing it right away."
+                  : verifyingPayment && canPayNow
+                    ? "We haven't received your payment yet. If you haven't paid, complete it below — otherwise we'll confirm your order within a few minutes."
+                  : verifyingPayment
                   ? "Thanks for paying online — we'll confirm your order shortly, usually within a few minutes. Questions? Message us."
                   : "We may be waiting for your payment, or there could be an issue with this order. Please contact us and we'll sort it out right away."}
               </span>
+              {canPayNow && (
+                <button type="button" className="od-paynow-btn od-paynow-lg" onClick={() => setPayOpen(true)}>
+                  <QrCode size={16} /> {payFailed ? `Retry payment · ₹${payNowAmount}` : `Complete payment · ₹${payNowAmount}`}
+                </button>
+              )}
               <button
                 type="button"
-                className="od-unconf-btn"
+                className={canPayNow ? "od-paynow-alt" : "od-unconf-btn"}
                 onClick={contactSupport}
               >
-                <FaWhatsapp size={15} /> Contact support
+                <FaWhatsapp size={canPayNow ? 13 : 15} /> Contact support
               </button>
             </div>
           </div>
         )}
+
+      {order && canPayNow && (
+        <OrderPayFlow
+          open={payOpen}
+          onClose={() => setPayOpen(false)}
+          orderId={orderId}
+          amount={payNowAmount}
+          advance={isAdvanceOrder && !paymentDue}
+          resetFailed={payFailed}
+          customer={{ name: custName, phone: order["Phone Number"] || number, address: order["Address"] }}
+          items={payItems}
+          onConfirmed={() => setOrder((o) => (o ? { ...o, "Order Status": "Processing" } : o))}
+          onPending={(st) => setOrder((o) => (o ? { ...o, "Order Status": st } : o))}
+        />
+      )}
 
       {/* User profile — bold name, number, address. */}
       {order && (

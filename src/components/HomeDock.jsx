@@ -106,6 +106,7 @@ export default function HomeDock() {
   const [scrolling, setScrolling] = useState(false);
   const [openKey, setOpenKey] = useState(0); // restarts the countdown ring
   const [flash, setFlash] = useState(false); // "you've reached …" chip
+  const [waTip, setWaTip] = useState(false); // WhatsApp tooltip on arrival
   const flashTimer = useRef(null);
   const lastActive = useRef(null);
   const closeTimer = useRef(null);
@@ -178,6 +179,16 @@ export default function HomeDock() {
     closeTimer.current = setTimeout(() => setOpen(false), ms);
   }, []);
 
+  // WhatsApp tooltip: visible for 4s shortly after the page opens.
+  useEffect(() => {
+    const show = setTimeout(() => setWaTip(true), 900);
+    const hide = setTimeout(() => setWaTip(false), 4900);
+    return () => {
+      clearTimeout(show);
+      clearTimeout(hide);
+    };
+  }, []);
+
   // Show the index once per session so people see what's below.
   useEffect(() => {
     if (!sections.length) return;
@@ -191,7 +202,7 @@ export default function HomeDock() {
       try {
         sessionStorage.setItem(PEEK_KEY, "1");
       } catch {}
-    }, 2200);
+    }, 5300); // after the WhatsApp tooltip
     return () => clearTimeout(t);
   }, [sections.length, openFor]);
 
@@ -394,7 +405,25 @@ export default function HomeDock() {
             </svg>
           )}
         </button>
-        <button type="button" className="hd-wa" onClick={askWhatsApp} aria-label="Ask TheBookX on WhatsApp about today's best offers">
+        <AnimatePresence>
+          {waTip && !open && (
+            <motion.span
+              className="wa-tip"
+              role="tooltip"
+              initial={{ opacity: 0, y: 6, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ type: "spring", stiffness: 380, damping: 28 }}
+            >
+              <FaWhatsapp size={18} />
+              <span>
+                Ask us for today&apos;s best deals
+                <small>Quick replies on WhatsApp</small>
+              </span>
+            </motion.span>
+          )}
+        </AnimatePresence>
+        <button type="button" className="hd-wa" onClick={() => { setWaTip(false); askWhatsApp(); }} aria-label="Ask TheBookX on WhatsApp about today's best offers">
           <FaWhatsapp size={22} />
         </button>
       </motion.div>

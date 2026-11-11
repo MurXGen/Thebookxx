@@ -15,8 +15,8 @@ export default function PdpWhatsApp({ book, price, mrp }) {
   const [hint, setHint] = useState(false);
 
   useEffect(() => {
-    const show = setTimeout(() => setHint(true), 2500);
-    const hide = setTimeout(() => setHint(false), 9500);
+    const show = setTimeout(() => setHint(true), 1200);
+    const hide = setTimeout(() => setHint(false), 5200); // visible for 4s
     return () => {
       clearTimeout(show);
       clearTimeout(hide);
@@ -40,8 +40,12 @@ export default function PdpWhatsApp({ book, price, mrp }) {
 
   return (
     <div className="pdp-wa">
-      <span className={`pdp-wa-hint${hint ? " show" : ""}`} aria-hidden="true">
-        Ask us for a better price
+      <span className={`wa-tip pdp-wa-tip${hint ? " show" : ""}`} role="tooltip">
+        <FaWhatsapp size={18} />
+        <span>
+          Ask us for a better price
+          <small>Extra discounts &amp; combo deals on WhatsApp</small>
+        </span>
       </span>
       <button
         type="button"

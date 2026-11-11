@@ -25,6 +25,22 @@ export const UPI_APPS = [
     ios: "gpay://",
     storeIos: "https://apps.apple.com/in/app/id1193357041",
   },
+  {
+    key: "bhim",
+    label: "BHIM",
+    pkg: "in.org.npci.upiapp",
+    ios: "bhim://",
+    storeIos: "https://apps.apple.com/in/app/id1200315258",
+    more: true,
+  },
+  {
+    key: "cred",
+    label: "CRED",
+    pkg: "com.dreamplug.androidapp",
+    ios: "credpay://",
+    storeIos: "https://apps.apple.com/in/app/id1428580080",
+    more: true,
+  },
 ];
 
 // Copy the UPI ID to the clipboard (no app launch).
@@ -42,6 +58,8 @@ export function upiAppByName(name) {
   if (n.includes("phonepe") || n.includes("phone pe")) return UPI_APPS[1];
   if (n.includes("google") || n.includes("gpay") || n.includes("g pay"))
     return UPI_APPS[2];
+  if (n.includes("bhim")) return UPI_APPS[3];
+  if (n.includes("cred")) return UPI_APPS[4];
   return null; // "Other UPI apps" / unknown → no specific app
 }
 

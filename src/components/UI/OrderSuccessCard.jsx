@@ -339,9 +339,22 @@ export default function OrderSuccessCard({
   useEffect(() => {
     if (pending) {
       try {
-        if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([18, 40, 40]);
+        if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([18, 40, 60, 30, 90]);
       } catch {}
-      return;
+      // Online order handed over after "verify status": same chime as a
+      // placed COD order, landing with the tick (card shows immediately).
+      const c = setTimeout(() => {
+        const a = chimeRef.current;
+        if (!a) return;
+        try {
+          a.currentTime = 0;
+          const p = a.play();
+          if (p && p.catch) p.catch(() => {});
+        } catch {
+          /* blocked */
+        }
+      }, 520);
+      return () => clearTimeout(c);
     }
     const t = setTimeout(() => {
       setPhase("done");

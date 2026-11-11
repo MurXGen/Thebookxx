@@ -68727,3 +68727,123 @@ h2.od-reco-title {
 .sets-seo-intro a { color: #c2410c; font-weight: 700; }
 .book-rail-viewall { text-decoration: none; cursor: pointer; }
 .book-rail-viewall:hover { filter: brightness(0.95); }
+
+/* Book page (phones): WhatsApp "best price?" button above the sticky bar */
+.pdp-wa {
+  position: absolute; right: 14px; bottom: calc(100% + 12px);
+  display: flex; align-items: center; gap: 8px; pointer-events: none;
+}
+.pdp-wa-btn {
+  pointer-events: auto; width: 54px; height: 54px; border-radius: 50%; border: none;
+  display: grid; place-items: center; background: #25d366; color: #fff; cursor: pointer;
+  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.42), 0 2px 6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease;
+}
+.pdp-wa-btn:active { transform: scale(0.94); }
+.pdp-wa-btn::after {
+  content: ""; position: absolute; right: 0; width: 54px; height: 54px; border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); animation: pdpWaPulse 2.4s ease-out 3;
+}
+@keyframes pdpWaPulse { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); } 100% { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); } }
+.pdp-wa-hint {
+  background: #fff; color: #0f172a; font-size: 12.5px; font-weight: 700; white-space: nowrap;
+  padding: 8px 12px; border-radius: 999px; border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  opacity: 0; transform: translateX(8px); transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.pdp-wa-hint.show { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .pdp-wa-btn::after { animation: none; } }
+
+/* ═══ Homepage dock: WhatsApp + section index (HomeDock.jsx) ═══ */
+.hs-anchor { scroll-margin-top: 80px; }
+.hd-fade {
+  position: fixed; inset: 0; z-index: 135;
+  background: linear-gradient(270deg, rgba(10, 8, 6, 0.82) 0%, rgba(10, 8, 6, 0.62) 42%, rgba(10, 8, 6, 0.18) 78%, rgba(10, 8, 6, 0) 100%);
+  -webkit-backdrop-filter: blur(1.5px); backdrop-filter: blur(1.5px);
+}
+.hd-rail {
+  position: fixed; right: 0; top: 168px; z-index: 136; width: 30px;
+  pointer-events: none;
+}
+.hd-track {
+  position: absolute; inset: 0; pointer-events: auto; touch-action: none;
+  cursor: ns-resize; outline: none; -webkit-tap-highlight-color: transparent;
+}
+.hd-track:focus-visible .hd-line { box-shadow: 0 0 0 2px #fb8500; }
+.hd-line, .hd-progress {
+  position: absolute; right: 11px; top: 0; width: 3px; border-radius: 3px;
+}
+.hd-line { bottom: 0; background: rgba(28, 24, 20, 0.14); transition: background 0.25s ease, opacity 0.3s ease; }
+.hd-progress { background: linear-gradient(180deg, #fbbf24, #fb8500); opacity: 0.85; }
+.hd-stop { position: absolute; right: 0; width: 100%; height: 0; display: flex; align-items: center; justify-content: flex-end; }
+.hd-dot {
+  position: absolute; right: 9px; width: 7px; height: 7px; margin-top: -3.5px; top: 0;
+  border-radius: 50%; background: #fff; border: 1.5px solid rgba(28, 24, 20, 0.28);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+.hd-stop.past .hd-dot { border-color: #fb8500; }
+.hd-stop.on .hd-dot { background: #fb8500; border-color: #fff; box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.25); }
+/* Folded state: faint while idle, clearer while scrolling */
+.hd-rail:not(.is-open) { opacity: 0.38; transition: opacity 0.35s ease; }
+.hd-rail.is-scrolling:not(.is-open) { opacity: 0.95; }
+.hd-rail.is-open .hd-line { background: rgba(255, 255, 255, 0.28); }
+.hd-rail.is-open .hd-dot { border-color: rgba(255, 255, 255, 0.7); background: rgba(255, 255, 255, 0.25); }
+.hd-rail.is-open .hd-stop.past .hd-dot { background: rgba(251, 133, 0, 0.6); border-color: #fbbf24; }
+.hd-rail.is-open .hd-stop.on .hd-dot { background: #fb8500; border-color: #fff; }
+.hd-label {
+  position: absolute; right: 26px; top: 0; transform: translateY(-50%);
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  margin-top: -14px; height: 28px; padding: 0 12px 0 10px; border-radius: 999px; border: none;
+  background: transparent; color: rgba(255, 255, 255, 0.86);
+  font-size: 13px; font-weight: 700; letter-spacing: 0.01em; cursor: pointer;
+  pointer-events: auto; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.hd-label svg { opacity: 0.8; }
+.hd-label:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.hd-stop.on .hd-label {
+  background: #fff; color: #1c1814; text-shadow: none; font-weight: 800;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+}
+.hd-stop.on .hd-label svg { color: #fb8500; opacity: 1; }
+
+.hd-fabs {
+  position: fixed; right: 12px; z-index: 137;
+  display: flex; flex-direction: row-reverse; align-items: center; gap: 8px; /* WhatsApp left, stack right */
+  padding: 4px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(28, 24, 20, 0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.hd-wa, .hd-stack {
+  position: relative; display: grid; place-items: center; border: none; cursor: pointer;
+  border-radius: 50%; transition: transform 0.15s ease; -webkit-tap-highlight-color: transparent;
+}
+.hd-wa:active, .hd-stack:active { transform: scale(0.93); }
+.hd-wa {
+  width: 40px; height: 40px; background: #25d366; color: #fff;
+  box-shadow: 0 3px 10px rgba(37, 211, 102, 0.35);
+}
+.hd-stack {
+  width: 40px; height: 40px; background: #1c1814; color: #fff;
+}
+.hd-stack.on { background: #fff; color: #1c1814; }
+.hd-ring { position: absolute; inset: -2px; width: 44px; height: 44px; transform: rotate(-90deg); pointer-events: none; }
+.hd-ring circle { fill: none; stroke: #fb8500; stroke-width: 2.5; stroke-linecap: round; }
+@media (min-width: 900px) {
+  .hd-rail { top: 190px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hd-rail:not(.is-open) { transition: none; }
+}
+
+/* "You've reached" chip beside the active rail dot */
+.hd-reached {
+  position: absolute; right: 26px; top: 0; margin-top: -14px; height: 28px;
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  padding: 0 12px 0 10px; border-radius: 999px; pointer-events: none;
+  background: #1c1814; color: #fff; font-size: 12.5px; font-weight: 800;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+.hd-reached svg { color: #fbbf24; }
+.hd-rail .hd-stop.on .hd-reached ~ .hd-dot { box-shadow: 0 0 0 4px rgba(251, 133, 0, 0.3); }
+.hd-rail:has(.hd-reached) { opacity: 1; }

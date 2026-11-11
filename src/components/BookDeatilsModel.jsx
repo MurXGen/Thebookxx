@@ -50,6 +50,7 @@ import YouMayLike from "./UI/YouMayLike";
 import BookReviews from "./UI/BookReviews";
 import StoreReviews from "./StoreReviews";
 import LiveOrdersStrip from "./LiveOrdersStrip";
+import PdpWhatsApp from "./UI/PdpWhatsApp";
 import CartConfetti from "./UI/Confetti";
 import { shareContent } from "./UI/ShareSheet";
 import { startOffer, PRICE_RISE, requestExtension } from "@/lib/offerTimer";
@@ -1159,6 +1160,8 @@ export default function BookDetailsModal({ book: bookProp }) {
       {/* ===== Sticky bottom bar (phones) ===== */}
       <div className="bd-sticky-bottom pdp-bar">
         <CartConfetti trigger={confetti} />
+        {/* WhatsApp "best price?" button, floating just above the bar */}
+        <PdpWhatsApp book={book} price={price} mrp={mrp} />
         {offerEnd ? (
           <OfferTimer endsAt={offerEnd} after={priceAfter} compact />
         ) : (

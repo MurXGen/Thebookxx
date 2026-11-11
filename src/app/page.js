@@ -21,6 +21,7 @@ import ReviewGallery from "@/components/ReviewGallery";
 import BundleDeals from "@/components/BundleDeals";
 import CategoryBrowse from "@/components/CategoryBrowse";
 import BookRail from "@/components/BookRail";
+import HomeDock from "@/components/HomeDock";
 import { BOX_SETS } from "@/utils/boxSets";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { Sparkles, TrendingUp, Award, Tag, Baby, BookOpen, Library } from "lucide-react";
@@ -140,6 +141,7 @@ const LazySection = ({ children, threshold = 0.1, fallback = null }) => {
 // Homepage book rail that shows its real heading immediately and skeleton-loads
 // the books until it scrolls into view.
 const RailBlock = (props) => (
+  <div id={`hs-${props.id}`} className="hs-anchor">
   <LazySection
     threshold={0.05}
     fallback={
@@ -156,6 +158,7 @@ const RailBlock = (props) => (
       <BookRail {...props} />
     </SmoothAppear>
   </LazySection>
+  </div>
 );
 
 export default function HomePage() {
@@ -197,13 +200,19 @@ export default function HomePage() {
       <Navbar />
 
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
-      <HomeHero />
+      <div id="hs-top" className="hs-anchor">
+        <HomeHero />
+      </div>
 
       {/* Real reader photos — the first thing under the hero, for trust */}
-      <ReviewGallery />
+      <div id="hs-reviews" className="hs-anchor">
+        <ReviewGallery />
+      </div>
 
       {/* Shop by category — one swipeable row right under the hero. */}
-      <CatalogueSection />
+      <div id="hs-categories" className="hs-anchor">
+        <CatalogueSection />
+      </div>
 
       {/* Then: trending, the ₹1 store, and everything else below. */}
       <RailBlock
@@ -226,9 +235,11 @@ export default function HomePage() {
       />
 
       {/* Combo offers — right under the ₹1 bestsellers. */}
-      <Suspense fallback={null}>
-        <ComboDeals />
-      </Suspense>
+      <div id="hs-combos" className="hs-anchor">
+        <Suspense fallback={null}>
+          <ComboDeals />
+        </Suspense>
+      </div>
 
       {/* Box sets / series sets — right under the combos. */}
       <RailBlock
@@ -266,7 +277,9 @@ export default function HomePage() {
 
       {/* <UnlockModal /> */}
       {/* Small QuickReads teaser right below the reviews / write-a-review CTA */}
-      <QuickReadsTeaser />
+      <div id="hs-quickreads" className="hs-anchor">
+        <QuickReadsTeaser />
+      </div>
 
       {/* Floating ₹1 gift box temporarily removed */}
       {/* <OneRupeeHero /> */}
@@ -360,9 +373,14 @@ export default function HomePage() {
 
       {/* Critical Components - Always Visible */}
 
-      <AllBooks />
+      <div id="hs-allbooks" className="hs-anchor">
+        <AllBooks />
+      </div>
 
       <CartBar tab="books" />
+
+      {/* WhatsApp + section navigator dock (rides above the cart bar) */}
+      <HomeDock />
 
       {/* Mobile-only bottom navigation (home page) */}
       <MobileBottomNav />

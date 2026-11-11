@@ -1122,6 +1122,30 @@ export const comboPairDiscount = (cartBooks = []) => {
 // Back-compat name.
 export const clarityComboDiscount = comboPairDiscount;
 
+// 3–4 book sets (the curated bundles). Titles are rebuilt from live prices
+// so they're accurate and don't double the " | TheBookX" suffix the root
+// title template already adds.
+export const bookSets = combos.filter((c) => !c.discountPct);
+bookSets.forEach((c) => {
+  const { price, savings, count } = getComboPricing(c);
+  c.seoTitle = `${c.title}: ${count} Book Set at ₹${price}${savings > 0 ? ` (Save ₹${savings})` : ""}`;
+});
+
+// Sets interleaved across genres (one per category in turn) for a varied row.
+export const mixedBookSets = (() => {
+  const byCat = new Map();
+  bookSets.forEach((c) => {
+    if (!byCat.has(c.category)) byCat.set(c.category, []);
+    byCat.get(c.category).push(c);
+  });
+  const lists = [...byCat.values()];
+  const out = [];
+  for (let i = 0; out.length < bookSets.length; i++) {
+    lists.forEach((l) => l[i] && out.push(l[i]));
+  }
+  return out;
+})();
+
 export const getComboBySlug = (slug) =>
   combos.find((c) => c.slug === slug) || null;
 

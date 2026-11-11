@@ -4,6 +4,24 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // Retired Art of Clarity combo pages → the matching 2-book combo (or /combos).
+      { source: "/combos/the-art-of-clarity-and-blue-ocean-strategy-combo", destination: "/combos/the-hard-thing-about-hard-things-and-blue-ocean-strategy-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-the-hard-thing-about-hard-things-combo", destination: "/combos/the-hard-thing-about-hard-things-and-blue-ocean-strategy-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-diary-of-a-ceo-combo", destination: "/combos/diary-of-a-ceo-and-the-almanack-of-naval-ravikant-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-the-almanack-of-naval-ravikant-combo", destination: "/combos/diary-of-a-ceo-and-the-almanack-of-naval-ravikant-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-do-epic-shit-combo", destination: "/combos/do-epic-shit-and-get-epic-shit-done-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-get-epic-shit-done-combo", destination: "/combos/do-epic-shit-and-get-epic-shit-done-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-make-epic-money-combo", destination: "/combos/do-epic-shit-and-get-epic-shit-done-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-surrounded-by-idiots-combo", destination: "/combos/never-split-the-difference-and-surrounded-by-idiots-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-the-48-laws-of-power-combo", destination: "/combos/the-48-laws-of-power-and-the-laws-of-human-nature-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-the-laws-of-human-nature-combo", destination: "/combos/the-48-laws-of-power-and-the-laws-of-human-nature-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-the-5-types-of-wealth-combo", destination: "/combos/the-art-of-spending-money-and-the-5-types-of-wealth-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-zero-to-one-combo", destination: "/combos/zero-to-one-and-the-lean-startup-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-the-lean-startup-combo", destination: "/combos/zero-to-one-and-the-lean-startup-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-thinking-fast-and-slow-combo", destination: "/combos/thinking-fast-and-slow-and-mindset-combo", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-everything-i-know-about-love-combo", destination: "/combos", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-the-first-90-days-combo", destination: "/combos", permanent: true },
+      { source: "/combos/the-art-of-clarity-and-the-let-them-theory-combo", destination: "/combos", permanent: true },
       // Recover the intuitive (but previously 404ing) blog aliases.
       {
         source: "/blog",

@@ -68711,3 +68711,15 @@ h2.od-reco-title {
   display: inline-block; margin-top: 2px; padding: 2px 7px; border-radius: 999px;
   background: #e11d48; color: #fff; font-size: 11px; font-weight: 800; white-space: nowrap;
 }
+
+/* /book-sets: genre link index + FAQ under the grid */
+.sets-seo { max-width: 1120px; margin: 28px auto 0; }
+.sets-seo h2 { font-size: 18px; font-weight: 900; margin: 22px 0 10px; color: var(--foreground); }
+.sets-seo-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.sets-seo-links li { display: grid; grid-template-columns: 150px 1fr; gap: 10px; font-size: 13.5px; line-height: 1.5; padding: 8px 0; border-bottom: 1px solid var(--hairline, #eee); }
+.sets-seo-links strong { font-weight: 800; color: var(--foreground); }
+.sets-seo-links a { color: #c2410c; text-decoration: none; font-weight: 600; }
+.sets-seo-links a:hover { text-decoration: underline; }
+.sets-seo-more { font-size: 14px; margin: 12px 0 0; }
+.sets-seo-more a { color: #c2410c; font-weight: 700; }
+@media (max-width: 640px) { .sets-seo-links li { grid-template-columns: 1fr; gap: 2px; } }

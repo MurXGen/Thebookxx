@@ -226,7 +226,12 @@ export default function HomePage() {
 
       {/* Combo offers — right under the ₹1 bestsellers. */}
       <Suspense fallback={null}>
-        <ComboDeals />
+        <ComboDeals kind="pairs" />
+      </Suspense>
+
+      {/* 3–4 book sets — right under the 2-book combos. */}
+      <Suspense fallback={null}>
+        <ComboDeals kind="sets" />
       </Suspense>
 
 

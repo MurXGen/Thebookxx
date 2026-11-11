@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { SlidersHorizontal, ArrowUpDown } from "lucide-react";
+import Link from "next/link";
+import { SlidersHorizontal, ArrowUpDown, ArrowRight } from "lucide-react";
 import BookCard from "@/components/BookCard";
 import HorizontalScroll from "@/components/UI/HorizontalScroll";
 
@@ -32,6 +33,9 @@ export default function BookRail({
   title,
   subtitle,
   pill,
+  // Optional "View all" link shown on the right of the heading.
+  viewAllHref,
+  viewAllLabel = "View all",
   books = [],
   controls = true,
 }) {
@@ -74,7 +78,11 @@ export default function BookRail({
           </h2>
           {subtitle && <p className="book-rail-sub">{subtitle}</p>}
         </div>
-        {pill && (
+        {viewAllHref ? (
+          <Link href={viewAllHref} className="book-rail-pill book-rail-viewall">
+            {viewAllLabel} <ArrowRight size={13} />
+          </Link>
+        ) : pill && (
           <span className="book-rail-pill">
             {Icon && <Icon size={13} />} {pill}
           </span>

@@ -21,8 +21,9 @@ import ReviewGallery from "@/components/ReviewGallery";
 import BundleDeals from "@/components/BundleDeals";
 import CategoryBrowse from "@/components/CategoryBrowse";
 import BookRail from "@/components/BookRail";
+import { BOX_SETS } from "@/utils/boxSets";
 import { books as ALL_BOOKS } from "@/utils/book";
-import { Sparkles, TrendingUp, Award, Tag, Baby, BookOpen } from "lucide-react";
+import { Sparkles, TrendingUp, Award, Tag, Baby, BookOpen, Library } from "lucide-react";
 import {
   BooksSkeleton,
   BookRailSkeleton,
@@ -226,13 +227,20 @@ export default function HomePage() {
 
       {/* Combo offers — right under the ₹1 bestsellers. */}
       <Suspense fallback={null}>
-        <ComboDeals kind="pairs" />
+        <ComboDeals />
       </Suspense>
 
-      {/* 3–4 book sets — right under the 2-book combos. */}
-      <Suspense fallback={null}>
-        <ComboDeals kind="sets" />
-      </Suspense>
+      {/* Box sets / series sets — right under the combos. */}
+      <RailBlock
+        id="rail-book-sets"
+        icon={Library}
+        badge="BOOK SETS"
+        title="Complete book sets & box sets"
+        subtitle="Whole series in one box — Harry Potter, Shiva Trilogy, ACOTAR, manga and more."
+        viewAllHref="/book-sets"
+        viewAllLabel={`View all ${BOX_SETS.length} sets`}
+        books={BOX_SETS}
+      />
 
 
 

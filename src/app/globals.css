@@ -68723,3 +68723,7 @@ h2.od-reco-title {
 .sets-seo-more { font-size: 14px; margin: 12px 0 0; }
 .sets-seo-more a { color: #c2410c; font-weight: 700; }
 @media (max-width: 640px) { .sets-seo-links li { grid-template-columns: 1fr; gap: 2px; } }
+.sets-seo-intro { font-size: 14.5px; line-height: 1.6; color: var(--foreground); margin: 8px 0 0; }
+.sets-seo-intro a { color: #c2410c; font-weight: 700; }
+.book-rail-viewall { text-decoration: none; cursor: pointer; }
+.book-rail-viewall:hover { filter: brightness(0.95); }

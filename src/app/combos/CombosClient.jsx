@@ -48,7 +48,7 @@ export default function CombosClient({
           thrillers, business, self-help, author collections and more. Every
           combo drops the whole set into your bag in one tap — with prices from
           ₹1, Cash on Delivery and free delivery from ₹199.{" "}
-          <Link href="/book-sets">Browse 3 &amp; 4 book sets →</Link>
+          <Link href="/book-sets">Looking for a whole series? Shop box sets →</Link>
         </p>}
       </header>
 

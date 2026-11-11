@@ -72,7 +72,7 @@ const SORTS = [
   { key: "discount", label: "Biggest Discount" },
 ];
 
-export default function CategoryListing({ books = [], displayName = "", slug = "" }) {
+export default function CategoryListing({ books = [], displayName = "", slug = "", heading = "", crumbs = null, children = null }) {
   const theme = getCategoryTheme(slug);
   const CatIcon = CAT_ICONS[theme.icon] || BookOpen;
   const [sortType, setSortType] = useState("relevance");
@@ -163,7 +163,7 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
       </svg>
 
       <Breadcrumbs
-        items={[
+        items={crumbs || [
           { label: "Books", href: "/books" },
           { label: `${displayName} Books` },
         ]}
@@ -178,7 +178,7 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
             <ArrowLeft size={18} />
           </Link>
           {/* Visible H1 — kept for SEO */}
-          <h1 className="cat-hero-title">{displayName} Books</h1>
+          <h1 className="cat-hero-title">{heading || `${displayName} Books`}</h1>
         </div>
       </div>
 
@@ -279,6 +279,7 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
       ) : (
         <LazyBookGrid items={filtered} batch={20} />
       )}
+      {children}
     </div>
   );
 }

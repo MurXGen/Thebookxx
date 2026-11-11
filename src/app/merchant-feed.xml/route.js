@@ -4,6 +4,7 @@
 // Google re-fetches it (daily) so it always reflects the live catalogue.
 
 import { books } from "@/utils/book";
+import { comboFeedItems } from "@/lib/comboFeed";
 
 const SITE = "https://www.thebookx.in";
 export const dynamic = "force-dynamic"; // always reflect current catalogue
@@ -72,6 +73,7 @@ export async function GET() {
     <link>${SITE}</link>
     <description>Books from TheBookX, starting at just ₹1. Free delivery from ₹199 and Cash on Delivery across India.</description>
 ${items}
+${comboFeedItems(SITE, esc)}
   </channel>
 </rss>`;
 

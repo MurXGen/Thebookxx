@@ -2,6 +2,7 @@
 // Submit this URL as a feed in Merchant Center to power free Shopping listings
 // (the "Books" / Shopping tab) and Shopping ads:  https://thebookx.in/product-feed.xml
 import { books } from "@/utils/book";
+import { comboFeedItems } from "@/lib/comboFeed";
 
 const SITE = "https://www.thebookx.in";
 
@@ -76,6 +77,7 @@ export async function GET() {
     <link>${SITE}</link>
     <description>Books at the lowest prices in India, starting at ₹1. Free delivery from ₹199 and Cash on Delivery.</description>
 ${items}
+${comboFeedItems(SITE, esc)}
   </channel>
 </rss>`;
 

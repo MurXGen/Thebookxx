@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, PackagePlus } from "lucide-react";
-import { combos, COMBO_CATEGORIES } from "@/utils/combos";
+import { combos, clarityCombos, bookPairCombos, COMBO_CATEGORIES } from "@/utils/combos";
 import ComboCard from "@/components/ComboCard";
 
 export default function CombosClient() {
@@ -37,8 +37,8 @@ export default function CombosClient() {
         </span>
         <h1>Book Combo Offers — Buy Together & Save</h1>
         <p>
-          The Art of Clarity paired with 20 top non-fiction bestsellers at 10%
-          off, plus {combos.length - 20} handpicked bundles across bestsellers, romance,
+          {clarityCombos.length} Art of Clarity combos and {bookPairCombos.length} 2-book bestseller
+          combos at 10% off, plus {combos.length - clarityCombos.length - bookPairCombos.length} handpicked bundles across bestsellers, romance,
           thrillers, business, self-help, author collections and more. Every
           combo drops the whole set into your bag in one tap — with prices from
           ₹1, Cash on Delivery and free delivery from ₹199.

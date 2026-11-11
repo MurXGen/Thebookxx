@@ -224,6 +224,11 @@ export default function HomePage() {
         books={RAIL_ONE_RUPEE}
       />
 
+      {/* Combo offers — right under the ₹1 bestsellers. */}
+      <Suspense fallback={null}>
+        <ComboDeals />
+      </Suspense>
+
 
 
       {/* Compact 2-row ₹1 books rail — above the review gallery. */}

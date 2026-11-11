@@ -2,7 +2,7 @@
 import Navbar from "@/components/Navbar";
 import CartBar from "@/components/CartBar";
 import CombosClient from "./CombosClient";
-import { combos, getComboBooks, getComboPricing } from "@/utils/combos";
+import { combos, clarityCombos, bookPairCombos, getComboBooks, getComboPricing } from "@/utils/combos";
 
 const PAGE_URL = "https://www.thebookx.in/combos";
 
@@ -10,7 +10,7 @@ export async function generateMetadata() {
   // Root layout appends " | TheBookX" via the title template.
   const title =
     "Book Combo Offers — The Art of Clarity Combos, Bestseller Bundles & More";
-  const description = `Shop ${combos.length}+ curated book combos on TheBookX. The Art of Clarity paired with 20 top non-fiction bestsellers at 10% off, plus bundles of 3–4 handpicked books across bestsellers, romance, thrillers, business, self-help and author collections — added to your cart in one tap. Lowest prices online, books from ₹1, free delivery, Cash on Delivery and easy 7-day returns across India.`;
+  const description = `Shop ${combos.length}+ curated book combos on TheBookX. ${clarityCombos.length} Art of Clarity combos and ${bookPairCombos.length} 2-book bestseller combos (Atomic Habits + Deep Work, The Psychology of Money + Rich Dad Poor Dad and more) at 10% off, plus bundles of 3–4 handpicked books across bestsellers, romance, thrillers, business, self-help and author collections — added to your cart in one tap. Lowest prices online, books from ₹1, free delivery, Cash on Delivery and easy 7-day returns across India.`;
 
   return {
     title,

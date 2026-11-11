@@ -2,7 +2,7 @@
 
 import BookCard from "@/components/BookCard";
 import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
-import { clarityComboDiscount } from "@/utils/combos";
+import { comboPairDiscount } from "@/utils/combos";
 import CartItemRow from "@/components/CartItemRow";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
@@ -659,12 +659,12 @@ function BagContent() {
     offerLabel = offerLabel ? `${offerLabel} + ₹40 add-on` : "₹40 book add-on";
   }
 
-  // The Art of Clarity combos: Clarity + one of the 20 partner bestsellers →
-  // 10% off that pair (same price as the combo card / combo page).
-  const clarityCombo = clarityComboDiscount(cartBooks);
-  if (clarityCombo.discount > 0) {
-    offerDiscount += clarityCombo.discount;
-    const lbl = `Art of Clarity combo 10% off`;
+  // 2-book combos (Art of Clarity pairs + other bestseller pairs): both books
+  // in the bag → 10% off that pair (same price as the combo card / page).
+  const pairCombo = comboPairDiscount(cartBooks);
+  if (pairCombo.discount > 0) {
+    offerDiscount += pairCombo.discount;
+    const lbl = `★ Combo discount (10%)`;
     offerLabel = offerLabel ? `${offerLabel} + ${lbl}` : lbl;
   }
 
@@ -1503,7 +1503,7 @@ ${itemsBlock}${qrLines}
             </div>
             <div className="cart-items-list">
               {cartBooks.map((book) => (
-                <CartItemRow key={book.id} book={book} />
+                <CartItemRow key={book.id} book={book} combo={pairCombo.perBook?.[book.id]} />
               ))}
               {qrItems.map((b) => (
                 <div key={b.id} className="cart-row cart-row-qr">
@@ -1989,6 +1989,7 @@ ${itemsBlock}${qrLines}
         totalDiscounted={totalDiscounted}
         offerDiscount={offerDiscount}
         offerLabel={offerLabel}
+        comboDiscount={pairCombo.discount}
         unlockedOffer={unlockedOffer}
         onApplyOffer={handleApplyOffer}
         standardDeliveryCharge={standardDeliveryCharge}

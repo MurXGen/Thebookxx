@@ -4,6 +4,234 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "booker-prize-2026-winner-m-john-harrison-the-end-of-everything-what-to-read-india": {
+    "id": "blog-105",
+    "title": "Booker Prize 2026 Winner: M. John Harrison's The End of Everything, and 15 Books to Read Next in India",
+    "slug": "booker-prize-2026-winner-m-john-harrison-the-end-of-everything-what-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-11",
+    "lastModified": "2026-11-11",
+    "excerpt": "M. John Harrison, 81, wins the Booker Prize 2026 for The End of Everything. What the book is about, the shortlist, and 15 books to read next in India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The 2026 Booker Prize has gone to M. John Harrison for The End of Everything. The British writer, who is 81, was named the winner at a ceremony at Old Billingsgate in London on Monday, 9 November 2026 (the news reached Indian readers on the morning of 10 November). He takes home £50,000 and becomes the oldest author ever to win the prize, two years older than Margaret Atwood was when she shared it in 2019."
+      },
+      {
+        "type": "paragraph",
+        "content": "It is also a result that will be argued about for a while. The End of Everything is a short, strange, satirical piece of speculative fiction, and it has been widely described as the first science fiction novel to win the Booker. Below is what the book is about, why the judges chose it, who it beat, and a reading list to help you get into Harrison's kind of fiction while the winner makes its way to Indian bookshelves."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Booker Prize 2026 at a glance",
+        "content": "Winner: The End of Everything by M. John Harrison. Announced: Monday, 9 November 2026, Old Billingsgate, London. Prize: £50,000. Chair of judges: historian Mary Beard. Decision: unanimous. Record: Harrison, 81, is the oldest winner in the prize's history."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What is The End of Everything about?"
+      },
+      {
+        "type": "paragraph",
+        "content": "The novel is set on England's Channel coast a few decades from now, after an unexplained catastrophe has broken ordinary life apart. Society has frayed, something alien has arrived in Britain, and the people left behind are making do. At its centre are Phillip Tennent, a beachcomber, and his elderly, gun-carrying aunt Marnie. On the shore Phillip finds a puzzling artefact that keeps changing shape, and the book follows what that discovery opens up."
+      },
+      {
+        "type": "paragraph",
+        "content": "At about 198 pages it was the shortest novel on the shortlist. Reports describe it as a dystopian satire, but the judges were keen to stress that it is not a bleak read. Mary Beard said the book turns readers upside down and still leaves them with a wry smile and a sense of optimism. If you like fiction that is funny and unsettling in the same paragraph, this is one to watch for."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Who is M. John Harrison?"
+      },
+      {
+        "type": "paragraph",
+        "content": "Harrison has been publishing for about six decades. He was part of the New Worlds magazine scene that reshaped British science fiction in the 1960s and 1970s, and he won the Arthur C. Clarke Award for Nova Swing. The End of Everything is his thirteenth novel. In his reaction to the win he said he finally felt like a proper writer, admitted he still felt completely lacking in confidence, and spoke up for prizes like the Booker in a market he sees as dominated by industrialised fiction."
+      },
+      {
+        "type": "blockquote",
+        "content": "A late, unanimous win for a writer who spent sixty years on the edges of literary fiction is a reminder that the best books do not always arrive on the expected schedule."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The 2026 Booker shortlist: who Harrison beat"
+      },
+      {
+        "type": "paragraph",
+        "content": "The judges, chaired by Mary Beard and including poet Raymond Antrobus and musician Jarvis Cocker, spent a full day debating six novels before agreeing on the winner. The other five were:"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "John of John by Douglas Stuart, who won the Booker in 2020 for Shuggie Bain.",
+          "The Disappearers by Marlon James, the 2015 winner for A Brief History of Seven Killings.",
+          "The Things We Never Say by Elizabeth Strout, the Pulitzer-winning author of Olive Kitteridge.",
+          "Black Bag by Luke Kennard.",
+          "May We Feed the King by Rebecca Perry."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Beating two former winners and one of the most loved novelists in English with a short science fiction satire is part of why this result is getting so much attention."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why this win matters for readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "For years, readers who love speculative fiction have been told, often implicitly, that it belongs in a separate section from serious literature. This year's result quietly undoes that. A book about an alien presence on a ruined coast now sits on the same list as The God of Small Things and Wolf Hall. If you have ever felt slightly embarrassed about loving science fiction, the Booker judges have just given you permission to stop."
+      },
+      {
+        "type": "paragraph",
+        "content": "It is also a good reminder for students and anyone preparing for literature exams or quizzes: prize winners, records and firsts tend to show up as current-affairs questions. Note the key facts in the callout above."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Read this while you wait: 15 books in the same spirit"
+      },
+      {
+        "type": "paragraph",
+        "content": "The End of Everything and the rest of the shortlist are new releases and may take time to reach every Indian retailer. In the meantime, these books from our catalogue will give you the same pleasures: strange futures, sharp social satire, and literary novels that refuse to sit in one genre."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Classic dystopias and satire"
+      },
+      {
+        "type": "paragraph",
+        "content": "Start with <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> and <a href=\"/books/brave-new-world\" style=\"color:#fb8500;font-weight:600\">Brave New World</a>, the two novels every dystopia is still measured against. <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> is the shortest route into political satire, and like Harrison's book it proves that a slim novel can hit very hard. For something even stranger, <a href=\"/books/the-metamorphosis\" style=\"color:#fb8500;font-weight:600\">The Metamorphosis</a> by Kafka is the original story of an ordinary life interrupted by something impossible."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Literary fiction that borrows from science fiction"
+      },
+      {
+        "type": "paragraph",
+        "content": "Kazuo Ishiguro, himself a Booker winner, is the best bridge between the two worlds. <a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a> was shortlisted for the Booker in 2005 and uses a quiet speculative idea to ask what makes a life worth living, while <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> tells a story of love and loneliness through the eyes of an artificial friend. <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> by Haruki Murakami blends the dreamlike and the everyday in a way Harrison's fans will recognise. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> is the gentlest entry here, a hopeful novel about the lives we did not live."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Big, bold science fiction"
+      },
+      {
+        "type": "paragraph",
+        "content": "If the Booker news has you curious about the genre itself, read <a href=\"/books/dune\" style=\"color:#fb8500;font-weight:600\">Dune</a>, the landmark epic about power, ecology and belief, and <a href=\"/books/project-hail-mary\" style=\"color:#fb8500;font-weight:600\">Project Hail Mary</a>, a fast, funny survival story that is one of the most recommended science fiction novels of recent years."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "A Booker winner from India"
+      },
+      {
+        "type": "paragraph",
+        "content": "No Booker reading list for Indian readers is complete without <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a>, Arundhati Roy's 1997 winner. Re-reading it next to news of a science fiction winner is a good way to see how wide the prize's idea of a great novel has become."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Non-fiction for big-picture thinkers"
+      },
+      {
+        "type": "paragraph",
+        "content": "Harrison's novel is, at heart, about how people make sense of a world that has changed faster than they can explain. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> gives you the long view of how societies hold together and fall apart. <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> explains why we misread uncertainty and risk. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> is a practical book for building a daily reading routine so that next year's longlist does not catch you behind."
+      },
+      {
+        "type": "paragraph",
+        "content": "And if all the end-of-the-world fiction leaves your head feeling crowded, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a calm, practical guide to cutting through noise, thinking clearly and deciding what actually deserves your attention."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to read prize fiction without getting overwhelmed"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Start short. A novel under 250 pages, like the winner or Animal Farm, is easier to finish in a busy week.",
+          "Read one classic alongside one new book, so you can see the conversation between them.",
+          "Give a strange book fifty pages before deciding. Speculative fiction often takes a while to explain its rules.",
+          "Keep a one-line note after each book: what it was about and how it made you feel. It turns reading into memory.",
+          "Join or start a small reading circle. Prize lists are more fun when someone disagrees with you."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Order from TheBookX",
+        "content": "Books from ₹1, free delivery across India and Cash on Delivery on every order. Buying for a reader friend? Add gift wrapping for +₹25 per book."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you only pick two from this list, make it <a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a> for a literary take on a speculative idea and <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> for the classic Harrison's satire is in conversation with."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Prizes come and go, but every so often one changes which books people feel allowed to love. This might be one of those years."
+      }
+    ],
+    "coverImage": "/blogs/booker-prize-2026-winner-m-john-harrison-the-end-of-everything-what-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/booker-prize-2026-winner-m-john-harrison-the-end-of-everything-what-to-read-india.jpeg",
+        "alt": "A young woman reading a book beside a window overlooking a grey seaside coast, with a cup of tea and a small stack of books on the sill",
+        "caption": "The 2026 Booker winner is set on a near-future English coast, a good excuse for a long, thoughtful read",
+        "category": "Literary Fiction"
+      }
+    ],
+    "keywords": [
+      "booker prize 2026 winner",
+      "booker prize 2026",
+      "m john harrison",
+      "the end of everything m john harrison",
+      "the end of everything booker",
+      "booker prize 2026 shortlist",
+      "first science fiction booker winner",
+      "oldest booker prize winner",
+      "dystopian novels to read",
+      "booker prize winners india",
+      "the art of clarity",
+      "buy books online india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Literary Fiction",
+      "Book Awards",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "Who won the Booker Prize 2026?",
+        "answer": "M. John Harrison won the 2026 Booker Prize for his novel The End of Everything. The winner was announced at Old Billingsgate in London on Monday, 9 November 2026, and the judges' decision was unanimous."
+      },
+      {
+        "question": "What is The End of Everything about?",
+        "answer": "It is a short satirical novel set on England's Channel coast in the near future, after an unexplained catastrophe. It follows a beachcomber, Phillip, and his elderly aunt Marnie, and begins with the discovery of a shape-shifting artefact on the shore. The judges described it as ultimately hopeful."
+      },
+      {
+        "question": "Why is M. John Harrison's Booker win historic?",
+        "answer": "At 81, Harrison is the oldest author ever to win the Booker Prize, and The End of Everything has been widely described as the first science fiction novel to win it. He receives £50,000."
+      },
+      {
+        "question": "Which books should I read after the Booker Prize 2026 winner?",
+        "answer": "Try Never Let Me Go and Klara and the Sun by Kazuo Ishiguro, classic dystopias like 1984 and Brave New World, Dune for big science fiction, The God of Small Things for an Indian Booker winner, and The Art of Clarity for clearer thinking. All are available on TheBookX with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "world-kindness-day-2026-13-november-books-on-kindness-and-compassion-india": {
     "id": "blog-104",
     "title": "World Kindness Day 2026 (13 November): 17 Books on Kindness and Compassion to Read in India",

@@ -47,7 +47,7 @@ function faqsFor(combo) {
     {
       q: `How do I get the 10% combo discount?`,
       a: isPair
-        ? `Tap "Add combo to bag". The 10% combo discount is applied automatically in your bag whenever The Art of Clarity and ${names[1]} are in it together. No coupon code needed.`
+        ? `Tap "Add combo to bag". The 10% combo discount is applied automatically in your bag whenever ${names[0]} and ${names[1]} are in it together. No coupon code needed.`
         : `Tap "Add combo to bag" and every book in the set is added in one tap at the combo price.`,
     },
     {
@@ -101,8 +101,10 @@ export async function generateMetadata({ params }) {
     ...authors.map((a) => `${a} books`),
     isPair && `${names[0]} and ${names[1]}`,
     isPair && `${names[1]} combo`,
-    isPair && "The Art of Clarity combo",
-    isPair && "Murthy Thevar books",
+    isPair && `${names[0]} combo`,
+    combo.bookIds.includes("bk-002") && "The Art of Clarity combo",
+    combo.bookIds.includes("bk-002") && "Murthy Thevar books",
+    isPair && "2 book combo offer",
     "book combo offer",
     "books combo pack",
     "self help book combo",
@@ -285,9 +287,15 @@ export default async function ComboDetailPage({ params }) {
   if (!combo) notFound();
 
   // Related: other combos from the same family (clarity pairs first).
-  const related = combos
-    .filter((c) => c.id !== combo.id && c.category === combo.category)
-    .slice(0, 8);
+  // then other 2-book combos (sharing a book first) to fill the row.
+  const same = combos.filter((c) => c.id !== combo.id && c.category === combo.category);
+  const shares = combos.filter(
+    (c) => c.id !== combo.id && !same.includes(c) && c.bookIds.some((id) => combo.bookIds.includes(id)),
+  );
+  const pairsFill = combo.discountPct
+    ? combos.filter((c) => c.discountPct && c.id !== combo.id && !same.includes(c) && !shares.includes(c))
+    : [];
+  const related = [...shares, ...same, ...pairsFill].slice(0, 8);
 
   return (
     <>

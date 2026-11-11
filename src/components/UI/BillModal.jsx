@@ -24,6 +24,8 @@ export default function BillModal({
   totalDiscounted,
   offerLabel,
   offerDiscount,
+  // Part of offerDiscount that comes from 2-book combos (shown as its own row).
+  comboDiscount = 0,
   // Unlocked cart reward the shopper hasn't applied yet → one-tap Apply row.
   unlockedOffer = null,
   onApplyOffer,
@@ -58,6 +60,8 @@ export default function BillModal({
     walletTopUp = S.walletTopUp || 0;
     hideDeliveryCharges = false;
   }
+  // A coupon at checkout switches offers (incl. the combo) off.
+  const comboShown = S?.couponDiscount > 0 ? 0 : Math.min(comboDiscount || 0, offerDiscount || 0);
   useTrackView(
     EVENTS.BILL_MODAL_VIEWED,
     {
@@ -193,10 +197,16 @@ export default function BillModal({
             <span>TheBookX discount</span>
             <span className="green">− ₹{itemSaving}</span>
           </div>
-          {offerDiscount > 0 && (
+          {comboShown > 0 && (
+            <div className="bill-row">
+              <span>★ Combo discount (10%)</span>
+              <span className="green">− ₹{comboShown}</span>
+            </div>
+          )}
+          {offerDiscount - comboShown > 0 && (
             <div className="bill-row">
               <span>Achievement discount</span>
-              <span className="green">− ₹{offerDiscount}</span>
+              <span className="green">− ₹{offerDiscount - comboShown}</span>
             </div>
           )}
           {S?.couponDiscount > 0 && (

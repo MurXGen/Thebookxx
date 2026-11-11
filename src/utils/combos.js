@@ -937,25 +937,34 @@ export const CLARITY_ID = "bk-002";
 export const CLARITY_COMBO_PCT = 10;
 export const CLARITY_PARTNER_IDS = [
   "bk-005", // Atomic Habits
+  "bk-391", // Ikigai
   "bk-006", // The Psychology of Money
-  "bk-007", // Surrounded by Idiots
+  "bk-438", // Rich Dad Poor Dad
   "bk-010", // The Subtle Art of Not Giving a F*ck
-  "bk-012", // The Laws of Human Nature
-  "bk-013", // The 48 Laws of Power
-  "bk-014", // Diary of a CEO
-  "bk-036", // The 5 Types of Wealth
-  "bk-037", // The Let Them Theory
-  "bk-038", // The First 90 Days
-  "bk-065", // Zero to One
-  "bk-067", // The Lean Startup
-  "bk-068", // The Hard Thing About Hard Things
-  "bk-069", // Blue Ocean Strategy
-  "bk-095", // Make Epic Money
-  "bk-096", // Do Epic Shit
-  "bk-097", // Get Epic Shit Done
-  "bk-130", // The Almanack of Naval Ravikant
-  "bk-133", // Everything I Know About Love
-  "bk-517", // Thinking, Fast and Slow
+];
+
+// Other 2-book combos: two bestsellers that read well together, 10% off.
+export const BOOK_PAIRS = [
+  ["bk-005", "bk-299"], // Atomic Habits + Deep Work
+  ["bk-391", "bk-305"], // Ikigai + The Daily Stoic
+  ["bk-006", "bk-438"], // The Psychology of Money + Rich Dad Poor Dad
+  ["bk-013", "bk-012"], // The 48 Laws of Power + The Laws of Human Nature
+  ["bk-065", "bk-067"], // Zero to One + The Lean Startup
+  ["bk-146", "bk-354"], // Can't Hurt Me + Never Finished
+  ["bk-009", "bk-150"], // The Courage to Be Disliked + The Courage to Be Happy
+  ["bk-031", "bk-032"], // Don't Believe Everything You Think + The Art of Not Overthinking
+  ["bk-010", "bk-366"], // The Subtle Art + Everything Is F*cked
+  ["bk-275", "bk-346"], // The Intelligent Investor + Coffee Can Investing
+  ["bk-517", "bk-151"], // Thinking, Fast and Slow + Mindset
+  ["bk-096", "bk-097"], // Do Epic Shit + Get Epic Shit Done
+  ["bk-167", "bk-308"], // The One Thing + The 7 Habits
+  ["bk-422", "bk-007"], // Never Split the Difference + Surrounded by Idiots
+  ["bk-213", "bk-161"], // Wings of Fire + Ignited Minds
+  ["bk-140", "bk-382"], // The Secret + Good Vibes, Good Life
+  ["bk-014", "bk-130"], // Diary of a CEO + The Almanack of Naval Ravikant
+  ["bk-068", "bk-069"], // The Hard Thing About Hard Things + Blue Ocean Strategy
+  ["bk-244", "bk-147"], // Dopamine Detox + Master Your Emotions
+  ["bk-001", "bk-036"], // The Art of Spending Money + The 5 Types of Wealth
 ];
 
 const comboSlugify = (t) =>
@@ -969,41 +978,83 @@ const comboSlugify = (t) =>
 export const clarityPairPrice = (sum) => Math.round(sum * (1 - CLARITY_COMBO_PCT / 100));
 
 const CLARITY = bookById[CLARITY_ID];
+const shortName = (n) => String(n || "").split(":")[0].trim();
+const pairTheme = (names) => {
+  const n = names.join(" ");
+  if (/money|wealth|naval|rich dad|investor|investing/i.test(n)) return "build wealth";
+  if (/startup|zero|hard thing|blue ocean|90 days|ceo/i.test(n)) return "build something big";
+  if (/power|human nature|idiots|never split|art of war/i.test(n)) return "read people better";
+  if (/stoic|secret|vibes|overthinking|believe everything|disliked|happy|dopamine|emotions|ikigai/i.test(n)) return "quiet the noise in your head";
+  if (/wings of fire|ignited|hurt me|never finished|mindset|thinking/i.test(n)) return "build an unbreakable mindset";
+  return "level up every day";
+};
+
+// One 10%-off pair combo from two book ids.
+function makePair(aId, bId, { id, category, clarity }) {
+  const A = bookById[aId];
+  const B = bookById[bId];
+  if (!A || !B) return null;
+  const an = shortName(A.name);
+  const bn = shortName(B.name);
+  const sum = (A.discountedPrice || 0) + (B.discountedPrice || 0);
+  const price = clarityPairPrice(sum);
+  const by = (x) => (x.author ? ` by ${x.author}` : "");
+  return {
+    id,
+    slug: `${comboSlugify(an)}-and-${comboSlugify(bn)}-combo`,
+    title: `${an} + ${bn}`,
+    tagline: `${clarity ? "Think clearly, then" : "Two bestsellers to"} ${pairTheme([A.name, B.name])} — 10% off together.`,
+    category,
+    bookIds: [aId, bId],
+    discountPct: CLARITY_COMBO_PCT,
+    featured: true,
+    seoTitle: `${an} + ${bn} Combo: ₹${price}, Save 10%`,
+    seoDescription: `Buy ${an}${by(A)} and ${bn}${by(B)} together for ₹${price} (₹${sum - price} off, 10% off both books) on TheBookX. Genuine paperbacks, Cash on Delivery, free delivery from ₹199 and 7-day replacement across India.`,
+  };
+}
+
 export const clarityCombos = CLARITY
-  ? CLARITY_PARTNER_IDS.map((pid, i) => bookById[pid])
-      .filter(Boolean)
-      .map((b, i) => {
-        // i = position in the partner list
-        const sum = (CLARITY.discountedPrice || 0) + (b.discountedPrice || 0);
-        const price = clarityPairPrice(sum);
-        const name = b.name;
-        return {
-          id: `combo-aoc-${String(i + 1).padStart(2, "0")}`,
-          slug: `the-art-of-clarity-and-${comboSlugify(b.name)}-combo`,
-          title: `The Art of Clarity + ${name}`,
-          tagline: `Think clearly, then ${
-            /money|wealth|naval|epic money/i.test(b.name)
-              ? "build wealth"
-              : /startup|zero|hard thing|blue ocean|90 days|ceo/i.test(b.name)
-                ? "build something big"
-                : /power|human nature|idiots/i.test(b.name)
-                  ? "read people better"
-                  : "level up every day"
-          } — two bestsellers, 10% off together.`,
-          category: "Art of Clarity Combos",
-          bookIds: [CLARITY_ID, b.id],
-          discountPct: CLARITY_COMBO_PCT,
-          featured: true,
-          seoTitle: `The Art of Clarity + ${name} Combo: ₹${price}, Save 10%`,
-          seoDescription: `Buy The Art of Clarity by Murthy Thevar and ${name}${
-            b.author ? ` by ${b.author}` : ""
-          } together for ₹${price} (₹${sum - price} off, 10% off both books) on TheBookX. Genuine paperbacks, Cash on Delivery, free delivery from ₹199 and 7-day replacement across India.`,
-        };
-      })
+  ? CLARITY_PARTNER_IDS.map((pid, i) =>
+      makePair(CLARITY_ID, pid, {
+        id: `combo-aoc-${String(i + 1).padStart(2, "0")}`,
+        category: "Art of Clarity Combos",
+        clarity: true,
+      }),
+    ).filter(Boolean)
   : [];
 
-// Clarity combos first (featured), then the curated bundles.
-combos.unshift(...clarityCombos);
+export const bookPairCombos = BOOK_PAIRS.map(([a, b], i) =>
+  makePair(a, b, { id: `combo-pair-${String(i + 1).padStart(2, "0")}`, category: "2-Book Combos" }),
+).filter(Boolean);
+
+// Every 10%-off two-book combo, mixed: the other pairs are shuffled with a
+// fixed seed (so server and browser render the same order and Google sees a
+// stable page) and one Art of Clarity combo is dropped in every few cards.
+const seededShuffle = (arr, seed = 7) => {
+  const a = [...arr];
+  let x = seed;
+  const rnd = () => ((x = (x * 9301 + 49297) % 233280) / 233280);
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+const CLARITY_SLOTS = [0, 4, 9, 13, 18]; // positions in the mixed pair list
+function mixPairs(clarity, others) {
+  const rest = seededShuffle(others);
+  const out = [];
+  let ci = 0;
+  while (rest.length || ci < clarity.length) {
+    if (ci < clarity.length && (CLARITY_SLOTS[ci] <= out.length || !rest.length)) out.push(clarity[ci++]);
+    else out.push(rest.shift());
+  }
+  return out;
+}
+export const pairCombos = mixPairs(clarityCombos, bookPairCombos);
+
+// Order: the mixed 2-book combos, then the curated 3–4 book bundles.
+combos.unshift(...pairCombos);
 
 export const getComboBooks = (combo) =>
   (combo?.bookIds || []).map((id) => bookById[id]).filter(Boolean);
@@ -1028,27 +1079,48 @@ export const getComboPricing = (combo) => {
   };
 };
 
-// Bag discount: each copy of The Art of Clarity pairs with one partner book
-// (priciest first) and the pair gets 10% off — same maths as the combo price.
-export const clarityComboDiscount = (cartBooks = []) => {
-  const clarityQty = cartBooks
-    .filter((b) => b.id === CLARITY_ID && Number(b.discountedPrice) > 1)
-    .reduce((n, b) => n + (b.qty || 1), 0);
-  if (!clarityQty) return { discount: 0, pairs: 0 };
-  const clarityPrice =
-    Number(cartBooks.find((b) => b.id === CLARITY_ID)?.discountedPrice) ||
-    Number(CLARITY?.discountedPrice) ||
-    0;
-  const partners = [];
+// Bag discount: whenever both books of a 2-book combo are in the bag, that
+// pair gets 10% off (same maths as the combo price). Each copy counts once;
+// the biggest saving is matched first.
+export const comboPairDiscount = (cartBooks = []) => {
+  const qty = {};
+  const price = {};
   cartBooks.forEach((b) => {
-    if (!CLARITY_PARTNER_IDS.includes(b.id) || !(Number(b.discountedPrice) > 1)) return;
-    for (let i = 0; i < (b.qty || 1); i++) partners.push(Number(b.discountedPrice));
+    const p = Number(b.discountedPrice);
+    if (!(p > 1)) return; // ₹1 / free promo copies don't count
+    qty[b.id] = (qty[b.id] || 0) + (b.qty || 1);
+    price[b.id] = p;
   });
-  partners.sort((a, b) => b - a);
-  const used = partners.slice(0, clarityQty);
-  const discount = used.reduce((s, p) => s + (clarityPrice + p - clarityPairPrice(clarityPrice + p)), 0);
-  return { discount, pairs: used.length };
+  const options = pairCombos
+    .filter((c) => c.bookIds.every((id) => qty[id]))
+    .map((c) => {
+      const sum = c.bookIds.reduce((s, id) => s + price[id], 0);
+      return { c, off: sum - clarityPairPrice(sum) };
+    })
+    .sort((x, y) => y.off - x.off);
+  let discount = 0;
+  let pairs = 0;
+  // Per-book share of the saving (split by price) so bag rows can show it.
+  const perBook = {};
+  for (const { c, off } of options) {
+    while (c.bookIds.every((id) => qty[id] > 0)) {
+      c.bookIds.forEach((id) => (qty[id] -= 1));
+      discount += off;
+      pairs += 1;
+      const [a, b] = c.bookIds;
+      const offA = Math.round((off * price[a]) / (price[a] + price[b]));
+      [[a, b, offA], [b, a, off - offA]].forEach(([id, other, share]) => {
+        const e = (perBook[id] ||= { off: 0, partners: [], slug: c.slug, pct: c.discountPct });
+        e.off += share;
+        const nm = shortName(bookById[other]?.name);
+        if (nm && !e.partners.includes(nm)) e.partners.push(nm);
+      });
+    }
+  }
+  return { discount, pairs, perBook };
 };
+// Back-compat name.
+export const clarityComboDiscount = comboPairDiscount;
 
 export const getComboBySlug = (slug) =>
   combos.find((c) => c.slug === slug) || null;

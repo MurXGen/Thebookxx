@@ -188,7 +188,7 @@ export default function ComboDetailClient({ combo, related = [], faqs = [], abou
 
       {related.length > 0 && (
         <section className="cd-sec">
-          <h2>{isPair ? "More Art of Clarity combos" : "More combos like this"}</h2>
+          <h2>{isPair ? "More 2-book combos" : "More combos like this"}</h2>
           <div className="cd-related">
             {related.map((c) => (
               <ComboCard key={c.id} combo={c} />

@@ -11,8 +11,19 @@ import { PackagePlus, ArrowRight, ChevronRight } from "lucide-react";
  * arrows/scroll behaviour as the ₹1 books section). Shows a preview slice;
  * the full catalogue lives at /combos.
  */
+// Homepage order: the mixed 2-book combos (Art of Clarity ones spread
+// through them), then the curated 3–4 book bundles.
+
+function homepageCombos() {
+  // 2-book combos in the shared mixed order (Art of Clarity ones spread
+  // through it), then the curated bundles.
+  const pairs = combos.filter((c) => c.discountPct);
+  const curated = combos.filter((c) => !c.discountPct);
+  return [...pairs, ...curated];
+}
+
 export default function ComboDeals({ limit = 14 }) {
-  const preview = combos.slice(0, limit);
+  const preview = homepageCombos().slice(0, limit);
 
   return (
     <section className="combo-section section-1200">
@@ -23,8 +34,8 @@ export default function ComboDeals({ limit = 14 }) {
           </span>
           <h2 className="combo-heading">Buy more, save more — book combos</h2>
           <p className="combo-sub">
-            The Art of Clarity + a top bestseller at 10% off, plus handpicked
-            bundles. One tap adds the whole set to your bag.
+            Two bestsellers together at 10% off, plus handpicked bundles. One
+            tap adds the whole set to your bag.
           </p>
         </div>
         <Link href="/combos" className="combo-viewall">

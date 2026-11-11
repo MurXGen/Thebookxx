@@ -95,12 +95,12 @@ export default function ComboCard({ combo }) {
       </h3>
       <p className="combo-tagline">{combo.tagline}</p>
 
+      {/* Fixed 4-row list so every card lines up; extra books roll into "+N more". */}
       <ul className="combo-books">
-        {items.map((b) => (
-          <li key={b.id} title={b.name}>
-            {b.name}
-          </li>
+        {items.slice(0, items.length > 4 ? 3 : 4).map((b) => (
+          <li key={b.id}>{b.name}</li>
         ))}
+        {items.length > 4 && <li className="combo-books-more">+{items.length - 3} more</li>}
       </ul>
 
       <div className="combo-price-row">

@@ -4,7 +4,7 @@ import { books } from "@/utils/book";
 import { notFound, redirect } from "next/navigation";
 import BookDetailsModal from "@/components/BookDeatilsModel";
 import BookAvailabilityGate from "@/components/BookAvailabilityGate";
-import { clarityCombos, getComboPricing, CLARITY_ID } from "@/utils/combos";
+import { pairCombos, getComboPricing, CLARITY_ID } from "@/utils/combos";
 import {
   SITE,
   FREE_DELIVERY_MIN,
@@ -196,17 +196,14 @@ export default async function BookDetailsPage({ params }) {
       {/* Buy-together links to The Art of Clarity combos (internal links for
           the combo pages; shown on Clarity and on each partner book). */}
       {(() => {
-        const list =
-          book.id === CLARITY_ID
-            ? clarityCombos
-            : clarityCombos.filter((c) => c.bookIds.includes(book.id));
+        const list = pairCombos.filter((c) => c.bookIds.includes(book.id));
         if (!list.length) return null;
         return (
           <section className="bd-combo-links" aria-label="Buy together and save">
             <h2>
               {book.id === CLARITY_ID
                 ? "Buy The Art of Clarity together & save 10%"
-                : `Buy ${book.name} with The Art of Clarity & save 10%`}
+                : `Buy ${book.name} as a combo & save 10%`}
             </h2>
             <ul>
               {list.map((c) => {

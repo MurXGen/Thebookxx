@@ -20,7 +20,7 @@ function slugify(text) {
  * [cover] | title / category / price / qty-stepper
  * Used only on the Bag page (recommendations still use BookCard).
  */
-export default function CartItemRow({ book }) {
+export default function CartItemRow({ book, combo = null }) {
   const { addToCart, decreaseQty, removeFromCart } = useStore();
 
   const qty = book.qty || 0;
@@ -35,7 +35,10 @@ export default function CartItemRow({ book }) {
   // Line totals (per-item subtotal reflects quantity)
   const lineNow = book.discountedPrice * qty;
   const lineWas = book.originalPrice * qty;
-  const lineSave = lineWas - lineNow;
+  // 2-book combo saving for this book (its share of the pair's 10% off).
+  const comboOff = combo?.off > 0 ? combo.off : 0;
+  const linePay = lineNow - comboOff;
+  const lineSave = lineWas - linePay;
 
   const handlePlus = () => {
     // ₹1 books are limited to a single copy per cart.
@@ -71,6 +74,14 @@ export default function CartItemRow({ book }) {
           <Link href={bookUrl} className="cart-row-title">
             {book.name}
           </Link>
+
+          {comboOff > 0 && (
+            <Link href={`/combos/${combo.slug}`} className="cart-row-combo">
+              <span className="cart-row-combo-star" aria-hidden="true">★</span>
+              Combo {combo.pct || 10}% off
+              <span className="cart-row-combo-with">with {combo.partners.join(", ")}</span>
+            </Link>
+          )}
 
           {categoryLabel &&
             (categoryUrl ? (
@@ -108,12 +119,15 @@ export default function CartItemRow({ book }) {
         {/* RIGHT: line price (top, aligned with title) */}
         <div className="cart-row-aside">
           <div className="cart-row-aside-price">
-            <span className="cart-row-aside-now">₹{lineNow}</span>
-            {lineWas > lineNow && (
+            <span className="cart-row-aside-now">₹{linePay}</span>
+            {comboOff > 0 && <span className="cart-row-aside-was">₹{lineNow}</span>}
+            {!comboOff && lineWas > lineNow && (
               <span className="cart-row-aside-was">₹{lineWas}</span>
             )}
-            {lineSave > 0 && (
-              <span className="cart-row-aside-save">Save ₹{lineSave}</span>
+            {comboOff > 0 ? (
+              <span className="cart-row-aside-combo">−₹{comboOff} combo</span>
+            ) : (
+              lineSave > 0 && <span className="cart-row-aside-save">Save ₹{lineSave}</span>
             )}
           </div>
         </div>

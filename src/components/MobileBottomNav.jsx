@@ -20,7 +20,6 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [orderCount, setOrderCount] = useState(0);
-  const [hidden, setHidden] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchMounted, setSearchMounted] = useState(false);
   const openSearch = () => {
@@ -29,31 +28,8 @@ export default function MobileBottomNav() {
     setSearchOpen(true);
   };
 
-  // Slide the bottom nav DOWN when scrolling down, reveal it when scrolling up —
-  // mirrors the navbar's hide-on-scroll behaviour.
-  useEffect(() => {
-    let last = window.scrollY;
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(() => {
-        const y = window.scrollY;
-        const delta = y - last;
-        if (y < 80) {
-          setHidden(false); // always show near the top
-        } else if (delta > 6) {
-          setHidden(true); // scrolling down → hide
-        } else if (delta < -6) {
-          setHidden(false); // scrolling up → show
-        }
-        last = y;
-        ticking = false;
-      });
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  // The bottom nav (and the cart bar / offer strip stacked on it) stays put
+  // while scrolling — only the top navbar hides on scroll.
 
   // Order count comes from the cached profile snapshot (saved phone). Read it on
   // mount and whenever the tab regains focus, so it reflects new orders.
@@ -91,13 +67,6 @@ export default function MobileBottomNav() {
     return () => document.body.classList.remove("has-bottom-nav");
   }, []);
 
-  // When the nav slides away, drop the floating bars down to the screen bottom
-  // (no blank gap) — the CSS handles the smooth slide.
-  useEffect(() => {
-    document.body.classList.toggle("bottom-nav-hidden", hidden);
-    return () => document.body.classList.remove("bottom-nav-hidden");
-  }, [hidden]);
-
   const tabs = [
     { key: "home", label: "Home", Icon: Home, href: "/" },
     { key: "categories", label: "Categories", Icon: LayoutGrid, href: "/books" },
@@ -117,7 +86,7 @@ export default function MobileBottomNav() {
   return (
     <>
     <nav
-      className={`tbx-bottomnav${hidden ? " tbx-bn-hidden" : ""}`}
+      className="tbx-bottomnav"
       aria-label="Primary"
     >
       {tabs.flatMap(({ key, label, Icon, href, badge }, idx) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { FaWhatsapp } from "react-icons/fa";
 import {
   Layers,
@@ -24,29 +24,31 @@ import {
 const SUPPORT_WHATSAPP = "917710892108";
 const OPEN_MS = 6500; // how long the index stays open before folding away
 const PEEK_KEY = "tbx_hs_peeked";
+const PARAM = "section"; // /?section=combos opens the homepage at that section
 
 // Homepage sections, top to bottom. `id` matches the hs-* anchors in page.js;
 // anything not on the page is skipped automatically.
 const SECTIONS = [
-  { id: "hs-top", label: "Top", icon: Home },
-  { id: "hs-reviews", label: "Reader photos", icon: Camera },
-  { id: "hs-categories", label: "Categories", icon: LayoutGrid },
-  { id: "hs-rail-trending", label: "Trending", icon: TrendingUp },
-  { id: "hs-rail-rupee", label: "₹1 books", icon: Tag },
-  { id: "hs-combos", label: "Combos", icon: PackagePlus },
-  { id: "hs-rail-book-sets", label: "Box sets", icon: Library },
-  { id: "hs-quickreads", label: "QuickReads", icon: Zap },
-  { id: "hs-rail-fiction", label: "Fiction", icon: BookOpen },
-  { id: "hs-rail-bestsellers", label: "Bestsellers", icon: Award },
-  { id: "hs-rail-new", label: "New arrivals", icon: Sparkles },
-  { id: "hs-rail-children", label: "Kids & stories", icon: Baby },
-  { id: "hs-allbooks", label: "All books", icon: BookMarked },
+  { id: "hs-top", slug: null, label: "Top", icon: Home },
+  { id: "hs-reviews", slug: "reader-photos", label: "Reader photos", icon: Camera },
+  { id: "hs-categories", slug: "categories", label: "Categories", icon: LayoutGrid },
+  { id: "hs-rail-trending", slug: "trending", label: "Trending", icon: TrendingUp },
+  { id: "hs-rail-rupee", slug: "1-rupee-books", label: "₹1 books", icon: Tag },
+  { id: "hs-combos", slug: "combos", label: "Combos", icon: PackagePlus },
+  { id: "hs-rail-book-sets", slug: "box-sets", label: "Box sets", icon: Library },
+  { id: "hs-quickreads", slug: "quickreads", label: "QuickReads", icon: Zap },
+  { id: "hs-rail-fiction", slug: "fiction", label: "Fiction", icon: BookOpen },
+  { id: "hs-rail-bestsellers", slug: "bestsellers", label: "Bestsellers", icon: Award },
+  { id: "hs-rail-new", slug: "new-arrivals", label: "New arrivals", icon: Sparkles },
+  { id: "hs-rail-children", slug: "kids", label: "Kids & stories", icon: Baby },
+  { id: "hs-allbooks", slug: "all-books", label: "All books", icon: BookMarked },
 ];
 
 /**
  * How far up from the bottom of the screen the dock has to sit to clear the
  * cart bar / offer strip / bottom nav — whichever is showing right now.
- * Polls lightly because those bars animate in and out (and hide on scroll).
+ * The bars no longer hide on scroll; this only catches the cart bar appearing /
+ * disappearing as the bag changes, so a gentle poll is enough.
  */
 function useBottomClearance() {
   const [clear, setClear] = useState(0);
@@ -62,10 +64,18 @@ function useBottomClearance() {
         m = Math.max(m, window.innerHeight - r.top);
       });
       setClear((c) => (Math.abs(c - m) > 1 ? m : c));
-      t = setTimeout(calc, 160);
+      t = setTimeout(calc, 600);
+    };
+    const onResize = () => {
+      clearTimeout(t);
+      calc();
     };
     calc();
-    return () => clearTimeout(t);
+    window.addEventListener("resize", onResize);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
   return clear;
 }
@@ -121,36 +131,121 @@ export default function HomeDock() {
     return () => clearTimeout(t);
   }, []);
 
+  // Continuous scroll position along the rail (0–100%), sprung so the fill
+  // glides between stops instead of jumping. Written straight to the DOM by
+  // framer-motion — no React re-render per scroll frame.
+  const progTarget = useMotionValue(0);
+  const prog = useSpring(progTarget, { stiffness: 260, damping: 34, mass: 0.6 });
+  const progScale = useTransform(prog, (v) => Math.max(0, Math.min(1, v / 100)));
+  const thumbTop = useTransform(prog, (v) => `${Math.max(0, Math.min(100, v))}%`);
+  const scrollingRef = useRef(false);
+  const deepLinking = useRef(false); // true while opening /?section=… (don't rewrite the URL mid-flight)
+
   // Track the section in view + "is scrolling" (rail brightens while you scroll).
   useEffect(() => {
     if (!sections.length) return;
     let raf = 0;
     let idle;
+    const n = sections.length;
     const measure = () => {
       raf = 0;
       const line = navOffset() + window.innerHeight * 0.25;
-      let idx = 0;
-      sections.forEach((s, i) => {
+      const tops = sections.map((s, i) => {
+        if (i === 0) return -Infinity;
         const el = document.getElementById(s.id);
-        if (el && el.getBoundingClientRect().top <= line) idx = i;
+        return el ? el.getBoundingClientRect().top : Infinity;
       });
-      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) idx = sections.length - 1;
+      let idx = 0;
+      tops.forEach((t, i) => {
+        if (t <= line) idx = i;
+      });
+      let frac = 0;
+      const atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      if (atEnd) {
+        idx = n - 1;
+      } else if (idx < n - 1) {
+        const from = idx === 0 ? line - window.scrollY : tops[idx]; // section 0 starts at the page top
+        const to = tops[idx + 1];
+        if (Number.isFinite(to) && to > from) frac = Math.min(1, Math.max(0, (line - from) / (to - from)));
+      }
       setActive(idx);
+      if (!drag.current.on && n > 1) progTarget.set(((idx + frac) / (n - 1)) * 100);
     };
     const onScroll = () => {
-      setScrolling(true);
+      if (!scrollingRef.current) {
+        scrollingRef.current = true;
+        setScrolling(true);
+      }
       clearTimeout(idle);
-      idle = setTimeout(() => setScrolling(false), 1100);
+      idle = setTimeout(() => {
+        scrollingRef.current = false;
+        setScrolling(false);
+      }, 1100);
       if (!raf) raf = requestAnimationFrame(measure);
     };
     raf = requestAnimationFrame(measure);
+    const onResize = () => {
+      if (!raf) raf = requestAnimationFrame(measure);
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
       clearTimeout(idle);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [sections]);
+  }, [sections, progTarget]);
+
+  // Keep ?section=… in the address bar in step with the section in view, so the
+  // link can be shared / reopened at the same spot. replaceState: no history
+  // spam, no re-render. Debounced so a fast fling doesn't write every stop.
+  useEffect(() => {
+    if (!sections.length) return;
+    const t = setTimeout(() => {
+      if (deepLinking.current) return;
+      try {
+        const url = new URL(window.location.href);
+        const slug = sections[active]?.slug;
+        const cur = url.searchParams.get(PARAM);
+        if ((slug || null) === cur) return;
+        if (slug) url.searchParams.set(PARAM, slug);
+        else url.searchParams.delete(PARAM);
+        window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+      } catch {}
+    }, 450);
+    return () => clearTimeout(t);
+  }, [active, sections]);
+
+  // Opened with /?section=combos → glide to that section once it's on the page.
+  const deepLinked = useRef(null);
+  const hasSections = sections.length > 0;
+  useEffect(() => {
+    if (!hasSections || deepLinked.current !== null) return;
+    let slug = null;
+    try {
+      slug = new URL(window.location.href).searchParams.get(PARAM);
+    } catch {}
+    const target = slug && SECTIONS.find((s) => s.slug === slug.toLowerCase());
+    deepLinked.current = !!target;
+    if (!target) return;
+    deepLinking.current = true;
+    let tries = 0;
+    let t;
+    const go = () => {
+      if (document.getElementById(target.id)) {
+        scrollToSection(target.id, "smooth");
+        // let the smooth scroll + settle passes finish before the URL follows scrolling again
+        t = setTimeout(() => (deepLinking.current = false), 2200);
+      } else if (tries++ < 20) {
+        t = setTimeout(go, 200);
+      } else {
+        deepLinking.current = false;
+      }
+    };
+    t = setTimeout(go, 350); // let the first paint / scroll restoration land
+    return () => clearTimeout(t);
+  }, [hasSections]);
 
   // Briefly name the section whenever a new one comes into view.
   useEffect(() => {
@@ -198,6 +293,7 @@ export default function HomeDock() {
     } catch {}
     if (seen) return;
     const t = setTimeout(() => {
+      if (deepLinked.current) return; // came for a specific section — don't cover it
       openFor();
       try {
         sessionStorage.setItem(PEEK_KEY, "1");
@@ -231,6 +327,7 @@ export default function HomeDock() {
     clearTimeout(closeTimer.current);
     const i = idxFromY(e.clientY);
     setDragIdx(i);
+    progTarget.set(pos[i] ?? 0);
   };
   const onPointerMove = (e) => {
     if (!drag.current.on) return;
@@ -238,6 +335,7 @@ export default function HomeDock() {
     const i = idxFromY(e.clientY);
     if (i !== dragIdx) {
       setDragIdx(i);
+      progTarget.set(pos[i] ?? 0);
       if (drag.current.moved) scrollToSection(sections[i].id, "instant");
       if (navigator.vibrate) {
         try {
@@ -321,13 +419,8 @@ export default function HomeDock() {
           }}
         >
           <span className="hd-line" aria-hidden="true" />
-          <motion.span
-            className="hd-progress"
-            aria-hidden="true"
-            initial={false}
-            animate={{ height: `${pos[hi] ?? 0}%` }}
-            transition={{ type: "spring", stiffness: 320, damping: 32 }}
-          />
+          <motion.span className="hd-progress" aria-hidden="true" style={{ scaleY: progScale }} />
+          <motion.span className="hd-thumb" aria-hidden="true" style={{ top: thumbTop }} />
           {sections.map((s, i) => {
             const Icon = s.icon;
             const on = i === hi;

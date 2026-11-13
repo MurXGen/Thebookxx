@@ -4,6 +4,388 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "national-library-week-2026-14-20-november-books-to-read-india": {
+    "id": "blog-107",
+    "title": "National Library Week 2026 (14 to 20 November): How to Celebrate Libraries and Books to Read in India",
+    "slug": "national-library-week-2026-14-20-november-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-13",
+    "lastModified": "2026-11-13",
+    "excerpt": "National Library Week 2026 runs 14 to 20 November. What it is, why libraries still matter in India, ideas to celebrate, and books to start your own shelf.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Every year from 14 to 20 November, schools, colleges and public libraries across India mark National Library Week. You will see book exhibitions in college reading rooms, quiz contests run by school Reader's Clubs, special assemblies on the joy of reading, and librarians nudging students towards shelves they have walked past all year. In 2026 the week begins on Saturday, 14 November, the same day as Children's Day, which makes it a natural moment to get a child, or yourself, back into the reading habit."
+      },
+      {
+        "type": "paragraph",
+        "content": "This guide explains what National Library Week is, why libraries still matter in a country of phones and short videos, simple ways to celebrate at home, school or work, and a shortlist of books that are about libraries, reading and learning, so you can start (or restart) a library of your own."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "National Library Week 2026 at a glance",
+        "content": "Dates: Saturday 14 November to Friday 20 November 2026. Observed by: school, college, university and public libraries across India, often led by the library staff and student Reader's Clubs. Purpose: to raise awareness of the role libraries play in learning, promote the pleasure of reading, and introduce students and the public to library services. Typical activities: book exhibitions, reading sessions, quizzes, essay and poster competitions, and library orientation for new members."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What is National Library Week?"
+      },
+      {
+        "type": "paragraph",
+        "content": "National Library Week is an annual observance that Indian libraries have kept alive for decades. Library bodies credit the public library movement, and pioneers such as Ayyanki Venkata Ramanaiah, often called the architect of the public library movement in India, for building the idea that a library is a public good and not a private collection. The week is not a government holiday. It lives because librarians, teachers and readers choose to celebrate it, which is exactly why it is worth joining in."
+      },
+      {
+        "type": "paragraph",
+        "content": "It is also a good time to remember S. R. Ranganathan, the father of library science in India, whose Five Laws of Library Science (1931) still read like a manifesto for anyone who loves books: books are for use; every reader his or her book; every book its reader; save the time of the reader; and a library is a growing organism."
+      },
+      {
+        "type": "blockquote",
+        "content": "Books are for use. Every reader his or her book. Every book its reader. Save the time of the reader. The library is a growing organism. — S. R. Ranganathan, The Five Laws of Library Science"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why libraries still matter in 2026"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Access for everyone. A library puts the same shelf in front of a student who cannot afford books and one who can. In many towns, the school or college library is still the only place a child can browse hundreds of titles for free.",
+          "Deep attention. A reading room is one of the last quiet public spaces. Sitting with a long book for an hour, without notifications, is a skill, and libraries help us practise it.",
+          "Discovery you cannot get from an algorithm. Browsing a shelf exposes you to books you would never have searched for. That accidental find is often the book that changes you.",
+          "Community. Reading circles, book clubs and library events turn reading from a solitary habit into a shared one, which is the easiest way to keep it going."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books about libraries, bookshops and the love of reading"
+      },
+      {
+        "type": "paragraph",
+        "content": "Start the week with stories that celebrate books themselves. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig imagines a library between life and death where every book is a life you could have lived. It is the perfect gateway read for someone who says they do not have time for novels."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you love cosy, slow fiction, the bookshop novels from East Asia have become a genre of their own. <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> by Satoshi Yagisawa follows a young woman who heals in a tiny second-hand bookshop in Tokyo's Jimbocho book district, and the story continues in <a href=\"/books/more-days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">More Days at the Morisaki Bookshop</a>. <a href=\"/books/welcome-to-the-hyunam-dong-bookshop\" style=\"color:#fb8500;font-weight:600\">Welcome to the Hyunam-dong Bookshop</a> by Hwang Bo-reum is a gentle Korean novel about a neighbourhood bookshop that becomes a refuge for its regulars. For a lighter mystery set among the shelves, try <a href=\"/books/murder-at-the-bookstore\" style=\"color:#fb8500;font-weight:600\">Murder at the Bookstore</a>."
+      },
+      {
+        "type": "paragraph",
+        "content": "Closer to home, <a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> by Sudha Murty is a collection of short, warm stories, and its title story about a grandmother who learns to read in her sixties is the best argument for literacy you will ever give a child. Pair it with R. K. Narayan's <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a>, a book that has sat on Indian library shelves for generations."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Classics every library (and home shelf) should have"
+      },
+      {
+        "type": "paragraph",
+        "content": "A good library is built on books people return to. <a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> by Harper Lee and George Orwell's <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> are two novels most of us first met in a school library and still argue about as adults. <a href=\"/books/little-women\" style=\"color:#fb8500;font-weight:600\">Little Women</a> by Louisa May Alcott, with its book-loving Jo March, remains one of the best first classics for young readers, and <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini is a modern classic that many readers say made them fall in love with novels."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-fiction for learners: read like you have a library card"
+      },
+      {
+        "type": "paragraph",
+        "content": "National Library Week is about learning as much as about stories. If you want to get more out of every book you read, begin with <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> by Mortimer J. Adler and Charles Van Doren, the classic guide to reading actively rather than passively. For students and young professionals, A. P. J. Abdul Kalam's <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> shows how a boy from Rameswaram turned borrowed books and steady study into a life of science."
+      },
+      {
+        "type": "paragraph",
+        "content": "Big-idea books are what libraries do best. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari and <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman will change how you see history and your own decisions. To build the habit of reading itself, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear and <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport are practical guides to protecting focused time, and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is the money book most readers wish they had found in their college library."
+      },
+      {
+        "type": "paragraph",
+        "content": "And if your mind feels too cluttered to settle into a book, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical read on cutting through mental noise, deciding what matters and giving your attention to it, which is exactly the state of mind a quiet afternoon in a library creates."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "7 ways to celebrate National Library Week 2026"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Visit your local library and get a membership. Public, school, college and community libraries all count. Ask the librarian what they would recommend; it is the best free advice in town.",
+          "Run a one-book-a-day challenge for the week. Short books, story collections and graphic novels make it doable.",
+          "Start a home library corner for your children. One shelf at their eye level, a lamp and a cushion is enough. Let them choose some of the books.",
+          "Organise a book swap at school, office or in your housing society. Everyone brings two books and leaves with two new ones.",
+          "Gift a book to a school or community library. Many small libraries welcome donations of good-condition children's books and classics.",
+          "Catalogue your own shelf. Sort it, note what you have not read, and pick three books to finish this month.",
+          "Read aloud. Ten minutes of reading aloud to a child, a grandparent or a friend is the oldest library programme in the world."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Building your own shelf? Start for less",
+        "content": "TheBookX has books from ₹1 with free delivery and Cash on Delivery across India, so you can stock a home or classroom library without overspending. Gifting a book to a young reader for Children's Day? Add gift wrapping for just ₹25."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A note for teachers and school librarians"
+      },
+      {
+        "type": "paragraph",
+        "content": "If you are planning activities for the week, keep them reader-first. A display of 'books our teachers loved as children', a silent reading period across the whole school, or a corner where students write one-line recommendations on cards tucked into books will do more for the reading culture than a long lecture. Let students choose, and let them abandon a book they do not enjoy. Ranganathan's second law, every reader his or her book, is the best activity guide there is."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Libraries have outlasted every prediction of their death because they offer something no screen can: time, quiet and a shelf full of other minds. This National Library Week, give yourself an hour with a book you chose by wandering, not scrolling. Happy reading."
+      }
+    ],
+    "coverImage": "/blogs/national-library-week-2026-14-20-november-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/national-library-week-2026-14-20-november-books-to-read-india.jpeg",
+        "alt": "Young woman reading a book between tall wooden library shelves in warm afternoon light during National Library Week",
+        "caption": "National Library Week 2026 runs from 14 to 20 November: a good week to rediscover your local library.",
+        "category": "Reading Culture"
+      }
+    ],
+    "keywords": [
+      "National Library Week 2026",
+      "National Library Week India",
+      "National Library Week 14 to 20 November",
+      "library week activities for schools",
+      "books about libraries",
+      "books to read during library week",
+      "S R Ranganathan five laws",
+      "how to build a home library India",
+      "reading habit books India"
+    ],
+    "categories": [
+      "Reading Culture",
+      "Education",
+      "Book Recommendations"
+    ],
+    "faqs": [
+      {
+        "question": "When is National Library Week 2026 in India?",
+        "answer": "National Library Week is observed every year from 14 to 20 November. In 2026 it runs from Saturday, 14 November to Friday, 20 November, beginning on the same day as Children's Day."
+      },
+      {
+        "question": "Why is National Library Week celebrated?",
+        "answer": "It raises awareness of the role libraries play in learning and access to knowledge, promotes the pleasure of reading, and introduces students and the public to library services. Schools, colleges and public libraries mark it with book exhibitions, quizzes, reading sessions and competitions."
+      },
+      {
+        "question": "What are S. R. Ranganathan's Five Laws of Library Science?",
+        "answer": "Published in 1931, they are: books are for use; every reader his or her book; every book its reader; save the time of the reader; and the library is a growing organism. Ranganathan is regarded as the father of library science in India."
+      },
+      {
+        "question": "What are some good books to read during National Library Week?",
+        "answer": "For fiction about books and reading, try The Midnight Library, Days at the Morisaki Bookshop and Welcome to the Hyunam-dong Bookshop. For learners, How to Read a Book, Wings of Fire, Atomic Habits and The Art of Clarity are practical picks. All are available on TheBookX with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
+  "goodreads-choice-awards-2026-opening-round-nominees-books-to-read-india": {
+    "id": "blog-106",
+    "title": "Goodreads Choice Awards 2026: Opening Round Nominees, Voting Dates and Books to Read in India",
+    "slug": "goodreads-choice-awards-2026-opening-round-nominees-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-12",
+    "lastModified": "2026-11-12",
+    "excerpt": "Goodreads Choice Awards 2026 voting is open until 22 November. The 15 categories, the big nominees, key dates, and the books to read in India while you vote.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The Goodreads Choice Awards are the one big book prize where judges do not decide anything. Readers do. Voting for the 2026 edition opened on Tuesday, 10 November, and for the next few weeks your feed will be full of people arguing about whether a Freida McFadden thriller deserves to beat a Liane Moriarty, or whether Matt Haig can win again with a train instead of a library."
+      },
+      {
+        "type": "paragraph",
+        "content": "This guide covers what Indian readers need to know: how the voting works and when each round closes, the categories and the most talked-about nominees, and, most usefully, which books by this year's nominated authors you can actually pick up now. Many of the 2026 nominees are brand-new hardbacks that take time to reach Indian shelves at sensible prices. The earlier books by the same writers are already here, and they are often the better place to start."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Goodreads Choice Awards 2026 at a glance",
+        "content": "Opening round: 10 to 22 November 2026. Final round: 24 to 29 November, with the top 10 books in each category. Winners announced: 3 December 2026. Categories: 15, with 20 nominees each in the opening round. Who votes: any registered Goodreads reader, including readers in India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How the Goodreads Choice Awards work"
+      },
+      {
+        "type": "paragraph",
+        "content": "Goodreads builds the opening-round list of 20 books per category from what its members have been reading and rating through the year. Readers then vote, one vote per category, and can also write in a book that was left out. The opening round runs until Sunday, 22 November. The field is then cut to 10 books per category for the final round from 24 to 29 November, and winners are revealed on 3 December."
+      },
+      {
+        "type": "paragraph",
+        "content": "Because the result is a popularity vote, it tells you something different from the Booker or the National Book Awards. It does not say which book is the most accomplished. It says which books readers loved enough to recommend to strangers, and that makes it a very handy shopping list."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The 15 categories for 2026"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Fiction, Historical Fiction, and Debut Novel",
+          "Mystery & Thriller, and Horror",
+          "Romance, and Romantasy",
+          "Fantasy, and Science Fiction",
+          "Young Adult Fiction, and Young Adult Fantasy & Sci-Fi",
+          "Nonfiction, Memoir, and History & Biography",
+          "Audiobook"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The nominees everyone is talking about"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Fiction"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Fiction shortlist is unusually stacked. It includes Ann Patchett's Whistler, Elizabeth Strout's The Things We Never Say, Barbara Kingsolver's Partita, Douglas Stuart's John of John, Jodi Picoult's Hollow Bones, Ben Lerner's Transcription and R.F. Kuang's Taipei Story. John Green is also there with Hollywood, Ending, his first novel for adults. If you have never read Green, <a href=\"/books/the-fault-in-our-stars\" style=\"color:#fb8500;font-weight:600\">The Fault in Our Stars</a> is still the book that explains his huge, loyal readership. Kuang, meanwhile, is one of the most discussed writers of the decade: <a href=\"/books/yellowface\" style=\"color:#fb8500;font-weight:600\">Yellowface</a> is a sharp, very readable satire of publishing, and <a href=\"/books/babel\" style=\"color:#fb8500;font-weight:600\">Babel</a> is the big, ambitious fantasy about language and empire that made her name. Emma Cline, nominated for Switzy, first broke through with <a href=\"/books/the-girls\" style=\"color:#fb8500;font-weight:600\">The Girls</a>."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Mystery & Thriller"
+      },
+      {
+        "type": "paragraph",
+        "content": "Freida McFadden has two books in this one category, Dear Debbie and The Witch, which tells you everything about her hold on thriller readers. She shares the list with Liane Moriarty (Big Little Truths), Lisa Jewell, Lucy Foley, Riley Sager, Alice Feeney, Karin Slaughter and John Grisham. For Indian readers the good news is that McFadden is easy to find here: start with <a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a>, the book that set off the craze, then try <a href=\"/books/dear-debbie\" style=\"color:#fb8500;font-weight:600\">Dear Debbie</a> or <a href=\"/books/the-teacher\" style=\"color:#fb8500;font-weight:600\">The Teacher</a>. If you like a twist that rewrites the whole book, <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> by Alex Michaelides belongs on the same pile."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Fantasy and Romantasy"
+      },
+      {
+        "type": "paragraph",
+        "content": "Matt Haig is nominated in Fantasy for The Midnight Train, alongside Leigh Bardugo's Dead Beat, Kate Quinn's The Astral Library, S.A. Chakraborty, Robert Jackson Bennett and Jim Butcher. Haig's <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> remains one of the most gifted novels in India, and it is the natural way into the new book. Bardugo fans who have not yet read the Grishaverse heist novel <a href=\"/books/six-of-crows\" style=\"color:#fb8500;font-weight:600\">Six of Crows</a> are in for a treat. The Romantasy category, according to Parade's round-up of the nominees, features new work from Sarah J. Maas and Rebecca Yarros, so this is a good moment to begin <a href=\"/books/a-court-of-thorns-and-roses-box-set-5-books\" style=\"color:#fb8500;font-weight:600\">A Court of Thorns and Roses (5-book box set)</a> or <a href=\"/books/fourth-wing\" style=\"color:#fb8500;font-weight:600\">Fourth Wing</a>."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Romance"
+      },
+      {
+        "type": "paragraph",
+        "content": "Romance readers will recognise Abby Jimenez, Carley Fortune, Elle Kennedy and Elsie Silver on the list. Two nominees have big Indian followings: Ana Huang, nominated for King of Gluttony from her Kings of Sin series (start with <a href=\"/books/king-of-wrath\" style=\"color:#fb8500;font-weight:600\">King of Wrath</a>), and Liz Tomforde, nominated for In Her Own League (catch up with the <a href=\"/books/windy-city-series-5-book-series\" style=\"color:#fb8500;font-weight:600\">Windy City Series</a>)."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Nonfiction, Memoir and History"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Nonfiction list includes Andrew Huberman's Protocols, Adam Grant's Vibe and Robert Kolker's The Vanishing Family. Kolker is one of the best narrative non-fiction writers working today, and his earlier <a href=\"/books/lost-girls\" style=\"color:#fb8500;font-weight:600\">Lost Girls</a> shows why. In Memoir, Gisèle Pelicot's A Hymn to Life and Ke Huy Quan's Never Say Die are the headline names, and Jon Meacham's American Struggle leads History & Biography."
+      },
+      {
+        "type": "blockquote",
+        "content": "A reader-voted prize is not a verdict on the best book of the year. It is a map of which books people pressed into their friends' hands. Use it that way."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to use the awards as an Indian reader"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Vote in the categories you actually read. You can skip any category, and a thoughtful vote in two categories beats a random one in fifteen.",
+          "Write in a book you loved that is missing. The opening round allows write-in votes, and that is how deserving books sneak into the final.",
+          "Read backlist first. New 2026 hardbacks often arrive late and at import prices in India. An author's earlier, already-popular paperback tells you whether you will love the new one.",
+          "Keep a list for December. Winners land on 3 December, just in time for year-end gifting and holiday reading.",
+          "Read across categories. If you only read thrillers, try one memoir or one fantasy nominee this month. The awards are a low-risk way to widen your reading."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-fiction to balance the season"
+      },
+      {
+        "type": "paragraph",
+        "content": "Award season can mean a lot of fiction. If you want something to think with, alongside the nominees, these remain the most borrowed and gifted non-fiction books among our readers: <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear, <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel, <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport and <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari."
+      },
+      {
+        "type": "paragraph",
+        "content": "And if a busy year has left your head crowded, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical read on thinking and communicating clearly. It is a good companion for the end of the year, when everyone is making lists, plans and resolutions."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Build your awards reading pile for less",
+        "content": "At TheBookX, books start from ₹1, delivery is free across India, and Cash on Delivery is available everywhere we ship. Planning to gift a nominee in December? Add gift wrapping for just ₹25 at checkout."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Opening-round voting closes on 22 November, so if a book moved you this year, now is the time to say so. We will be watching the final round with you."
+      }
+    ],
+    "coverImage": "/blogs/goodreads-choice-awards-2026-opening-round-nominees-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/goodreads-choice-awards-2026-opening-round-nominees-books-to-read-india.jpeg",
+        "alt": "Young woman reading a novel on a sofa with a stack of books and a cup of tea beside her, choosing her favourite books of 2026",
+        "caption": "Goodreads Choice Awards 2026: readers vote for their favourite books of the year until 22 November.",
+        "category": "Book Awards"
+      }
+    ],
+    "keywords": [
+      "Goodreads Choice Awards 2026",
+      "Goodreads Choice Awards 2026 nominees",
+      "Goodreads Choice Awards 2026 voting dates",
+      "best books of 2026",
+      "Goodreads 2026 opening round",
+      "Freida McFadden Dear Debbie",
+      "Matt Haig The Midnight Train",
+      "books to read India 2026",
+      "buy books online India"
+    ],
+    "categories": [
+      "Book Awards",
+      "Book News",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "When is voting for the Goodreads Choice Awards 2026?",
+        "answer": "The opening round runs from 10 to 22 November 2026. The final round, with the top 10 books per category, runs from 24 to 29 November, and winners are announced on 3 December 2026."
+      },
+      {
+        "question": "Can readers in India vote in the Goodreads Choice Awards?",
+        "answer": "Yes. Any reader with a free Goodreads account can vote, wherever they live. You get one vote per category and can also write in a book that is not on the list during the opening round."
+      },
+      {
+        "question": "How many categories are there in the Goodreads Choice Awards 2026?",
+        "answer": "There are 15 categories, including Fiction, Mystery & Thriller, Romance, Romantasy, Fantasy, Science Fiction, Horror, Debut Novel, Young Adult, Nonfiction, Memoir, History & Biography and Audiobook, each with 20 opening-round nominees."
+      },
+      {
+        "question": "Where can I buy books by Goodreads 2026 nominated authors in India?",
+        "answer": "TheBookX stocks many popular books by this year's nominated authors, such as Freida McFadden, Matt Haig, R.F. Kuang, Leigh Bardugo and Ana Huang, with books from ₹1, free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "booker-prize-2026-winner-m-john-harrison-the-end-of-everything-what-to-read-india": {
     "id": "blog-105",
     "title": "Booker Prize 2026 Winner: M. John Harrison's The End of Everything, and 15 Books to Read Next in India",

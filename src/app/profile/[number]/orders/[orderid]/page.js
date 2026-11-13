@@ -1743,6 +1743,12 @@ export default function OrderDetailPage() {
     const itemDiscountF =
       cItemDisc != null ? cItemDisc : Math.max(0, listingF - subF);
 
+    // Collected at the door = balance + the 1.5% COD collection charge — the
+    // same figure the out-for-delivery messages / Manage Orders use.
+    const codBalance = isCOD ? payOnDeliveryF : 0;
+    const payAtDoor = isCOD ? Math.round(codBalance * 1.015) : 0;
+    const codCollectCharge = Math.max(0, payAtDoor - codBalance);
+
     return {
       sub: subF,
       grand,
@@ -1766,6 +1772,8 @@ export default function OrderDetailPage() {
       advancePaid,
       advanceAmount: advanceAmountF,
       payOnDelivery: payOnDeliveryF,
+      payAtDoor,
+      codCollectCharge,
       couponCode,
       couponDiscount,
       giftOn: addons.giftOn,
@@ -1795,6 +1803,8 @@ export default function OrderDetailPage() {
       advancePaid,
       advanceAmount,
       payOnDelivery,
+      payAtDoor,
+      codCollectCharge,
       listing,
       itemDiscount,
     } = bd;
@@ -1940,9 +1950,20 @@ export default function OrderDetailPage() {
       y += 24;
       ctx.fillStyle = "#0a0a0a";
       ctx.font = "700 14px Arial";
+      if (codCollectCharge > 0) {
+        ctx.font = "13px Arial";
+        ctx.fillStyle = "#555555";
+        ctx.fillText("COD collection charge (1.5%)", P, y);
+        ctx.textAlign = "right";
+        ctx.fillText(`+₹${codCollectCharge}`, W - P, y);
+        ctx.textAlign = "left";
+        y += 22;
+        ctx.fillStyle = "#0a0a0a";
+        ctx.font = "700 14px Arial";
+      }
       ctx.fillText("Collect at door", P, y);
       ctx.textAlign = "right";
-      ctx.fillText(`₹${payOnDelivery}`, W - P, y);
+      ctx.fillText(`₹${payAtDoor || payOnDelivery}`, W - P, y);
       ctx.textAlign = "left";
       y += 30;
     }
@@ -3919,6 +3940,20 @@ export default function OrderDetailPage() {
             <span>−₹{bd.advanceAmount}</span>
           </div>
         )}
+        {bd.isCOD && !delivered && bd.codCollectCharge > 0 && (
+          <>
+            {bd.advancePaid && (
+              <div className="od-price-row">
+                <span>Balance due</span>
+                <span>₹{bd.payOnDelivery}</span>
+              </div>
+            )}
+            <div className="od-price-row">
+              <span>COD collection charge (1.5%)</span>
+              <span>+₹{bd.codCollectCharge}</span>
+            </div>
+          </>
+        )}
         {bd.isCOD && !delivered && (
           <div className="od-pay-due">
             <div className="od-pay-due-main">
@@ -3927,12 +3962,12 @@ export default function OrderDetailPage() {
                   ? "To pay on delivery (balance)"
                   : "To pay on delivery"}
               </span>
-              <span className="od-pay-due-amt">₹{bd.payOnDelivery}</span>
+              <span className="od-pay-due-amt">₹{bd.payAtDoor}</span>
             </div>
             <span className="od-pay-due-note">
               {bd.advancePaid
-                ? `₹${bd.advanceAmount} already paid online · pay the remaining ₹${bd.payOnDelivery} in cash/UPI to the delivery agent`
-                : "Pay in cash or UPI to the delivery agent"}
+                ? `₹${bd.advanceAmount} already paid online · keep ₹${bd.payAtDoor} ready (incl. ₹${bd.codCollectCharge} COD collection charge) — cash or UPI to the delivery agent`
+                : `Keep ₹${bd.payAtDoor} ready (incl. ₹${bd.codCollectCharge} COD collection charge) — cash or UPI to the delivery agent`}
             </span>
           </div>
         )}

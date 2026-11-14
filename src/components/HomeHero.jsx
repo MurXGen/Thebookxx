@@ -1,7 +1,7 @@
 "use client";
 
 import LiveActivity from "@/components/LiveActivity";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -25,8 +25,8 @@ import { books } from "@/utils/book";
 import { getCartOffers } from "@/utils/cartOffers";
 import OfferTierList from "@/components/UI/OfferTierList";
 import { useStore } from "@/context/StoreContext";
-import ScratchTeaserCard from "@/components/ScratchTeaserCard";
 import SearchOverlay from "@/components/SearchOverlay";
+import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";
 import RecommendationModal from "@/components/RecommendationModal";
 
 // Static, above-the-fold hero. Gives the homepage a clear value proposition and
@@ -84,22 +84,6 @@ export default function HomeHero() {
     freeShip: o.type === "free_shipping",
   }));
 
-  // Christmas snowfall — deterministic flakes so SSR and client markup match.
-  const flakes = useMemo(
-    () =>
-      Array.from({ length: 36 }).map((_, i) => ({
-        i,
-        left: (i * 61) % 100,
-        size: 3 + ((i * 7) % 6), // 3–8px
-        delay: -(((i * 37) % 90) / 10), // already falling on first paint
-        dur: 7 + (((i * 53) % 70) / 10), // 7–14s
-        drift: 14 + ((i * 29) % 30),
-        blur: i % 5 === 0,
-      })),
-    [],
-  );
-  // Fairy lights strung along the top edge.
-  const lights = useMemo(() => Array.from({ length: 18 }).map((_, i) => i), []);
 
   const stats = [
     { icon: Star, label: "4.4 rating" },
@@ -108,11 +92,6 @@ export default function HomeHero() {
     { icon: Truck, label: "Faster delivery", highlight: true },
     { icon: Gift, label: "Free bookmark", highlight: true },
   ];
-
-  const openScratch = () => {
-    if (typeof window !== "undefined")
-      window.dispatchEvent(new Event("tbx:open-scratch"));
-  };
 
   // ── Aggressive on-page SEO for the hero + its featured books ──
   const ORIGIN = "https://www.thebookx.in";
@@ -195,38 +174,17 @@ export default function HomeHero() {
           </li>
         </ul>
       </div>
-      {/* Christmas: fairy lights + soft snowfall behind the content */}
-      <div className="hx-lights" aria-hidden="true">
-        {lights.map((i) => (
-          <span key={i} className={`hx-bulb c${i % 4}`} style={{ animationDelay: `${(i % 6) * 0.35}s` }} />
-        ))}
-      </div>
-      <div className="hx-snow" aria-hidden="true">
-        {flakes.map((f) => (
-          <span
-            key={f.i}
-            className={`hx-flake${f.blur ? " soft" : ""}${f.i % 4 === 0 ? " glyph" : ""}`}
-            style={{
-              left: `${f.left}%`,
-              width: f.i % 4 === 0 ? undefined : f.size,
-              height: f.i % 4 === 0 ? undefined : f.size,
-              fontSize: f.i % 4 === 0 ? 8 + f.size * 1.6 : undefined,
-              animationDelay: `${f.delay}s`,
-              animationDuration: `${f.dur}s`,
-              "--hx-drift": `${f.drift}px`,
-            }}
-          >
-            {f.i % 4 === 0 ? "❄" : null}
-          </span>
-        ))}
-      </div>
+      {/* Christmas: velvet backdrop bokeh, pine garland with baubles, live snow */}
+      <div className="hx-bokeh" aria-hidden="true" />
+      <XmasSnow />
+      <XmasGarland />
 
       <div className="hero-top">
         <div className="home-hero-inner">
           {/* Christmas sale kicker — opens the reward tiers */}
           <button
             type="button"
-            className="hx-kicker"
+            className="hx-kicker hx-capped"
             onClick={() => setOffersOpen(true)}
             aria-label="Christmas sale — up to 50% off. See all offers."
           >
@@ -235,21 +193,9 @@ export default function HomeHero() {
             <ChevronRight size={14} />
           </button>
 
-          {/* Three bestseller covers, fanned like gifts under the tree */}
-          {picks.length >= 3 && (
-            <div className="hx-covers" aria-hidden="true">
-              {[picks[1], picks[0], picks[2]].map((b, i) => (
-                <span key={b.id} className={`hx-cover hx-cover-${i}`}>
-                  <img src={b.image} alt="" loading="eager" />
-                  {i === 1 && <span className="hx-snowcap" />}
-                </span>
-              ))}
-              <span className="hx-ribbon">from ₹1</span>
-            </div>
-          )}
-
           <h1 className="home-hero-title">
-            Buy Books Online in India,{" "}
+            <span className="hx-sw">Buy</span> <span className="hx-sw">Books</span>{" "}
+            <span className="hx-sw">Online</span> in <span className="hx-sw">India,</span>{" "}
             <span className="home-hero-accent">Starting at ₹1</span>
           </h1>
 
@@ -262,18 +208,26 @@ export default function HomeHero() {
           <div className="hero-actions hx-actions">
             <button
               type="button"
-              className="hero-search-btn"
+              className="hero-search-btn hx-capped"
               onClick={() => setSearchOpen(true)}
             >
               <Search size={18} /> Search books
             </button>
             <button
               type="button"
-              className="hero-suggest-btn"
+              className="hero-suggest-btn hx-capped"
               onClick={() => setSuggestOpen(true)}
             >
               <Sparkles size={18} /> Suggest me
             </button>
+          </div>
+
+          {/* Christmas gift — opens the scratch & win flow */}
+          <div className="hx-gift-row">
+            {/* Snowy Christmas trees standing on the gift card */}
+            <XmasTree size={64} gifts={false} className="hx-gift-tree left" />
+            <XmasTree size={92} className="hx-gift-tree right" />
+            <HeroGift />
           </div>
 
           {/* Quiet trust line */}
@@ -284,6 +238,7 @@ export default function HomeHero() {
             <li>{titleCount}+ titles</li>
             <li>7-day replacement</li>
             <li>Cash on Delivery</li>
+            <li className="hx-trust-hi">Free bookmarks</li>
           </ul>
 
           {/* Offers — auto-scrolling chips; tap any to see all reward tiers */}
@@ -375,54 +330,61 @@ export default function HomeHero() {
   );
 }
 
-// Scratch & win band — moved out of the hero so the hero stays minimal. It
-// reuses the homepage scratch flow (opens via the tbx:open-scratch event).
-export function HeroScratchBand() {
-  const openScratch = () => {
-    if (typeof window !== "undefined")
+// Christmas gift in the hero. Tapping it unwraps the box (lid pops, sparkles
+// burst) and then opens the existing scratch & win flow via tbx:open-scratch.
+function HeroGift() {
+  const [opening, setOpening] = useState(false);
+  const open = () => {
+    if (opening) return;
+    setOpening(true);
+    try {
+      navigator.vibrate?.(18);
+    } catch {}
+    setTimeout(() => {
       window.dispatchEvent(new Event("tbx:open-scratch"));
+      setOpening(false);
+    }, 650);
   };
   return (
-    <div className="hx-scratch-wrap">
-        {/* Scratch & win band — reuses the homepage scratch flow (opens the
-            number modal + wallet reward via the tbx:open-scratch event). */}
-        <div
-          className="hero-scratch-band"
-          role="button"
-          tabIndex={0}
-          onClick={openScratch}
-          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && openScratch()}
-          aria-label="Scratch to win cashback"
-        >
-          <span className="hero-scratch-deco" aria-hidden="true" />
-          {/* Lightning sparks that flash around the card on hover / tap */}
-          {["tl", "tr", "bl", "br"].map((pos) => (
-            <svg
-              key={pos}
-              viewBox="0 0 24 24"
-              className={`sc-bolt sc-bolt-${pos}`}
-              aria-hidden="true"
-            >
-              <path d="M13.5 2 4 13.5h6.5L9.5 22 20 9.5h-6.6L13.5 2Z" />
-            </svg>
-          ))}
-
-          <div className="hero-scratch-copy">
-            <span className="hero-scratch-kicker">
-              <Gift size={13} /> Scratch &amp; win
-            </span>
-            <span className="hero-scratch-amt">
-              Cashback upto <span className="hero-scratch-amt-big">₹100</span>
-            </span>
-            <span className="hero-scratch-sub">
-              Every order wins. Tap the card to reveal.
-            </span>
-          </div>
-
-          <span className="hero-scratch-teaser" aria-hidden="true">
-            <ScratchTeaserCard visualOnly />
-          </span>
-        </div>
-    </div>
+    <button
+      type="button"
+      className={`hx-gift${opening ? " opening" : ""}`}
+      onClick={open}
+      aria-label="Open your Christmas gift: scratch and win up to ₹100 cashback"
+    >
+      <span className="hx-gift-shine" aria-hidden="true" />
+      <span className="hx-gift-box" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="58" height="58">
+          <g className="hx-gift-lid">
+            <rect x="6" y="18" width="52" height="12" rx="3" fill="#e11d48" />
+            <rect x="6" y="18" width="52" height="4" rx="2" fill="#fff" fillOpacity=".18" />
+            <rect x="28" y="18" width="8" height="12" fill="#fbbf24" />
+            <path d="M32 18c-4-9-15-11-15-4 0 4 8 5 15 4z" fill="#fbbf24" />
+            <path d="M32 18c4-9 15-11 15-4 0 4-8 5-15 4z" fill="#f59e0b" />
+            <circle cx="32" cy="17" r="3" fill="#d97706" />
+          </g>
+          <rect x="9" y="30" width="46" height="28" rx="3" fill="#be123c" />
+          <rect x="9" y="30" width="46" height="5" fill="#000" fillOpacity=".12" />
+          <rect x="28" y="30" width="8" height="28" fill="#fbbf24" />
+          <circle cx="18" cy="44" r="1.6" fill="#fff" fillOpacity=".55" />
+          <circle cx="46" cy="40" r="1.6" fill="#fff" fillOpacity=".55" />
+          <circle cx="44" cy="51" r="1.2" fill="#fff" fillOpacity=".45" />
+          <circle cx="20" cy="53" r="1.2" fill="#fff" fillOpacity=".45" />
+        </svg>
+        {[0, 1, 2, 3, 4, 5].map((k) => (
+          <i key={k} className={`hx-spark s${k}`} />
+        ))}
+      </span>
+      <span className="hx-gift-copy">
+        <span className="hx-gift-kicker">Christmas gift</span>
+        <span className="hx-gift-amt">
+          Scratch &amp; win up to <b>₹100</b>
+        </span>
+        <span className="hx-gift-sub">Every order wins · tap to open</span>
+      </span>
+      <span className="hx-gift-cta" aria-hidden="true">
+        Open <ChevronRight size={15} />
+      </span>
+    </button>
   );
 }

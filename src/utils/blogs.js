@@ -4,6 +4,284 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "national-book-awards-2026-finalists-salman-rushdie-medal-books-to-read-india": {
+    "id": "blog-119",
+    "title": "National Book Awards 2026: Finalists, Salman Rushdie's Medal and What Indian Readers Should Read Before 18 November",
+    "slug": "national-book-awards-2026-finalists-salman-rushdie-medal-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-14",
+    "lastModified": "2026-11-14",
+    "excerpt": "The 77th National Book Awards are on 18 November 2026, with Salman Rushdie receiving a lifetime medal. The 25 finalists explained, plus what to read in India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "One of the biggest nights in the literary calendar is just days away. The 77th National Book Awards, run by the US-based National Book Foundation, will be announced on Wednesday, 18 November 2026, which is Thursday morning for readers in India. Twenty-five finalists across five categories are in the running, and this year there is a strong Indian thread through the evening: Salman Rushdie will receive the Foundation's Medal for Distinguished Contribution to American Letters, presented to him by Kiran Desai."
+      },
+      {
+        "type": "paragraph",
+        "content": "This guide explains how the awards work, lists every finalist, picks out the books and storylines worth following from India, and suggests what to read now if you want to get into the spirit of prize season, whether you have read none of the finalists or all of them."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "National Book Awards 2026 at a glance",
+        "content": "Ceremony: the 77th National Book Awards Ceremony and Benefit Dinner, Wednesday 18 November 2026 in New York, livestreamed on the National Book Foundation's website and YouTube. Finalists: 25 books in Fiction, Nonfiction, Poetry, Translated Literature and Young People's Literature, chosen by 25 judges from 1,912 submissions. Prizes: winners receive US$10,000, a bronze medal and a statue; finalists receive US$1,000 and a bronze medal. Lifetime honours: Salman Rushdie (Medal for Distinguished Contribution to American Letters) and Perri Klass (Literarian Award)."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What are the National Book Awards?"
+      },
+      {
+        "type": "paragraph",
+        "content": "The National Book Awards are among the most prestigious literary prizes in the United States, honouring books by American writers published in the previous year. The finalists were announced on 6 October 2026, narrowed down from longlists of ten per category released in September. Unlike the Booker Prize, which picks one novel, the National Book Awards crown five winners on the same night, so the shortlist doubles as a ready-made reading list across fiction, memoir, history, poetry, translation and books for teenagers."
+      },
+      {
+        "type": "paragraph",
+        "content": "The Translated Literature category is especially interesting for Indian readers, because prize money there is split equally between the author and the translator. It is a reminder that translators are co-creators, something Indian readers who have discovered regional literature in English already know well."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The Indian connection: Salman Rushdie and Kiran Desai"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Medal for Distinguished Contribution to American Letters is a lifetime achievement honour, and past recipients include Toni Morrison, Joan Didion and Stephen King. This year it goes to Salman Rushdie, the Bombay-born author of Midnight's Children, the novel that won the Booker Prize in 1981 and later the Booker of Bookers. The medal will be presented by Kiran Desai, who won the Booker Prize in 2006 for The Inheritance of Loss. Two of the most celebrated Indian-born novelists in English sharing a stage is a moment worth marking."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you have never read the big Indian novels that put writers like Rushdie and Desai on the world map, this is a good week to start with their contemporaries. Arundhati Roy's Booker-winning <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> remains the most-loved Indian literary novel of its generation, and her memoir <a href=\"/books/mother-mary-comes-to-me\" style=\"color:#fb8500;font-weight:600\">Mother Mary Comes to Me</a> is the perfect companion, showing how the woman behind it learned to write. For a gentler classic, R. K. Narayan's <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is where many Indian readers first fell in love with fiction in English."
+      },
+      {
+        "type": "blockquote",
+        "content": "Prize lists are not verdicts on what you must read. They are invitations: a curated table at the front of the bookshop, set out once a year by people who read everything so you do not have to."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "All 25 National Book Awards 2026 finalists"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Fiction"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Paradiso 17 by Hannah Lillith Assadi",
+          "Dèy by Edwidge Danticat",
+          "Pretend You're Dead and I Carry You by Julián Delgado Lopera",
+          "Beginning Middle End by Valeria Luiselli",
+          "Mad Eden by Morgan Thomas"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Nonfiction"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "The Midnight Special: The Secret Prison History of American Music by Colin Asher",
+          "Huna: A Memoir of Revolution, Prison, and Becoming by Abdelrahman ElGendy",
+          "Let the Poets Govern: A Declaration of Freedom by Camonghne Felix",
+          "Mother Tongue by Sara Nović",
+          "Spawning Season: An Experiment in Queer Parenthood by Joseph Osmundson"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Poetry"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Tree of Knowledge by Victoria Chang",
+          "Hide by Carolina Ebeid",
+          "Still House in the Desert: An eco-contemplation by Brenda Hillman",
+          "Exhibit G: Poems, Essays, and Photographs of Gaza by Fady Joudah",
+          "Bramble by Susan Stewart"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Translated Literature"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "The School of Night by Karl Ove Knausgaard, translated from the Norwegian by Martin Aitken",
+          "Centroeuropa by Vicente Luis Mora, translated from the Spanish by Rahul Bery",
+          "Night of a Thousand Hells by Intan Paramaditha, translated from the Indonesian by Stephen Epstein and Tiffany Tsao",
+          "Pure Men by Mohamed Mbougar Sarr, translated from the French by Lara Vergnaud",
+          "Your Presence Is a Danger to Your Life: Voices of Survival and Witness in Gaza by Samar Yazbek, translated from the Arabic by Leri Price"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Young People's Literature"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Holloway by Elana K. Arnold",
+          "When Tomorrow Burns by Tae Keller",
+          "That Which Feeds Us: A Hawaiian Gothic by Keala Kendall",
+          "The Fight of Our Lives: AIDS in America by David Levithan and Gabriel Duckels",
+          "Shook by Julian Randall, with illustrations by Nathan Walker"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Three storylines to watch on the night"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Witness writing from Gaza. Two finalists, Fady Joudah's poetry collection Exhibit G and Samar Yazbek's Your Presence Is a Danger to Your Life, bring testimony from Gaza into two different categories. Whatever wins, it shows how literature is being used to record what journalism alone cannot.",
+          "Big names in translation. Karl Ove Knausgaard, famous for his six-volume My Struggle, and Mohamed Mbougar Sarr, who won France's Prix Goncourt in 2021, sit side by side in Translated Literature. It is the category to watch if you want books that travel across borders.",
+          "Memoir as the dominant form in nonfiction. Four of the five nonfiction finalists draw on personal experience, from prison and revolution to parenthood and language. Personal narrative is clearly where readers and judges are finding the most energy right now."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What to read now: books in the spirit of the finalists"
+      },
+      {
+        "type": "paragraph",
+        "content": "Many of this year's finalists will take time to reach Indian bookshelves. In the meantime, here are books available in India that share their concerns, grouped by category so you can follow whichever shortlist interests you most."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you follow the Fiction shortlist"
+      },
+      {
+        "type": "paragraph",
+        "content": "Hanya Yanagihara's <a href=\"/books/a-little-life\" style=\"color:#fb8500;font-weight:600\">A Little Life</a> was itself a National Book Award fiction finalist in 2015 and remains one of the most discussed literary novels of the past decade, a long, devastating book about friendship and survival. For something more playful but just as ambitious, Gabrielle Zevin's <a href=\"/books/tomorrow-and-tomorrow-and-tomorrow\" style=\"color:#fb8500;font-weight:600\">Tomorrow, and Tomorrow, and Tomorrow</a> follows two friends who build video games together across thirty years. And Nobel laureate Kazuo Ishiguro's <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> is the kind of quiet, humane novel that prize juries love."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you follow Translated Literature"
+      },
+      {
+        "type": "paragraph",
+        "content": "Han Kang's <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a>, translated from the Korean by Deborah Smith, won the International Booker Prize in 2016, and Han Kang went on to win the Nobel Prize in Literature in 2024. It is the best single proof that a translated book can change a writer's whole career. Haruki Murakami's <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> is the gateway to Japanese fiction for millions of readers, and the cosy Korean bestseller <a href=\"/books/welcome-to-the-hyunam-dong-bookshop\" style=\"color:#fb8500;font-weight:600\">Welcome to the Hyunam-dong Bookshop</a> shows how translation now brings comfort reads, not just prize winners, to India."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you follow Nonfiction and memoir"
+      },
+      {
+        "type": "paragraph",
+        "content": "Paul Kalanithi's <a href=\"/books/when-breath-becomes-air\" style=\"color:#fb8500;font-weight:600\">When Breath Becomes Air</a>, written by a neurosurgeon facing his own terminal diagnosis, is a model of the honest, searching memoir. <a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a> is a reminder that a single personal story can shift global conversations about education and freedom, while <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> remains the most read piece of witness writing ever published, and a natural companion to this year's Gaza finalists."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "If you follow Young People's Literature"
+      },
+      {
+        "type": "paragraph",
+        "content": "For teenagers, John Green's <a href=\"/books/the-fault-in-our-stars\" style=\"color:#fb8500;font-weight:600\">The Fault in Our Stars</a> is the modern classic of young adult fiction that treats young readers' biggest questions seriously, and <a href=\"/books/the-hunger-games-trilogy-set\" style=\"color:#fb8500;font-weight:600\">The Hunger Games Trilogy Set</a> is still the best first dystopia for a reader moving from children's books to adult fiction."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to read a prize list without feeling overwhelmed"
+      },
+      {
+        "type": "paragraph",
+        "content": "Twenty-five books is a lot. The trick is not to read them all, but to use the list to find the one or two that speak to you. Pick one category you care about, read the opening pages of every finalist in it online, and choose the one you cannot stop thinking about. Read slowly and make notes in the margins. Mortimer Adler's <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> is the classic guide to doing exactly that, and it will make every prize season more rewarding."
+      },
+      {
+        "type": "paragraph",
+        "content": "If prize-season noise leaves you unsure what you actually want to read, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical book about cutting through mental clutter and deciding what matters to you, which works as well for building a reading list as it does for building a life. And if you want to understand why publishing hype and literary prizes can be both thrilling and fraught, R. F. Kuang's sharp satire <a href=\"/books/yellowface\" style=\"color:#fb8500;font-weight:600\">Yellowface</a> is the most talked-about novel ever written about the book industry."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Build your prize-season shelf for less",
+        "content": "TheBookX has books from ₹1 with free delivery and Cash on Delivery across India. Start with one literary novel, one memoir and one book in translation, and you will have your own mini prize shortlist at home. Buying for a reader friend? Add gift wrapping for just ₹25."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to follow the ceremony from India"
+      },
+      {
+        "type": "paragraph",
+        "content": "The ceremony on 18 November is livestreamed on the National Book Foundation's website and YouTube channel. Because it takes place on Wednesday evening in New York, the winners will be known in India on the morning of Thursday, 19 November. The night before, on 17 November, the Foundation also hosts a Finalist Reading where all 25 finalists read from their work, which is also livestreamed and a lovely way to hear the books in their authors' own voices."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Literary prizes are at their best when they send us back to reading. Whether you cheer for a finalist on 18 November, celebrate Salman Rushdie's lifetime honour, or simply finally pick up the Indian classic you have been meaning to read, let this week be the one you open a book that stretches you. Happy reading."
+      }
+    ],
+    "coverImage": "/blogs/national-book-awards-2026-finalists-salman-rushdie-medal-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/national-book-awards-2026-finalists-salman-rushdie-medal-books-to-read-india.jpeg",
+        "alt": "Young woman reading a hardback novel at a wooden table with a stack of literary books and a cup of chai in warm evening light",
+        "caption": "The 77th National Book Awards are announced on 18 November 2026: a good week to read a prize-worthy book.",
+        "category": "Book Awards"
+      }
+    ],
+    "keywords": [
+      "National Book Awards 2026",
+      "National Book Award 2026 finalists",
+      "National Book Awards 2026 winners date",
+      "Salman Rushdie Medal for Distinguished Contribution 2026",
+      "Kiran Desai Salman Rushdie National Book Foundation",
+      "literary prize books to read India",
+      "translated literature books India",
+      "award winning books to read 2026"
+    ],
+    "categories": [
+      "Book Awards",
+      "Book Recommendations",
+      "Literary Fiction"
+    ],
+    "faqs": [
+      {
+        "question": "When are the National Book Awards 2026 announced?",
+        "answer": "The winners of the 77th National Book Awards are announced at a ceremony in New York on Wednesday, 18 November 2026, livestreamed on the National Book Foundation's website and YouTube. In India, the results will be known on the morning of Thursday, 19 November."
+      },
+      {
+        "question": "Who are the National Book Awards 2026 fiction finalists?",
+        "answer": "The five fiction finalists are Paradiso 17 by Hannah Lillith Assadi, Dèy by Edwidge Danticat, Pretend You're Dead and I Carry You by Julián Delgado Lopera, Beginning Middle End by Valeria Luiselli, and Mad Eden by Morgan Thomas."
+      },
+      {
+        "question": "What honour is Salman Rushdie receiving at the 2026 National Book Awards?",
+        "answer": "Salman Rushdie will receive the National Book Foundation's Medal for Distinguished Contribution to American Letters, a lifetime achievement honour. It will be presented by Booker Prize winner Kiran Desai."
+      },
+      {
+        "question": "What should I read in India while waiting for the National Book Award winners?",
+        "answer": "Try books in the same spirit as the finalists: A Little Life (a 2015 National Book Award finalist), The Vegetarian and Kafka on the Shore for translated fiction, When Breath Becomes Air and I Am Malala for memoir, and The God of Small Things for a Booker-winning Indian classic. All are available on TheBookX with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "national-library-week-2026-14-20-november-books-to-read-india": {
     "id": "blog-107",
     "title": "National Library Week 2026 (14 to 20 November): How to Celebrate Libraries and Books to Read in India",

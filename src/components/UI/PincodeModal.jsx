@@ -33,8 +33,18 @@ function getActiveEvent() {
   const now = new Date();
   const m = now.getMonth(); // 0-based
   const d = now.getDate();
-  // Diwali-ish window (rough): late Oct – mid Nov
-  if ((m === 9 && d >= 20) || (m === 10 && d <= 15)) {
+  // Christmas season (Nov – Dec) — matches the Christmas homepage hero
+  if (m === 10 || m === 11) {
+    return {
+      key: "christmas",
+      emoji: "🎁",
+      title: "Your Christmas gift!",
+      sub: "Scratch to unwrap a wallet reward",
+      gradient: "linear-gradient(135deg,#dc2626,#fbbf24)",
+    };
+  }
+  // Diwali-ish window (rough): late Oct
+  if (m === 9 && d >= 20) {
     return {
       key: "diwali",
       emoji: "🪔",

@@ -72,7 +72,7 @@ import {
 import { parseAddonsField } from "@/utils/addonsField";
 import { isGiftOrder } from "@/utils/giftOrder";
 import { showToast } from "@/context/ToastContext";
-import { isPaymentPending, isPaymentDue, pendingSince, PENDING_NUDGE_MS } from "@/lib/paymentPending";
+import { isPaymentPending, isPaymentDue, pendingSince, PENDING_NUDGE_MS, PAYMENT_PENDING_STATUS, markPaymentPending } from "@/lib/paymentPending";
 import OrderPayFlow from "@/components/profile/OrderPayFlow";
 import { parseSheetTime } from "@/lib/sheetTime";
 import { isRefundInProcess, isRefundDone, REFUND_LATE_MS } from "@/lib/refundStatus";
@@ -1099,6 +1099,8 @@ export default function OrderDetailPage() {
   const [nowTs, setNowTs] = useState(() => Date.now());
   // "Complete payment" UPI QR sheet (same flow as checkout).
   const [payOpen, setPayOpen] = useState(false);
+  // Faster-delivery upgrade on a COD order: ₹99 advance via the same UPI QR flow.
+  const [upgradePayOpen, setUpgradePayOpen] = useState(false);
   useEffect(() => {
     if (!payPending) return;
     // Tick for the 15-minute WhatsApp nudge, and re-read the order so the page
@@ -1737,7 +1739,15 @@ export default function OrderDetailPage() {
     const hasBillCols =
       cSub != null || cOffer != null || cItemDisc != null || cMrp != null;
     const discountF = hasBillCols ? offerF : discount;
-    const advanceAmountF = cAdvance != null ? cAdvance : advanceAmount;
+    // An advance order always carries the ₹99 paid online — some rows (e.g. ones
+    // switched to "COD + ₹99" from Manage Orders) hold 0 / blank in the column.
+    const advanceAmountF = advancePaid
+      ? cAdvance != null && cAdvance > 0
+        ? cAdvance
+        : 99
+      : cAdvance != null
+        ? cAdvance
+        : advanceAmount;
     const payOnDeliveryF =
       cCollect != null ? cCollect : Math.max(0, grand - advanceAmountF);
     const itemDiscountF =
@@ -2081,7 +2091,11 @@ export default function OrderDetailPage() {
     )
     .filter(Boolean)
     .join(", ");
-  const stLabel = payPending
+  // COD → Faster upgrade awaiting the ₹99 advance check.
+  const fasterPending = payPending && isExpressOrder(order) && /^\s*yes/i.test(String(order["Advance Paid"] || ""));
+  const stLabel = fasterPending
+    ? { title: "Faster delivery in progress", sub: "Confirming your ₹99 advance — it ships by air once verified" }
+    : payPending
     ? { title: "Order is still processing", sub: "It will be processed within the next few minutes or hours" }
     : statusLabel(order);
   // Live India Post tracking status (pushed from the booking-report upload).
@@ -2556,17 +2570,23 @@ export default function OrderDetailPage() {
     const fasterCharge = getDeliveryCharge(orderValue, true, hasOneRupee);
     const newTotal =
       (parseFloat(order["Total Amount"]) || bd.grand) + upgradeExtra;
+    // ₹99-advance order: the extra simply joins the balance collected at the door.
+    const newCollect = isAdvanceUpgrade ? Math.max(0, Math.round((bd.payOnDelivery || 0) + upgradeExtra)) : null;
     const fields = {
       "Delivery Type": "Faster Delivery",
       "Total Amount": String(newTotal),
       "Delivery Charge": String(fasterCharge),
+      ...(newCollect != null ? { "COD Collectible": String(newCollect) } : {}),
     };
     try {
-      await updateOrderRow(orderId, fields);
+      const res = await updateOrderRow(orderId, fields);
+      if (res?.success === false) throw new Error(res.error || "write failed");
       setOrder((o) => ({ ...o, ...fields }));
       setShowUpgradeModal(false);
       // Let the team know so they prioritise dispatch for the faster delivery.
-      const msg = `Hi TheBookX, I've *upgraded to Faster delivery* (+₹${upgradeExtra}) for order ${orderId}. New total ₹${newTotal}. Please dispatch it faster by air. 🙏`;
+      const msg = isAdvanceUpgrade
+        ? `Hi TheBookX, I'm *upgrading order ${orderId} to Faster delivery* (+₹${upgradeExtra}). I've already paid the ₹99 advance — I'll pay the new balance of ₹${newCollect} (+1.5% COD collection) at delivery. Please dispatch it by air. 🙏`
+        : `Hi TheBookX, I've *upgraded to Faster delivery* (+₹${upgradeExtra}) for order ${orderId}. New total ₹${newTotal}. Please dispatch it faster by air. 🙏`;
       window.open(
         `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
         "_blank",
@@ -2584,10 +2604,50 @@ export default function OrderDetailPage() {
   // Rather than silently editing the sheet, the shopper pays only the surplus
   // and we route everything through WhatsApp: an intent message, then a verify
   // message that carries the merchant approval link (opens the merchant page).
+  const isAdvanceUpgrade = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
   const isPrepaidOrder =
+    !isAdvanceUpgrade &&
     /upi|online|prepaid|paytm|razorpay|gpay|phonepe/i.test(
       String(order?.["Payment Type"] || ""),
-    ) || /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
+    );
+  // Plain Cash-on-Delivery: Faster ships prepaid-only, so the shopper pays a ₹99
+  // advance (QR) and the order becomes "COD · ₹99 advance" — which also drops
+  // the COD handling fee, exactly like "Pay in two parts" at checkout.
+  const isCodUpgrade = !isAdvanceUpgrade && !isPrepaidOrder && !!bd?.isCOD;
+  const codUpgrade = (() => {
+    if (!isCodUpgrade || upgradeExtra == null) return null;
+    const oldTotal = parseFloat(order?.["Total Amount"]) || bd.grand || 0;
+    const codFee = Math.max(0, Math.round(bd.codFee || 0));
+    const newTotal = Math.max(0, Math.round(oldTotal - codFee + upgradeExtra));
+    const balance = Math.max(0, newTotal - 99);
+    return { oldTotal, codFee, newTotal, balance, atDoor: Math.round(balance * 1.015) };
+  })();
+  // Runs when the shopper taps "I've paid, verify status": saves the order as
+  // Faster + ₹99 advance and parks it on "Payment Pending" until the team taps
+  // Passed (→ Processing) or Failed on Telegram.
+  const saveCodFasterUpgrade = async () => {
+    if (!codUpgrade) return false;
+    const orderValue = bd.sub || 0;
+    const hasOneRupee = books.some(
+      (b) => Number(b.price) === 1 || Number(b.total) === 1,
+    );
+    const fields = {
+      "Delivery Type": "Faster Delivery",
+      "Delivery Charge": String(getDeliveryCharge(orderValue, true, hasOneRupee)),
+      "Total Amount": String(codUpgrade.newTotal),
+      "COD Fee": "0",
+      "Payment Type": "COD · ₹99 advance",
+      "Advance Paid": "Yes",
+      "Advance Amount": "99",
+      "COD Collectible": String(codUpgrade.balance),
+      "Order Status": PAYMENT_PENDING_STATUS,
+    };
+    const res = await updateOrderRow(orderId, fields);
+    if (res?.success === false) return false;
+    markPaymentPending(orderId);
+    setOrder((o) => (o ? { ...o, ...fields } : o));
+    return true;
+  };
   const UPI_ID = "7977960242-1@okbizaxis";
   const merchantUpgradeLink = () => {
     const origin =
@@ -2644,10 +2704,15 @@ export default function OrderDetailPage() {
       0,
       (parseFloat(order["Total Amount"]) || bd.grand) - diff,
     );
+    const advOrder = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
     const fields = {
       "Delivery Type": "Standard Delivery",
       "Total Amount": String(newTotal),
       "Delivery Charge": String(standardCharge),
+      // ₹99-advance order: the balance at the door drops by the same amount.
+      ...(advOrder
+        ? { "COD Collectible": String(Math.max(0, Math.round((bd.payOnDelivery || 0) - diff))) }
+        : {}),
     };
     try {
       await updateOrderRow(orderId, fields);
@@ -2824,10 +2889,11 @@ export default function OrderDetailPage() {
             <span className="od-paypend-spin" aria-hidden="true" />
           </span>
           <div className="od-unconf-txt">
-            <strong>Order is still processing</strong>
+            <strong>{fasterPending ? "Faster delivery in progress" : "Order is still processing"}</strong>
             <span>
-              We&apos;re confirming your payment. Your order will be processed
-              within the next few minutes or hours — this page updates on its own.
+              {fasterPending
+                ? "We're confirming your ₹99 advance. As soon as it's verified your order is upgraded to Faster delivery and ships by air — this page updates on its own."
+                : "We're confirming your payment. Your order will be processed within the next few minutes or hours — this page updates on its own."}
             </span>
             {payPendingLong && (
               <>
@@ -2943,6 +3009,23 @@ export default function OrderDetailPage() {
           items={payItems}
           onConfirmed={() => setOrder((o) => (o ? { ...o, "Order Status": "Processing" } : o))}
           onPending={(st) => setOrder((o) => (o ? { ...o, "Order Status": st } : o))}
+        />
+      )}
+
+      {order && codUpgrade && (
+        <OrderPayFlow
+          open={upgradePayOpen}
+          onClose={() => setUpgradePayOpen(false)}
+          orderId={orderId}
+          amount={99}
+          advance
+          liveCheck={false}
+          onVerify={saveCodFasterUpgrade}
+          teamTitle="⚡ *Faster delivery upgrade · ₹99 advance*"
+          teamNote={`🚚 COD → Faster (+₹${upgradeExtra}) · new total ₹${codUpgrade.newTotal} · collect ₹${codUpgrade.balance} (+1.5%) at door`}
+          doneToast="Upgrade saved! We're confirming your ₹99 — Faster delivery kicks in once it's verified."
+          customer={{ name: custName, phone: order["Phone Number"] || number, address: order["Address"] }}
+          items={payItems}
         />
       )}
 
@@ -3694,22 +3777,71 @@ export default function OrderDetailPage() {
                   </div>
                 </div>
 
-                <div className="fdu-bill">
-                  <div className="fdu-bill-row">
-                    <span>Faster delivery upgrade</span>
-                    <span>+₹{upgradeExtra}</span>
+                {codUpgrade ? (
+                  <div className="fdu-bill">
+                    <div className="fdu-bill-row">
+                      <span>Faster delivery upgrade</span>
+                      <span>+₹{upgradeExtra}</span>
+                    </div>
+                    {codUpgrade.codFee > 0 && (
+                      <div className="fdu-bill-row fdu-bill-save">
+                        <span>COD handling fee (waived with advance)</span>
+                        <span>−₹{codUpgrade.codFee}</span>
+                      </div>
+                    )}
+                    <div className="fdu-bill-row fdu-bill-total">
+                      <span>New order total</span>
+                      <span>₹{codUpgrade.newTotal}</span>
+                    </div>
+                    <div className="fdu-split">
+                      <div className="fdu-split-seg on">
+                        <b>₹99</b>
+                        <span>Pay with UPI now</span>
+                      </div>
+                      <span className="fdu-split-plus" aria-hidden="true">+</span>
+                      <div className="fdu-split-seg">
+                        <b>₹{codUpgrade.atDoor}</b>
+                        <span>At delivery · incl. 1.5% COD collection</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="fdu-bill-row fdu-bill-total">
-                    <span>New order total</span>
-                    <span>
-                      ₹
-                      {(parseFloat(order["Total Amount"]) || bd.grand) +
-                        upgradeExtra}
-                    </span>
+                ) : (
+                  <div className="fdu-bill">
+                    <div className="fdu-bill-row">
+                      <span>Faster delivery upgrade</span>
+                      <span>+₹{upgradeExtra}</span>
+                    </div>
+                    <div className="fdu-bill-row fdu-bill-total">
+                      <span>New order total</span>
+                      <span>
+                        ₹
+                        {(parseFloat(order["Total Amount"]) || bd.grand) +
+                          upgradeExtra}
+                      </span>
+                    </div>
+                    {isAdvanceUpgrade && (
+                      <div className="fdu-bill-row">
+                        <span>New balance at delivery</span>
+                        <span>
+                          ₹{Math.round(((bd.payOnDelivery || 0) + upgradeExtra) * 1.015)}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                </div>
+                )}
 
-                {isPrepaidOrder ? (
+                {codUpgrade ? (
+                  <p className="fdu-note">
+                    Faster delivery ships with a ₹99 advance. Pay it by UPI now —
+                    your order switches to Faster as soon as you verify, and we
+                    confirm the payment within minutes.
+                  </p>
+                ) : isAdvanceUpgrade ? (
+                  <p className="fdu-note">
+                    You&apos;ve already paid the ₹99 advance — nothing to pay now.
+                    The ₹{upgradeExtra} is added to the balance you pay at delivery.
+                  </p>
+                ) : isPrepaidOrder ? (
                   <p className="fdu-note">
                     You&apos;ve already paid online, so you only pay the ₹
                     {upgradeExtra} difference to upgrade.
@@ -3769,12 +3901,29 @@ export default function OrderDetailPage() {
                 <button
                   type="button"
                   className="pri-big-btn width100 fdu-confirm"
-                  onClick={isPrepaidOrder ? startPrepaidSurplus : applyFasterUpgrade}
+                  onClick={
+                    codUpgrade
+                      ? () => {
+                          setShowUpgradeModal(false);
+                          setUpgradePayOpen(true);
+                        }
+                      : isPrepaidOrder
+                        ? startPrepaidSurplus
+                        : applyFasterUpgrade
+                  }
                   disabled={upgrading}
                 >
                   {upgrading ? (
                     <>
                       <Loader2 size={16} className="lb-spinner" /> Upgrading…
+                    </>
+                  ) : codUpgrade ? (
+                    <>
+                      <QrCode size={16} /> Pay ₹99 advance &amp; upgrade
+                    </>
+                  ) : isAdvanceUpgrade ? (
+                    <>
+                      <FaWhatsapp size={16} /> Upgrade now · pay at delivery
                     </>
                   ) : isPrepaidOrder ? (
                     `Pay ₹${upgradeExtra} difference to upgrade`

@@ -25570,7 +25570,7 @@ export default function ManageOrdersPage() {
                           {eb.mode === "cod"
                             ? `Collect ₹${eb.codCollectible.toLocaleString()} at the door · COD fee ₹${eb.codFee}`
                             : eb.mode === "advance"
-                              ? `₹99 paid online · collect ₹${eb.codCollectible.toLocaleString()} at the door · no COD fee`
+                              ? `₹99 paid online · balance ₹${eb.codCollectible.toLocaleString()} · collect ₹${Math.round(eb.codCollectible * 1.015).toLocaleString()} at the door (incl. 1.5%)`
                               : "Prepaid — nothing to collect at the door"}
                         </em>
                       </div>

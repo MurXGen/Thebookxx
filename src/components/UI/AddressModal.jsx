@@ -1006,6 +1006,16 @@ export default function AddressModal({
     upiRawTotal + advanceHandlingFee - couponWalletExtra(upiRawTotal),
   );
   const advanceRemaining = Math.max(0, advanceOrderTotal - codAdvanceAmount);
+  // What the customer actually hands over at the door on a two-part order:
+  // the balance + the 1.5% COD collection charge (same as the order page,
+  // out-for-delivery messages and the printed label).
+  const advanceAtDoor = Math.round(advanceRemaining * 1.015);
+  const advanceCollectCharge = Math.max(0, advanceAtDoor - advanceRemaining);
+  // COD always ships Standard, so its card is priced on the Standard bill —
+  // switching delivery type above doesn't change the COD card.
+  const codStdRaw = getTotalWithDelivery(false) + addOnsCharge;
+  const codFeeStd = proActive ? 0 : Math.max(29, Math.round(codStdRaw * 0.059));
+  const codStdTotal = Math.max(0, codStdRaw + codFeeStd - couponWalletExtra(codStdRaw + codFeeStd));
   // Full wallet actually used (goods + charges it covers for the standard flow)
   // — used for display and when storing the order.
   const walletAppliedTotal =
@@ -3369,12 +3379,14 @@ export default function AddressModal({
                         </span>
                         <span className="pay-perks">
                           <span className="pay-perk">Free bookmark</span>
-                          <span className="pay-perk">No COD fee</span>
+                          <span className="pay-method-desc pay-method-adv-rest">
+                            Rest ₹{advanceAtDoor} at delivery
+                          </span>
                         </span>
                       </span>
                       <span className="pm2-pricecol">
-                        <span className="pm2-strike">₹{codTotalWithFee}</span>
-                        <span className="pm2-price">₹{advanceOrderTotal}</span>
+                        <span className="pm2-price">₹{codAdvanceAmount}</span>
+                        <span className="pm2-pricenote">now</span>
                       </span>
                       <span
                         className={`pay-method-radio${paySel === "ADV" ? " on" : ""}`}
@@ -3402,9 +3414,14 @@ export default function AddressModal({
                         +
                       </span>
                       <div className="pay-split-seg">
-                        <span className="pay-split-amt">₹{advanceRemaining}</span>
+                        <span className="pay-split-amt">₹{advanceAtDoor}</span>
                         <span className="pay-split-lbl">
                           Cash on Delivery later
+                          {advanceCollectCharge > 0 && (
+                            <small className="pay-split-note">
+                              incl. ₹{advanceCollectCharge} collection (1.5%)
+                            </small>
+                          )}
                         </span>
                       </div>
                     </div>
@@ -3443,22 +3460,18 @@ export default function AddressModal({
                         <span className="pm2-title">Cash on Delivery</span>
                       </span>
                       <span className="pay-perks">
-                        {fasterDelivery ? (
-                          <span className="pay-method-desc">
-                            Switches to Standard delivery
-                          </span>
-                        ) : proActive ? (
+                        {proActive ? (
                           <span className="pay-perk">No COD fee · Member</span>
                         ) : (
                           <span className="pay-method-desc pay-method-cod-fee">
-                            Includes <strong>+₹{codFeeAmount}</strong> handling
+                            Includes <strong>+₹{codFeeStd}</strong> handling
                             fee
                           </span>
                         )}
                       </span>
                     </span>
                     <span className="pm2-pricecol">
-                      <span className="pm2-price">₹{codTotalWithFee}</span>
+                      <span className="pm2-price">₹{codStdTotal}</span>
                     </span>
                     <span
                       className={`pay-method-radio${paySel === "COD" ? " on" : ""}`}

@@ -38,6 +38,15 @@ export default function OrderPayFlow({
   onConfirmed, // payment confirmed by the team
   onPending, // shopper says they paid; awaiting verification
   resetFailed = false, // order reads "Payment Failed": clear it before the live check
+  // Upgrade mode (e.g. Faster delivery on a COD order): the order already reads
+  // "Processing", so a live status check can't tell anything. Instead, on
+  // "verify" we run `onVerify` (which writes the upgrade + "Payment Pending"),
+  // THEN post to Telegram with Passed / Failed, so the team's tap decides it.
+  liveCheck = true,
+  onVerify = null,
+  teamTitle = "💳 *Payment retry · order page*",
+  teamNote = "",
+  doneToast = "Thanks! We're confirming your payment — this page updates on its own.",
 }) {
   const [phase, setPhase] = useState("await");
   const [qrUnlocked, setQrUnlocked] = useState(false);
@@ -94,11 +103,13 @@ export default function OrderPayFlow({
     notified.current = true;
     const lines = items.map((it, i) => `${i + 1}. ${it.name} ×${it.qty || 1}`).join("\n");
     const msg =
-      `💳 *Payment retry · order page*\n\n` +
+      `${teamTitle}\n\n` +
       `👤 *${customer.name || "Customer"}*\n📞 ${customer.phone || "—"}\n` +
       (customer.address ? `📍 ${customer.address}\n` : "") +
       (lines ? `\n📚 *Items*\n${lines}\n` : "") +
-      `\n💰 *Paying now: ₹${amount}*${advance ? " (advance)" : ""}\n\n🆔 ${orderId}`;
+      `\n💰 *Paying now: ₹${amount}*${advance ? " (advance)" : ""}\n` +
+      (teamNote ? `${teamNote}\n` : "") +
+      `\n🆔 ${orderId}`;
     const payload = JSON.stringify({
       orderDetails: msg,
       customerName: customer.name || "",
@@ -124,10 +135,12 @@ export default function OrderPayFlow({
       setQrUnlocked(true);
       setCountdown(30);
       setPhase("counting");
-      notifyTeam();
-      check();
       timers.current.tick = setInterval(() => setCountdown((p) => (p <= 1 ? 0 : p - 1)), 1000);
-      timers.current.poll = setInterval(check, 5000);
+      if (liveCheck) {
+        notifyTeam();
+        check();
+        timers.current.poll = setInterval(check, 5000);
+      }
       timers.current.to = setTimeout(() => {
         clearInterval(timers.current.tick);
         clearInterval(timers.current.poll);
@@ -162,6 +175,25 @@ export default function OrderPayFlow({
     setPhase("rechecking");
     setVerifyLoading(true);
     const t0 = Date.now();
+    const minWait = () => new Promise((res) => setTimeout(res, Math.max(0, 3000 - (Date.now() - t0))));
+    if (onVerify) {
+      let ok = false;
+      try {
+        ok = (await onVerify()) !== false;
+      } catch {}
+      await minWait();
+      setVerifyLoading(false);
+      if (!ok) {
+        setPhase("ready");
+        showToast("Couldn't save that just now — please tap verify again.", "error");
+        return;
+      }
+      notifyTeam();
+      done.current = true;
+      onClose?.();
+      showToast(doneToast, "success");
+      return;
+    }
     let r = null;
     try {
       r = await fetchOrderStatusById(orderId);
@@ -179,7 +211,7 @@ export default function OrderPayFlow({
   };
 
   const tryAgain = () => {
-    writeStatus(orderId, "Unconfirmed");
+    if (liveCheck) writeStatus(orderId, "Unconfirmed");
     notified.current = false;
     start();
   };

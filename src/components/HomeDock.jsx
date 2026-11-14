@@ -18,6 +18,7 @@ import {
   Sparkles,
   Baby,
   BookMarked,
+  Info,
   X,
 } from "lucide-react";
 
@@ -31,6 +32,7 @@ const PARAM = "section"; // /?section=combos opens the homepage at that section
 const SECTIONS = [
   { id: "hs-top", slug: null, label: "Top", icon: Home },
   { id: "hs-reviews", slug: "reader-photos", label: "Reader photos", icon: Camera },
+  { id: "hs-about", slug: "about-us", label: "About us", icon: Info },
   { id: "hs-categories", slug: "categories", label: "Categories", icon: LayoutGrid },
   { id: "hs-rail-trending", slug: "trending", label: "Trending", icon: TrendingUp },
   { id: "hs-rail-rupee", slug: "1-rupee-books", label: "₹1 books", icon: Tag },

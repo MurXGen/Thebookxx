@@ -13,7 +13,8 @@ import BookLoader from "@/components/UI/BookLoader";
 import UnlockChip from "@/components/UI/UnlockChip";
 import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
-import HomeHero from "@/components/HomeHero";
+import HomeHero, { HeroScratchBand } from "@/components/HomeHero";
+import HomeAbout from "@/components/HomeAbout";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
 import QuickReadsTeaser from "@/components/QuickReadsTeaser";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
@@ -208,6 +209,14 @@ export default function HomePage() {
       <div id="hs-reviews" className="hs-anchor">
         <ReviewGallery />
       </div>
+
+      {/* Who we are — short About us right under the reader photos */}
+      <div id="hs-about" className="hs-anchor">
+        <HomeAbout />
+      </div>
+
+      {/* Scratch & win (moved out of the hero to keep the hero minimal) */}
+      <HeroScratchBand />
 
       {/* Shop by category — one swipeable row right under the hero. */}
       <div id="hs-categories" className="hs-anchor">

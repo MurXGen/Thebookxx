@@ -1,11 +1,7 @@
 "use client";
 
 import LiveActivity from "@/components/LiveActivity";
-import DiwaliNight, {
-  DiyaRow,
-  DiwaliGreeting,
-} from "@/components/UI/DiwaliNight";
-import { useRef, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -29,7 +25,6 @@ import { books } from "@/utils/book";
 import { getCartOffers } from "@/utils/cartOffers";
 import OfferTierList from "@/components/UI/OfferTierList";
 import { useStore } from "@/context/StoreContext";
-import { showToast } from "@/context/ToastContext";
 import ScratchTeaserCard from "@/components/ScratchTeaserCard";
 import SearchOverlay from "@/components/SearchOverlay";
 import RecommendationModal from "@/components/RecommendationModal";
@@ -44,12 +39,9 @@ const slugify = (t) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-// Readers' top-3 podium under the hero; hidden for now.
-const SHOW_PODIUM = false;
-
 export default function HomeHero() {
   const titleCount = Math.max(100, Math.floor(books.length / 100) * 100);
-  const { cart, addToCart } = useStore();
+  const { cart } = useStore();
 
   // Readers' top 3 picks shown in the hero showcase.
   const pickNames = [
@@ -92,116 +84,22 @@ export default function HomeHero() {
     freeShip: o.type === "free_shipping",
   }));
 
-  // Tap-anywhere firecracker: spawn a short-lived sparkle burst at the pointer.
-  const heroRef = useRef(null);
-  const [bursts, setBursts] = useState([]);
-
-  // Tap the festive season card → a big confetti shower across the hero.
-  const [showers, setShowers] = useState([]);
-  const fireShower = (e) => {
-    e?.stopPropagation?.();
-    const COLORS = [
-      "#fb8500",
-      "#ffb703",
-      "#ffd23f",
-      "#c0223b",
-      "#ff8c42",
-      "#4ade80",
-      "#60a5fa",
-      "#f472b6",
-      "#ffffff",
-    ];
-    const id = `sh-${Date.now()}-${Math.random()}`;
-    const pieces = Array.from({ length: 54 }).map((_, i) => ({
-      i,
-      left: Math.random() * 100,
-      delay: Math.random() * 0.45,
-      dur: 1.8 + Math.random() * 1.6,
-      size: 6 + Math.random() * 7,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      rot: Math.random() * 760 - 380,
-      drift: Math.random() * 160 - 80,
-      round: Math.random() < 0.42,
-    }));
-    setShowers((s) => [...s, { id, pieces }]);
-    setTimeout(() => setShowers((s) => s.filter((z) => z.id !== id)), 3600);
-  };
-  const SPARK_COLORS = ["#fb8500", "#ff8c42", "#e6a83c", "#ffd23f", "#c0223b"];
-  const spawnBurst = (e) => {
-    const el = heroRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const id = `${Date.now()}-${Math.random()}`;
-    const n = 10 + Math.floor(Math.random() * 4);
-    const parts = Array.from({ length: n }).map((_, i) => {
-      const angle = (i / n) * Math.PI * 2 + Math.random() * 0.5;
-      const dist = 28 + Math.random() * 46;
-      return {
-        i,
-        dx: Math.cos(angle) * dist,
-        dy: Math.sin(angle) * dist,
-        size: 4 + Math.random() * 5,
-        color: SPARK_COLORS[i % SPARK_COLORS.length],
-      };
-    });
-    setBursts((b) => [...b, { id, x, y, parts }]);
-    setTimeout(() => setBursts((b) => b.filter((z) => z.id !== id)), 750);
-  };
-
-  // Diwali marigold petals drifting down the hero. Deterministic values keep
-  // SSR and client markup identical (no hydration mismatch).
-  const petals = useMemo(() => {
-    const COLORS = ["#fb8500", "#ffb703", "#ffd23f", "#ff8c42", "#e85d04", "#f48c06"];
-    return Array.from({ length: 10 }).map((_, i) => ({
-      i,
-      left: (i * 97) % 100,
-      delay: ((i * 53) % 70) / 10, // 0–7s
-      dur: 6 + (((i * 71) % 55) / 10), // 6–11.5s
-      size: 9 + (i % 4) * 3, // 9–18px
-      color: COLORS[i % COLORS.length],
-      sway: 24 + ((i * 37) % 40), // horizontal sway px
-    }));
-  }, []);
-
-  // Marigold garland (toran) flowers strung across the top of the hero.
-  const toran = useMemo(
+  // Christmas snowfall — deterministic flakes so SSR and client markup match.
+  const flakes = useMemo(
     () =>
-      Array.from({ length: 22 }).map((_, i) => ({
+      Array.from({ length: 36 }).map((_, i) => ({
         i,
-        orange: i % 2 === 0,
-        size: 16 + (i % 3) * 3,
-        drop: (i % 4) * 4, // slight hang variation
+        left: (i * 61) % 100,
+        size: 3 + ((i * 7) % 6), // 3–8px
+        delay: -(((i * 37) % 90) / 10), // already falling on first paint
+        dur: 7 + (((i * 53) % 70) / 10), // 7–14s
+        drift: 14 + ((i * 29) % 30),
+        blur: i % 5 === 0,
       })),
     [],
   );
-
-  // Door-style hanging marigold garlands (bandhanwar) at the top corners.
-  // Each strand is a column of flower/leaf beads of a given length.
-  const bandhanwar = useMemo(() => {
-    const strand = (len) =>
-      Array.from({ length: len }).map((_, k) => ({
-        k,
-        leaf: k % 2 === 1,
-        orange: k % 4 < 2,
-      }));
-    return {
-      left: [strand(7), strand(5)],
-      right: [strand(5), strand(7)],
-    };
-  }, []);
-
-  // A few auto-firing Diwali fireworks across the hero sky.
-  const fireworks = useMemo(
-    () => [
-      { i: 0, left: 16, top: 14, hue: "#ffd23f", delay: 0 },
-      { i: 1, left: 72, top: 10, hue: "#fb8500", delay: 1.4 },
-      { i: 2, left: 46, top: 22, hue: "#f472b6", delay: 2.8 },
-      { i: 3, left: 88, top: 26, hue: "#60a5fa", delay: 3.9 },
-    ],
-    [],
-  );
+  // Fairy lights strung along the top edge.
+  const lights = useMemo(() => Array.from({ length: 18 }).map((_, i) => i), []);
 
   const stats = [
     { icon: Star, label: "4.4 rating" },
@@ -265,12 +163,7 @@ export default function HomeHero() {
   };
 
   return (
-    <section
-      className="home-hero hero-night"
-      ref={heroRef}
-      onPointerDown={spawnBurst}
-      style={{ position: "relative" }}
-    >
+    <section className="home-hero hero-xmas" style={{ position: "relative" }}>
       {/* Structured data — WebSite search action + featured books as Products */}
       <script
         type="application/ld+json"
@@ -302,156 +195,42 @@ export default function HomeHero() {
           </li>
         </ul>
       </div>
-      {/* Night sky: everything up to the diya fade sits on the dark band */}
-      <div className="hn-sky">
-      {/* Diwali night: stars, rangoli and swinging lanterns */}
-      <DiwaliNight />
-
-      {/* Diwali marigold garland (toran) strung across the top */}
-      <div className="hero-toran" aria-hidden="true">
-        {toran.map((f) => (
+      {/* Christmas: fairy lights + soft snowfall behind the content */}
+      <div className="hx-lights" aria-hidden="true">
+        {lights.map((i) => (
+          <span key={i} className={`hx-bulb c${i % 4}`} style={{ animationDelay: `${(i % 6) * 0.35}s` }} />
+        ))}
+      </div>
+      <div className="hx-snow" aria-hidden="true">
+        {flakes.map((f) => (
           <span
             key={f.i}
-            className={`toran-f${f.orange ? " o" : " y"}`}
+            className={`hx-flake${f.blur ? " soft" : ""}`}
             style={{
+              left: `${f.left}%`,
               width: f.size,
               height: f.size,
-              marginTop: f.drop,
-              animationDelay: `${(f.i % 6) * 0.2}s`,
+              animationDelay: `${f.delay}s`,
+              animationDuration: `${f.dur}s`,
+              "--hx-drift": `${f.drift}px`,
             }}
           />
         ))}
-      </div>
-
-      {/* Door-style hanging marigold garlands (bandhanwar) at top corners */}
-      <div className="hero-bandhanwar" aria-hidden="true">
-        {["left", "right"].map((side) => (
-          <div key={side} className={`bw-cluster ${side}`}>
-            {bandhanwar[side].map((strand, s) => (
-              <span key={s} className="bw-strand" style={{ animationDelay: `${s * 0.3}s` }}>
-                {strand.map((b) => (
-                  <span
-                    key={b.k}
-                    className={`bw-bead${b.leaf ? " leaf" : b.orange ? " o" : " y"}`}
-                  />
-                ))}
-                <span className="bw-tip" />
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
-
-      {/* Diwali fireworks bursting in the hero sky */}
-      <div className="hero-fireworks" aria-hidden="true">
-        {fireworks.map((fw) => (
-          <span
-            key={fw.i}
-            className="hero-fw"
-            style={{
-              left: `${fw.left}%`,
-              top: `${fw.top}%`,
-              "--fw": fw.hue,
-              animationDelay: `${fw.delay}s`,
-            }}
-          >
-            {Array.from({ length: 12 }).map((_, k) => (
-              <span
-                key={k}
-                className="fw-spark"
-                style={{ "--a": `${k * 30}deg`, animationDelay: `${fw.delay}s` }}
-              />
-            ))}
-          </span>
-        ))}
-      </div>
-
-      {/* Marigold petals drifting down the hero (behind the content) */}
-      <div className="hero-confetti hero-petals" aria-hidden="true">
-        {petals.map((c) => (
-          <span
-            key={c.i}
-            className="hero-petal"
-            style={{
-              left: `${c.left}%`,
-              width: c.size,
-              height: c.size + 3,
-              background: c.color,
-              animationDelay: `${c.delay}s`,
-              animationDuration: `${c.dur}s`,
-              "--pt-x": `${c.sway}px`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Confetti shower fired when the season card is tapped */}
-      <div className="hero-shower-layer" aria-hidden="true">
-        {showers.flatMap((sh) =>
-          sh.pieces.map((p) => (
-            <span
-              key={`${sh.id}-${p.i}`}
-              className={`hero-shower-piece${p.round ? " round" : ""}`}
-              style={{
-                left: `${p.left}%`,
-                width: p.size,
-                height: p.round ? p.size : p.size + 4,
-                background: p.color,
-                animationDelay: `${p.delay}s`,
-                animationDuration: `${p.dur}s`,
-                "--sh-rot": `${p.rot}deg`,
-                "--sh-x": `${p.drift}px`,
-              }}
-            />
-          )),
-        )}
-      </div>
-
-      {/* Tap-anywhere firecracker sparkles */}
-      <div className="hero-spark-layer" aria-hidden="true">
-        {bursts.map((burst) =>
-          burst.parts.map((p) => (
-            <motion.span
-              key={`${burst.id}-${p.i}`}
-              className="hero-spark"
-              initial={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-              animate={{ opacity: 0, scale: 0.3, x: p.dx, y: p.dy }}
-              transition={{ duration: 0.65, ease: "easeOut" }}
-              style={{
-                left: burst.x,
-                top: burst.y,
-                width: p.size,
-                height: p.size,
-                background: p.color,
-                boxShadow: `0 0 6px ${p.color}`,
-              }}
-            />
-          )),
-        )}
       </div>
 
       <div className="hero-top">
         <div className="home-hero-inner">
-          {/* Festive sale — flat lay below the marigold garland (tap to shower) */}
+          {/* Christmas sale kicker — opens the reward tiers */}
           <button
             type="button"
-            className="hero-festive-flat"
-            onClick={fireShower}
-            aria-label="Festive sale — up to 50% off. Tap for a surprise."
+            className="hx-kicker"
+            onClick={() => setOffersOpen(true)}
+            aria-label="Christmas sale — up to 50% off. See all offers."
           >
-            <span className="hff-kicker">
-              <span aria-hidden="true">🪔</span>
-              Festive Season Sale is live
-              <span aria-hidden="true">🪔</span>
-            </span>
-            <span className="hff-amt">
-              Up to <b>50% OFF</b> on every order
-            </span>
-            <span className="hff-hint">Tap for a surprise 🎉</span>
+            <span className="hx-kicker-dot" aria-hidden="true" />
+            Christmas Sale is live · <b>Up to 50% OFF</b>
+            <ChevronRight size={14} />
           </button>
-
-          {/* Happy Diwali greeting under the sale card */}
-          <DiwaliGreeting />
 
           {/* Offers marquee — auto-scrolls; tap any chip to see all reward tiers */}
           <div className="hero-offers-row" role="list">
@@ -575,162 +354,15 @@ export default function HomeHero() {
 
         </div>
 
-        {/* Readers' top-3 picks podium — hidden for now (flip SHOW_PODIUM). */}
-        {SHOW_PODIUM && picks.length > 0 && (
-          <aside className="hero-picks">
-            {/* Winners' podium: #1 tallest in the centre, #2 right, #3 left.
-              Rises into place when scrolled into view, retracts when past. */}
-            <motion.div
-              className="hero-podium"
-              initial="hide"
-              whileInView="show"
-              viewport={{ once: false, amount: 0.35 }}
-            >
-              {/* tiny confetti */}
-              <motion.span
-                className="hpz-confetti"
-                aria-hidden="true"
-                variants={{ hide: { opacity: 0 }, show: { opacity: 1 } }}
-                transition={{ duration: 0.3, delay: 0.35 }}
-              >
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <span key={i} className={`hpz-cf hpz-cf-${i}`} />
-                ))}
-              </motion.span>
-
-              {[
-                { b: picks[2], rank: 3 },
-                { b: picks[0], rank: 1 },
-                { b: picks[1], rank: 2 },
-              ]
-                .filter((x) => x.b)
-                .map(({ b, rank }, idx) => {
-                  const url = `/books/${slugify(b.name)}`;
-                  return (
-                    <motion.div
-                      className={`hpz hpz-r${rank}`}
-                      key={b.id}
-                      variants={{
-                        hide: { opacity: 0, y: 48 },
-                        show: { opacity: 1, y: 0 },
-                      }}
-                      transition={{
-                        duration: 0.5,
-                        ease: [0.22, 1, 0.36, 1],
-                        delay: idx * 0.1,
-                      }}
-                    >
-                      <button
-                        type="button"
-                        className="hpz-book"
-                        aria-label={`Add ${b.name} to bag`}
-                        onClick={() => {
-                          addToCart(b.id, "card");
-                          showToast(
-                            `Added to your bag 🎉 “${b.name}”`,
-                            "success",
-                          );
-                        }}
-                      >
-                        <span className="hpz-coverwrap">
-                          <span className="hpz-cover">
-                            <img
-                              src={b.image}
-                              alt={`${b.name}${b.author ? ` by ${b.author}` : ""} — buy online at ₹${b.discountedPrice} on TheBookX`}
-                              loading="lazy"
-                            />
-                          </span>
-                          <span
-                            className="hpz-bm hpz-bm-back"
-                            aria-hidden="true"
-                          />
-                          <span
-                            className="hpz-bm hpz-bm-front"
-                            aria-hidden="true"
-                          >
-                            <span className="hpz-bm-txt">BOOKMARK</span>
-                          </span>
-                        </span>
-                        <span className="hpz-title">{b.name}</span>
-                      </button>
-                      <div className="hpz-pillar">
-                        <span className="hpz-rank">{rank}</span>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-            </motion.div>
-
-            <button
-              type="button"
-              className="hero-picks-addall"
-              onClick={() => {
-                picks.forEach((b) => addToCart(b.id));
-                showToast("Added all 3 picks to your bag 🎉", "success");
-              }}
-            >
-              <Plus size={16} /> Add all 3 to bag
-            </button>
-          </aside>
-        )}
       </div>
 
       {/* Live activity: orders, Faster picks, bag adds, reviews */}
       <LiveActivity />
 
-      {/* Scratch & win band — reuses the homepage scratch flow (opens the
-          number modal + wallet reward via the tbx:open-scratch event). */}
-      <div
-        className="hero-scratch-band"
-        role="button"
-        tabIndex={0}
-        onClick={openScratch}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && openScratch()}
-        aria-label="Scratch to win cashback"
-      >
-        <span className="hero-scratch-deco" aria-hidden="true" />
-        {/* Lightning sparks that flash around the card on hover / tap */}
-        {["tl", "tr", "bl", "br"].map((pos) => (
-          <svg
-            key={pos}
-            viewBox="0 0 24 24"
-            className={`sc-bolt sc-bolt-${pos}`}
-            aria-hidden="true"
-          >
-            <path d="M13.5 2 4 13.5h6.5L9.5 22 20 9.5h-6.6L13.5 2Z" />
-          </svg>
-        ))}
-
-        <div className="hero-scratch-copy">
-          <span className="hero-scratch-kicker">
-            <Gift size={13} /> Scratch &amp; win
-          </span>
-          <span className="hero-scratch-amt">
-            Cashback upto <span className="hero-scratch-amt-big">₹100</span>
-          </span>
-          <span className="hero-scratch-sub">
-            Every order wins. Tap the card to reveal.
-          </span>
-        </div>
-
-        <span className="hero-scratch-teaser" aria-hidden="true">
-          <ScratchTeaserCard visualOnly />
-        </span>
-      </div>
-
-      {/* Lit diyas at the foot of the night sky, fading into the page */}
-      <DiyaRow />
-      {/* Gold diamond border where the night sky meets the page */}
-      <div className="dn-border" aria-hidden="true">
-        <span className="dn-border-line" />
-        <span className="dn-border-gems">
-          <i />
-          <i className="big" />
-          <i />
-        </span>
-        <span className="dn-border-line" />
-      </div>
-      </div>
+      {/* Snow drift where the hero meets the page */}
+      <svg className="hx-drift" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 22 C40 8 80 30 130 18 S220 6 270 20 S350 30 400 14 V40 H0 Z" />
+      </svg>
 
       {/* Search modal (existing overlay) */}
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
@@ -785,5 +417,57 @@ export default function HomeHero() {
         )}
       </AnimatePresence>
     </section>
+  );
+}
+
+// Scratch & win band — moved out of the hero so the hero stays minimal. It
+// reuses the homepage scratch flow (opens via the tbx:open-scratch event).
+export function HeroScratchBand() {
+  const openScratch = () => {
+    if (typeof window !== "undefined")
+      window.dispatchEvent(new Event("tbx:open-scratch"));
+  };
+  return (
+    <div className="hx-scratch-wrap">
+        {/* Scratch & win band — reuses the homepage scratch flow (opens the
+            number modal + wallet reward via the tbx:open-scratch event). */}
+        <div
+          className="hero-scratch-band"
+          role="button"
+          tabIndex={0}
+          onClick={openScratch}
+          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && openScratch()}
+          aria-label="Scratch to win cashback"
+        >
+          <span className="hero-scratch-deco" aria-hidden="true" />
+          {/* Lightning sparks that flash around the card on hover / tap */}
+          {["tl", "tr", "bl", "br"].map((pos) => (
+            <svg
+              key={pos}
+              viewBox="0 0 24 24"
+              className={`sc-bolt sc-bolt-${pos}`}
+              aria-hidden="true"
+            >
+              <path d="M13.5 2 4 13.5h6.5L9.5 22 20 9.5h-6.6L13.5 2Z" />
+            </svg>
+          ))}
+
+          <div className="hero-scratch-copy">
+            <span className="hero-scratch-kicker">
+              <Gift size={13} /> Scratch &amp; win
+            </span>
+            <span className="hero-scratch-amt">
+              Cashback upto <span className="hero-scratch-amt-big">₹100</span>
+            </span>
+            <span className="hero-scratch-sub">
+              Every order wins. Tap the card to reveal.
+            </span>
+          </div>
+
+          <span className="hero-scratch-teaser" aria-hidden="true">
+            <ScratchTeaserCard visualOnly />
+          </span>
+        </div>
+    </div>
   );
 }

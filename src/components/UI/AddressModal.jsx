@@ -195,6 +195,10 @@ export default function AddressModal({
   // Lift add-on selections up so the shared Bill modal reflects them.
   onDeliveryChoiceChange,
   onGiftWrapChange,
+  // Add-ons already picked in the bag — the modal opens with them.
+  initialFaster = false,
+  initialBookmarks = 0,
+  onBookmarksChange,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -448,9 +452,11 @@ export default function AddressModal({
   }, [giftWrap]);
 
   // Keep the parent (and the shared Bill modal) in sync with add-on choices.
+  // Only while open: the modal is always mounted, and its defaults must not
+  // overwrite what the shopper picked in the bag.
   useEffect(() => {
-    if (onDeliveryChoiceChange) onDeliveryChoiceChange(fasterDelivery);
-  }, [fasterDelivery, onDeliveryChoiceChange]);
+    if (open && onDeliveryChoiceChange) onDeliveryChoiceChange(fasterDelivery);
+  }, [open, fasterDelivery, onDeliveryChoiceChange]);
   useEffect(() => {
     if (onGiftWrapChange) onGiftWrapChange(giftWrap);
   }, [giftWrap, onGiftWrapChange]);
@@ -459,6 +465,16 @@ export default function AddressModal({
   //   below ₹500  → 2 free · ₹500–999 → 3 free · ₹1000+ → 4 free
   const [bookmarkQty, setBookmarkQty] = useState(0);
   const BOOKMARK_UNIT = 9;
+  // Open with the bag's add-on choices (bookmarks + delivery speed).
+  useEffect(() => {
+    if (!open) return;
+    setBookmarkQty(Math.max(0, Math.min(2, Number(initialBookmarks) || 0)));
+    setFasterDelivery(!!initialFaster);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+  useEffect(() => {
+    if (open && onBookmarksChange) onBookmarksChange(bookmarkQty);
+  }, [open, bookmarkQty, onBookmarksChange]);
   // Switching to Cash on Delivery caps bookmarks at 1 — trim any extra.
   useEffect(() => {
     const cap = paySel === "COD" ? 1 : 2;
@@ -1010,7 +1026,6 @@ export default function AddressModal({
   // the balance + the 1.5% COD collection charge (same as the order page,
   // out-for-delivery messages and the printed label).
   const advanceAtDoor = Math.round(advanceRemaining * 1.015);
-  const advanceCollectCharge = Math.max(0, advanceAtDoor - advanceRemaining);
   // COD always ships Standard, so its card is priced on the Standard bill —
   // switching delivery type above doesn't change the COD card.
   const codStdRaw = getTotalWithDelivery(false) + addOnsCharge;
@@ -1194,8 +1209,8 @@ export default function AddressModal({
       setDistrict(saved.district || "");
       setArea(saved.area || "");
       setState(saved.state || "");
-      // Faster is chosen fresh on the payment step each time (Standard by default).
-      setFasterDelivery(false);
+      // Delivery speed comes from the bag's add-on choice (Standard by default).
+      setFasterDelivery(!!initialFaster);
       try {
         const em = localStorage.getItem("checkoutEmail");
         if (em && !email) setEmail(em);
@@ -1211,7 +1226,7 @@ export default function AddressModal({
         String(saved.address || "").trim().length > ADDRESS_MIN_CHARS;
       if (ok) {
         setPaySel("UPI");
-        setFasterDelivery(false);
+        setFasterDelivery(!!initialFaster);
         setTimeout(() => setShowPaySelect(true), 250);
       }
     }
@@ -2942,9 +2957,9 @@ export default function AddressModal({
                       return;
                     }
                     setPaySel("UPI"); // online payment selected by default
-                    // Straight to payment with Standard delivery; Faster is an
-                    // opt-in tick on that sheet (and only then joins the bill).
-                    setFasterDelivery(false);
+                    // Delivery speed as picked in the bag (Standard unless the
+                    // shopper chose Faster there); changeable on that sheet.
+                    setFasterDelivery(!!initialFaster);
                     setShowPaySelect(true);
                   }}
                 >
@@ -3335,8 +3350,14 @@ export default function AddressModal({
                         <span className="pm2-badge">Save ₹{codFeeAmount}</span>
                       </span>
                       <span className="pay-perks">
-                        <span className="pay-perk">Free bookmark</span>
-                        <span className="pay-perk">No COD fee</span>
+                        <span className="pay-perk pay-perk-ic pay-perk-bm">
+                          <span className="pay-perk-pop" aria-hidden="true"><Bookmark size={12} strokeWidth={2.4} fill="currentColor" /></span>
+                          Free bookmark
+                        </span>
+                        <span className="pay-perk pay-perk-ic">
+                          <Banknote size={13} strokeWidth={2.2} aria-hidden="true" />
+                          No COD fee
+                        </span>
                       </span>
                     </span>
                     <span className="pm2-pricecol">
@@ -3378,9 +3399,13 @@ export default function AddressModal({
                           )}
                         </span>
                         <span className="pay-perks">
-                          <span className="pay-perk">Free bookmark</span>
-                          <span className="pay-method-desc pay-method-adv-rest">
-                            Rest ₹{advanceAtDoor} at delivery
+                          <span className="pay-perk pay-perk-ic pay-perk-bm">
+                            <span className="pay-perk-pop" aria-hidden="true"><Bookmark size={12} strokeWidth={2.4} fill="currentColor" /></span>
+                            Free bookmark
+                          </span>
+                          <span className="pay-perk pay-perk-ic pay-perk-blue">
+                            <Truck size={13} strokeWidth={2.2} aria-hidden="true" />
+                            Rest at delivery
                           </span>
                         </span>
                       </span>
@@ -3416,12 +3441,8 @@ export default function AddressModal({
                       <div className="pay-split-seg">
                         <span className="pay-split-amt">₹{advanceAtDoor}</span>
                         <span className="pay-split-lbl">
-                          Cash on Delivery later
-                          {advanceCollectCharge > 0 && (
-                            <small className="pay-split-note">
-                              incl. ₹{advanceCollectCharge} collection (1.5%)
-                            </small>
-                          )}
+                          Rest at delivery
+                          <small className="pay-split-note">Cash or online (UPI)</small>
                         </span>
                       </div>
                     </div>
@@ -3463,9 +3484,9 @@ export default function AddressModal({
                         {proActive ? (
                           <span className="pay-perk">No COD fee · Member</span>
                         ) : (
-                          <span className="pay-method-desc pay-method-cod-fee">
-                            Includes <strong>+₹{codFeeStd}</strong> handling
-                            fee
+                          <span className="pay-perk pay-perk-ic pay-perk-red">
+                            <Banknote size={13} strokeWidth={2.2} aria-hidden="true" />
+                            +₹{codFeeStd} COD fees
                           </span>
                         )}
                       </span>

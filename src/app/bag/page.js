@@ -13,7 +13,8 @@ import BagQuickAdd from "@/components/BagQuickAdd";
 import { fetchProStatus, cachedProStatus } from "@/utils/proPlan";
 import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
-import { SavedBanner, TopUpCard, BillCard, PolicyNote } from "@/components/BagSections";
+import { SavingsGlow, TopUpCard, BillCard, PolicyNote } from "@/components/BagSections";
+import BagAddons, { BAG_ADDONS_KEY, MAX_BAG_BOOKMARKS } from "@/components/BagAddons";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import OrderSuccessCard from "@/components/UI/OrderSuccessCard";
 import BillModal from "@/components/UI/BillModal";
@@ -126,21 +127,22 @@ function BagContent() {
     }, 0);
     return () => clearTimeout(t);
   }, []);
-  const [deliveryEta, setDeliveryEta] = useState("Delivery in 4–9 days");
+  // Delivery windows for the Standard / Faster add-on (by saved pincode).
+  const [etaWin, setEtaWin] = useState({ std: "4–9 days", fast: "1–6 days" });
   useEffect(() => {
     const t = setTimeout(() => {
       try {
         const pin = String(localStorage.getItem("delivery_pincode") || "");
         const city = localStorage.getItem("delivery_city") || "";
         if (pin.length === 6) {
-          const mh = /^4[0-4]/.test(pin) && !pin.startsWith("403");
           const st = localStorage.getItem("delivery_state") || "";
-          const range = mh
-            ? "1–5 days"
-            : isFastRegion({ state: st, city, pincode: pin })
-              ? "4–9 days"
-              : windowText(deliveryWindows({ state: st, city, pincode: pin }).standard);
-          setDeliveryEta(`${range} to ${city || pin}`);
+          const addr = { state: st, city, pincode: pin };
+          const win = deliveryWindows(addr);
+          const mh = /^4[0-4]/.test(pin) && !pin.startsWith("403");
+          setEtaWin({
+            std: mh ? "1–5 days" : isFastRegion(addr) ? "4–9 days" : windowText(win.standard),
+            fast: windowText(win.faster),
+          });
         }
       } catch {
         /* ignore */
@@ -169,6 +171,33 @@ function BagContent() {
   // Mirror the add-on choices made inside the Address modal so the shared
   // Bill modal shows the same delivery + gift-wrap charges.
   const [billFaster, setBillFaster] = useState(false);
+  // Add-ons picked right in the bag (bookmarks + delivery speed); the checkout
+  // opens with the same choices. Remembered per device.
+  const [bagBookmarks, setBagBookmarks] = useState(0);
+  const addonsLoaded = useRef(false);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      try {
+        const v = JSON.parse(localStorage.getItem(BAG_ADDONS_KEY) || "null");
+        if (v) {
+          setBagBookmarks(Math.max(0, Math.min(MAX_BAG_BOOKMARKS, Number(v.bookmarks) || 0)));
+          setBillFaster(!!v.faster);
+        }
+      } catch {
+        /* ignore */
+      }
+      addonsLoaded.current = true;
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
+  useEffect(() => {
+    if (!addonsLoaded.current) return;
+    try {
+      localStorage.setItem(BAG_ADDONS_KEY, JSON.stringify({ bookmarks: bagBookmarks, faster: billFaster }));
+    } catch {
+      /* ignore */
+    }
+  }, [bagBookmarks, billFaster]);
   // Checkout's exact bill when View bill is opened from inside checkout.
   const [billSnap, setBillSnap] = useState(null);
   const [billGiftWrap, setBillGiftWrap] = useState(false);
@@ -738,6 +767,9 @@ function BagContent() {
   };
 
   const totalWithStandardDelivery = finalPayable + standardDeliveryCharge + walletTopUp;
+  // Faster picked in the bag → the pay bar / bill card show the Faster price.
+  const fasterExtraBag = billFaster ? Math.max(0, fasterDeliveryCharge - standardDeliveryCharge) : 0;
+  const bagFreeBookmarks = totalDiscounted >= 1000 ? 4 : totalDiscounted >= 500 ? 3 : 2;
 
   // QuickReads ride on the same physical-book bill (one combined checkout).
   const hasBundledQr = cartBooks.length > 0 && qrItems.length > 0;
@@ -1397,7 +1429,7 @@ ${itemsBlock}${qrLines}
   }
 
   return (
-    <section className="section-680 flex flex-col gap-24">
+    <section className="section-680 flex flex-col gap-24 bag-page">
       <PageHeader
         title="Your Bag"
         subtitle={`${cartBooks.length} book${cartBooks.length > 1 ? "s" : ""} in cart`}
@@ -1483,19 +1515,9 @@ ${itemsBlock}${qrLines}
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
         <>
-          {cartBooks.length > 0 && <SavedBanner amount={totalSaved} />}
-          {cartBooks.length > 0 && (
-            // The wallet top-up counts toward free delivery, so the strip
-            // reflects it too.
-            <CartOfferStrip discountedAmount={totalDiscounted + walletTopUp} />
-          )}
-
-          {/* Bookmark achievements (2 → 3 → 4 free, Mystery Box at ₹3000) */}
-          {cartBooks.length > 0 && <OrderRewards amount={totalDiscounted} />}
-
           <div className="cart-items-panel bg-cart">
             <div className="bg-cart-head">
-              <b>{deliveryEta}</b>
+              <b>Your books</b>
               <span>
                 {cartBooks.reduce((n, b) => n + b.qty, 0) + qrItems.length} item
                 {cartBooks.reduce((n, b) => n + b.qty, 0) + qrItems.length === 1 ? "" : "s"}
@@ -1574,6 +1596,19 @@ ${itemsBlock}${qrLines}
                 </div>
               ))}
             </div>
+            {cartBooks.length > 0 && (
+              <BagAddons
+                bookmarks={bagBookmarks}
+                onBookmarks={setBagBookmarks}
+                freeBookmarks={bagFreeBookmarks}
+                faster={billFaster}
+                onFaster={setBillFaster}
+                standardFee={standardDeliveryCharge}
+                fasterFee={fasterDeliveryCharge}
+                standardEta={etaWin.std}
+                fasterEta={etaWin.fast}
+              />
+            )}
             <div className="bg-cart-foot">
               <span>Missed a book?</span>
               <Link href="/books">Add more</Link>
@@ -1582,6 +1617,12 @@ ${itemsBlock}${qrLines}
               </button>
             </div>
           </div>
+
+          {/* Savings — slim green strip (the "add more" strip docks on the pay bar) */}
+          {cartBooks.length > 0 && <SavingsGlow amount={totalSaved} mrp={totalOriginal} />}
+
+          {/* Bookmark achievements (2 → 3 → 4 free, Mystery Box at ₹3000) */}
+          {cartBooks.length > 0 && <OrderRewards amount={totalDiscounted} />}
 
           {cartBooks.length > 0 && (
             <TopUpCard
@@ -1671,12 +1712,12 @@ ${itemsBlock}${qrLines}
               totalDiscounted={totalDiscounted}
               offerDiscount={offerDiscount}
               offerLabel={offerLabel}
-              deliveryFee={standardDeliveryCharge}
+              deliveryFee={billFaster ? fasterDeliveryCharge : standardDeliveryCharge}
               deliveryFeeWithout={baseDeliveryFee}
               freeAt={FREE_DELIVERY_AT}
               topUp={walletTopUp}
               quickReads={bundledQrTotal}
-              toPay={totalWithStandardDelivery + bundledQrTotal}
+              toPay={totalWithStandardDelivery + bundledQrTotal + fasterExtraBag}
               onViewBill={() => setShowBill(true)}
             />
           )}
@@ -1711,11 +1752,16 @@ ${itemsBlock}${qrLines}
             <div
               className={`fixed-bill-bar bg-paybar${showRecommendationModal ? " reco-open" : ""}`}
             >
+              {/* "Add ₹X more for FREE delivery / offers" docked on the pay bar.
+                  The wallet top-up counts toward free delivery, so it's included. */}
+              <div className="bag-offer-dock">
+                <CartOfferStrip discountedAmount={totalDiscounted + walletTopUp} />
+              </div>
               <button type="button" className="bg-paybar-left" onClick={() => setShowBill(true)} data-no-busy>
                 <small>
                   To pay{totalSaved > 0 ? ` · ₹${totalSaved} saved` : ""}
                 </small>
-                <b>₹{totalWithStandardDelivery + bundledQrTotal}</b>
+                <b>₹{totalWithStandardDelivery + bundledQrTotal + fasterExtraBag}</b>
                 <em>View bill ▴</em>
               </button>
               <button
@@ -1727,7 +1773,7 @@ ${itemsBlock}${qrLines}
                 {isShortening
                   ? "Preparing…"
                   : canCheckout
-                    ? `Proceed to pay ₹${totalWithStandardDelivery + bundledQrTotal}`
+                    ? `Proceed to pay ₹${totalWithStandardDelivery + bundledQrTotal + fasterExtraBag}`
                     : `Add ₹${amountNeededToCheckout} more`}
               </button>
             </div>
@@ -1975,6 +2021,9 @@ ${itemsBlock}${qrLines}
         }}
         onDeliveryChoiceChange={setBillFaster}
         onGiftWrapChange={setBillGiftWrap}
+        initialFaster={billFaster}
+        initialBookmarks={bagBookmarks}
+        onBookmarksChange={setBagBookmarks}
       />
 
       <BillModal

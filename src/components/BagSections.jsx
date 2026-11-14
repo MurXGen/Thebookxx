@@ -21,6 +21,44 @@ export function SavedBanner({ amount }) {
   );
 }
 
+// Savings card under the books: a glowing amount with twinkling stars.
+const STARS = [
+  { x: "5%", y: "28%", s: 8, d: 0 },
+  { x: "14%", y: "58%", s: 6, d: 0.7 },
+  { x: "84%", y: "22%", s: 7, d: 0.3 },
+  { x: "93%", y: "55%", s: 9, d: 1.1 },
+];
+export function SavingsGlow({ amount, mrp = 0 }) {
+  if (!(amount > 0)) return null;
+  const pct = mrp > 0 ? Math.round((amount / mrp) * 100) : 0;
+  return (
+    <div className="bg-glow" role="status">
+      {STARS.map((st, i) => (
+        <svg
+          key={i}
+          className="bg-glow-star"
+          viewBox="0 0 24 24"
+          width={st.s}
+          height={st.s}
+          style={{ left: st.x, top: st.y, animationDelay: `${st.d}s` }}
+          aria-hidden="true"
+        >
+          <path d="M12 0c.9 6.4 4.6 10.6 12 12-7.4 1.4-11.1 5.6-12 12-.9-6.4-4.6-10.6-12-12 7.4-1.4 11.1-5.6 12-12z" />
+        </svg>
+      ))}
+      <motion.span
+        key={Math.round(amount)}
+        className="bg-glow-txt"
+        initial={{ y: 6, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 380, damping: 22 }}
+      >
+        <b>{inr(amount)} saved</b> on this order{pct > 0 ? ` · ${pct}% off` : ""}
+      </motion.span>
+    </div>
+  );
+}
+
 // "FREE delivery on this order · Get ₹11 in your wallet · use it fully on the
 // next order [ADD]". Shown when the cart is a small amount short of free
 // delivery (or of the checkout minimum).

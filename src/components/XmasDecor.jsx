@@ -26,7 +26,7 @@ function makeSprite(size) {
  * gentle wind shift. Pauses off-screen / in a hidden tab; static under
  * prefers-reduced-motion. `density` scales the flake count.
  */
-export function XmasSnow({ density = 1, className = "" }) {
+export function XmasSnow({ density = 1, max = 170, className = "" }) {
   const ref = useRef(null);
   useEffect(() => {
     const canvas = ref.current;
@@ -65,7 +65,7 @@ export function XmasSnow({ density = 1, className = "" }) {
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const target = Math.round(
-        Math.min(170, Math.max(28, ((w * h) / 4800) * density)),
+        Math.min(max, Math.max(Math.min(28, max), ((w * h) / 4800) * density)),
       );
       while (flakes.length < target) flakes.push(make(true));
       flakes.length = target;
@@ -130,7 +130,7 @@ export function XmasSnow({ density = 1, className = "" }) {
       io.disconnect();
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [density]);
+  }, [density, max]);
   return (
     <canvas ref={ref} className={`hx-snowcanvas ${className}`} aria-hidden="true" />
   );

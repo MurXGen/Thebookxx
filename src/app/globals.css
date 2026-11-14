@@ -69578,3 +69578,81 @@ body:has(.bag-page) { background: linear-gradient(180deg, #fffaf4 0%, #fffdfa 22
   filter: drop-shadow(0 1px 1.5px rgba(110, 140, 180, 0.4));
 }
 .hx-sw::before { top: -0.03em; height: 0.19em; left: 0; right: 0.02em; }
+
+/* ===== v7: Book page — blush backdrop, page snowfall, snowy white cards ===== */
+.pdp-page { position: relative; isolation: isolate; }
+.pdp-fx {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: clip;
+  background:
+    radial-gradient(70% 420px at 0% 0%, rgba(239, 68, 68, 0.16), transparent 70%),
+    radial-gradient(60% 420px at 100% 240px, rgba(220, 38, 38, 0.10), transparent 70%),
+    linear-gradient(180deg, #fde4e3 0%, #fdeeec 520px, #fff4f2 100%);
+}
+.pdp-fx.front { z-index: 2; background: none; }
+.hx-snowcanvas.pdp-snowfall { position: sticky; top: 0; display: block; width: 100%; height: 100vh; }
+.pdp-fx.front .pdp-snowfall { opacity: 0.8; }
+.pdp.pdp-x { position: relative; z-index: 1; padding-top: 2px; }
+.pdp-x .pdp-crumbs a, .pdp-x .pdp-crumbs svg { color: #7f1d1d; }
+
+/* Shared card look */
+.pdp-x .pdp-card, .pdp-x .pdp-sec {
+  position: relative; background: #fff; border: 1px solid rgba(220, 38, 38, 0.13); border-radius: 18px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 14px 30px -24px rgba(127, 29, 29, 0.55);
+}
+.pdp-x .pdp-card { padding: 16px; }
+@media (min-width: 900px) { .pdp-x .pdp-card { padding: 20px 22px; } }
+/* Lumpy snow resting on a card's top edge */
+.pdp-x .pdp-snowy::before, .pdp-x .pdp-sec::before {
+  content: ""; position: absolute; z-index: 2; pointer-events: none; left: 14px; right: 14px; top: -9px; height: 18px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C4 3 14 1 24 4 C34 0 48 1 58 4 C70 0 86 2 98 4 C110 0 128 1 140 4 C152 0 170 1 180 4 C190 2 197 4 196 9 C196 12 192 13 188 12 C186 17 180 18 178 13 C150 14 130 12 118 13 C117 19 108 19 107 13 C90 14 70 12 52 13 C50 17 44 18 42 13 C30 14 12 13 8 12 C5 12 4 11 4 9 Z' fill='%23ffffff' stroke='%23c7d6ea' stroke-width='1'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+  filter: drop-shadow(0 2px 2px rgba(110, 140, 180, 0.3));
+}
+
+/* Hero: stage card + info cards */
+.pdp-x .pdp-hero { gap: 18px; padding: 6px 0 8px; }
+.pdp-x .pdp-stage { border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 22px; box-shadow: 0 18px 40px -28px rgba(127, 29, 29, 0.6); }
+@media (min-width: 900px) {
+  .pdp-x .pdp-hero { gap: 40px; padding: 14px 0 12px; }
+  .pdp-x .pdp-media { position: sticky; top: 84px; }
+}
+.pdp-x .pdp-info { gap: 16px; }
+.pdp-x .pdp-head { padding-top: 18px; }
+.pdp-x .pdp-head .pdp-byline { margin-top: 10px; }
+.pdp-x .pdp-head .pdp-title { margin-top: 6px; }
+.pdp-x .pdp-buy .pdp-price { border: 0; padding: 0; }
+.pdp-x .pdp-buy .pdp-now { color: #b91c1c; }
+.pdp-x .pdp-buy .pdp-ctas { margin-top: 16px; }
+.pdp-x .pdp-fbt4 { background: #fff; border: 1px solid rgba(220, 38, 38, 0.13); border-radius: 18px; padding: 16px; box-shadow: 0 14px 30px -24px rgba(127, 29, 29, 0.55); }
+.pdp-x .pdp-deliv.pdp-card { padding: 16px; gap: 14px; border-bottom: 1px solid rgba(220, 38, 38, 0.13); }
+.pdp-x .pdp-deliv .pdp-ic { color: #dc2626; }
+
+/* Why-buy card: perk tiles (no truncation) + quick facts */
+.pdp-x .pdp-why .pdp-perks { background: none; border: 0; padding: 0; gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pdp-x .pdp-why .pdp-perks li { padding: 10px 11px; border-radius: 12px; background: #fff5f4; border: 1px solid rgba(220, 38, 38, 0.08); font-size: 12.5px; align-items: center; }
+.pdp-x .pdp-why .pdp-perks li span { white-space: normal; overflow: visible; text-overflow: clip; }
+.pdp-x .pdp-why .pdp-perks svg { color: #dc2626; }
+.pdp-x .pdp-why .pdp-facts { margin-top: 14px; padding-top: 14px; border-top: 1px dashed rgba(220, 38, 38, 0.2); }
+
+/* Section shortcuts: sticky pill bar */
+.pdp-x .pdp-jump {
+  top: 66px; z-index: 6; margin: 22px 0 4px; padding: 5px; gap: 4px; border: 1px solid rgba(220, 38, 38, 0.13);
+  border-radius: 999px; background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 10px 24px -18px rgba(127, 29, 29, 0.55);
+}
+.pdp-x .pdp-jump a { flex: 1; text-align: center; padding: 9px 12px; border: 0 !important; border-radius: 999px; font-size: 13.5px; transition: background .15s, color .15s; }
+.pdp-x .pdp-jump a:hover { background: #fff1f0; }
+.pdp-x .pdp-jump a.on { background: #dc2626; color: #fff !important; }
+
+/* Content sections as snowy cards */
+.pdp-x .pdp-sec { margin: 22px 0; padding: 22px 16px 20px; border-bottom: 1px solid rgba(220, 38, 38, 0.13); scroll-margin-top: 130px; overflow: visible; }
+@media (min-width: 900px) { .pdp-x .pdp-sec { margin: 26px 0; padding: 30px 32px 28px; } }
+.pdp-x .pdp-h2 { display: flex; align-items: center; gap: 10px; }
+.pdp-x .pdp-h2::before { content: ""; flex: none; width: 4px; height: 1.05em; border-radius: 4px; background: linear-gradient(#ef4444, #b91c1c); }
+.pdp-x .pdp-sec-head .pdp-h2 { margin: 0; }
+.pdp-x .pdp-sec > .pdp-h2, .pdp-x .pdp-sec > .pdp-sec-head { margin-bottom: 16px; }
+.pdp-x .pdp-rs { border-color: rgba(220, 38, 38, 0.12); border-radius: 14px; }
+.pdp-x .pdp-chips a.on { background: #dc2626; border-color: #dc2626; color: #fff; }
+@media (prefers-reduced-motion: reduce) { .pdp-fx.front { display: none; } }
+/* Backdrop + snow run edge to edge, past the 1200px app shell */
+.pdp-fx { left: calc(50% - 50vw); right: calc(50% - 50vw); }
+body:has(.pdp-page) { overflow-x: hidden; }

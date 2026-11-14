@@ -636,7 +636,15 @@ export default function BookDetailsModal({ book: bookProp }) {
         )}
       </AnimatePresence>
 
-      <main className="pdp">
+      <div className="pdp-page">
+      {/* Christmas: blush backdrop with snow falling behind and (lightly) over the cards */}
+      <div className="pdp-fx" aria-hidden="true">
+        <XmasSnow className="pdp-snowfall" density={0.9} />
+      </div>
+      <div className="pdp-fx front" aria-hidden="true">
+        <XmasSnow className="pdp-snowfall" density={0.3} max={22} />
+      </div>
+      <main className="pdp pdp-x">
         <nav className="pdp-crumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <ChevronRight size={13} aria-hidden="true" />
@@ -690,6 +698,7 @@ export default function BookDetailsModal({ book: bookProp }) {
           </div>
 
           <div className="pdp-info">
+            <div className="pdp-card pdp-head pdp-snowy">
             <div className="pdp-eyebrow">
               {cat && <Link href={`/category/${cat}`}>{titleCase(cat)}</Link>}
               {isBestseller && <span className="pdp-tag">Bestseller</span>}
@@ -712,7 +721,9 @@ export default function BookDetailsModal({ book: bookProp }) {
                 <span>({reviewCount.toLocaleString("en-IN")})</span>
               </a>
             </div>
+            </div>
 
+            <div className="pdp-card pdp-buy">
             <div className="pdp-price">
               <div className="pdp-price-row">
                 <span className="pdp-now">₹{price}</span>
@@ -745,11 +756,13 @@ export default function BookDetailsModal({ book: bookProp }) {
                 </p>
               )}
             </div>
+            <div className="pdp-ctas">{ctas()}</div>
+            </div>
 
             <FrequentlyBought book={book} companion={companion} cart={cart} onAdd={handleAddBundle} />
 
             {/* Delivery: estimate from the saved pincode, or a prompt to add one */}
-            <div className="pdp-deliv">
+            <div className="pdp-deliv pdp-card">
               <div className="pdp-deliv-row">
                 {mh ? <Zap size={17} className="pdp-ic fast" /> : <Truck size={17} className="pdp-ic" />}
                 <span className="pdp-deliv-txt">
@@ -791,8 +804,6 @@ export default function BookDetailsModal({ book: bookProp }) {
               </div>
             </div>
 
-            <div className="pdp-ctas">{ctas()}</div>
-
             {/* QuickReads add-on — temporarily hidden. Change `false &&` back
                 to `bookHasQuickRead &&` to re-enable. */}
             {false && bookHasQuickRead && (
@@ -824,6 +835,7 @@ export default function BookDetailsModal({ book: bookProp }) {
               </div>
             )}
 
+            <div className="pdp-card pdp-why">
             <ul className="pdp-perks">
               <li>
                 <Bookmark size={16} />
@@ -865,6 +877,7 @@ export default function BookDetailsModal({ book: bookProp }) {
                 </div>
               )}
             </dl>
+            </div>
           </div>
         </section>
 
@@ -1169,6 +1182,7 @@ export default function BookDetailsModal({ book: bookProp }) {
 
         <div className="bd-bottom-spacer" />
       </main>
+      </div>
 
       {/* ===== Sticky bottom bar (phones) ===== */}
       <div className="bd-sticky-bottom pdp-bar">

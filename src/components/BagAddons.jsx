@@ -122,7 +122,8 @@ export default function BagAddons({
         </span>
       </div>
 
-      <div className="bga-deliv" role="radiogroup" aria-label="Delivery speed">
+      <div className="bga-deliv" role="radiogroup" aria-label="Delivery type">
+        <span className="bga-deliv-head">Delivery type</span>
         <button
           type="button"
           role="radio"
@@ -130,6 +131,7 @@ export default function BagAddons({
           className={`bga-opt${!faster ? " on" : ""}`}
           onClick={() => onFaster(false)}
         >
+          <span className="bga-radio" aria-hidden="true" />
           <span className="bga-opt-top">
             <Truck size={15} /> Standard
             <em>{standardFee > 0 ? `₹${standardFee}` : "FREE"}</em>
@@ -146,6 +148,7 @@ export default function BagAddons({
             onFaster(true);
           }}
         >
+          <span className="bga-radio" aria-hidden="true" />
           <span className="bga-opt-top">
             <Zap size={15} /> Faster
             <em>+₹{fasterExtra}</em>

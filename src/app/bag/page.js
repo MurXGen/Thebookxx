@@ -6,7 +6,8 @@ import { comboPairDiscount } from "@/utils/combos";
 import CartItemRow from "@/components/CartItemRow";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
-import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";
+import CheckoutGuide from "@/components/CheckoutGuide";
+import { XmasSnow } from "@/components/XmasDecor";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
 import OrderRewards from "@/components/OrderRewards";
@@ -1362,24 +1363,12 @@ ${itemsBlock}${qrLines}
   if (!cartBooks.length && !qrItems.length && !libraryBooks.length) {
     return (
       <div className="bag-xmas">
-        {/* Christmas: blush backdrop, snowfall and a garland over the bag */}
+        {/* Christmas: light snowfall behind the bag */}
         <div className="pdp-fx" aria-hidden="true">
           <XmasSnow className="pdp-snowfall" density={0.9} />
         </div>
         <div className="pdp-fx front" aria-hidden="true">
           <XmasSnow className="pdp-snowfall" density={0.3} max={18} />
-        </div>
-        <div className="bag-xmas-top" aria-hidden="true">
-          <XmasGarland
-            className="bag-garland"
-            baubles={[
-              { l: 6, len: 14, c: "red", d: 0 },
-              { l: 22, len: 24, c: "gold", d: 0.5 },
-              { l: 78, len: 20, c: "red", d: 0.3 },
-              { l: 94, len: 12, c: "gold", d: 0.8 },
-            ]}
-          />
-          <XmasTree size={44} gifts={false} className="bag-tree" />
         </div>
         <div className="section-680">
           <PageHeader
@@ -1449,24 +1438,12 @@ ${itemsBlock}${qrLines}
 
   return (
     <section className="section-680 flex flex-col gap-24 bag-page bag-xmas">
-      {/* Christmas: blush backdrop, snowfall and a garland over the bag */}
+      {/* Christmas: light snowfall behind the bag */}
       <div className="pdp-fx" aria-hidden="true">
         <XmasSnow className="pdp-snowfall" density={0.9} />
       </div>
       <div className="pdp-fx front" aria-hidden="true">
         <XmasSnow className="pdp-snowfall" density={0.3} max={18} />
-      </div>
-      <div className="bag-xmas-top" aria-hidden="true">
-        <XmasGarland
-          className="bag-garland"
-          baubles={[
-            { l: 6, len: 14, c: "red", d: 0 },
-            { l: 22, len: 24, c: "gold", d: 0.5 },
-            { l: 78, len: 20, c: "red", d: 0.3 },
-            { l: 94, len: 12, c: "gold", d: 0.8 },
-          ]}
-        />
-        <XmasTree size={44} gifts={false} className="bag-tree" />
       </div>
       <PageHeader
         title="Your Bag"
@@ -1615,19 +1592,6 @@ ${itemsBlock}${qrLines}
                 </div>
               ))}
             </div>
-            {cartBooks.length > 0 && (
-              <BagAddons
-                bookmarks={bagBookmarks}
-                onBookmarks={setBagBookmarks}
-                freeBookmarks={bagFreeBookmarks}
-                faster={billFaster}
-                onFaster={setBillFaster}
-                standardFee={standardDeliveryCharge}
-                fasterFee={fasterDeliveryCharge}
-                standardEta={etaWin.std}
-                fasterEta={etaWin.fast}
-              />
-            )}
             <div className="bg-cart-foot">
               <span>Missed a book?</span>
               <Link href="/books">Add more</Link>
@@ -1637,7 +1601,24 @@ ${itemsBlock}${qrLines}
             </div>
           </div>
 
+          {/* Add-ons: their own compact section under the books */}
+          {cartBooks.length > 0 && (
+            <BagAddons
+              bookmarks={bagBookmarks}
+              onBookmarks={setBagBookmarks}
+              freeBookmarks={bagFreeBookmarks}
+              faster={billFaster}
+              onFaster={setBillFaster}
+              standardFee={standardDeliveryCharge}
+              fasterFee={fasterDeliveryCharge}
+              standardEta={etaWin.std}
+              fasterEta={etaWin.fast}
+            />
+          )}
+
           {/* Savings — slim green strip (the "add more" strip docks on the pay bar) */}
+          {/* Animated "how to checkout" walkthrough (hideable) */}
+          {cartBooks.length > 0 && <CheckoutGuide />}
           {cartBooks.length > 0 && <SavingsGlow amount={totalSaved} mrp={totalOriginal} />}
 
           {/* Bookmark achievements (2 → 3 → 4 free, Mystery Box at ₹3000) */}

@@ -1,7 +1,8 @@
 "use client";
 
+import PlacingOrder from "@/components/UI/PlacingOrder";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Fragment } from "react";
 import { useStore } from "@/context/StoreContext";
 import { books as ALL_BOOKS } from "@/utils/book";
 import LoadingButton from "./LoadingButton";
@@ -153,6 +154,28 @@ const WALLET_MAX_PER_ORDER = 399;
 const ADDRESS_MIN_CHARS = 30;
 
 // "Faster checkout" reassurance label shown in every checkout step header.
+// Bag → Address → Pay progress strip shown under the checkout headers.
+function SwSteps({ at = 1 }) {
+  const steps = ["Bag", "Address", "Payment"];
+  return (
+    <div className="sw-steps" role="list" aria-label={`Checkout step ${at + 1} of 3`}>
+      {steps.map((t, i) => (
+        <Fragment key={t}>
+          {i > 0 && (
+            <span className={`sw-link${i <= at ? " full" : ""}`} aria-hidden="true">
+              <i />
+            </span>
+          )}
+          <span role="listitem" className={`sw-step ${i < at ? "done" : i === at ? "on" : "todo"}`}>
+            <span className="sw-dot">{i < at ? "✓" : i + 1}</span>
+            <span className="sw-name">{t}</span>
+          </span>
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
 export const FastCheckout = () => (
   <span className="fc-badge">
     <Zap size={11} strokeWidth={2.6} /> Faster checkout
@@ -2502,21 +2525,22 @@ export default function AddressModal({
             exit={{ y: "100%" }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            <div className="bill-header">
-              <span className="flex items-center gap-8">
-                <span className="weight-600 font-16">Delivery Details</span>
-                <span className="ps-step-badge">Step 1/2</span>
-                <FastCheckout />
-              </span>
-              <button
-                type="button"
-                className="bm2-x"
-                aria-label="Close"
-                onClick={onClose}
-              >
-                <X size={18} />
+            <div className="bill-header sw-head">
+              <button type="button" className="sw-back" aria-label="Back to bag" onClick={onClose}>
+                <ArrowLeft size={20} />
               </button>
+              <span className="sw-head-txt">
+                <b>Delivery details</b>
+                <small>
+                  Step 1 of 2 · To pay ₹{getTotalWithDelivery(false) + addOnsCharge}
+                  {(offerSaving > 0 || mrpSaving > 0) && (
+                    <em> · ₹{offerSaving > 0 ? offerSaving : mrpSaving} saved</em>
+                  )}
+                </small>
+              </span>
+              <FastCheckout />
             </div>
+            <SwSteps at={1} />
 
             <div className="address-form-content" ref={addrBodyRef}>
               {/* Location + address — grouped into one white card. */}
@@ -3194,34 +3218,59 @@ export default function AddressModal({
                   </motion.div>
                 )}
               </AnimatePresence>
-              <div className="bill-header">
-                <span className="flex items-center gap-8">
-                  <button
-                    type="button"
-                    className="ps-back-btn"
-                    onClick={() => setShowPaySelect(false)}
-                    aria-label="Back to delivery details"
-                  >
-                    <ArrowLeft size={18} />
-                  </button>
-                  <span className="weight-600 font-16">
-                    Choose payment method
-                  </span>
-                  <span className="ps-step-badge">Step 2/2</span>
-                  <FastCheckout />
+              <div className="bill-header sw-head">
+                <button
+                  type="button"
+                  className="sw-back"
+                  onClick={() => setShowPaySelect(false)}
+                  aria-label="Back to delivery details"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+                <span className="sw-head-txt">
+                  <b>Payment options</b>
+                  <small>
+                    Step 2 of 2 · To pay ₹{isZeroPayable ? 0 : paySel === "COD" ? codTotalWithFee : upiTotalForFlow}
+                    {(offerSaving > 0 || mrpSaving > 0) && (
+                      <em> · ₹{offerSaving > 0 ? offerSaving : mrpSaving} saved</em>
+                    )}
+                  </small>
                 </span>
-                <span
-                  className="cursor-pointer"
+                <button
+                  type="button"
+                  className="sw-x"
+                  aria-label="Close checkout"
                   onClick={() => {
                     setShowPaySelect(false);
                     onClose();
                   }}
                 >
-                  <X size={16} />
-                </span>
+                  <X size={18} />
+                </button>
               </div>
+              <SwSteps at={2} />
 
               <div className="pay-sel" ref={paySelRef}>
+                {/* Where it's going — the route strip, like a delivery app */}
+                <div className="sw-route">
+                  <span className="sw-route-line" aria-hidden="true">
+                    <i />
+                    <i />
+                  </span>
+                  <span className="sw-route-txt">
+                    <span>
+                      <b>TheBookX</b> · ships within a day
+                    </span>
+                    <span className="sw-route-to">
+                      <b>{String(name || "").trim().split(/\s+/)[0] || "Deliver"}</b>
+                      {" | "}
+                      {[flatNo, building, address, city, pincode].filter(Boolean).join(", ")}
+                    </span>
+                  </span>
+                  <button type="button" className="sw-route-edit" onClick={() => setShowPaySelect(false)}>
+                    Change
+                  </button>
+                </div>
                 {isZeroPayable && (
                   <div className="pay-zero">
                     <span className="pay-zero-ic">
@@ -3237,92 +3286,96 @@ export default function AddressModal({
                   </div>
                 )}
 
-                {/* Current delivery type — a highlighted stripe above Faster
-                    delivery so shoppers always see the included standard option
-                    (free, 4–9 days). Dims when Faster is the active choice. */}
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={!fasterDelivery}
-                  className={`dstripe dstripe-pick${fasterDelivery ? " muted" : " on"}`}
-                  onClick={() => {
-                    if (fasterDelivery) {
-                      setFasterDelivery(false);
-                      buzz(8);
-                    }
-                  }}
-                  data-no-busy
-                >
-                  <span className={`dstripe-radio${!fasterDelivery ? " on" : ""}`} aria-hidden="true">
-                    {!fasterDelivery && <Check size={12} strokeWidth={3.5} />}
-                  </span>
-                  <span className="fdx-txt">
-                    <span className="fdx-title">
-                      <Truck size={15} className="fdx-zap std" /> Standard delivery
-                    </span>
-                    <span className="fdx-sub">Arrives in 4–9 days</span>
-                  </span>
-                  <span className="fdx-price std">FREE</span>
-                </button>
-
-                {/* Faster delivery — opt-in (Standard by default); ticking it
-                    adds the priority fee to the bill live. Not with COD. */}
-                <div
-                  className={`fdx${fasterDelivery ? " on" : ""}${paySel === "COD" ? " off" : ""}`}
-                >
+                {/* Delivery type: Standard + Faster as rows of one card */}
+                <div className="dtype" role="radiogroup" aria-label="Delivery type">
+                  <span className="dtype-head">Delivery type</span>
+                  {/* Current delivery type — a highlighted stripe above Faster
+                      delivery so shoppers always see the included standard option
+                      (free, 4–9 days). Dims when Faster is the active choice. */}
                   <button
                     type="button"
-                    className="fdx-main"
                     role="radio"
-                    aria-checked={fasterDelivery}
-                    aria-disabled={paySel === "COD"}
-                    disabled={paySel === "COD"}
+                    aria-checked={!fasterDelivery}
+                    className={`dstripe dstripe-pick${fasterDelivery ? " muted" : " on"}`}
                     onClick={() => {
-                      if (paySel === "COD" || fasterDelivery) return;
-                      setFasterDelivery(true);
-                      buzz(8);
+                      if (fasterDelivery) {
+                        setFasterDelivery(false);
+                        buzz(8);
+                      }
                     }}
+                    data-no-busy
                   >
-                    <span className={`dstripe-radio fdx-radio${fasterDelivery ? " on" : ""}`} aria-hidden="true">
-                      {fasterDelivery && <Check size={12} strokeWidth={3.5} />}
+                    <span className={`dstripe-radio${!fasterDelivery ? " on" : ""}`} aria-hidden="true">
+                      {!fasterDelivery && <Check size={12} strokeWidth={3.5} />}
                     </span>
                     <span className="fdx-txt">
                       <span className="fdx-title">
-                        <Zap size={15} className="fdx-zap" /> Faster delivery
+                        <Truck size={15} className="fdx-zap std" /> Standard delivery
                       </span>
-                      <span className="fdx-sub">
-                        {paySel === "COD"
-                          ? "Not available with Cash on Delivery"
-                          : `Arrives in ${fasterDays}`}
-                      </span>
+                      <span className="fdx-sub">Arrives in 4–9 days</span>
                     </span>
-                    <span className="fdx-price">
-                      {fasterExtra > 0 ? `+₹${fasterExtra}` : "Free"}
-                    </span>
+                    <span className="fdx-price std">FREE</span>
                   </button>
-                  <button
-                    type="button"
-                    className="fdx-info"
-                    aria-label="What is Faster delivery?"
-                    aria-expanded={fasterTip}
-                    onClick={() => setFasterTip((v) => !v)}
-                    onBlur={() => setFasterTip(false)}
+
+                  {/* Faster delivery — opt-in (Standard by default); ticking it
+                      adds the priority fee to the bill live. Not with COD. */}
+                  <div
+                    className={`fdx${fasterDelivery ? " on" : ""}${paySel === "COD" ? " off" : ""}`}
                   >
-                    <Info size={16} />
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {fasterTip && (
-                      <motion.p
-                        className="fdx-tip"
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.18 }}
-                      >
-                        Packed first, sent by priority post. Arrives in {fasterDays}.
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
+                    <button
+                      type="button"
+                      className="fdx-main"
+                      role="radio"
+                      aria-checked={fasterDelivery}
+                      aria-disabled={paySel === "COD"}
+                      disabled={paySel === "COD"}
+                      onClick={() => {
+                        if (paySel === "COD" || fasterDelivery) return;
+                        setFasterDelivery(true);
+                        buzz(8);
+                      }}
+                    >
+                      <span className={`dstripe-radio fdx-radio${fasterDelivery ? " on" : ""}`} aria-hidden="true">
+                        {fasterDelivery && <Check size={12} strokeWidth={3.5} />}
+                      </span>
+                      <span className="fdx-txt">
+                        <span className="fdx-title">
+                          <Zap size={15} className="fdx-zap" /> Faster delivery
+                        </span>
+                        <span className="fdx-sub">
+                          {paySel === "COD"
+                            ? "Not available with Cash on Delivery"
+                            : `Arrives in ${fasterDays}`}
+                        </span>
+                      </span>
+                      <span className="fdx-price">
+                        {fasterExtra > 0 ? `+₹${fasterExtra}` : "Free"}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="fdx-info"
+                      aria-label="What is Faster delivery?"
+                      aria-expanded={fasterTip}
+                      onClick={() => setFasterTip((v) => !v)}
+                      onBlur={() => setFasterTip(false)}
+                    >
+                      <Info size={16} />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {fasterTip && (
+                        <motion.p
+                          className="fdx-tip"
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.18 }}
+                        >
+                          Packed first, sent by priority post. Arrives in {fasterDays}.
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
 
                 {/* Payment methods — full-width selectable cards. */}
@@ -5609,108 +5662,124 @@ export function CODSuccessModal({
       >
         <AnimatePresence mode="wait">
           {isProcessing ? (
+            loadingTitle === "Placing your order…" ? (
             <motion.div
               key="processing"
+              className="po-host"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              style={{
-                padding: "48px 20px",
-                textAlign: "center",
-                flex: 1,
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 12,
-              }}
             >
-              <div
-                style={{
-                  position: "relative",
-                  width: 80,
-                  height: 80,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <motion.div
-                  animate={{
-                    scale: [1, 1.18, 1],
-                    opacity: [0.4, 0.15, 0.4],
-                  }}
-                  transition={{
-                    duration: 1.6,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    borderRadius: "50%",
-                    background:
-                      "radial-gradient(circle, var(--tertiary, #fb8500) 0%, transparent 70%)",
-                  }}
-                />
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  style={{
-                    color: "var(--tertiary, #fb8500)",
-                    display: "flex",
-                  }}
-                >
-                  <Loader2 size={48} strokeWidth={2.5} />
-                </motion.div>
-              </div>
-
-              <motion.h2
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="weight-700"
-                style={{ fontSize: 18, margin: "8px 0 4px" }}
-              >
-                {loadingTitle}
-              </motion.h2>
-              <motion.p
+              <PlacingOrder
+                label={String(name || "").trim().split(/\s+/)[0] ? `${String(name).trim().split(/\s+/)[0]}'s address` : "Your address"}
+                address={[address, city, pincode].filter(Boolean).join(", ")}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+                key="processing"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="font-12 dark-50"
-                style={{ margin: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  padding: "48px 20px",
+                  textAlign: "center",
+                  flex: 1,
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 12,
+                }}
               >
-                {loadingSub}
-              </motion.p>
-
-              <div className="flex flex-row gap-6" style={{ marginTop: 12 }}>
-                {[0, 1, 2].map((i) => (
+                <div
+                  style={{
+                    position: "relative",
+                    width: 80,
+                    height: 80,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <motion.div
-                    key={i}
-                    animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
+                    animate={{
+                      scale: [1, 1.18, 1],
+                      opacity: [0.4, 0.15, 0.4],
+                    }}
                     transition={{
-                      duration: 1.2,
+                      duration: 1.6,
                       repeat: Infinity,
                       ease: "easeInOut",
-                      delay: i * 0.15,
                     }}
                     style={{
-                      width: 6,
-                      height: 6,
+                      position: "absolute",
+                      inset: 0,
                       borderRadius: "50%",
-                      background: "var(--tertiary, #fb8500)",
+                      background:
+                        "radial-gradient(circle, var(--tertiary, #fb8500) 0%, transparent 70%)",
                     }}
                   />
-                ))}
-              </div>
-            </motion.div>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    style={{
+                      color: "var(--tertiary, #fb8500)",
+                      display: "flex",
+                    }}
+                  >
+                    <Loader2 size={48} strokeWidth={2.5} />
+                  </motion.div>
+                </div>
+  
+                <motion.h2
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="weight-700"
+                  style={{ fontSize: 18, margin: "8px 0 4px" }}
+                >
+                  {loadingTitle}
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="font-12 dark-50"
+                  style={{ margin: 0 }}
+                >
+                  {loadingSub}
+                </motion.p>
+  
+                <div className="flex flex-row gap-6" style={{ marginTop: 12 }}>
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
+                      transition={{
+                        duration: 1.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: i * 0.15,
+                      }}
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: "var(--tertiary, #fb8500)",
+                      }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+          )
           ) : (
             <motion.div
               key="success"

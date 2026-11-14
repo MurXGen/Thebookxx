@@ -1,5 +1,6 @@
 "use client";
 
+import PlacingOrder from "@/components/UI/PlacingOrder";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -60,6 +61,11 @@ const buildBooksList = (items) =>
         }`,
     )
     .join("\n");
+
+const firstNameFor = (n) => {
+  const f = String(n || "").trim().split(/\s+/)[0];
+  return f ? `${f}'s address` : "Your address";
+};
 
 export default function OrderSuccessCard({
   orderId,
@@ -388,13 +394,10 @@ export default function OrderSuccessCard({
   if (phase === "placing") {
     return (
       <div className="osc-overlay">
-        <div className="osc-placing">
-          <span className="osc-placing-spinner" aria-hidden="true" />
-          <span className="osc-placing-txt">Placing your order…</span>
-          <span className="osc-placing-sub">
-            Hang tight — confirming your books
-          </span>
-        </div>
+        <PlacingOrder
+          label={firstNameFor(name)}
+          address={[address.address, address.city, address.state, address.pincode].filter(Boolean).join(", ")}
+        />
       </div>
     );
   }

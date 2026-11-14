@@ -70171,3 +70171,45 @@ body:has(.od-xmas) { overflow-x: hidden; background: var(--sw-bg); }
 .pinfs-xmas .pinfs-cta:disabled { background: #f3b4b4 !important; color: #fff !important; }
 .pinfs-xmas .pinfs-skip { color: #b91c1c; }
 .pinfs-xmas .pinfs-tc { color: #8a6b6b; }
+
+/* ===== UPI app chooser + QR pay: full-page sectional screens ===== */
+.bill-modal.paymeth-modal, .bill-modal.upiv3-modal {
+  display: flex !important; flex-direction: column; padding: 0 !important; overflow: hidden !important; background: var(--sw-bg) !important;
+}
+.paymeth-modal > :not(.sw-snow), .upiv3-modal > :not(.sw-snow) { position: relative; z-index: 1; }
+.paymeth-modal .sw-head, .upiv3-modal .sw-head { flex: 0 0 auto; }
+.paymeth-modal .po, .paymeth-modal .po + *, .paymeth-modal > div:last-child:not(.sw-head):not(.sw-steps) { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.paymeth-modal .po { padding: 14px 12px 24px !important; background: transparent; }
+@media (max-width: 768px) {
+  .bill-modal-overlay:has(> .paymeth-modal), .bill-modal-overlay:has(> .upiv3-modal) { background: var(--sw-bg); }
+  .bill-modal.paymeth-modal, .bill-modal.upiv3-modal { top: 0 !important; bottom: 0 !important; height: 100dvh !important; max-height: none !important; border-radius: 0 !important; }
+  .bill-modal.paymeth-modal::before, .bill-modal.upiv3-modal::before { display: none !important; }
+}
+/* Chooser sections */
+.paymeth-modal .po-route { position: relative; background: #fff !important; border: 0 !important; border-radius: 20px !important; padding: 14px 16px !important; box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04); }
+.paymeth-modal .po-cap { margin: 18px 4px 8px !important; font-size: 12px !important; font-weight: 800 !important; letter-spacing: .12em; text-transform: uppercase; color: #8a8a99 !important; }
+.paymeth-modal .po-card { background: #fff !important; border: 0 !important; border-radius: 20px !important; padding: 4px 14px !important; box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04); animation: swRise .45s cubic-bezier(.22,1,.36,1) both; }
+.paymeth-modal .po-row + .po-row, .paymeth-modal .po-opt + .po-opt { border-top: 1px dashed var(--sw-line) !important; }
+.paymeth-modal .po-radio.on { background: var(--sw-green) !important; border-color: var(--sw-green) !important; color: #fff !important; }
+.paymeth-modal .po-pay { background: var(--sw-green) !important; color: #fff !important; }
+.paymeth-modal .po-route::before {
+  content: ""; position: absolute; z-index: 2; pointer-events: none; left: 14px; right: 14px; top: -8px; height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C4 3 14 1 24 4 C34 0 48 1 58 4 C70 0 86 2 98 4 C110 0 128 1 140 4 C152 0 170 1 180 4 C190 2 197 4 196 9 C196 12 192 13 188 12 C186 17 180 18 178 13 C150 14 130 12 118 13 C117 19 108 19 107 13 C90 14 70 12 52 13 C50 17 44 18 42 13 C30 14 12 13 8 12 C5 12 4 11 4 9 Z' fill='%23ffffff' stroke='%23c7d6ea' stroke-width='1'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+}
+/* QR screen sections */
+.upiv3-modal .upiv3-scroll { padding: 6px 12px 16px !important; background: transparent; }
+.sw-cap { display: block; margin: 14px 4px 8px; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #8a8a99; }
+.upiv3-modal .upiv3-qr-card { background: #fff; border: 0 !important; border-radius: 20px !important; box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04) !important; }
+.upiv3-modal .upiv3-trust { background: #fff; border: 0; border-radius: 16px; padding: 12px 14px; justify-content: space-around; }
+.upiv3-modal .upiv3-footer { background: #fff; }
+.upiv3-modal .upiopen-btn { background: var(--sw-green) !important; color: #fff !important; }
+.upiv3-modal .upiv3-head-r { margin-left: auto; }
+
+/* Home hero: edge-to-edge on desktop (no white gutters beside the 1200px shell) */
+.app-shell:has(.hero-xmas) { overflow-x: visible; }
+body:has(.hero-xmas) { overflow-x: hidden; }
+@media (min-width: 900px) {
+  .home-hero.hero-xmas {
+    width: 100vw; max-width: none; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); border-radius: 0;
+  }
+}

@@ -4471,39 +4471,32 @@ export default function AddressModal({
               transition={{ duration: 0.35, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="bill-header">
-                <span className="weight-600 font-16 flex items-center gap-8">
-                  {payMethodStage === "giftcard" ? (
-                    <>
-                      <button
-                        type="button"
-                        className="paymeth-back"
-                        onClick={() => setPayMethodStage("choose")}
-                        aria-label="Back"
-                      >
-                        <ArrowLeft size={16} />
-                      </button>
-                      {giftMethod}
-                    </>
-                  ) : (
-                    <span className="po-head">
-                      <b>Payment options</b>
-                      <small>
-                        {(cartBooks || []).reduce((n, b) => n + (b.qty || 1), 0)} item
-                        {(cartBooks || []).reduce((n, b) => n + (b.qty || 1), 0) === 1 ? "" : "s"} · Total ₹
-                        {payNowAmount}
-                        {advanceMode ? " now" : ""}
-                      </small>
-                    </span>
-                  )}
-                </span>
-                <span
-                  className="cursor-pointer"
-                  onClick={() => setShowPayMethod(false)}
+              <div className="bill-header sw-head">
+                <button
+                  type="button"
+                  className="sw-back"
+                  onClick={() =>
+                    payMethodStage === "giftcard" ? setPayMethodStage("choose") : setShowPayMethod(false)
+                  }
+                  aria-label="Back"
                 >
-                  <X size={18} />
+                  <ArrowLeft size={20} />
+                </button>
+                <span className="sw-head-txt">
+                  <b>{payMethodStage === "giftcard" ? giftMethod : "Choose UPI app"}</b>
+                  <small>
+                    {(cartBooks || []).reduce((n, b) => n + (b.qty || 1), 0)} item
+                    {(cartBooks || []).reduce((n, b) => n + (b.qty || 1), 0) === 1 ? "" : "s"} · To pay ₹
+                    {payNowAmount}
+                    {advanceMode ? " now" : ""}
+                  </small>
                 </span>
+                <button type="button" className="sw-x" onClick={() => setShowPayMethod(false)} aria-label="Close">
+                  <X size={18} />
+                </button>
               </div>
+              <SwSteps at={2} />
+              <XmasSnow className="sw-snow" density={0.5} max={40} ink />
 
               {payMethodStage === "choose" ? (
                 <div className="po">
@@ -6441,8 +6434,17 @@ export function UPIPaymentModal({
         transition={{ duration: 0.4, ease: "easeOut" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bill-header">
-          <span className="weight-600 font-16">Pay with UPI</span>
+        <div className="bill-header sw-head">
+          <button type="button" className="sw-back" onClick={onClose} aria-label="Back to payment options">
+            <ArrowLeft size={20} />
+          </button>
+          <span className="sw-head-txt">
+            <b>Scan &amp; pay</b>
+            <small>
+              UPI · To pay ₹{totalToPay}
+              {advanceMode ? " advance" : ""}
+            </small>
+          </span>
           <span className="upiv3-head-r">
             {SHOW_UPI_WHATSAPP && (
             <a
@@ -6456,13 +6458,13 @@ export function UPIPaymentModal({
               <FaWhatsapp size={14} /> Help
             </a>
             )}
-            <span className="cursor-pointer" onClick={onClose}>
-              <X size={16} />
-            </span>
           </span>
         </div>
+        <SwSteps at={2} />
+        <XmasSnow className="sw-snow" density={0.5} max={40} ink />
 
         <div className="upiv3 upiv3-scroll">
+          <span className="sw-cap">Scan to pay</span>
           {/* QR shows immediately; a 2s loader blurs it while it "generates" */}
           <motion.div
             className="upiv3-qr"
@@ -6602,6 +6604,7 @@ export function UPIPaymentModal({
           </motion.div>
 
           {/* Trust footer */}
+          <span className="sw-cap">Safe &amp; tracked</span>
           <div className="upiv3-trust">
             <span>
               <ShieldCheck size={13} /> 256-bit encrypted

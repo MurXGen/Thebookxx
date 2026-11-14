@@ -941,7 +941,20 @@ export const CLARITY_PARTNER_IDS = [
   "bk-006", // The Psychology of Money
   "bk-438", // Rich Dad Poor Dad
   "bk-010", // The Subtle Art of Not Giving a F*ck
+  "bk-009", // The Courage to Be Disliked
 ];
+
+// Hand-written copy for specific Art of Clarity pairs (keyed by partner id);
+// anything not set here falls back to the generated text in makePair().
+const CLARITY_PAIR_COPY = {
+  "bk-009": {
+    tagline:
+      "Clear thinking meets the courage to live on your own terms — two reads on freedom from overthinking, 10% off together.",
+    seoTitle: (p) => `The Art of Clarity + The Courage to Be Disliked Combo: ₹${p}, Save 10%`,
+    seoDescription: (p, off) =>
+      `Buy The Art of Clarity by Murthy Thevar and The Courage to Be Disliked by Ichiro Kishimi & Fumitake Koga together for ₹${p} (₹${off} off, 10% off both books). A self-help combo on clear thinking, letting go of others' approval and living freely. Genuine paperbacks, Cash on Delivery, free delivery from ₹199 and 7-day replacement across India.`,
+  },
+};
 
 // Other 2-book combos: two bestsellers that read well together, 10% off.
 export const BOOK_PAIRS = [
@@ -1014,13 +1027,23 @@ function makePair(aId, bId, { id, category, clarity }) {
 }
 
 export const clarityCombos = CLARITY
-  ? CLARITY_PARTNER_IDS.map((pid, i) =>
-      makePair(CLARITY_ID, pid, {
+  ? CLARITY_PARTNER_IDS.map((pid, i) => {
+      const c = makePair(CLARITY_ID, pid, {
         id: `combo-aoc-${String(i + 1).padStart(2, "0")}`,
         category: "Art of Clarity Combos",
         clarity: true,
-      }),
-    ).filter(Boolean)
+      });
+      const copy = c && CLARITY_PAIR_COPY[pid];
+      if (!copy) return c;
+      const sum = (CLARITY.discountedPrice || 0) + (bookById[pid]?.discountedPrice || 0);
+      const price = clarityPairPrice(sum);
+      return {
+        ...c,
+        tagline: copy.tagline || c.tagline,
+        seoTitle: copy.seoTitle ? copy.seoTitle(price) : c.seoTitle,
+        seoDescription: copy.seoDescription ? copy.seoDescription(price, sum - price) : c.seoDescription,
+      };
+    }).filter(Boolean)
   : [];
 
 export const bookPairCombos = BOOK_PAIRS.map(([a, b], i) =>
@@ -1040,7 +1063,7 @@ const seededShuffle = (arr, seed = 7) => {
   }
   return a;
 };
-const CLARITY_SLOTS = [0, 4, 9, 13, 18]; // positions in the mixed pair list
+const CLARITY_SLOTS = [0, 4, 9, 13, 18, 22]; // positions in the mixed pair list
 function mixPairs(clarity, others) {
   const rest = seededShuffle(others);
   const out = [];

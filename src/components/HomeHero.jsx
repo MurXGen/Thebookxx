@@ -194,8 +194,8 @@ export default function HomeHero() {
           </button>
 
           <h1 className="home-hero-title">
-            <span className="hx-sw">Buy</span> <span className="hx-sw">Books</span>{" "}
-            <span className="hx-sw">Online</span> in <span className="hx-sw">India,</span>{" "}
+            Buy Books{" "}
+            Online in India,{" "}
             <span className="home-hero-accent">Starting at ₹1</span>
           </h1>
 

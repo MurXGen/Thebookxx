@@ -2,7 +2,7 @@
 "use client";
 
 import { useStore } from "@/context/StoreContext";
-import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";
+import { XmasSnow, XmasTree } from "@/components/XmasDecor";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
 import {
@@ -663,18 +663,10 @@ export default function BookDetailsModal({ book: bookProp }) {
         <section ref={heroRef} className="pdp-hero">
           <div className="pdp-media">
             <div className="pdp-stage pdp-xmas">
-              {/* Christmas: snowfall, garland and a little tree around the cover */}
-              <XmasSnow density={1.3} />
-              <XmasGarland
-                className="pdp-garland"
-                baubles={[
-                  { l: 8, len: 14, c: "red", d: 0 },
-                  { l: 20, len: 24, c: "gold", d: 0.5 },
-                  { l: 80, len: 22, c: "red", d: 0.3 },
-                  { l: 92, len: 12, c: "gold", d: 0.8 },
-                ]}
-              />
-              <XmasTree size={78} className="pdp-tree" />
+              {/* Christmas: light snowfall and a little tree by the cover */}
+              <XmasSnow density={0.8} />
+
+              <XmasTree size={60} gifts={false} className="pdp-tree" />
               <Cover
                 book={book}
                 alt={`${book.name}${book.author ? ` by ${book.author}` : ""} book cover`}
@@ -1188,7 +1180,15 @@ export default function BookDetailsModal({ book: bookProp }) {
       <div className="bd-sticky-bottom pdp-bar">
         <CartConfetti trigger={confetti} />
         {/* WhatsApp "best price?" button, floating just above the bar */}
-        <PdpWhatsApp book={book} price={price} mrp={mrp} />
+        <PdpWhatsApp
+          book={book}
+          price={price}
+          mrp={mrp}
+          liked={inWishlist}
+          heart={heart(18)}
+          onLike={handleWishlist}
+          onShare={handleShare}
+        />
         {offerEnd ? (
           <OfferTimer endsAt={offerEnd} after={priceAfter} compact />
         ) : (

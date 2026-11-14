@@ -69656,3 +69656,79 @@ body:has(.bag-page) { background: linear-gradient(180deg, #fffaf4 0%, #fffdfa 22
 /* Backdrop + snow run edge to edge, past the 1200px app shell */
 .pdp-fx { left: calc(50% - 50vw); right: calc(50% - 50vw); }
 body:has(.pdp-page) { overflow-x: hidden; }
+
+/* Book page (phones): wishlist + share + WhatsApp in one small floating pill */
+.pdp-dock {
+  pointer-events: auto; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px;
+  border-radius: 999px; background: rgba(255, 255, 255, 0.96); border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 26px -10px rgba(15, 23, 42, 0.35), 0 2px 6px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.pdp-dock-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 0; display: grid; place-items: center;
+  background: #f8fafc; color: #1f2937; cursor: pointer; transition: transform 0.15s ease, background 0.15s;
+}
+.pdp-dock-btn:active { transform: scale(0.92); }
+.pdp-dock-btn.on { background: #fef2f2; }
+.pdp-dock-btn.wa { background: #25d366; color: #fff; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.45); }
+.pdp-wa { align-items: flex-end; }
+.pdp-wa .wa-tip { align-self: flex-end; margin-bottom: 2px; }
+@media (max-width: 768px) { .pdp-stage-actions { display: none !important; } }
+
+/* Bag page: same snowy backdrop as the book page, garland + tree up top */
+.bag-xmas { position: relative; isolation: isolate; }
+body:has(.bag-xmas) { overflow-x: hidden; }
+.bag-xmas-top { position: relative; height: 44px; margin: 0 -4px -18px; pointer-events: none; }
+.bag-garland { height: 40px; }
+.bag-tree { position: absolute !important; right: 6px; top: 26px; z-index: 4; filter: drop-shadow(0 6px 8px rgba(127, 29, 29, 0.25)); }
+.bag-xmas .page-header, .bag-xmas > header { position: relative; z-index: 1; }
+.bag-xmas-top { height: 46px; margin: 0 -4px -4px; }
+.bag-tree { top: 2px; right: 10px; }
+.bag-xmas > .section-680 { position: relative; z-index: 1; }
+.bag-xmas > .bag-xmas-top { max-width: 680px; margin: 0 auto -4px; }
+.bag-xmas > .bag-xmas-top { width: 100%; }
+.bag-page.bag-xmas > .bag-xmas-top { margin: 0 0 -14px; }
+.bag-page.bag-xmas > .bag-xmas-top { margin-bottom: -4px; }
+
+/* ===== v8: lighter, calmer book + bag pages ===== */
+/* Near-white backdrop with a faint warm wash (was strong pink) */
+.pdp-fx {
+  background:
+    radial-gradient(60% 360px at 0% 0%, rgba(239, 68, 68, 0.05), transparent 70%),
+    radial-gradient(50% 360px at 100% 200px, rgba(220, 38, 38, 0.04), transparent 70%),
+    linear-gradient(180deg, #fdf6f5 0%, #fefaf9 480px, #fffdfc 100%);
+}
+.pdp-fx.front { background: none; }
+/* Snow needs a hint of colour to read on the light backdrop */
+.pdp-fx .hx-snowcanvas { filter: drop-shadow(0 0 1px rgba(148, 170, 200, 0.55)); }
+/* Book stage: soft, almost white, no garland */
+.pdp-stage.pdp-xmas {
+  padding-top: 24px;
+  background: linear-gradient(180deg, #fbf3f2 0%, #fdf9f8 100%);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 30px -26px rgba(15, 23, 42, 0.35);
+}
+.pdp-xmas .pdp-flag { top: 14px; } .pdp-xmas .pdp-stage-actions { top: 12px; }
+.pdp-tree { opacity: 0.95; }
+/* Cards: neutral borders + light shadows, less red */
+.pdp-x .pdp-card, .pdp-x .pdp-sec, .pdp-x .pdp-fbt4 {
+  border-color: rgba(15, 23, 42, 0.07);
+  box-shadow: 0 8px 24px -22px rgba(15, 23, 42, 0.35);
+}
+.pdp-x .pdp-crumbs a, .pdp-x .pdp-crumbs svg { color: var(--dark-50); }
+.pdp-x .pdp-why .pdp-perks li { background: #fafafa; border-color: rgba(15, 23, 42, 0.05); }
+.pdp-x .pdp-jump { border-color: rgba(15, 23, 42, 0.07); box-shadow: 0 8px 20px -18px rgba(15, 23, 42, 0.4); }
+.pdp-x .pdp-jump a:hover { background: #f6f6f6; }
+.pdp-x .pdp-jump a.on { background: #1f2937; }
+
+/* Book page dock: heart · share · WhatsApp in a row; tip points at WhatsApp */
+.pdp-dock.row, .pdp-wa .pdp-dock, .bag-fabs .pdp-dock { flex-direction: row; }
+.pdp-dock-btn { width: 38px; height: 38px; }
+.pdp-wa { flex-direction: column; align-items: flex-end; gap: 0; }
+.pdp-wa .wa-tip, .bag-fabs .wa-tip { --tip-x: 15px; bottom: calc(100% + 10px); right: 0; margin: 0; }
+
+/* Bag: share + WhatsApp float above the pay bar, on the right */
+.bag-fabs { position: absolute; right: 12px; bottom: calc(100% + 10px); z-index: 2; display: flex; flex-direction: column; align-items: flex-end; pointer-events: none; }
+.bag-fabs .pdp-dock { pointer-events: auto; }
+.bag-fabs .wa-tip { opacity: 0; transform: translateY(6px); transition: opacity 0.25s ease, transform 0.25s ease; }
+.bag-fabs .wa-tip.show { opacity: 1; transform: none; }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
+import { Share2 } from "lucide-react";
 
 const SUPPORT_WHATSAPP = "917710892108";
 
@@ -11,7 +12,7 @@ const SUPPORT_WHATSAPP = "917710892108";
  * message asking for the best price / any extra offer on this book.
  * A small "Ask for a better price" hint shows briefly, then tucks away.
  */
-export default function PdpWhatsApp({ book, price, mrp }) {
+export default function PdpWhatsApp({ book, price, mrp, liked = false, heart = null, onLike, onShare }) {
   const [hint, setHint] = useState(false);
 
   useEffect(() => {
@@ -47,14 +48,32 @@ export default function PdpWhatsApp({ book, price, mrp }) {
           <small>Extra discounts &amp; combo deals on WhatsApp</small>
         </span>
       </span>
-      <button
-        type="button"
-        className="pdp-wa-btn"
-        onClick={open}
-        aria-label={`Ask on WhatsApp for the best price on ${book.name}`}
-      >
-        <FaWhatsapp size={28} />
-      </button>
+      {/* Wishlist, share and WhatsApp stacked in one small pill */}
+      <div className="pdp-dock">
+        {onLike && (
+          <button
+            type="button"
+            className={`pdp-dock-btn${liked ? " on" : ""}`}
+            onClick={onLike}
+            aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            {heart}
+          </button>
+        )}
+        {onShare && (
+          <button type="button" className="pdp-dock-btn" onClick={onShare} aria-label="Share book">
+            <Share2 size={18} />
+          </button>
+        )}
+        <button
+          type="button"
+          className="pdp-dock-btn wa"
+          onClick={open}
+          aria-label={`Ask on WhatsApp for the best price on ${book.name}`}
+        >
+          <FaWhatsapp size={20} />
+        </button>
+      </div>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { comboPairDiscount } from "@/utils/combos";
 import CartItemRow from "@/components/CartItemRow";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
+import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
 import OrderRewards from "@/components/OrderRewards";
@@ -15,7 +16,6 @@ import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
 import { SavingsGlow, TopUpCard, BillCard, PolicyNote } from "@/components/BagSections";
 import BagAddons, { BAG_ADDONS_KEY, MAX_BAG_BOOKMARKS } from "@/components/BagAddons";
-import MobileBottomNav from "@/components/MobileBottomNav";
 import OrderSuccessCard from "@/components/UI/OrderSuccessCard";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
@@ -1361,7 +1361,26 @@ ${itemsBlock}${qrLines}
 
   if (!cartBooks.length && !qrItems.length && !libraryBooks.length) {
     return (
-      <>
+      <div className="bag-xmas">
+        {/* Christmas: blush backdrop, snowfall and a garland over the bag */}
+        <div className="pdp-fx" aria-hidden="true">
+          <XmasSnow className="pdp-snowfall" density={0.9} />
+        </div>
+        <div className="pdp-fx front" aria-hidden="true">
+          <XmasSnow className="pdp-snowfall" density={0.3} max={18} />
+        </div>
+        <div className="bag-xmas-top" aria-hidden="true">
+          <XmasGarland
+            className="bag-garland"
+            baubles={[
+              { l: 6, len: 14, c: "red", d: 0 },
+              { l: 22, len: 24, c: "gold", d: 0.5 },
+              { l: 78, len: 20, c: "red", d: 0.3 },
+              { l: 94, len: 12, c: "gold", d: 0.8 },
+            ]}
+          />
+          <XmasTree size={44} gifts={false} className="bag-tree" />
+        </div>
         <div className="section-680">
           <PageHeader
             title="Your Bag"
@@ -1424,12 +1443,31 @@ ${itemsBlock}${qrLines}
 
         {sharedModal}
         {shareModal}
-      </>
+      </div>
     );
   }
 
   return (
-    <section className="section-680 flex flex-col gap-24 bag-page">
+    <section className="section-680 flex flex-col gap-24 bag-page bag-xmas">
+      {/* Christmas: blush backdrop, snowfall and a garland over the bag */}
+      <div className="pdp-fx" aria-hidden="true">
+        <XmasSnow className="pdp-snowfall" density={0.9} />
+      </div>
+      <div className="pdp-fx front" aria-hidden="true">
+        <XmasSnow className="pdp-snowfall" density={0.3} max={18} />
+      </div>
+      <div className="bag-xmas-top" aria-hidden="true">
+        <XmasGarland
+          className="bag-garland"
+          baubles={[
+            { l: 6, len: 14, c: "red", d: 0 },
+            { l: 22, len: 24, c: "gold", d: 0.5 },
+            { l: 78, len: 20, c: "red", d: 0.3 },
+            { l: 94, len: 12, c: "gold", d: 0.8 },
+          ]}
+        />
+        <XmasTree size={44} gifts={false} className="bag-tree" />
+      </div>
       <PageHeader
         title="Your Bag"
         subtitle={`${cartBooks.length} book${cartBooks.length > 1 ? "s" : ""} in cart`}
@@ -1444,25 +1482,6 @@ ${itemsBlock}${qrLines}
             >
               <Search size={19} />
             </button>
-            <button
-              type="button"
-              className="bag-icon-btn"
-              onClick={handleShareBag}
-              aria-label="Share your bag"
-              title="Share your bag"
-            >
-              <Share2 size={19} />
-            </button>
-            <a
-              href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bag-icon-btn"
-              aria-label="Need help? Chat on WhatsApp"
-              title="Need help? Chat on WhatsApp"
-            >
-              <FaWhatsapp size={20} color="#25D366" />
-            </a>
             <Link
               href="/profile"
               className="bag-icon-btn"
@@ -1754,6 +1773,8 @@ ${itemsBlock}${qrLines}
             >
               {/* "Add ₹X more for FREE delivery / offers" docked on the pay bar.
                   The wallet top-up counts toward free delivery, so it's included. */}
+              {/* Share + WhatsApp float just above the pay bar, on the right */}
+              <BagFabs onShare={handleShareBag} />
               <div className="bag-offer-dock">
                 <CartOfferStrip discountedAmount={totalDiscounted + walletTopUp} />
               </div>
@@ -2118,12 +2139,49 @@ function FreebieBadge() {
   );
 }
 
+// Share + WhatsApp pill above the pay bar; a "Need help?" tip shows briefly.
+function BagFabs({ onShare }) {
+  const [tip, setTip] = useState(false);
+  useEffect(() => {
+    const a = setTimeout(() => setTip(true), 1500);
+    const b = setTimeout(() => setTip(false), 5500);
+    return () => {
+      clearTimeout(a);
+      clearTimeout(b);
+    };
+  }, []);
+  return (
+    <div className="bag-fabs">
+      <span className={`wa-tip bag-fabs-tip${tip ? " show" : ""}`} role="tooltip">
+        <FaWhatsapp size={18} />
+        <span>
+          Need help with your order?
+          <small>Chat with us on WhatsApp</small>
+        </span>
+      </span>
+      <div className="pdp-dock">
+        <button type="button" className="pdp-dock-btn" onClick={onShare} aria-label="Share your bag">
+          <Share2 size={18} />
+        </button>
+        <a
+          href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pdp-dock-btn wa"
+          aria-label="Need help? Chat on WhatsApp"
+        >
+          <FaWhatsapp size={20} />
+        </a>
+      </div>
+    </div>
+  );
+}
+
 // useSearchParams (shared-bag links) must live inside a Suspense boundary.
 export default function BagPage() {
   return (
     <Suspense fallback={null}>
       <BagContent />
-      <MobileBottomNav />
     </Suspense>
   );
 }

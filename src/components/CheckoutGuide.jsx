@@ -20,6 +20,16 @@ export default function CheckoutGuide() {
   const [open, setOpen] = useState(false);
   const touched = useRef(false);
   const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  // Only loop the demo while it's on screen.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const el = ref.current;
@@ -40,12 +50,12 @@ export default function CheckoutGuide() {
   }, []);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !inView) return;
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
     const id = setInterval(() => setF((x) => (x + 1) % 4), 2200);
     return () => clearInterval(id);
-  }, [open]);
+  }, [open, inView]);
 
   const toggle = () => {
     touched.current = true;
@@ -54,7 +64,7 @@ export default function CheckoutGuide() {
   };
 
   return (
-    <section ref={ref} className={`cg${open ? " open" : ""}`} aria-label="How checkout works">
+    <section ref={ref} className={`cg${open ? " open" : ""}${inView ? "" : " cg-off"}`} aria-label="How checkout works">
       <button type="button" className="cg-head" onClick={toggle} aria-expanded={open} aria-controls="cg-body">
         <span className="cg-label">How to checkout · 3 taps</span>
         <ChevronDown size={18} className="cg-chev" aria-hidden="true" />

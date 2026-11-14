@@ -1,7 +1,7 @@
 "use client";
 
 import LiveActivity from "@/components/LiveActivity";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -40,6 +40,16 @@ const slugify = (t) =>
     .replace(/(^-|-$)/g, "");
 
 export default function HomeHero() {
+  // Pause the hero's looping CSS animations (garland, tree, gift) off-screen.
+  const heroRef = useRef(null);
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([e]) => el.classList.toggle("hx-off", !e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   const titleCount = Math.max(100, Math.floor(books.length / 100) * 100);
   const { cart } = useStore();
 
@@ -142,7 +152,7 @@ export default function HomeHero() {
   };
 
   return (
-    <section className="home-hero hero-xmas" style={{ position: "relative" }}>
+    <section ref={heroRef} className="home-hero hero-xmas" style={{ position: "relative" }}>
       {/* Structured data — WebSite search action + featured books as Products */}
       <script
         type="application/ld+json"

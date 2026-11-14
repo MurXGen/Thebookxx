@@ -69804,17 +69804,6 @@ body:has(.bag-xmas) { overflow-x: hidden; }
 
 /* Sticky footer: amount + big CTA */
 .addr-modal .af-foot, .pay-sel-modal .af-foot { background: #fff; }
-.addr-modal .af-foot .af-proceed {
-  background: var(--sw-orange) !important; border-color: var(--sw-orange) !important; color: #fff !important;
-  min-height: 52px !important; border-radius: 14px !important; padding: 0 26px !important; font-size: 16px !important; font-weight: 800 !important;
-  box-shadow: 0 8px 18px -10px rgba(252, 96, 17, 0.8);
-}
-.pay-sel-modal .af-foot .af-proceed {
-  background: var(--sw-green) !important; border-color: var(--sw-green) !important; color: #fff !important;
-  min-height: 52px !important; border-radius: 14px !important; font-size: 16px !important; font-weight: 800 !important;
-  box-shadow: 0 8px 18px -10px rgba(27, 166, 114, 0.9);
-}
-.addr-modal .af-foot .af-proceed:disabled, .addr-modal .af-foot .af-proceed[aria-disabled="true"] { background: #d7d7df !important; border-color: #d7d7df !important; box-shadow: none; }
 
 /* Payment page: route strip + grouped option cards */
 .sw-route { order: -2; display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #fff; border-radius: 20px; }
@@ -69876,12 +69865,6 @@ body:has(.bag-xmas) { overflow-x: hidden; }
   box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04) !important;
 }
 .bag-page .bg-glow { border-radius: 14px !important; }
-.bag-page .bg-paybar-btn {
-  background: var(--sw-orange) !important; border-color: var(--sw-orange) !important; color: #fff !important;
-  min-height: 52px; border-radius: 14px !important; font-weight: 800 !important; font-size: 15px !important;
-  box-shadow: 0 8px 18px -10px rgba(252, 96, 17, 0.8);
-}
-.bag-page .bg-paybar-btn[aria-disabled="true"] { background: #1c1c28 !important; border-color: #1c1c28 !important; box-shadow: none; }
 
 /* ===== Checkout guide (animated mini phone + steps) ===== */
 .cg { background: #fff; border-radius: 20px; padding: 14px 16px 16px; box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04); }
@@ -70049,3 +70032,142 @@ body:has(.bag-xmas) { overflow-x: hidden; }
 .sw-steps { display: flex !important; align-items: flex-start !important; justify-content: space-between; overflow: visible; padding: 12px 18px 10px !important; }
 .sw-steps .sw-step { flex: 0 0 auto !important; display: flex !important; flex-direction: column; align-items: center !important; gap: 5px !important; min-width: 52px; }
 .sw-steps .sw-link { position: relative; top: auto; left: auto; right: auto; flex: 1 1 auto; height: 2px; margin: 12px -8px 0; }
+
+/* Checkout CTAs: our button sizes, green colour */
+.addr-modal .af-foot .af-proceed:not(:disabled):not([aria-disabled="true"]), .pay-sel-modal .af-foot .af-proceed:not(:disabled):not([aria-disabled="true"]) { background: var(--sw-green) !important; border-color: var(--sw-green) !important; color: #fff !important; }
+.addr-modal .af-foot .af-proceed:hover, .pay-sel-modal .af-foot .af-proceed:hover { background: #17925f !important; border-color: #17925f !important; }
+
+/* ===== Order details: sectional cards on a grey canvas + light Christmas ===== */
+.od-page.od-xmas { position: relative; isolation: isolate; }
+.od-xmas > .pdp-fx:not(.front) { background: var(--sw-bg) !important; }
+.od-xmas > .pdp-fx .hx-snowcanvas { filter: drop-shadow(0 0 1px rgba(120, 140, 170, 0.6)); }
+body:has(.od-xmas) { overflow-x: hidden; background: var(--sw-bg); }
+.od-xmas .od-profile-card, .od-xmas .od-map-card, .od-xmas .od-deliv-card, .od-xmas .od-block,
+.od-xmas .od-reco, .od-xmas .od-scratch-block, .od-xmas .abp, .od-xmas .od-due, .od-xmas .od-eta-standalone {
+  background: #fff !important; border: 0 !important; border-radius: 20px !important;
+  box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04) !important;
+}
+.od-xmas .od-reco { padding: 16px 0 16px 16px !important; overflow: hidden; }
+.od-xmas .od-quick > * { background: #fff !important; border: 0 !important; box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04) !important; }
+.od-xmas .od-price-block .od-block-title, .od-xmas .od-items-block h2, .od-xmas .od-price-block > :first-child {
+  letter-spacing: .12em;
+}
+.od-xmas .ord-head { background: transparent; }
+.od-xmas .od-deliv-card { position: relative; overflow: visible !important; }
+.od-tree { position: absolute !important; right: 12px; top: -30px; z-index: 2; filter: drop-shadow(0 4px 6px rgba(127, 29, 29, 0.2)); pointer-events: none; }
+.od-xmas .od-deliv-card::before {
+  content: ""; position: absolute; z-index: 2; pointer-events: none; left: 14px; right: 60px; top: -8px; height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C4 3 14 1 24 4 C34 0 48 1 58 4 C70 0 86 2 98 4 C110 0 128 1 140 4 C152 0 170 1 180 4 C190 2 197 4 196 9 C196 12 192 13 188 12 C186 17 180 18 178 13 C150 14 130 12 118 13 C117 19 108 19 107 13 C90 14 70 12 52 13 C50 17 44 18 42 13 C30 14 12 13 8 12 C5 12 4 11 4 9 Z' fill='%23ffffff' stroke='%23c7d6ea' stroke-width='1'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+  filter: drop-shadow(0 2px 2px rgba(110, 140, 180, 0.3));
+}
+
+/* Book page bar (phones): Add to Cart + Buy now side by side */
+.pdp-bar-two { flex: 1; display: flex; gap: 8px; margin-left: auto; min-width: 0; }
+.pdp-bar-two .pdp-bar-cta { flex: 1; min-width: 0; padding: 0 10px; font-size: 14px; gap: 6px; }
+.pdp-bar-cta.line { background: #fff !important; color: var(--tertiary) !important; box-shadow: inset 0 0 0 1.5px var(--tertiary); }
+
+/* Checkout pages: light snowfall on the grey canvas + snow on the first card */
+.addr-modal, .pay-sel-modal { position: relative; }
+.hx-snowcanvas.sw-snow { position: absolute; inset: 0; z-index: 0; pointer-events: none; filter: drop-shadow(0 0 1px rgba(120, 140, 170, 0.6)); }
+.addr-modal > :not(.sw-snow), .pay-sel-modal > :not(.sw-snow):not(.gw-confetti) { position: relative; z-index: 1; }
+.addr-modal .address-form-content, .pay-sel-modal .pay-sel { background: transparent !important; }
+.addr-modal .address-form-content > .af-card:first-of-type, .pay-sel-modal .sw-route { position: relative; overflow: visible; }
+.addr-modal .address-form-content > .af-card:first-of-type::before, .pay-sel-modal .sw-route::before {
+  content: ""; position: absolute; z-index: 2; pointer-events: none; left: 14px; right: 14px; top: -8px; height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C4 3 14 1 24 4 C34 0 48 1 58 4 C70 0 86 2 98 4 C110 0 128 1 140 4 C152 0 170 1 180 4 C190 2 197 4 196 9 C196 12 192 13 188 12 C186 17 180 18 178 13 C150 14 130 12 118 13 C117 19 108 19 107 13 C90 14 70 12 52 13 C50 17 44 18 42 13 C30 14 12 13 8 12 C5 12 4 11 4 9 Z' fill='%23ffffff' stroke='%23c7d6ea' stroke-width='1'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+  filter: drop-shadow(0 2px 2px rgba(110, 140, 180, 0.3));
+}
+.addr-modal .address-form-content, .pay-sel-modal .pay-sel { padding-top: 20px !important; }
+
+/* Inline alternate number under name & phone */
+.addr-alt-inline { margin-top: 12px; overflow: hidden; }
+.addr-alt-field { position: relative; display: block; }
+.addr-alt-cc { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; font-weight: 700; color: var(--sw-ink); pointer-events: none; z-index: 1; }
+.addr-alt-field input { padding-left: 48px !important; padding-right: 44px !important; }
+.addr-alt-x { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border: 0; border-radius: 50%; background: #f2f2f5; color: #6b6b7b; display: grid; place-items: center; cursor: pointer; }
+
+/* Empty bag: same sectional cards for the book rails + hero */
+.bag-empty2 .bqa { background: transparent !important; box-shadow: none !important; gap: 16px; }
+.bag-empty2 .bqa-row {
+  background: #fff !important; border: 0 !important; border-radius: 20px !important;
+  box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04) !important; padding: 16px 0 16px 16px !important; overflow: hidden;
+}
+.bag-empty2 .bag-empty2-hero, .bag-empty2 .orw, .bag-empty2 .bag-empty2-ask {
+  background: #fff !important; border: 0 !important; border-radius: 20px !important; box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04) !important;
+}
+.bag-xmas:not(.bag-page) > .pdp-fx:not(.front) { background: var(--sw-bg) !important; }
+
+/* =====================================================================
+   Perf pass: compositor-only animations, nothing running off-screen.
+   ===================================================================== */
+/* Skeletons: was ~12 background-position animations per card (×2 rules).
+   Now static blocks + ONE transform sweep per rail; off-screen rails skip render. */
+.bcs-card .skel, .bcs-head .skel { animation: none !important; background: #ececf0 !important; }
+.bcs-card .skel::after, .bcs-head .skel::after { content: none !important; animation: none !important; }
+.bcs-rail { position: relative; }
+.bcs-rail::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%);
+  transform: translateX(-100%); animation: skel-shimmer 1.5s ease-in-out infinite; will-change: transform;
+}
+.bcs-section, .book-rail:has(.bcs-rail) { content-visibility: auto; contain-intrinsic-size: auto 380px; }
+
+/* Garland bulbs: glow baked in, animate opacity only (no box-shadow repaint) */
+.hx-bulb { box-shadow: 0 0 8px 2px var(--hx-c) !important; animation-name: hxGlowO !important; will-change: opacity; }
+@keyframes hxGlowO { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+.hx-bauble { will-change: transform; }
+
+/* Gift card: static glow (the shine sweep keeps it lively, transform-only) */
+.hx-gift { animation: none !important; box-shadow: 0 14px 30px -18px rgba(185, 28, 28, 0.55), 0 0 0 5px rgba(220, 38, 38, 0.12) !important; }
+.hx-gift-shine { will-change: transform; }
+
+/* Tree star: static glow, scale-only pulse */
+.xt-star { filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.85)); }
+@keyframes xtStar { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+
+/* Pause every looping hero animation once the hero is scrolled away */
+.hx-off *, .hx-off *::before, .hx-off *::after { animation-play-state: paused !important; }
+
+/* Snow canvases: no CSS filter on a redrawn full-screen canvas (tint is baked into the sprite) */
+.pdp-fx .hx-snowcanvas, .bag-xmas .pdp-fx .hx-snowcanvas, .od-xmas > .pdp-fx .hx-snowcanvas, .hx-snowcanvas.sw-snow { filter: none !important; }
+
+/* No backdrop blur over animated layers */
+.pdp-dock, .pdp-x .pdp-jump { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.pdp-dock { background: #fff !important; }
+.pdp-x .pdp-jump { background: rgba(255, 255, 255, 0.98) !important; }
+.cg-off *, .cg-off *::before, .cg-off *::after { animation-play-state: paused !important; }
+
+/* ===== Scratch modal — Christmas (matches the hero) ===== */
+.pinfs-modal:has(.pinfs-xmas) { background: #fde8e8 !important; }
+.pinfs-xmas {
+  background:
+    radial-gradient(80% 40% at 50% 0%, rgba(239, 68, 68, 0.22), transparent 75%),
+    radial-gradient(60% 30% at 0% 60%, rgba(220, 38, 38, 0.12), transparent 70%),
+    linear-gradient(180deg, #fbd5d5 0%, #fde8e8 40%, #fff1f0 75%, #fff7f5 100%);
+  padding-top: 44px;
+}
+.pinfs-xmas .pinfs-snow { position: absolute; inset: 0; z-index: -1; }
+.pinfs-garland { position: absolute; top: 0; left: 0; right: 0; height: 44px; z-index: 1; }
+.pinfs-xmas .pinfs-x { top: 46px; background: #fff; color: #7f1d1d; }
+.pinfs-xmas .pinfs-top { margin-top: 10px; }
+.pinfs-xmas .pinfs-brand { position: relative; background: #fff; color: #b91c1c; border: 1px solid rgba(220, 38, 38, 0.25); padding: 6px 14px; box-shadow: 0 6px 16px -12px rgba(185, 28, 28, 0.6); }
+.pinfs-xmas .pinfs-h { color: #1c1917; }
+.pinfs-xmas .pinfs-h em { background: linear-gradient(90deg, #b91c1c, #dc2626, #ef4444); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pinfs-xmas .pinfs-sub { color: #6b4b4b; }
+/* Ticket: red velvet with gold border, trees either side */
+.pinfs-xmas .pinfs-badge { margin: 30px 0 20px; width: 100%; max-width: 360px; }
+.pinfs-xmas .pinfs-badge-in { background: linear-gradient(180deg, #ef4444, #b91c1c) !important; border-color: #fbbf24 !important; box-shadow: 0 18px 34px -18px rgba(127, 29, 29, 0.85), inset 0 2px 0 rgba(255, 255, 255, 0.25) !important; }
+.pinfs-xmas .pinfs-badge-in b { color: #fff; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.15); }
+.pinfs-tree { position: absolute !important; bottom: -4px; z-index: 0; filter: drop-shadow(0 6px 8px rgba(127, 29, 29, 0.25)); }
+.pinfs-tree.l { left: 4px; } .pinfs-tree.r { right: 0; }
+/* Form card + chips + CTA in hero red */
+.pinfs-xmas .pinfs-form { background: #fff; backdrop-filter: none; border: 1px solid rgba(220, 38, 38, 0.12); border-radius: 20px; box-shadow: 0 14px 30px -22px rgba(127, 29, 29, 0.6); }
+.pinfs-xmas .pinfs-phone { border-color: #f3c2c2; }
+.pinfs-xmas .pinfs-phone:focus-within { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14); }
+.pinfs-xmas .pinfs-cc { border-right-color: #f6dada; }
+.pinfs-xmas .pinfs-chip { background: #fff; border-color: #f1d4d4; }
+.pinfs-xmas .pinfs-chip.on { background: #dc2626; border-color: #dc2626; color: #fff; }
+.pinfs-xmas .pinfs-cta { position: relative; background: linear-gradient(180deg, #ef4444, #b91c1c) !important; box-shadow: 0 12px 24px -12px rgba(185, 28, 28, 0.85); }
+.pinfs-xmas .pinfs-cta:disabled { background: #f3b4b4 !important; color: #fff !important; }
+.pinfs-xmas .pinfs-skip { color: #b91c1c; }
+.pinfs-xmas .pinfs-tc { color: #8a6b6b; }

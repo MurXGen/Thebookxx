@@ -62,6 +62,7 @@ import CommunityJoin from "@/components/CommunityJoin";
 import PwaInstallPromo from "@/components/PwaInstallPromo";
 import AddBeforePacking from "@/components/profile/AddBeforePacking";
 import BookCard from "@/components/BookCard";
+import { XmasSnow, XmasTree } from "@/components/XmasDecor";
 import CartConfetti from "@/components/UI/Confetti";
 import ReviewRewardCard from "@/components/ReviewRewardCard";
 import {
@@ -2809,7 +2810,11 @@ export default function OrderDetailPage() {
   const recos = [clarity, ...rest].filter(Boolean).slice(0, 8);
 
   return (
-    <main className="od-page">
+    <main className="od-page od-xmas">
+      {/* Christmas: light snowfall behind the order sections */}
+      <div className="pdp-fx" aria-hidden="true">
+        <XmasSnow className="pdp-snowfall" density={0.8} ink />
+      </div>
       <header className="ord-head">
         <button
           type="button"
@@ -3554,6 +3559,7 @@ export default function OrderDetailPage() {
       {/* Delivery details — ETA date, status timeline, courier, tracking ID. */}
       {order && !cancelled && (
         <section className="od-deliv-card">
+          <XmasTree size={40} gifts={false} className="od-tree" />
           {(() => {
             const steps = [
               { k: "Placed", Icon: Check },

@@ -1,6 +1,7 @@
 "use client";
 
 import PlacingOrder from "@/components/UI/PlacingOrder";
+import { XmasSnow } from "@/components/XmasDecor";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef, Fragment } from "react";
 import { useStore } from "@/context/StoreContext";
@@ -2541,6 +2542,7 @@ export default function AddressModal({
               <FastCheckout />
             </div>
             <SwSteps at={1} />
+            <XmasSnow className="sw-snow" density={0.5} max={40} ink />
 
             <div className="address-form-content" ref={addrBodyRef}>
               {/* Location + address — grouped into one white card. */}
@@ -2780,16 +2782,8 @@ export default function AddressModal({
                             <span className="dd-hint">{phoneError}</span>
                           )
                         )}
-                        {/* Alternate number — opens a slide-up modal. */}
-                        {altPhone && altPhone.length === 10 ? (
-                          <button
-                            type="button"
-                            className="addr-altlink added"
-                            onClick={() => setAltModalOpen(true)}
-                          >
-                            <Check size={12} /> Alternate number added · Edit
-                          </button>
-                        ) : (
+                        {/* Alternate number — opens an inline field below. */}
+                        {!(altModalOpen || altPhone) && (
                           <button
                             type="button"
                             className="addr-altlink"
@@ -2800,6 +2794,52 @@ export default function AddressModal({
                         )}
                       </div>
                     </div>
+
+                    {/* Alternate number — inline, right under name & phone */}
+                    <AnimatePresence initial={false}>
+                      {(altModalOpen || altPhone) && (
+                        <motion.div
+                          className="input-group addr-alt-inline"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.25, ease: "easeOut" }}
+                        >
+                          <label className="flex flex-row gap-4 flex-center items-center">
+                            <Phone size={14} />
+                            Alternate number{" "}
+                            <span className="font-10 gray-500">(optional)</span>
+                          </label>
+                          <span className="addr-alt-field">
+                            <span className="addr-alt-cc">+91</span>
+                            <input
+                              className="sec-mid-btn width100"
+                              placeholder="Second number for delivery"
+                              value={altPhone}
+                              maxLength={15}
+                              inputMode="tel"
+                              autoComplete="tel"
+                              autoFocus={altModalOpen && !altPhone}
+                              onChange={(ev) => setAltPhone(normalizePhone(ev.target.value))}
+                            />
+                            <button
+                              type="button"
+                              className="addr-alt-x"
+                              aria-label="Remove alternate number"
+                              onClick={() => {
+                                setAltPhone("");
+                                setAltModalOpen(false);
+                              }}
+                            >
+                              <X size={15} />
+                            </button>
+                          </span>
+                          {altPhone && altPhone.length > 0 && altPhone.length < 10 && (
+                            <span className="dd-err">Enter all 10 digits</span>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     {/* Email — full width, below name/phone; shown only once the
                         phone number is fully entered. Saved to the Email column. */}
@@ -2840,80 +2880,6 @@ export default function AddressModal({
                   taps "Choose payment method" (see showSpeedModal). */}
             </div>
 
-            {/* Alternate-number slide-up modal */}
-            <AnimatePresence>
-              {altModalOpen && (
-                <motion.div
-                  className="bill-modal-overlay"
-                  style={{ zIndex: 2147483001 }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setAltModalOpen(false)}
-                >
-                  <motion.div
-                    className="bill-modal"
-                    onClick={(e) => e.stopPropagation()}
-                    initial={{ y: "100%", opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: "100%", opacity: 0 }}
-                    transition={{ duration: 0.35, ease: "easeOut" }}
-                  >
-                    <div className="bill-header">
-                      <span className="weight-600 font-16 flex items-center gap-8">
-                        <Phone size={16} /> Alternate number
-                      </span>
-                      <span
-                        className="cursor-pointer"
-                        onClick={() => setAltModalOpen(false)}
-                      >
-                        <X size={18} />
-                      </span>
-                    </div>
-                    <div className="input-group" style={{ padding: "4px 0 2px" }}>
-                      <label className="font-12 gray-500">
-                        A second number we can reach for delivery (optional)
-                      </label>
-                      <input
-                        className="sec-mid-btn width100"
-                        placeholder="Alternate 10-digit number"
-                        value={altPhone}
-                        maxLength={15}
-                        inputMode="tel"
-                        autoFocus
-                        onChange={(e) => setAltPhone(normalizePhone(e.target.value))}
-                        onKeyDown={(e) =>
-                          e.key === "Enter" &&
-                          altPhone.length === 10 &&
-                          setAltModalOpen(false)
-                        }
-                      />
-                    </div>
-                    <div className="flex flex-row gap-12" style={{ marginTop: 12 }}>
-                      {altPhone && (
-                        <button
-                          type="button"
-                          className="sec-mid-btn width100"
-                          onClick={() => {
-                            setAltPhone("");
-                            setAltModalOpen(false);
-                          }}
-                        >
-                          Remove
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        className="pri-big-btn width100"
-                        onClick={() => setAltModalOpen(false)}
-                      >
-                        {altPhone && altPhone.length === 10 ? "Save" : "Done"}
-                      </button>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
 
             {/* Fixed footer — total + proceed stay pinned, form scrolls above */}
             <div className="addr-footer">
@@ -3249,6 +3215,7 @@ export default function AddressModal({
                 </button>
               </div>
               <SwSteps at={2} />
+              <XmasSnow className="sw-snow" density={0.5} max={40} ink />
 
               <div className="pay-sel" ref={paySelRef}>
                 {/* Where it's going — the route strip, like a delivery app */}

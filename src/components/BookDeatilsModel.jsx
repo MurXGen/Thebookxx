@@ -501,7 +501,8 @@ export default function BookDetailsModal({ book: bookProp }) {
       if (!guardAdd()) return;
       addToCart(book.id, "detail");
     }
-    router.push("/bag");
+    // Straight to checkout: the bag opens the address step on ?checkout=1.
+    router.push("/bag?checkout=1");
   };
 
   const handleShare = async (e) => {
@@ -639,10 +640,7 @@ export default function BookDetailsModal({ book: bookProp }) {
       <div className="pdp-page">
       {/* Christmas: blush backdrop with snow falling behind and (lightly) over the cards */}
       <div className="pdp-fx" aria-hidden="true">
-        <XmasSnow className="pdp-snowfall" density={0.9} />
-      </div>
-      <div className="pdp-fx front" aria-hidden="true">
-        <XmasSnow className="pdp-snowfall" density={0.3} max={22} />
+        <XmasSnow className="pdp-snowfall" density={0.9} ink />
       </div>
       <main className="pdp pdp-x">
         <nav className="pdp-crumbs" aria-label="Breadcrumb">
@@ -1238,14 +1236,24 @@ export default function BookDetailsModal({ book: bookProp }) {
               </Link>
             </div>
           ) : (
-            <LoadingButton
-              className="pdp-bar-cta"
-              onClick={handleAddToCart}
-              aria-disabled={isAddDisabled}
-              icon={<ShoppingCart size={17} />}
-            >
-              Add to Cart
-            </LoadingButton>
+            <div className="pdp-bar-two">
+              <LoadingButton
+                className="pdp-bar-cta line"
+                onClick={handleAddToCart}
+                aria-disabled={isAddDisabled}
+                icon={<ShoppingCart size={16} />}
+              >
+                Add to Cart
+              </LoadingButton>
+              <button
+                type="button"
+                className="pdp-bar-cta"
+                onClick={handleBuyNow}
+                aria-disabled={isAddDisabled}
+              >
+                <Zap size={16} /> Buy now
+              </button>
+            </div>
           )}
         </div>
       </div>

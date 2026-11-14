@@ -1365,10 +1365,7 @@ ${itemsBlock}${qrLines}
       <div className="bag-xmas">
         {/* Christmas: light snowfall behind the bag */}
         <div className="pdp-fx" aria-hidden="true">
-          <XmasSnow className="pdp-snowfall" density={0.9} />
-        </div>
-        <div className="pdp-fx front" aria-hidden="true">
-          <XmasSnow className="pdp-snowfall" density={0.3} max={18} />
+          <XmasSnow className="pdp-snowfall" density={0.9} ink />
         </div>
         <div className="section-680">
           <PageHeader
@@ -1440,10 +1437,7 @@ ${itemsBlock}${qrLines}
     <section className="section-680 flex flex-col gap-24 bag-page bag-xmas">
       {/* Christmas: light snowfall behind the bag */}
       <div className="pdp-fx" aria-hidden="true">
-        <XmasSnow className="pdp-snowfall" density={0.9} />
-      </div>
-      <div className="pdp-fx front" aria-hidden="true">
-        <XmasSnow className="pdp-snowfall" density={0.3} max={18} />
+        <XmasSnow className="pdp-snowfall" density={0.9} ink />
       </div>
       <PageHeader
         title="Your Bag"

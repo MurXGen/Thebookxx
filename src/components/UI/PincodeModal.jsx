@@ -1,5 +1,6 @@
 "use client";
 
+import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import {
@@ -445,6 +446,7 @@ export default function PincodeModal() {
   };
 
   const event = getActiveEvent();
+  const xmas = event.key === "christmas";
 
   return (
     <>
@@ -515,21 +517,41 @@ export default function PincodeModal() {
                   </div>
                 </>
               ) : (
-                <div className="pinfs">
-                  {/* Sunburst + floating coins/books */}
-                  <div className="pinfs-rays" aria-hidden="true" />
-                  <span className="pinfs-float c1" aria-hidden="true">₹</span>
-                  <span className="pinfs-float c2" aria-hidden="true">₹</span>
-                  <span className="pinfs-float c3" aria-hidden="true">₹</span>
-                  <span className="pinfs-float b1" aria-hidden="true">📚</span>
-                  <span className="pinfs-float b2" aria-hidden="true">🔖</span>
+                <div className={`pinfs${xmas ? " pinfs-xmas" : ""}`}>
+                  {xmas ? (
+                    <>
+                      {/* Christmas: hero look — rose backdrop, garland, snow, baubles */}
+                      <XmasSnow className="pinfs-snow" density={0.7} max={50} />
+                      <XmasGarland
+                        className="pinfs-garland"
+                        baubles={[
+                          { l: 8, len: 16, c: "red", d: 0 },
+                          { l: 24, len: 26, c: "gold", d: 0.5 },
+                          { l: 76, len: 22, c: "red", d: 0.3 },
+                          { l: 92, len: 14, c: "gold", d: 0.8 },
+                        ]}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      {/* Sunburst + floating coins/books */}
+                      <div className="pinfs-rays" aria-hidden="true" />
+                      <span className="pinfs-float c1" aria-hidden="true">₹</span>
+                      <span className="pinfs-float c2" aria-hidden="true">₹</span>
+                      <span className="pinfs-float c3" aria-hidden="true">₹</span>
+                      <span className="pinfs-float b1" aria-hidden="true">📚</span>
+                      <span className="pinfs-float b2" aria-hidden="true">🔖</span>
+                    </>
+                  )}
 
                   <button type="button" className="pinfs-x" onClick={handleSkip} aria-label="Close">
                     <X size={20} />
                   </button>
 
                   <div className="pinfs-top">
-                    <span className="pinfs-brand">TheBookX</span>
+                    <span className={`pinfs-brand${xmas ? " hx-capped" : ""}`}>
+                      {xmas ? "TheBookX · Christmas gift" : "TheBookX"}
+                    </span>
                     <h2 className="pinfs-h">
                       Scratch &amp; win
                       <br />
@@ -539,6 +561,8 @@ export default function PincodeModal() {
                   </div>
 
                   <div className="pinfs-badge" aria-hidden="true">
+                    {xmas && <XmasTree size={70} gifts={false} className="pinfs-tree l" />}
+                    {xmas && <XmasTree size={86} className="pinfs-tree r" />}
                     <span className="pinfs-crown">{event.emoji || "🪔"}</span>
                     <span className="pinfs-badge-in">
                       <b>Scratch</b>
@@ -610,7 +634,7 @@ export default function PincodeModal() {
                   <div className="pinfs-foot">
                     <small className="pinfs-tc">*T&amp;C apply</small>
                     <LoadingButton
-                      className="pinfs-cta"
+                      className={`pinfs-cta${xmas ? " hx-capped" : ""}`}
                       onClick={handleSubmit}
                       disabled={loading}
                     >

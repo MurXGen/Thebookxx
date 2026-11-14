@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 // continuous canvas snowfall, a pine garland with baubles, and a tree.
 
 // Soft round flake drawn once, then stamped with drawImage (smooth + cheap).
-function makeSprite(size) {
+function makeSprite(size, ink = false) {
   const c = document.createElement("canvas");
   c.width = c.height = size;
   const g = c.getContext("2d");
@@ -14,8 +14,11 @@ function makeSprite(size) {
   const grad = g.createRadialGradient(r, r, 0, r, r, r);
   grad.addColorStop(0, "rgba(255,255,255,1)");
   grad.addColorStop(0.45, "rgba(255,255,255,0.95)");
-  grad.addColorStop(0.75, "rgba(205,220,240,0.55)");
-  grad.addColorStop(1, "rgba(205,220,240,0)");
+  // "ink" bakes a soft blue-grey rim in, so flakes read on light pages
+  // without an expensive CSS filter on the canvas.
+  grad.addColorStop(0.62, ink ? "rgba(214,226,242,0.95)" : "rgba(205,220,240,0.7)");
+  grad.addColorStop(0.82, ink ? "rgba(140,165,200,0.45)" : "rgba(205,220,240,0.35)");
+  grad.addColorStop(1, "rgba(150,170,200,0)");
   g.fillStyle = grad;
   g.fillRect(0, 0, size, size);
   return c;
@@ -26,7 +29,7 @@ function makeSprite(size) {
  * gentle wind shift. Pauses off-screen / in a hidden tab; static under
  * prefers-reduced-motion. `density` scales the flake count.
  */
-export function XmasSnow({ density = 1, max = 170, className = "" }) {
+export function XmasSnow({ density = 1, max = 140, ink = false, className = "" }) {
   const ref = useRef(null);
   useEffect(() => {
     const canvas = ref.current;
@@ -34,7 +37,7 @@ export function XmasSnow({ density = 1, max = 170, className = "" }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const sprite = makeSprite(32);
+    const sprite = makeSprite(32, ink);
     let w = 0,
       h = 0,
       flakes = [],
@@ -58,14 +61,14 @@ export function XmasSnow({ density = 1, max = 170, className = "" }) {
     };
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5); // soft flakes need no more
       w = rect.width;
       h = rect.height;
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const target = Math.round(
-        Math.min(max, Math.max(Math.min(28, max), ((w * h) / 4800) * density)),
+        Math.min(max, Math.max(Math.min(28, max), ((w * h) / 6000) * density)),
       );
       while (flakes.length < target) flakes.push(make(true));
       flakes.length = target;
@@ -130,7 +133,7 @@ export function XmasSnow({ density = 1, max = 170, className = "" }) {
       io.disconnect();
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [density, max]);
+  }, [density, max, ink]);
   return (
     <canvas ref={ref} className={`hx-snowcanvas ${className}`} aria-hidden="true" />
   );

@@ -205,16 +205,19 @@ export default function HomeHero() {
         {flakes.map((f) => (
           <span
             key={f.i}
-            className={`hx-flake${f.blur ? " soft" : ""}`}
+            className={`hx-flake${f.blur ? " soft" : ""}${f.i % 4 === 0 ? " glyph" : ""}`}
             style={{
               left: `${f.left}%`,
-              width: f.size,
-              height: f.size,
+              width: f.i % 4 === 0 ? undefined : f.size,
+              height: f.i % 4 === 0 ? undefined : f.size,
+              fontSize: f.i % 4 === 0 ? 8 + f.size * 1.6 : undefined,
               animationDelay: `${f.delay}s`,
               animationDuration: `${f.dur}s`,
               "--hx-drift": `${f.drift}px`,
             }}
-          />
+          >
+            {f.i % 4 === 0 ? "❄" : null}
+          </span>
         ))}
       </div>
 
@@ -228,12 +231,63 @@ export default function HomeHero() {
             aria-label="Christmas sale — up to 50% off. See all offers."
           >
             <span className="hx-kicker-dot" aria-hidden="true" />
-            Christmas Sale is live · <b>Up to 50% OFF</b>
+            Christmas Sale · <b>Up to 50% OFF</b>
             <ChevronRight size={14} />
           </button>
 
-          {/* Offers marquee — auto-scrolls; tap any chip to see all reward tiers */}
-          <div className="hero-offers-row" role="list">
+          {/* Three bestseller covers, fanned like gifts under the tree */}
+          {picks.length >= 3 && (
+            <div className="hx-covers" aria-hidden="true">
+              {[picks[1], picks[0], picks[2]].map((b, i) => (
+                <span key={b.id} className={`hx-cover hx-cover-${i}`}>
+                  <img src={b.image} alt="" loading="eager" />
+                  {i === 1 && <span className="hx-snowcap" />}
+                </span>
+              ))}
+              <span className="hx-ribbon">from ₹1</span>
+            </div>
+          )}
+
+          <h1 className="home-hero-title">
+            Buy Books Online in India,{" "}
+            <span className="home-hero-accent">Starting at ₹1</span>
+          </h1>
+
+          <p className="home-hero-sub">
+            Hand-picked bestsellers, self-help &amp; fiction from just ₹1 — free
+            delivery from ₹199, Cash on Delivery &amp; 7-day replacement on damaged or wrong books across India.
+          </p>
+
+          {/* Primary actions — Search + Suggest */}
+          <div className="hero-actions hx-actions">
+            <button
+              type="button"
+              className="hero-search-btn"
+              onClick={() => setSearchOpen(true)}
+            >
+              <Search size={18} /> Search books
+            </button>
+            <button
+              type="button"
+              className="hero-suggest-btn"
+              onClick={() => setSuggestOpen(true)}
+            >
+              <Sparkles size={18} /> Suggest me
+            </button>
+          </div>
+
+          {/* Quiet trust line */}
+          <ul className="hx-trust">
+            <li>
+              <Star size={13} fill="#f59e0b" stroke="#f59e0b" /> 4.4 rating
+            </li>
+            <li>{titleCount}+ titles</li>
+            <li>7-day replacement</li>
+            <li>Cash on Delivery</li>
+          </ul>
+
+          {/* Offers — auto-scrolling chips; tap any to see all reward tiers */}
+          <div className="hero-offers-row hx-offers" role="list">
             <div className="hero-offers-track">
               {[...offerChips, ...offerChips].map((c, i) => (
                 <button
@@ -252,105 +306,6 @@ export default function HomeHero() {
               ))}
             </div>
           </div>
-
-          <h1 className="home-hero-title">
-            Buy Books Online in India,{" "}
-            <span className="home-hero-accent">Starting at ₹1</span>
-          </h1>
-
-          <p className="home-hero-sub">
-            Hand-picked bestsellers, self-help &amp; fiction from just ₹1 — free
-            delivery from ₹199, Cash on Delivery &amp; 7-day replacement on damaged or wrong books across India.
-          </p>
-
-          <div className="hb-perks hb-perks-top">
-            {/* Rating — five stars filling in */}
-            <span className="hb-perk hb-rate">
-              <span className="hb-stars" aria-hidden="true">
-                {[0, 1, 2, 3, 4].map((k) => (
-                  <svg key={k} viewBox="0 0 24 24" style={{ animationDelay: `${k * 0.12}s` }}>
-                    <path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" />
-                  </svg>
-                ))}
-              </span>
-              4.4 rating
-            </span>
-            {/* Titles — a little shelf of book spines */}
-            <span className="hb-perk hb-titles">
-              <span className="hb-shelf" aria-hidden="true">
-                <i />
-                <i />
-                <i />
-                <i />
-              </span>
-              {titleCount}+ titles
-            </span>
-            {/* Returns — circular arrow turning */}
-            <span className="hb-perk hb-ret">
-              <span className="hb-cycle" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M20 12a8 8 0 1 1-2.34-5.66" />
-                  <path d="M20 4v5h-5" />
-                </svg>
-                <b>7</b>
-              </span>
-              7-day replacement
-            </span>
-            <span className="hb-perk hb-fast">
-              <span className="hb-bolt" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M13.5 2 4 13.5h6.5L9.5 22 20 9.5h-6.6L13.5 2Z" />
-                </svg>
-              </span>
-              <span className="hb-speed" aria-hidden="true">
-                <i />
-                <i />
-                <i />
-              </span>
-              Faster delivery
-            </span>
-            <span className="hb-perk hb-mark">
-              <span className="hb-ribbons" aria-hidden="true">
-                <svg viewBox="0 0 14 26" className="hb-ribbon r1">
-                  <path d="M1 0h12v26l-6-5-6 5Z" />
-                  <circle cx="7" cy="7" r="2" />
-                </svg>
-                <svg viewBox="0 0 14 26" className="hb-ribbon r2">
-                  <path d="M1 0h12v26l-6-5-6 5Z" />
-                  <circle cx="7" cy="7" r="2" />
-                </svg>
-              </span>
-              Free bookmark
-            </span>
-          </div>
-
-          {/* Primary actions — Search + Suggest */}
-          <div className="hero-actions">
-            <button
-              type="button"
-              className="hero-search-btn"
-              onClick={() => setSearchOpen(true)}
-            >
-              <Search size={18} /> Search book
-            </button>
-            <button
-              type="button"
-              className="hero-suggest-btn"
-              onClick={() => setSuggestOpen(true)}
-            >
-              <Sparkles size={18} /> Suggest me
-            </button>
-          </div>
-
-          {/* First-time helper — short CTA into the book-suggestion quiz */}
-          <button
-            type="button"
-            className="hx-btn"
-            onClick={() => setSuggestOpen(true)}
-          >
-            <BookOpen size={16} /> First time here? Help me choose
-            <ChevronRight size={15} />
-          </button>
 
         </div>
 

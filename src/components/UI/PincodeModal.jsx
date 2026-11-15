@@ -664,6 +664,7 @@ export default function PincodeModal() {
         reward={scratchReward}
         scratched={scratchDone}
         onScratch={handleScratchComplete}
+        xmas={xmas}
         note={
           scratchEligible ? (
             <>

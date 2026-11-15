@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Gift, Hand } from "lucide-react";
 import ScratchCard from "./ScratchCard";
+import { XmasSnow } from "@/components/XmasDecor";
 
 /**
  * A reward scratch card that slides up over a warm, festive backdrop (same
@@ -21,6 +22,13 @@ export default function ScratchRewardSheet({
   scratched = false,
   onScratch,
   note,
+  // Optional copy overrides (review page uses its own wording).
+  badge = "Scratch & win",
+  loseTitle = "Better luck tomorrow",
+  loseSub = "Thanks for joining TheBookX",
+  wonSub = "Wallet cash for your next order",
+  ctaLabel,
+  xmas = false, // Christmas skin: red backdrop + snowfall
 }) {
   const won = scratched && eligible;
   return (
@@ -34,7 +42,7 @@ export default function ScratchRewardSheet({
           onClick={onClose}
         >
           <motion.div
-            className="scratch-sheet srs"
+            className={`scratch-sheet srs${xmas ? " srs-xmas" : ""}`}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -45,6 +53,7 @@ export default function ScratchRewardSheet({
             aria-label="Scratch card reward"
           >
             <div className="srs-rays" aria-hidden="true" />
+            {xmas && <XmasSnow className="srs-snow" density={0.6} max={50} />}
             <span className="srs-float c1" aria-hidden="true">₹</span>
             <span className="srs-float c2" aria-hidden="true">₹</span>
             <span className="srs-float b1" aria-hidden="true">📚</span>
@@ -55,7 +64,7 @@ export default function ScratchRewardSheet({
 
             <div className="srs-head">
               <span className="srs-badge">
-                <Gift size={14} /> Scratch &amp; win
+                <Gift size={14} /> {badge}
               </span>
               <h2 className="srs-title">
                 {scratched ? (
@@ -64,7 +73,7 @@ export default function ScratchRewardSheet({
                       You won <em>₹{reward}</em>!
                     </>
                   ) : (
-                    "Better luck tomorrow"
+                    loseTitle
                   )
                 ) : (
                   <>
@@ -75,8 +84,8 @@ export default function ScratchRewardSheet({
               <p className="srs-sub">
                 {scratched
                   ? eligible
-                    ? "Wallet cash for your next order"
-                    : "Thanks for joining TheBookX"
+                    ? wonSub
+                    : loseSub
                   : "Scratch the card to reveal your wallet reward"}
               </p>
             </div>
@@ -87,7 +96,7 @@ export default function ScratchRewardSheet({
                 height={200}
                 cover="festive"
                 revealIcon={eligible ? "₹" : "🎁"}
-                revealText={eligible ? `₹${reward}` : "Better luck tomorrow"}
+                revealText={eligible ? `₹${reward}` : loseTitle}
                 revealSub={eligible ? "Added to your TheBookX wallet" : ""}
                 onComplete={onScratch}
               />
@@ -123,7 +132,7 @@ export default function ScratchRewardSheet({
                   className="srs-cta"
                   onClick={onViewProfile ? onViewProfile : onClose}
                 >
-                  {onViewProfile ? "View my profile" : "Awesome, thanks!"}
+                  {ctaLabel || (onViewProfile ? "View my profile" : "Awesome, thanks!")}
                 </button>
               ) : (
                 <button type="button" className="srs-later" onClick={onClose}>

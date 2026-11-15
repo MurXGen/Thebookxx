@@ -175,7 +175,6 @@ export default function OrderScratchCard({
                 <ScratchCard
                   width={150}
                   height={98}
-                  completeAt={0.8}
                   revealText={`₹${reward}`}
                   revealSub="won!"
                   onComplete={handleScratched}

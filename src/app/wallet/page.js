@@ -160,6 +160,13 @@ export default function WalletPage() {
           </div>
         )}
 
+        {ledger && ledger.expiredTotal > 0 && (
+          <p className="wallet-expired-note">
+            ₹{ledger.expiredTotal} in older coins expired unused (coins last{" "}
+            {WALLET_TTL_DAYS} days).
+          </p>
+        )}
+
         {ledger && ledger.history.length > 0 && (
           <div className="wallet-history">
             <h2 className="wallet-h2">Transaction history</h2>
@@ -218,8 +225,14 @@ export default function WalletPage() {
                           : fmtDateTime(h.date)}
                       </span>
                       {h.type === "credit" && h.expires && (
-                        <span className="wallet-txn-exp">
-                          Expires {fmtDate(h.expires)}
+                        <span className={`wallet-txn-exp${h.expiredAmount > 0 ? " gone" : ""}`}>
+                          {h.expiredAmount > 0
+                            ? h.expiredAmount >= Math.abs(h.amount)
+                              ? `Expired on ${fmtDate(h.expires)}`
+                              : `₹${h.expiredAmount} expired on ${fmtDate(h.expires)}`
+                            : h.expired || h.remaining === 0
+                              ? "Used"
+                              : `₹${h.remaining} left · expires ${fmtDate(h.expires)}`}
                         </span>
                       )}
                     </div>

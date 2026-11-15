@@ -4,6 +4,211 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "literature-festival-season-2026-27-india-calendar-books-to-read": {
+    "id": "blog-120",
+    "title": "India Literature Festival Season 2026-27: Dates for JLF, Kerala, Bangalore and More, Plus What to Read Before You Go",
+    "slug": "literature-festival-season-2026-27-india-calendar-books-to-read",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-15",
+    "lastModified": "2026-11-15",
+    "excerpt": "India's lit fest season is here: dates for Dehradun, Lucknow, Bangalore, Jaipur, Kerala, Hyderabad and Kolkata festivals, plus the books to read before you go.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Winter in India is literature festival season. From the hills of Shillong in mid-November to the beach at Kozhikode in late January, the next ten weeks bring a run of festivals where you can hear authors read, argue with panellists, queue for signatures and come home with a bag of books you did not plan to buy. The Shillong Literary Festival has just wrapped up at Ward's Lake (12 to 14 November 2026), with Kiran Desai and Damon Galgut on the programme, and the rest of the calendar is now filling up fast."
+      },
+      {
+        "type": "paragraph",
+        "content": "This guide pulls together the major festivals coming up between now and January 2027, explains how to get the most out of a festival day, and suggests what to read beforehand so you walk into every session with something to say."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "India literature festival calendar at a glance",
+        "content": "Dehradun Literature Festival: 27 to 29 November 2026, Doon International School. Koshala Literature Festival (fifth edition): 27 to 30 November 2026, Lucknow. Bangalore Literature Festival: 11 to 13 December 2026, Freedom Park. Jaipur Literature Festival: 14 to 18 January 2027, Hotel Clarks Amer. Kerala Literature Festival (tenth year): 21 to 24 January 2027, Kozhikode Beach. Hyderabad Literary Festival: 22 to 24 January 2027, HITEC City. Kolkata Literary Meet: late January 2027. Dates are as published in festival listings this month; always confirm on the official festival website before you travel."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The festivals to bookmark, month by month"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "November 2026: Dehradun and Lucknow"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Dehradun Literature Festival returns to Doon International School from 27 to 29 November, with film-makers Imtiaz Ali and Vishal Bhardwaj among the names announced. It is a good festival for readers who love the crossover between books and cinema, so it is worth revisiting a novel that became a classic film. R. K. Narayan's <a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> is the obvious pick, and Ruskin Bond's <a href=\"/books/the-room-on-the-roof\" style=\"color:#fb8500;font-weight:600\">The Room on the Roof</a>, written when Bond was a teenager and set in the Dehradun he knew, is the perfect book to carry up the hill."
+      },
+      {
+        "type": "paragraph",
+        "content": "In Lucknow, the fifth Koshala Literature Festival runs from 27 to 30 November at the Lucknow Museum of Heritage and Art, themed around rediscovering humanity through heritage. Its focus on Hindi, Urdu and regional literature, with mushairas, kavi sammelans and Sufi evenings, makes it the ideal excuse to read in Hindi. Dharamvir Bharati's <a href=\"/books/gunahon-ka-devta\" style=\"color:#fb8500;font-weight:600\">Gunahon Ka Devta</a> remains one of the most loved Hindi novels ever written, and Satya Vyas's <a href=\"/books/banaras-talkies\" style=\"color:#fb8500;font-weight:600\">Banaras Talkies</a> shows how fresh and funny contemporary Hindi fiction can be."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "December 2026: Bangalore"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Bangalore Literature Festival takes over Freedom Park from 11 to 13 December, with free entry on online registration. Its LitMart, where shortlisted writers pitch manuscripts to a jury, makes it a favourite with aspiring authors. If you are one of them, read <a href=\"/books/steal-like-an-artist-10-things-nobody-told-you-about-being-creative\" style=\"color:#fb8500;font-weight:600\">Steal Like an Artist</a> on the way there, and keep Sudha Murty's <a href=\"/books/wise-and-otherwise-a-salute-to-life\" style=\"color:#fb8500;font-weight:600\">Wise and Otherwise</a> in your bag as a reminder that the best stories are often the simplest true ones."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "January 2027: Jaipur, Kozhikode, Hyderabad and Kolkata"
+      },
+      {
+        "type": "paragraph",
+        "content": "January is the peak. The Jaipur Literature Festival, the biggest free-to-attend literary event of its kind and now marking its twentieth year, runs from 14 to 18 January 2027 at Hotel Clarks Amer. Within a week, the Kerala Literature Festival celebrates its tenth year on Kozhikode Beach (21 to 24 January) with Australia as guest nation, the Hyderabad Literary Festival returns to HITEC City (22 to 24 January), and the Kolkata Literary Meet follows in late January. Booker-season fiction and Indian classics dominate these stages, so this is the time to read <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> if you never have, or to pair it with Arundhati Roy's memoir <a href=\"/books/mother-mary-comes-to-me\" style=\"color:#fb8500;font-weight:600\">Mother Mary Comes to Me</a>."
+      },
+      {
+        "type": "blockquote",
+        "content": "A literature festival is the only place where you can disagree with an author in person and then ask them to sign your copy. Go prepared, and you will get far more than an autograph."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to get the most out of a literature festival"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Download the programme the week before and circle no more than three sessions a day. Festivals run parallel venues, and trying to see everything means seeing nothing properly.",
+          "Read at least one book by each author you plan to watch. Sessions are far richer when you know the work, and your question at the end will be better than \"what inspired you?\".",
+          "Register early. Many Indian festivals are free but need online registration, and popular sessions fill up long before the doors open.",
+          "Carry your own copy for signing. Festival bookshops often sell out of headline titles on day one, so order ahead and bring it with you.",
+          "Take notes. Write down the books that authors mention on stage: those recommendations are often the best part of the day.",
+          "Talk to strangers in the queue. Festival crowds are the friendliest readers you will ever meet, and many lifelong book clubs start in a signing line."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "That last point about taking notes matters more than it seems. A day of panels can leave you buzzing but muddled. Murthy Thevar's <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> is a short, practical read on turning a flood of ideas into a few clear thoughts and decisions, which is exactly the skill you need when you get home with ten pages of scribbled recommendations."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What to read before festival season: a starter list"
+      },
+      {
+        "type": "paragraph",
+        "content": "You do not need to have read every shortlisted novel of the year to enjoy a festival. A mix of Indian classics, celebrated world fiction and big-idea non-fiction will prepare you for almost any panel."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Indian fiction that comes up again and again"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R. K. Narayan: the gentle, timeless short stories that taught generations of Indians to read fiction in English.",
+          "<a href=\"/books/an-unsuitable-boy\" style=\"color:#fb8500;font-weight:600\">An Unsuitable Boy</a> by Vikram Seth: the great Indian family saga, perfect for a long winter and still discussed at every major festival.",
+          "<a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni: the Mahabharata retold through Draupadi, ideal for sessions on myth and retellings.",
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy: the Booker winner that changed Indian writing in English."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "World fiction for prize-season panels"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> by Han Kang: the Nobel laureate's most famous novel, essential for any conversation about translated literature.",
+          "<a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> by Kazuo Ishiguro: a quiet, moving novel about artificial intelligence and love, which speaks directly to one of the most debated subjects on festival stages this year.",
+          "<a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> by Satoshi Yagisawa: a gentle Japanese novel about a bookshop, made for reading on the train to Jaipur."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Non-fiction for the big-ideas sessions"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari: the history book that still shapes debates on technology, power and the future.",
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A. P. J. Abdul Kalam: the autobiography that inspires students at every festival youth session.",
+          "<a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> by Mortimer Adler and Charles Van Doren: the classic guide to reading actively, so you get more out of every book on this list.",
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar: for thinking clearly about everything you hear."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Stock up before the festival bookshop queues",
+        "content": "Order your festival reading on TheBookX with books from ₹1, free delivery and Cash on Delivery across India. Taking a friend along? Add gift wrapping for just ₹25 and turn a festival day into a present."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Can't make it to a festival? Bring the festival home"
+      },
+      {
+        "type": "paragraph",
+        "content": "Most of the big festivals now stream or upload their sessions, so you can follow along from your sofa. Pick one session a weekend, read the author's book first, then watch the conversation with a cup of chai. Invite two or three friends, and you have a book club with a ready-made reading list that lasts until spring."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Whichever festival you choose, the best preparation is the same: read something you love, come with a question, and leave with a longer reading list than you arrived with. Happy festival season."
+      }
+    ],
+    "coverImage": "/blogs/literature-festival-season-2026-27-india-calendar-books-to-read.jpeg",
+    "images": [
+      {
+        "url": "/blogs/literature-festival-season-2026-27-india-calendar-books-to-read.jpeg",
+        "alt": "Young woman reading a paperback on a sunny lawn at an outdoor literature festival, with a tote bag of books beside her and festival canopies softly blurred behind",
+        "caption": "India's literature festival season runs from November 2026 to January 2027: read before you go.",
+        "category": "Literary Events"
+      }
+    ],
+    "keywords": [
+      "literature festival India 2026",
+      "India literature festival calendar 2026-27",
+      "Jaipur Literature Festival 2027 dates",
+      "Kerala Literature Festival 2027",
+      "Bangalore Literature Festival 2026",
+      "Dehradun Literature Festival 2026",
+      "books to read before literature festival",
+      "lit fest season India"
+    ],
+    "categories": [
+      "Literary Events",
+      "Book Recommendations",
+      "Indian Literature"
+    ],
+    "faqs": [
+      {
+        "question": "When is the Jaipur Literature Festival 2027?",
+        "answer": "The Jaipur Literature Festival is scheduled for 14 to 18 January 2027 at Hotel Clarks Amer in Jaipur, according to festival listings published in November 2026. Confirm the final dates and registration details on the official JLF website."
+      },
+      {
+        "question": "Which literature festivals are happening in India in November and December 2026?",
+        "answer": "The Dehradun Literature Festival runs from 27 to 29 November 2026, the Koshala Literature Festival in Lucknow from 27 to 30 November, and the Bangalore Literature Festival at Freedom Park from 11 to 13 December. The Shillong Literary Festival took place from 12 to 14 November."
+      },
+      {
+        "question": "Are Indian literature festivals free to attend?",
+        "answer": "Many are. The Bangalore and Hyderabad festivals offer free entry with online registration, and the Kerala Literature Festival has free delegate registration alongside paid passes. Others, such as Jaipur and Koshala, have low-cost tickets. Always register early, as popular sessions fill up."
+      },
+      {
+        "question": "What should I read before going to a literature festival?",
+        "answer": "Read at least one book by each author you plan to see, then add a few classics that come up often on stage, such as The God of Small Things, Malgudi Days and The Vegetarian, plus a non-fiction pick like Sapiens or The Art of Clarity. All are available on TheBookX with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "national-book-awards-2026-finalists-salman-rushdie-medal-books-to-read-india": {
     "id": "blog-119",
     "title": "National Book Awards 2026: Finalists, Salman Rushdie's Medal and What Indian Readers Should Read Before 18 November",

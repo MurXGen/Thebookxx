@@ -40,6 +40,12 @@ const slugify = (t) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
+// Real covers for the desktop hero visual.
+const HERO_COVERS = ["bk-002", "bk-005", "bk-006", "bk-391", "bk-009"]
+  .map((id) => books.find((b) => b.id === id))
+  .filter((b) => b && b.image)
+  .map((b) => (typeof b.image === "string" ? b.image : b.image.src));
+
 export default function HomeHero() {
   // Pause the hero's looping CSS animations (garland, tree, gift) off-screen.
   const heroRef = useRef(null);
@@ -231,6 +237,25 @@ export default function HomeHero() {
               <Sparkles size={18} /> Suggest me
             </button>
           </div>
+
+          {/* Desktop: fanned real covers floating on a red glow */}
+          <div className="hx-visual" aria-hidden="true">
+            <span className="hx-visual-glow" />
+            {HERO_COVERS.map((src, i) => (
+              <img key={src} src={src} alt="" className={`hx-vcover v${i}`} loading="eager" decoding="async" />
+            ))}
+            <span className="hx-visual-tag">
+              <Star size={13} fill="#f59e0b" stroke="#f59e0b" /> Bestsellers from ₹1
+            </span>
+          </div>
+
+          {/* Desktop: proof stats under the actions */}
+          <ul className="hx-stats">
+            <li><b>{titleCount}+</b><span>Books in stock</span></li>
+            <li><b>4.4<Star size={15} fill="#f59e0b" stroke="#f59e0b" /></b><span>Reader rating</span></li>
+            <li><b>5,000+</b><span>Community readers</span></li>
+            <li><b>COD</b><span>&amp; 7-day replacement</span></li>
+          </ul>
 
           {/* Christmas gift — opens the scratch & win flow */}
           {/* Community CTA, just above the Christmas gift */}

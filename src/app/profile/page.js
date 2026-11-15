@@ -1907,7 +1907,7 @@ Please cancel this order. Thank you `;
                 )}
                 {/* Share & earn — post a review, get up to ₹200 back. */}
                 {!cardLoading && !booting && (
-                  <ReviewRewardCard phone={phoneNumber} />
+                  <ReviewRewardCard phone={phoneNumber} compact />
                 )}
               </>
             )}

@@ -77,9 +77,12 @@ export default function HomeNavbar({ onSearch }) {
         alive = false;
       };
     }
+    // Short cache (2 min, per phone) so the pill doesn't refetch on every page
+    // but never shows a stale balance after spending / earning coins.
     let cached = null;
     try {
-      cached = sessionStorage.getItem("tbx_wallet_bal");
+      const c = JSON.parse(sessionStorage.getItem("tbx_wallet_bal") || "null");
+      if (c && c.p === phone && Date.now() - c.t < 120000) cached = c.v;
     } catch {
       /* ignore */
     }
@@ -88,7 +91,7 @@ export default function HomeNavbar({ onSearch }) {
       if (!alive) return;
       setWallet(l.balance || 0);
       try {
-        sessionStorage.setItem("tbx_wallet_bal", String(l.balance || 0));
+        sessionStorage.setItem("tbx_wallet_bal", JSON.stringify({ v: l.balance || 0, p: phone, t: Date.now() }));
       } catch {
         /* ignore */
       }
@@ -108,6 +111,68 @@ export default function HomeNavbar({ onSearch }) {
   const eta = !pin ? "4–9 days" : fast ? "1–5 days" : "4–9 days";
 
   return (
+    <>
+    {/* ===== Desktop (≥1024px): promo strip + floating navbar ===== */}
+    <div className="hnd">
+      <div className="hnd-promo">
+        <span>🎄 Christmas Sale — up to 50% off</span>
+        <i aria-hidden="true">·</i>
+        <span>Free delivery from ₹199</span>
+        <i aria-hidden="true">·</i>
+        <span>Cash on Delivery &amp; 7-day replacement</span>
+      </div>
+      <div className="hnd-bar">
+        <Link href="/" className="hnd-brand" aria-label="TheBookX home">
+          <span className="hnd-logo">TheBookX</span>
+          <span className="hnd-logo-sub">formerly Uskillbook</span>
+        </Link>
+        <nav className="hnd-links" aria-label="Main">
+          <Link href="/books">Books</Link>
+          <Link href="/1rupee">₹1 Books</Link>
+          <Link href="/combos">Combos</Link>
+          <Link href="/category/self-help">Self-help</Link>
+          <Link href="/category/fiction">Fiction</Link>
+          <Link href="/quickreads">QuickReads</Link>
+        </nav>
+        <button
+          type="button"
+          className="hnd-search"
+          onClick={() => {
+            trackEvent("search_opened", { source: "home_header_desktop" });
+            onSearch?.();
+          }}
+          aria-label="Search books"
+        >
+          <Search size={16} />
+          <span>Search books, authors…</span>
+        </button>
+        <button type="button" className="hnd-del" onClick={openPincodeSheet} aria-label="Change delivery pincode">
+          {ready ? (
+            <>
+              <b>{fast && <Zap size={13} className="hn-del-zap" />}{eta}</b>
+              <span>{pin ? `${city ? `${city} · ` : ""}${pin}` : "Set pincode"}</span>
+            </>
+          ) : (
+            <span className="hn-skel hn-skel-addr" />
+          )}
+        </button>
+        <div className="hnd-acts">
+          <Link href="/wallet" className="hn-wallet" aria-label="Wallet">
+            <Wallet size={16} />
+            {walletKnown && wallet === null ? <span className="hn-skel hn-skel-wal" /> : <span>₹{wallet ?? 0}</span>}
+          </Link>
+          <Link href="/profile" className="hn-ic" aria-label="Account">
+            <User size={19} />
+          </Link>
+          <Link href="/bag" className="hn-ic hn-cart" aria-label="Cart">
+            <HiOutlineShoppingBag size={20} />
+            {cartCount > 0 && <span className="hn-badge">{cartCount > 99 ? "99+" : cartCount}</span>}
+          </Link>
+          <Link href="/books" className="hnd-cta">Shop bestsellers</Link>
+        </div>
+      </div>
+    </div>
+
     <div className="hn">
       {/* Christmas: gentle snowfall across the header */}
       <XmasSnow className="hn-snow" density={0.6} max={36} />
@@ -188,5 +253,6 @@ export default function HomeNavbar({ onSearch }) {
         ))}
       </nav>
     </div>
+    </>
   );
 }

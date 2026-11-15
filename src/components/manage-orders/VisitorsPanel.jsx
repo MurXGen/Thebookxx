@@ -6,7 +6,7 @@ import DevicesPanel from "./DevicesPanel";
 import TimersPanel from "./TimersPanel";
 import InsightsPanel from "./InsightsPanel";
 
-export default function VisitorsPanel({ orders = [] }) {
+export default function VisitorsPanel() {
   const [tab, setTab] = useState("insights");
   return (
     <div className="an2 vz-wrap">
@@ -29,7 +29,7 @@ export default function VisitorsPanel({ orders = [] }) {
         ))}
       </div>
       {tab === "insights" ? (
-        <InsightsPanel orders={orders} />
+        <InsightsPanel />
       ) : tab === "devices" ? (
         <DevicesPanel />
       ) : (

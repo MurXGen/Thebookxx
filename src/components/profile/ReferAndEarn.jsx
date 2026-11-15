@@ -111,13 +111,21 @@ export default function ReferAndEarn({
   // with the earning line and the CTA, tucked inside the profile card.
   if (minimal) {
     return (
-      <div className="refearn-mini">
-        <div className="refearn-mini-txt">
-          <strong>Refer &amp; Earn ₹{REFERRER_REWARD}</strong>
-          <span>
-            Your friend saves ₹{REFEREE_REWARD}, you earn ₹{REFERRER_REWARD} once
-            their first order is delivered.
+      <div className="refearn-mini pe-row-wrap">
+        <div className="pe-row">
+          <span className="pe-ic ref" aria-hidden="true">
+            <Users size={18} />
           </span>
+          <span className="pe-txt">
+            <strong>Refer &amp; earn ₹{REFERRER_REWARD}</strong>
+            <small>Friend saves ₹{REFEREE_REWARD} · you earn after delivery</small>
+          </span>
+          {!locked && !code && (
+            <button type="button" className="pe-cta" onClick={enable} disabled={busy}>
+              {busy ? <Loader2 size={14} className="refearn-spin" /> : null}
+              Invite
+            </button>
+          )}
         </div>
         {locked ? (
           <div className="refearn-locked refearn-mini-locked">
@@ -125,19 +133,7 @@ export default function ReferAndEarn({
             <span>{locked}</span>
           </div>
         ) : !code ? (
-          <button
-            type="button"
-            className="refearn-mini-cta"
-            onClick={enable}
-            disabled={busy}
-          >
-            {busy ? (
-              <Loader2 size={15} className="refearn-spin" />
-            ) : (
-              <Users size={15} />
-            )}
-            Get my referral link
-          </button>
+          null
         ) : (
           <>
             <div className="refearn-linkrow refearn-mini-linkrow">
@@ -156,14 +152,10 @@ export default function ReferAndEarn({
                   <Copy size={15} />
                 )}
               </button>
+              <button type="button" className="refearn-copy pe-wa" onClick={share} aria-label="Share on WhatsApp">
+                <FaWhatsapp size={16} />
+              </button>
             </div>
-            <button
-              type="button"
-              className="refearn-mini-cta"
-              onClick={share}
-            >
-              <FaWhatsapp size={16} /> Share on WhatsApp
-            </button>
           </>
         )}
       </div>

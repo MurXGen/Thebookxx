@@ -51,7 +51,7 @@ function fileToDataUrl(file, maxDim = 1080, quality = 0.8) {
   });
 }
 
-export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "" }) {
+export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "", compact = false }) {
   const [phone, setPhone] = useState(() =>
     norm(phoneProp) ||
     (typeof window !== "undefined" ? norm(getSavedPhone()) : ""),
@@ -183,45 +183,66 @@ export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "" }
   };
 
   return (
-    <section className="rr-card">
-      {/* Compact achievement header — one line + reward progress bar + Claim */}
-      <div className="rr-compact">
-        <div className="rr-compact-top">
-          <span className="rr-badge">
-            <Gift size={13} /> SHARE &amp; EARN
+    <section className={`rr-card${compact ? " rr-card-compact" : ""}`}>
+      {compact ? (
+        /* Minimal row for the profile card: icon · copy · Claim, How it works link */
+        <div className="pe-row">
+          <span className="pe-ic rr" aria-hidden="true">
+            <Gift size={18} />
           </span>
-          <button
-            type="button"
-            className="rr-how-link"
-            onClick={() => setHowOpen(true)}
-          >
-            <Sparkles size={13} /> How it works
+          <span className="pe-txt">
+            <strong>Share &amp; earn ₹{MAX_REWARD}</strong>
+            <small>
+              Reel + review ·{" "}
+              <button type="button" className="pe-link" onClick={() => setHowOpen(true)}>
+                How it works
+              </button>
+            </small>
+          </span>
+          <button type="button" className="pe-cta" onClick={() => setOpen(true)}>
+            Claim
           </button>
         </div>
-        <p className="rr-compact-line">
-          Post a reel &amp; honest review —{" "}
-          <b>earn up to ₹{MAX_REWARD}</b> back to your wallet
-        </p>
-        <div className="rr-ach">
-          <div className="rr-ach-track">
-            <span className="rr-ach-dot" style={{ left: "0%" }} />
-            <span className="rr-ach-dot" style={{ left: "50%" }} />
-            <span className="rr-ach-dot rr-ach-dot-end" style={{ left: "100%" }} />
+      ) : (
+        /* Compact achievement header — one line + reward progress bar + Claim */
+        <div className="rr-compact">
+          <div className="rr-compact-top">
+            <span className="rr-badge">
+              <Gift size={13} /> SHARE &amp; EARN
+            </span>
+            <button
+              type="button"
+              className="rr-how-link"
+              onClick={() => setHowOpen(true)}
+            >
+              <Sparkles size={13} /> How it works
+            </button>
           </div>
-          <div className="rr-ach-scale">
-            <span>₹50</span>
-            <span>₹100</span>
-            <span>₹{MAX_REWARD}</span>
+          <p className="rr-compact-line">
+            Post a reel &amp; honest review —{" "}
+            <b>earn up to ₹{MAX_REWARD}</b> back to your wallet
+          </p>
+          <div className="rr-ach">
+            <div className="rr-ach-track">
+              <span className="rr-ach-dot" style={{ left: "0%" }} />
+              <span className="rr-ach-dot" style={{ left: "50%" }} />
+              <span className="rr-ach-dot rr-ach-dot-end" style={{ left: "100%" }} />
+            </div>
+            <div className="rr-ach-scale">
+              <span>₹50</span>
+              <span>₹100</span>
+              <span>₹{MAX_REWARD}</span>
+            </div>
           </div>
+          <button
+            type="button"
+            className="rr-claim"
+            onClick={() => setOpen(true)}
+          >
+            <Sparkles size={15} /> Claim up to ₹{MAX_REWARD}
+          </button>
         </div>
-        <button
-          type="button"
-          className="rr-claim"
-          onClick={() => setOpen(true)}
-        >
-          <Sparkles size={15} /> Claim up to ₹{MAX_REWARD}
-        </button>
-      </div>
+      )}
 
       {howOpen &&
         typeof document !== "undefined" &&

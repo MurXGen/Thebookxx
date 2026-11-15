@@ -8401,3 +8401,31 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
 }
 .mo-glass .mo-phase.is-refunds:not(.empty) .mo-phase-step { background: rgba(217, 119, 6, 0.14); color: #b45309; }
 .mo-glass.mo-dark .mo-phase.is-refunds:not(.empty) .mo-phase-step { background: rgba(251, 191, 36, 0.16); color: #fcd34d; }
+
+/* 54 · Insights from the Abandoned Cart tab — tips, rate rows, 4-col table. */
+.vzi .vzi-tr { grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.8fr) 56px 56px; }
+@media (max-width: 640px) {
+  .vzi .vzi-tr { grid-template-columns: minmax(0, 1fr) 48px 48px; }
+  .vzi .vzi-th span:nth-child(2) { display: none; }
+  .vzi .vzi-tr .vzi-vis { grid-column: 1 / -1; grid-row: 2; }
+  .vzi .vzi-tr .vzi-conv { grid-column: 2; grid-row: 1; }
+  .vzi .vzi-tr > span:nth-child(4) { grid-column: 3; grid-row: 1; }
+}
+.vzi-rates { display: flex; flex-direction: column; gap: 10px; }
+.vzi-rate { display: grid; grid-template-columns: minmax(96px, 150px) minmax(0, 1fr) 40px 44px; gap: 10px; align-items: center; font-size: 13px; }
+.vzi-rate-l { font-weight: 600; color: var(--vzi-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vzi-rate-n { text-align: right; font-size: 12px; color: var(--vzi-ink3); font-weight: 600; }
+.vzi-rate-p { text-align: right; font-weight: 800; color: var(--vzi-ink); }
+.vzi-rate-p.good { color: #0b8a0b; }
+.vzi-rate-p.bad { color: #d03b3b; }
+.vzi-rate-p.low { color: var(--vzi-ink3); font-weight: 600; }
+.vzi-tip-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.vzi-tip { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: var(--vzi-track); }
+.vzi-tip-ic { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; }
+.vzi-tip.act .vzi-tip-ic { background: #fff1e6; color: #c2410c; }
+.vzi-tip.warn .vzi-tip-ic { background: #fdecec; color: #d03b3b; }
+.vzi-tip.idea .vzi-tip-ic { background: #e6f0fd; color: #2a78d6; }
+.vzi-tip.good .vzi-tip-ic { background: #e7f8ec; color: #0b8a0b; }
+.vzi-tip b { display: block; font-size: 13.5px; color: var(--vzi-ink); }
+.vzi-tip small { display: block; margin-top: 2px; font-size: 12.5px; line-height: 1.45; color: var(--vzi-ink2); }
+.vzi-tips { border-color: color-mix(in srgb, #fb8500 35%, var(--vzi-line)); }

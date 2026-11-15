@@ -8339,14 +8339,6 @@ export default function ManageOrdersPage() {
       return next;
     });
   };
-  // Lightweight order list for Visitors → Insights (date + books only).
-  const visitorOrders = useMemo(
-    () =>
-      orders
-        .filter((o) => o["Order ID"] && !/cancel|return/i.test(String(o["Order Status"] || "")))
-        .map((o) => ({ at: getOrderDate(o)?.getTime() || 0, books: o.parsedBooks || [] })),
-    [orders],
-  );
   const tidSelCount = tidRows.filter((r) => tidSel.includes(r.orderId)).length;
   const tidCopy = () => {
     const chosen = tidSelCount
@@ -17793,7 +17785,7 @@ export default function ManageOrdersPage() {
         )}
 
         {/* ===== Visitors: devices joined across tabs + offer timers ===== */}
-        {activeTab === "timers" && <VisitorsPanel orders={visitorOrders} />}
+        {activeTab === "timers" && <VisitorsPanel />}
 
         {/* ===== Track orders ===== */}
         {activeTab === "track" && (

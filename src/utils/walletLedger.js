@@ -46,23 +46,25 @@ export function parseSheetDate(input) {
 /**
  * Compute the wallet state from raw ledger entries.
  * @param {{date: Date, amount: number}[]} entries  +amount = credit, -amount = debit
- * @returns { balance, history, expiringSoon, expiringDate, oldestCreditDate }
+ * @returns { balance, history, expiringSoon, expiringDate, oldestCreditDate,
+ *            expiredTotal, overspent }
+ *   expiredTotal — coins that lapsed unused (60 days after credit)
+ *   overspent    — debit amount that no valid coins covered (audit signal:
+ *                  spend recorded against expired/insufficient coins)
  */
 export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_TTL_DAYS) {
   const sorted = [...entries]
     .filter((e) => e.date && e.amount)
     .sort((a, b) => a.date - b.date);
 
-  const credits = []; // { date, remaining, expires }
+  const credits = []; // { date, remaining, expires, h }
+  let overspent = 0;
   const history = [];
 
   for (const e of sorted) {
     if (e.amount > 0) {
       const expires = new Date(e.date.getTime() + ttlDays * DAY);
-      // Locked/orphan reward coins (linked order not found for this phone) are
-      // invalid — keep them out of the FIFO balance pool (and hidden by the UI).
-      if (!e.locked) credits.push({ date: e.date, remaining: e.amount, expires });
-      history.push({
+      const h = {
         date: e.date,
         amount: e.amount,
         type: "credit",
@@ -70,7 +72,11 @@ export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_
         orderId: e.orderId || "",
         locked: !!e.locked,
         expires,
-      });
+      };
+      history.push(h);
+      // Locked/orphan reward coins (linked order not found for this phone) are
+      // invalid — keep them out of the FIFO balance pool (and hidden by the UI).
+      if (!e.locked) credits.push({ date: e.date, remaining: e.amount, expires, h });
     } else {
       // A PENDING debit is spend on an order that isn't confirmed yet (e.g. an
       // unpaid UPI draft). It's shown in history as "pending" but does NOT
@@ -102,6 +108,7 @@ export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_
         c.remaining -= take;
         need -= take;
       }
+      if (need > 0) overspent += need;
     }
   }
 
@@ -111,9 +118,17 @@ export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_
   let oldestCreditDate = null;
   const warnMs = WALLET_EXPIRY_WARN_DAYS * DAY;
 
+  let expiredTotal = 0;
   for (const c of credits) {
+    // Per-credit status for the history list: what's left / what lapsed.
+    c.h.remaining = Math.max(0, Math.round(c.remaining));
+    c.h.expired = c.expires.getTime() <= now;
+    c.h.expiredAmount = c.h.expired ? c.h.remaining : 0;
     if (c.remaining <= 0) continue;
-    if (c.expires.getTime() <= now) continue; // expired, unusable
+    if (c.expires.getTime() <= now) {
+      expiredTotal += c.remaining; // lapsed unused, not spendable
+      continue;
+    }
     balance += c.remaining;
     if (!oldestCreditDate || c.date < oldestCreditDate) oldestCreditDate = c.date;
     if (c.expires.getTime() - now <= warnMs) {
@@ -128,6 +143,8 @@ export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_
     expiringSoon: Math.round(expiringSoon),
     expiringDate,
     oldestCreditDate,
+    expiredTotal: Math.round(expiredTotal),
+    overspent: Math.round(overspent),
   };
 }
 

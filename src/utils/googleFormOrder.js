@@ -1,5 +1,6 @@
 // utils/googleFormOrder.js
 
+import { computeWalletLedger, fetchWalletEntries } from "./walletLedger";
 import { encodeAddonsField } from "./addonsField";
 import { getDeliveryCharge } from "./cartOffers";
 
@@ -226,21 +227,13 @@ export const fetchWalletBalance = async (phone) => {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length !== 10) return 0;
   try {
-    // Server route reads the sheet + returns only this phone's ledger entries.
-    const res = await fetch(`/api/wallet?phone=${digits}`);
-    const json = await res.json();
-    const entries = Array.isArray(json.entries) ? json.entries : [];
-    // Exclude from the spendable balance:
-    //  • locked/orphan reward coins (linked order not found), and
-    //  • pending debits — spend on an order that isn't confirmed yet (e.g. an
-    //    unpaid UPI draft). The amount still belongs to the customer until that
-    //    order goes through, so checkout keeps offering it.
-    const bal = entries.reduce((s, e) => {
-      if (e.pending) return s;
-      if (e.locked && Number(e.amount) > 0) return s;
-      return s + (Number(e.amount) || 0);
-    }, 0);
-    return Math.max(0, Math.round(bal));
+    // ONE source of truth for every balance on the site (checkout, profile,
+    // wallet page, header, order page): the expiry-aware FIFO ledger. It
+    // excludes coins older than 60 days, locked/orphan reward coins and
+    // pending (not-yet-confirmed) spends. Previously this just summed the rows,
+    // so expired coins stayed spendable at checkout.
+    const entries = await fetchWalletEntries(digits);
+    return computeWalletLedger(entries).balance;
   } catch (e) {
     console.error("Wallet balance read failed:", e);
     return 0;

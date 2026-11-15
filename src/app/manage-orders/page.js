@@ -154,6 +154,7 @@ import {
   saveSender,
   validateRow,
   IP_LIMITS,
+  estimateWeight,
 } from "@/utils/indiaPostBulk";
 
 // ---- Book cover lookup (order stores names; resolve to cover image) ----
@@ -4092,6 +4093,8 @@ export default function ManageOrdersPage() {
   const longPressRef = useRef(false); // true right after a long-press selects a card
   const lpTimer = useRef(null); // long-press timer handle
   const [trackDrafts, setTrackDrafts] = useState({}); // { orderId: "CX..." }
+  // Dispatch-card parcel drafts: { orderId: { w, l, b, h } } until Save.
+  const [parcelDrafts, setParcelDrafts] = useState({});
   const [trackScanFor, setTrackScanFor] = useState(null); // orderId being scanned
   const [addrEdit, setAddrEdit] = useState({}); // { orderId: {address,city,state,pincode} }
   const [rowSaving, setRowSaving] = useState({}); // { orderId: "tracking"|"address"|"status" }
@@ -10026,6 +10029,19 @@ export default function ManageOrdersPage() {
       ok ? "success" : "error",
     );
   };
+  // Inline weight & size (Dispatch cards): saved locally + queued for the
+  // shipment bar's push, exactly like the Parcel sheet does.
+  const queueShipSize = (order, w, sizes) => {
+    const oid = order["Order ID"];
+    const curW = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");
+    const curS = String(order["Sizes(Lxbxh)"] || "").trim();
+    if (w === curW && sizes === curS) return;
+    patchLocalOrder(oid, { "Weight(gm)": w, "Sizes(Lxbxh)": sizes });
+    setPendingShip((p) => ({
+      ...p,
+      [oid]: { "Weight(gm)": w, "Sizes(Lxbxh)": sizes },
+    }));
+  };
   const saveWeightSize = async () => {
     if (!wsOrder) return;
     const oid = wsOrder["Order ID"];
@@ -12393,7 +12409,146 @@ export default function ManageOrdersPage() {
                                       <ChevronRight size={15} />
                                     </button>
                                   </div>
-                                  {(w || sz || trk) && (
+                                  {selCtx && (() => {
+                                    // Dispatch only: the Parcel sheet's inputs, right on the card.
+                                    const saved = String(order["Sizes(Lxbxh)"] || "")
+                                      .split(/[xX×*]/)
+                                      .map((s) => s.replace(/[^\d]/g, ""));
+                                    const hasSaved = saved.length === 3 && saved.every(Boolean);
+                                    const dflt = { l: "22", b: "16", h: String(Math.max(1, bookCount) * 2) };
+                                    const base = {
+                                      w,
+                                      l: hasSaved ? saved[0] : dflt.l,
+                                      b: hasSaved ? saved[1] : dflt.b,
+                                      h: hasSaved ? saved[2] : dflt.h,
+                                    };
+                                    const d = { ...base, ...(parcelDrafts[orderId] || {}) };
+                                    const t = trackDrafts[orderId] ?? trk;
+                                    const setD = (k, v) =>
+                                      setParcelDrafts((p) => ({
+                                        ...p,
+                                        [orderId]: { ...(p[orderId] || {}), [k]: String(v).replace(/[^\d]/g, "") },
+                                      }));
+                                    const sizes = [d.l, d.b, d.h].every(Boolean) ? `${d.l}x${d.b}x${d.h}` : "";
+                                    const dirty =
+                                      d.w !== w ||
+                                      sizes !== String(order["Sizes(Lxbxh)"] || "").trim() ||
+                                      String(t || "").trim() !== trk;
+                                    const faster =
+                                      /faster|express/i.test(String(order["Delivery Type"] || "")) ||
+                                      /^e/i.test(String(t || trk || "").trim());
+                                    const wn = parseInt(d.w, 10);
+                                    const kind = faster
+                                      ? "speed"
+                                      : wn > 0
+                                        ? wn < SPEED_MAX_GRAMS ? "speed" : "contract"
+                                        : null;
+                                    const est = estimateWeight(order);
+                                    const save = () => {
+                                      queueShipSize(order, d.w || "", sizes);
+                                      const nt = String(t || "").trim();
+                                      if (nt && nt !== trk) queueTracking(order, nt);
+                                      setParcelDrafts((p) => {
+                                        const n = { ...p };
+                                        delete n[orderId];
+                                        return n;
+                                      });
+                                      showToast("Parcel saved · push to the sheet when you're done", "success");
+                                    };
+                                    const ready = d.w && sizes && trk && !dirty;
+                                    return (
+                                      <div
+                                        className={`mo2-parcel${ready ? " ok" : ""}`}
+                                        onKeyDown={(e) => {
+                                          if (e.key === "Enter" && dirty) save();
+                                        }}
+                                      >
+                                        <div className="mo2-parcel-h">
+                                          <span className="mo2-parcel-t">
+                                            <Package size={14} aria-hidden="true" /> Parcel
+                                          </span>
+                                          {kind ? (
+                                            <span className={`mo2-kind ${kind}`}>
+                                              {kind === "speed" ? "Speed Post" : "Contractual"}
+                                              <em>
+                                                {faster
+                                                  ? "express opted"
+                                                  : `${wn < SPEED_MAX_GRAMS ? "under" : "≥"} ${SPEED_MAX_GRAMS} g`}
+                                              </em>
+                                            </span>
+                                          ) : (
+                                            <span className="mo2-kind none">Enter weight</span>
+                                          )}
+                                        </div>
+                                        <div className="mo2-parcel-grid">
+                                          <label className="mo2-pf mo2-pf-w">
+                                            <span className="mo2-pf-l">Weight</span>
+                                            <span className="mo2-pf-box">
+                                              <input
+                                                inputMode="numeric"
+                                                value={d.w}
+                                                placeholder={`~${est}`}
+                                                onChange={(e) => setD("w", e.target.value)}
+                                                aria-label="Weight in grams"
+                                              />
+                                              <small>g</small>
+                                            </span>
+                                          </label>
+                                          <div className="mo2-pf mo2-pf-d">
+                                            <span className="mo2-pf-l">Size · cm</span>
+                                            <span className="mo2-pf-box">
+                                              {["l", "b", "h"].map((k, i) => (
+                                                <Fragment key={k}>
+                                                  {i > 0 && <i aria-hidden="true">×</i>}
+                                                  <input
+                                                    inputMode="numeric"
+                                                    value={d[k]}
+                                                    placeholder={k.toUpperCase()}
+                                                    onChange={(e) => setD(k, e.target.value)}
+                                                    aria-label={["Length", "Breadth", "Height"][i] + " in cm"}
+                                                  />
+                                                </Fragment>
+                                              ))}
+                                            </span>
+                                          </div>
+                                          <div className="mo2-pf mo2-pf-t">
+                                            <span className="mo2-pf-l">Tracking ID</span>
+                                            <span className="mo2-pf-box">
+                                              <input
+                                                value={t}
+                                                placeholder="Scan or type"
+                                                onChange={(e) =>
+                                                  setTrackDrafts((p) => ({ ...p, [orderId]: e.target.value.toUpperCase() }))
+                                                }
+                                                aria-label="Tracking ID"
+                                                autoCapitalize="characters"
+                                                spellCheck={false}
+                                              />
+                                              <button
+                                                type="button"
+                                                className="mo2-pf-scan"
+                                                onClick={() => setTrackScanFor(orderId)}
+                                                title="Scan tracking barcode"
+                                                aria-label="Scan tracking barcode"
+                                              >
+                                                <Camera size={15} />
+                                              </button>
+                                            </span>
+                                          </div>
+                                          <button
+                                            type="button"
+                                            className="mo2-parcel-save"
+                                            onClick={save}
+                                            disabled={!dirty}
+                                          >
+                                            <Check size={15} />
+                                            {dirty ? "Save" : "Saved"}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    );
+                                  })()}
+                                  {!selCtx && (w || sz || trk) && (
                                     <p className="mo2-shipline">
                                       {(w || sz) && (
                                         <span>
@@ -12474,6 +12629,7 @@ export default function ManageOrdersPage() {
                                     <small className="mo-act-l">View</small>
                                   </a>
                                 )}
+                                <span className="mo2-act-sep" aria-hidden="true" />
                                 <button
                                   type="button"
                                   className={`mo-frame-ic mo-frame-book${bookedOrders[orderId] ? " done" : ""}`}
@@ -12510,7 +12666,7 @@ export default function ManageOrdersPage() {
                                   )}
                                   <small className="mo-act-l">{dispatchIds.includes(orderId) ? "Queued" : "Queue"}</small>
                                 </button>
-                                {(() => {
+                                {!selCtx && (() => {
                                   // One button for weight, size & tracking (the
                                   // same editor); the dot shows what's missing.
                                   const sw = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");

@@ -131,9 +131,13 @@ export function BillCard({
   quickReads = 0,
   bookmarks = 0,
   bookmarkQty = 0,
+  giftWrap = 0,
   toPay,
+  coupon = null, // { code, off, short, before, extra, beaten }
+  onRemoveCoupon,
   onViewBill,
 }) {
+  const couponOn = coupon && coupon.off > 0;
   const shortBy = Math.max(0, freeAt - totalDiscounted - (topUp || 0));
   const struckTotal = totalOriginal + deliveryFeeWithout + (topUp || 0) + quickReads;
   return (
@@ -163,6 +167,12 @@ export function BillCard({
           <span>{inr(bookmarks)}</span>
         </div>
       )}
+      {giftWrap > 0 && (
+        <div className="bg-bill-row">
+          <span>Gift wrap</span>
+          <span>{inr(giftWrap)}</span>
+        </div>
+      )}
       <div className="bg-bill-row dashed">
         <span className="bg-dot">Delivery fee</span>
         <span>
@@ -184,12 +194,44 @@ export function BillCard({
           <span>{inr(topUp)}</span>
         </div>
       )}
-      <div className="bg-bill-total">
+      {coupon && (
+        <div className={`bg-bill-row bg-coupon${couponOn ? " on" : ""}`}>
+          <span>
+            <b className="bg-coupon-tag">{coupon.code}</b>{" "}
+            {couponOn
+              ? "Coupon applied"
+              : coupon.beaten
+                ? "Your offers already save more"
+                : `Add ${inr(coupon.short)} more to unlock`}
+            {onRemoveCoupon && (
+              <button type="button" className="bg-coupon-x" onClick={onRemoveCoupon} data-no-busy>
+                Remove
+              </button>
+            )}
+          </span>
+          <span>{couponOn ? `−${inr(coupon.off)}` : coupon.beaten ? "" : "10% off"}</span>
+        </div>
+      )}
+      <div className={`bg-bill-total${couponOn ? " coupon" : ""}`}>
         <span>To pay</span>
         <span>
-          {struckTotal > toPay && <s>{inr(struckTotal)}</s>} {inr(toPay)}
+          {couponOn ? (
+            <>
+              <s>{inr(coupon.before)}</s> <b className="bg-total-new">{inr(toPay)}</b>
+            </>
+          ) : (
+            <>
+              {struckTotal > toPay && <s>{inr(struckTotal)}</s>} {inr(toPay)}
+            </>
+          )}
         </span>
       </div>
+      {couponOn && (
+        <p className="bg-coupon-save">
+          🎉 You&apos;re saving {inr(coupon.extra)}
+          {coupon.extra < coupon.off ? " more" : ""} with {coupon.code}
+        </p>
+      )}
       {onViewBill && (
         <button type="button" className="bg-link" onClick={onViewBill} data-no-busy>
           Full bill breakdown <ChevronRight size={14} />

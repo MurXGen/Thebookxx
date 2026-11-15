@@ -51,8 +51,8 @@ export const GRIEVANCE = {
 
 // ── Delivery (mirrors getDeliveryCharge) ────────────────────────────────────
 export const DELIVERY = {
-  freeMin: 199, // normal carts: free from ₹199 up to ₹1,000
-  belowFreeFee: 69, // normal carts below ₹199
+  freeMin: 249, // normal carts: free from ₹249 up to ₹1,000
+  belowFreeFee: 69, // normal carts below ₹249
   oneRupeeFreeMin: 399, // carts containing a ₹1 book
   oneRupeeBelowFee: 100,
   careFeeAbove: 1000, // "Handling & Care" fee kicks in above this

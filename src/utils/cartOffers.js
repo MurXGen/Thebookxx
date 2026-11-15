@@ -1,5 +1,10 @@
 // utils/cartOffers.js
 
+// Free standard delivery from this order value (carts WITHOUT a ₹1 book).
+// ₹1-book carts keep their own ₹399 threshold.
+export const FREE_DELIVERY_AT = 249;
+export const FREE_DELIVERY_AT_ONE_RUPEE = 399;
+
 // Get base offers based on whether ₹1 items are present
 export const getCartOffers = (hasOneRupeeItem = false) => {
   if (hasOneRupeeItem) {
@@ -44,19 +49,19 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
       },
     ];
   } else {
-    // No ₹1 books → orders below ₹199 carry a small ₹69 delivery fee; reaching
-    // ₹199 unlocks FREE delivery, then the goals push toward flat discounts.
+    // No ₹1 books → orders below ₹249 carry a small ₹69 delivery fee; reaching
+    // ₹249 unlocks FREE delivery, then the goals push toward flat discounts.
     return [
       {
         min: 0,
-        target: 199,
+        target: FREE_DELIVERY_AT,
         type: "free_shipping",
         reward: "FREE delivery",
         message: "Add ₹{remaining} more for FREE delivery",
         icon: "gift",
       },
       {
-        min: 199,
+        min: FREE_DELIVERY_AT,
         target: 450,
         type: "flat",
         value: 50,
@@ -132,16 +137,19 @@ export const getDeliveryCharge = (
 
   // Standard delivery charge:
   //   ₹1-book carts: below ₹399 → ₹100 · ₹399–₹1000 → FREE
-  //   Normal carts : below ₹199 → ₹69  · ₹199–₹1000 → FREE
-  //   Above ₹1000 (either) → "Handling & Care" fee = 20% of the order
+  //   Normal carts : below ₹249 → ₹69  · ₹249–₹1000 → FREE
+  //   Above ₹1000 (either) → "Handling & Care" fee = 5% of the order
+  //   Above ₹2000 (either) → "Handling & Care" fee = 10% of the order
   //                          (capped at ₹159 for ₹1-book carts)
   let standard;
   if (amt > 1000) {
-    standard = hasOneRupeeItem ? Math.min(round(amt * 0.2), 159) : round(amt * 0.2);
+    // Lowered from a flat 20% so bigger orders aren't penalised.
+    const rate = amt > 2000 ? 0.1 : 0.05;
+    standard = hasOneRupeeItem ? Math.min(round(amt * rate), 159) : round(amt * rate);
   } else if (hasOneRupeeItem) {
     standard = amt < 399 ? 100 : 0;
   } else {
-    standard = amt < 199 ? 69 : 0;
+    standard = amt < FREE_DELIVERY_AT ? 69 : 0;
   }
 
   // Faster / Express = the standard charge (incl. any Handling & Care) PLUS a
@@ -169,13 +177,13 @@ export const getDeliveryLabel = (
   const amt = Number(orderAmount) || 0;
   const express = isFasterDelivery ? " · Express" : "";
 
-  if (amt > 1000) return "Handling & Care" + express; // 20% (cap ₹159 for ₹1)
+  if (amt > 1000) return "Handling & Care" + express; // 5% (10% above ₹2000; cap ₹159 for ₹1)
   if (hasOneRupeeItem) {
     if (amt < 399) return "Delivery" + express; // ₹100 flat
     return "Free Delivery" + express;
   }
   // Normal carts
-  if (amt < 199) return "Delivery" + express; // ₹69
+  if (amt < FREE_DELIVERY_AT) return "Delivery" + express; // ₹69
   return "Free Delivery" + express;
 };
 
@@ -195,14 +203,15 @@ export const getDeliveryDescription = (
 
   if (amt > 1000) {
     return hasOneRupeeItem
-      ? "Handling & care fee — 20% of the order (max ₹159)." + eta
-      : "Handling & care fee — 20% of the order value." + eta;
+      ? `Handling & care fee — ${amt > 2000 ? "10" : "5"}% of the order (max ₹159).` + eta
+      : `Handling & care fee — ${amt > 2000 ? "10" : "5"}% of the order value.` + eta;
   }
   if (hasOneRupeeItem) {
     if (amt < 399) return "₹100 delivery — free on orders above ₹399." + eta;
     return "Free delivery on this order." + eta;
   }
-  if (amt < 199) return "₹69 delivery — free on orders above ₹199." + eta;
+  if (amt < FREE_DELIVERY_AT)
+    return `₹69 delivery — free on orders above ₹${FREE_DELIVERY_AT}.` + eta;
   return "Free delivery on this order." + eta;
 };
 
@@ -216,7 +225,7 @@ export const getOriginalCharge = (orderAmount, isFasterDelivery = false) => {
 };
 
 // Helper to get minimum checkout amount based on ₹1 items. Normal carts can
-// now check out below ₹199 (a ₹69 delivery fee applies); ₹1-book carts keep
+// now check out below ₹249 (a ₹69 delivery fee applies); ₹1-book carts keep
 // the higher ₹499 threshold.
 export const getMinCheckoutAmount = (hasOneRupeeItem = false) => {
   return hasOneRupeeItem ? 199 : 99;

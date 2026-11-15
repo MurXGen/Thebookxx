@@ -4,6 +4,7 @@ import PlacingOrder from "@/components/UI/PlacingOrder";
 import { XmasSnow } from "@/components/XmasDecor";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef, Fragment } from "react";
+import { readBagCoupon, saveBagCoupon } from "@/utils/bagCoupon";
 import { useStore } from "@/context/StoreContext";
 import { books as ALL_BOOKS } from "@/utils/book";
 import LoadingButton from "./LoadingButton";
@@ -346,7 +347,11 @@ export default function AddressModal({
   const couponRedeemedRef = useRef(false);
   // Which method is currently highlighted on the "Choose payment method" sheet.
   // Defaults to none — the shopper must pick, then confirm with the button below.
-  const [paySel, setPaySel] = useState("UPI"); // online selected by default
+  const [paySel, setPaySel] = useState("ADV"); // "Pay in two parts" by default
+  // Default payment choice when the payment step opens: Pay in two parts (₹99
+  // now + rest at delivery) — it beats plain COD on AOV and cancellations.
+  // Falls back to full online when the whole bill is ₹99 or less.
+  const defaultPaySel = () => (upiTotalForFlow > codAdvanceAmount ? "ADV" : "UPI");
   // COD isn't offered with Faster delivery — flip back to Pay Online if chosen.
   useEffect(() => {
     if (fasterDelivery && paySel === "COD") setPaySel("UPI");
@@ -871,6 +876,24 @@ export default function AddressModal({
     Math.max(0, bookmarkQty - _bmFreeForCoupon) * BOOKMARK_UNIT;
   const couponBaseTotal =
     _netNoCoupon + _delivForCoupon + _addOnsForCoupon;
+  // Coupon picked in the bag (WELCOME10 popup) → applied here too, as long as
+  // the order still meets its minimum.
+  useEffect(() => {
+    if (!open || appliedCoupon) return;
+    const c = readBagCoupon();
+    // Only when it meets the minimum AND beats the cart offer it replaces
+    // (same rule the bag shows).
+    const est =
+      c && c.type === "percent"
+        ? Math.min(Math.round(((finalPayable + (offerDiscount || 0) + (standardDeliveryCharge || 0)) * (c.value || 0)) / 100), c.maxDiscount > 0 ? c.maxDiscount : Infinity)
+        : Number(c?.value) || 0;
+    if (c && !(c.minOrder > 0 && finalPayable < c.minOrder) && est > (offerDiscount || 0)) {
+      setAppliedCoupon(c);
+      couponRedeemedRef.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, finalPayable, offerDiscount, standardDeliveryCharge]);
+
   const couponDiscount = (() => {
     if (!appliedCoupon) return 0;
     // Wallet-unlock coupon isn't a price discount — it only lifts the cap.
@@ -956,6 +979,7 @@ export default function AddressModal({
   };
   const removeCoupon = () => {
     setAppliedCoupon(null);
+    saveBagCoupon(null);
     showToast("Coupon removed", "info");
   };
 
@@ -1266,7 +1290,7 @@ export default function AddressModal({
         /^\d{6}$/.test(String(saved.pincode || "")) &&
         String(saved.address || "").trim().length > ADDRESS_MIN_CHARS;
       if (ok) {
-        setPaySel("UPI");
+        setPaySel(defaultPaySel());
         setFasterDelivery(!!initialFaster);
         setTimeout(() => setShowPaySelect(true), 250);
       }
@@ -1425,6 +1449,7 @@ export default function AddressModal({
     // Count the coupon redemption once, only when the order is actually placed.
     if (confirmed && appliedCoupon?.code && !couponRedeemedRef.current) {
       couponRedeemedRef.current = true;
+      saveBagCoupon(null); // used up — don't carry it to the next order
       fetch("/api/coupons", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1512,7 +1537,7 @@ export default function AddressModal({
         "Wallet Top-up": String(n0(topUp)),
         "QuickReads Total": String(n0((quickReadItems || []).length * 19)),
         "COD Fee": String(n0(feeForThisOrder)),
-        // Handling & Care fee — applies on carts above ₹1000 (the 20% band) and
+        // Handling & Care fee — applies on carts above ₹1000 (5%, or 10% above ₹2000) and
         // only on Standard delivery (the express fee is not a handling charge).
         "Handling & Care": String(
           !proFreeDelivery && totalDiscounted > 1000
@@ -2963,7 +2988,7 @@ export default function AddressModal({
                       showToast(validationMessage(), "error");
                       return;
                     }
-                    setPaySel("UPI"); // online payment selected by default
+                    setPaySel(defaultPaySel()); // Pay in two parts by default
                     // Delivery speed as picked in the bag (Standard unless the
                     // shopper chose Faster there); changeable on that sheet.
                     setFasterDelivery(!!initialFaster);
@@ -3122,7 +3147,7 @@ export default function AddressModal({
                   onClick={() => {
                     if (!addrConfirmReady) return;
                     closeAddrConfirm();
-                    setPaySel("UPI");
+                    setPaySel(defaultPaySel());
                     setShowPaySelect(true);
                   }}
                 >
@@ -3440,11 +3465,22 @@ export default function AddressModal({
                             <span className="pay-perk-pop" aria-hidden="true"><Bookmark size={12} strokeWidth={2.4} fill="currentColor" /></span>
                             Free bookmark
                           </span>
+                          <span className="pay-perk pay-perk-ic">
+                            <Banknote size={13} strokeWidth={2.2} aria-hidden="true" />
+                            No COD fee
+                          </span>
+                          {!fasterDelivery && standardDeliveryCharge === 0 && (
+                            <span className="pay-perk pay-perk-ic">
+                              <Truck size={13} strokeWidth={2.2} aria-hidden="true" />
+                              Free delivery
+                            </span>
+                          )}
                           <span className="pay-perk pay-perk-ic pay-perk-blue">
                             <Truck size={13} strokeWidth={2.2} aria-hidden="true" />
                             Rest at delivery
                           </span>
                         </span>
+                        <span className="pm2-reco">Recommended · most readers pick this</span>
                       </span>
                       <span className="pm2-pricecol">
                         <span className="pm2-price">₹{codAdvanceAmount}</span>

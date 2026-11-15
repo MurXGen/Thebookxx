@@ -7,6 +7,10 @@ import CartItemRow from "@/components/CartItemRow";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
 import CheckoutGuide from "@/components/CheckoutGuide";
+import OneRupeeUnlock from "@/components/OneRupeeUnlock";
+import WelcomeCouponPopup from "@/components/WelcomeCouponPopup";
+import { trackEvent } from "@/lib/ga";
+import { readBagCoupon, saveBagCoupon, bagCouponOff, BAG_COUPON_EVENT, WELCOME_CODE } from "@/utils/bagCoupon";
 import { XmasSnow } from "@/components/XmasDecor";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
@@ -47,6 +51,8 @@ import {
   getDeliveryDescription,
   getOriginalCharge,
   getMinCheckoutAmount,
+  FREE_DELIVERY_AT as FREE_DELIVERY_AT_NORMAL,
+  FREE_DELIVERY_AT_ONE_RUPEE,
 } from "@/utils/cartOffers";
 import {
   ArrowLeft,
@@ -63,7 +69,7 @@ import {
   X,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef, Suspense } from "react";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
 import {
@@ -201,7 +207,6 @@ function BagContent() {
   }, [bagBookmarks, billFaster]);
   // Checkout's exact bill when View bill is opened from inside checkout.
   const [billSnap, setBillSnap] = useState(null);
-  const [billGiftWrap, setBillGiftWrap] = useState(false);
   const [successCtx, setSuccessCtx] = useState(null); // interactive success modal
   const [upsellAccepted, setUpsellAccepted] = useState(false);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
@@ -232,7 +237,35 @@ function BagContent() {
 
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [isShortening, setIsShortening] = useState(false);
-  const [giftWrap, setGiftWrap] = useState(false);
+  // "Pack this as a gift" (Your books section) — same flag checkout uses,
+  // remembered for the visit so it survives the hop into checkout.
+  const [giftWrap, setGiftWrapState] = useState(false);
+  // Read the saved choice during the first render: checkout (a child) reports
+  // its gift flag from its own effects, which run before ours and would
+  // otherwise overwrite the saved value.
+  const savedGiftRef = useRef(null);
+  if (savedGiftRef.current === null && typeof window !== "undefined") {
+    try {
+      savedGiftRef.current = sessionStorage.getItem("tbx_bag_gift") === "1";
+    } catch {
+      savedGiftRef.current = false;
+    }
+  }
+  const giftRestoredRef = useRef(false);
+  useEffect(() => {
+    if (savedGiftRef.current) setGiftWrapState(true);
+    giftRestoredRef.current = true;
+  }, []);
+  const setGiftWrap = useCallback((on) => {
+    // Ignore checkout's first "off" report while the saved "on" is restoring.
+    if (!on && savedGiftRef.current === true && !giftRestoredRef.current) return;
+    setGiftWrapState(!!on);
+    try {
+      sessionStorage.setItem("tbx_bag_gift", on ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }, []);
   const GIFT_WRAP_CHARGE = 25;
 
   useEffect(() => {
@@ -705,8 +738,10 @@ function BagContent() {
   // shopper can pay that small gap as wallet credit (used on their next order)
   // instead of a delivery fee. Shown only when the gap is ≤ ₹TOPUP_MAX.
   const TOPUP_MAX = 50;
-  const FREE_DELIVERY_AT = hasOneRupeeItem ? 399 : 199;
-  const baseCheckoutValue = totalDiscounted + (giftWrap ? GIFT_WRAP_CHARGE : 0);
+  const FREE_DELIVERY_AT = hasOneRupeeItem ? FREE_DELIVERY_AT_ONE_RUPEE : FREE_DELIVERY_AT_NORMAL;
+  // Gift wrap add-on price by order value: +₹15 up to ₹500, +₹35 above.
+  const giftCharge = giftWrap ? (totalDiscounted > 500 ? 35 : 15) : 0;
+  const baseCheckoutValue = totalDiscounted + giftCharge;
   const baseDeliveryFee = getDeliveryCharge(totalDiscounted, false, hasOneRupeeItem);
   let topUpGap = 0;
   let topUpReason = null;
@@ -777,6 +812,73 @@ function BagContent() {
   // QuickReads ride on the same physical-book bill (one combined checkout).
   const hasBundledQr = cartBooks.length > 0 && qrItems.length > 0;
   const bundledQrTotal = hasBundledQr ? qrTotal : 0;
+
+  // ── WELCOME10 (bag coupon) ─────────────────────────────────────────────
+  // Welcome popup once per visit when the bag has books; the applied coupon
+  // is kept in localStorage so checkout picks it up.
+  const [bagCoupon, setBagCoupon] = useState(null);
+  const [welcomeRule, setWelcomeRule] = useState(null); // live WELCOME10 terms
+  const [showWelcome, setShowWelcome] = useState(false);
+  useEffect(() => {
+    const sync = () => setBagCoupon(readBagCoupon());
+    sync();
+    window.addEventListener(BAG_COUPON_EVENT, sync);
+    return () => window.removeEventListener(BAG_COUPON_EVENT, sync);
+  }, []);
+  const hasBooksForWelcome = cartBooks.length > 0;
+  useEffect(() => {
+    if (!hasBooksForWelcome || readBagCoupon()) return;
+    try {
+      if (sessionStorage.getItem("tbx_welcome_seen")) return;
+    } catch {
+      /* ignore */
+    }
+    let alive = true;
+    let t;
+    // Read-only: fetch the live terms so the popup only shows an active code.
+    fetch("/api/coupons?cartValue=0")
+      .then((r) => r.json())
+      .then((j) => {
+        const c = (j.coupons || []).find((x) => x.code === WELCOME_CODE && x.status === "active");
+        if (!alive || !c) return;
+        setWelcomeRule({ code: c.code, title: c.title, type: c.type, value: c.value, maxDiscount: c.maxDiscount || 0, minOrder: c.minOrder || 0 });
+        t = setTimeout(() => {
+          if (!alive) return;
+          setShowWelcome(true);
+          try {
+            sessionStorage.setItem("tbx_welcome_seen", "1");
+          } catch {
+            /* ignore */
+          }
+        }, 1200);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+      clearTimeout(t);
+    };
+  }, [hasBooksForWelcome]);
+
+  // Same rules as checkout: a coupon REPLACES the cart offer (flat ₹-off,
+  // combo, add-on discount) rather than stacking, and works on books +
+  // delivery + add-ons (QuickReads excluded). It's only used when it beats the
+  // offer; the min order is checked on the item value after offers.
+  const toPayBeforeCoupon =
+    totalWithStandardDelivery + bundledQrTotal + fasterExtraBag + bagBookmarkCharge + giftCharge;
+  const couponBase = toPayBeforeCoupon - bundledQrTotal + offerDiscount;
+  const couponCalc = bagCouponOff(bagCoupon, couponBase, finalPayable);
+  const couponWins = couponCalc.off > offerDiscount;
+  const couponOff = couponWins ? couponCalc.off : 0; // shown on the coupon row
+  const couponShort = couponCalc.short;
+  const bagToPay = couponWins ? toPayBeforeCoupon + offerDiscount - couponOff : toPayBeforeCoupon;
+  const welcomeCalc = bagCouponOff(welcomeRule, couponBase, finalPayable);
+  const welcomePreview = { off: Math.max(0, welcomeCalc.off - offerDiscount), short: welcomeCalc.short };
+  const applyWelcome = () => {
+    if (!welcomeRule) return;
+    saveBagCoupon(welcomeRule);
+    setShowWelcome(false);
+    trackEvent("welcome_coupon_applied", { cart_value: finalPayable });
+  };
 
   // Returns the COD fee amount only when paymentType is COD
   const getCodFeeForPayment = (paymentType) =>
@@ -1437,6 +1539,14 @@ ${itemsBlock}${qrLines}
 
   return (
     <section className="section-680 flex flex-col gap-24 bag-page bag-xmas">
+      <WelcomeCouponPopup
+        open={showWelcome && cartBooks.length > 0 && (welcomePreview.off > 0 || welcomePreview.short > 0)}
+        code={welcomeRule?.code || WELCOME_CODE}
+        save={welcomePreview.off}
+        short={welcomePreview.short}
+        onApply={applyWelcome}
+        onClose={() => setShowWelcome(false)}
+      />
       {/* Christmas: light snowfall behind the bag */}
       <div className="pdp-fx" aria-hidden="true">
         <XmasSnow className="pdp-snowfall" density={0.9} ink />
@@ -1507,9 +1617,17 @@ ${itemsBlock}${qrLines}
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
         <>
-          <div className="cart-items-panel bg-cart">
+          <div className={`cart-items-panel bg-cart${giftWrap ? " gifted" : ""}`}>
+            {giftWrap && <span className="bg-gift-band" aria-hidden="true" />}
             <div className="bg-cart-head">
-              <b>Your books</b>
+              <b>
+                Your books
+                {giftWrap && (
+                  <span className="bg-gift-tag">
+                    <span aria-hidden="true">🎀</span> Gift packed
+                  </span>
+                )}
+              </b>
               <span>
                 {cartBooks.reduce((n, b) => n + b.qty, 0) + qrItems.length} item
                 {cartBooks.reduce((n, b) => n + b.qty, 0) + qrItems.length === 1 ? "" : "s"}
@@ -1588,6 +1706,31 @@ ${itemsBlock}${qrLines}
                 </div>
               ))}
             </div>
+            {/* Pack as a gift — ticks the same Gift wrap option in checkout */}
+            <button
+              type="button"
+              className={`bg-gift${giftWrap ? " on" : ""}`}
+              onClick={() => {
+                const next = !giftWrap;
+                setGiftWrap(next);
+                trackEvent("bag_gift_wrap", { on: next });
+                if (next) showToast("We'll gift-wrap your books 🎁", "success");
+              }}
+              aria-pressed={giftWrap}
+              data-no-busy
+            >
+              <span className="bg-gift-ic" aria-hidden="true">
+                <Gift size={16} />
+              </span>
+              <span className="bg-gift-txt">
+                <b>Pack this as a gift</b>
+                <small>Gift wrap with a note · add a message at checkout</small>
+              </span>
+              <span className="bg-gift-price">+₹{totalDiscounted > 500 ? 35 : 15}</span>
+              <span className={`bg-gift-check${giftWrap ? " on" : ""}`} aria-hidden="true">
+                {giftWrap && <Check size={12} strokeWidth={3} />}
+              </span>
+            </button>
             <div className="bg-cart-foot">
               <span>Missed a book?</span>
               <Link href="/books">Add more</Link>
@@ -1596,6 +1739,11 @@ ${itemsBlock}${qrLines}
               </button>
             </div>
           </div>
+
+          {/* ₹1 book still locked (order under ₹199) → 3 one-tap bestsellers */}
+          {hasOneRupeeItem && totalDiscounted < MIN_CHECKOUT_AMOUNT && (
+            <OneRupeeUnlock source="bag" />
+          )}
 
           {/* Add-ons: their own compact section under the books */}
           {cartBooks.length > 0 && (
@@ -1616,9 +1764,6 @@ ${itemsBlock}${qrLines}
           {/* Animated "how to checkout" walkthrough (hideable) */}
           {cartBooks.length > 0 && <CheckoutGuide />}
           {cartBooks.length > 0 && <SavingsGlow amount={totalSaved} mrp={totalOriginal} />}
-
-          {/* Bookmark achievements (2 → 3 → 4 free, Mystery Box at ₹3000) */}
-          {cartBooks.length > 0 && <OrderRewards amount={totalDiscounted} />}
 
           {cartBooks.length > 0 && (
             <TopUpCard
@@ -1706,7 +1851,7 @@ ${itemsBlock}${qrLines}
             <BillCard
               totalOriginal={totalOriginal}
               totalDiscounted={totalDiscounted}
-              offerDiscount={offerDiscount}
+              offerDiscount={couponWins ? 0 : offerDiscount}
               offerLabel={offerLabel}
               deliveryFee={billFaster ? fasterDeliveryCharge : standardDeliveryCharge}
               deliveryFeeWithout={baseDeliveryFee}
@@ -1715,7 +1860,21 @@ ${itemsBlock}${qrLines}
               quickReads={bundledQrTotal}
               bookmarks={bagBookmarkCharge}
               bookmarkQty={Math.max(0, bagBookmarks - bagFreeBookmarks)}
-              toPay={totalWithStandardDelivery + bundledQrTotal + fasterExtraBag + bagBookmarkCharge}
+              giftWrap={giftCharge}
+              toPay={bagToPay}
+              coupon={
+                bagCoupon
+                  ? {
+                      code: bagCoupon.code,
+                      off: couponOff,
+                      short: couponShort,
+                      before: toPayBeforeCoupon,
+                      extra: toPayBeforeCoupon - bagToPay,
+                      beaten: !couponShort && !couponWins,
+                    }
+                  : null
+              }
+              onRemoveCoupon={() => saveBagCoupon(null)}
               onViewBill={() => setShowBill(true)}
             />
           )}
@@ -1761,7 +1920,10 @@ ${itemsBlock}${qrLines}
                 <small>
                   To pay{totalSaved > 0 ? ` · ₹${totalSaved} saved` : ""}
                 </small>
-                <b>₹{totalWithStandardDelivery + bundledQrTotal + fasterExtraBag + bagBookmarkCharge}</b>
+                <b>
+                  {couponOff > 0 && <s className="bg-paybar-was">₹{toPayBeforeCoupon}</s>}
+                  <span className={couponOff > 0 ? "bg-paybar-new" : undefined}>₹{bagToPay}</span>
+                </b>
                 <em>View bill ▴</em>
               </button>
               <button
@@ -1773,7 +1935,7 @@ ${itemsBlock}${qrLines}
                 {isShortening
                   ? "Preparing…"
                   : canCheckout
-                    ? `Proceed to pay ₹${totalWithStandardDelivery + bundledQrTotal + fasterExtraBag + bagBookmarkCharge}`
+                    ? `Proceed to pay ₹${bagToPay}`
                     : `Add ₹${amountNeededToCheckout} more`}
               </button>
             </div>
@@ -1999,7 +2161,7 @@ ${itemsBlock}${qrLines}
         totalWithStandardDelivery={totalWithStandardDelivery}
         walletTopUp={walletTopUp}
         giftWrapCharge={giftWrapChargeEff}
-        giftWrapSelected={false}
+        giftWrapSelected={giftWrap}
         handleCODCheckout={handleCODCheckout}
         handleUPICheckout={handleUPICheckout}
         notifyTelegram={sendOrderToTelegram}
@@ -2020,7 +2182,7 @@ ${itemsBlock}${qrLines}
           setShowBill(true);
         }}
         onDeliveryChoiceChange={setBillFaster}
-        onGiftWrapChange={setBillGiftWrap}
+        onGiftWrapChange={setGiftWrap}
         initialFaster={billFaster}
         initialBookmarks={bagBookmarks}
         onBookmarksChange={setBagBookmarks}
@@ -2050,7 +2212,7 @@ ${itemsBlock}${qrLines}
         cartBooks={cartBooks}
         isFasterDelivery={false}
         giftWrapCharge={giftWrapChargeEff}
-        giftWrapSelected={false}
+        giftWrapSelected={giftWrap}
         hideDeliveryCharges={needsShippingNudge}
         quickReadItems={hasBundledQr ? qrItems : []}
         quickReadUnitPrice={QUICKREAD_PRICE}

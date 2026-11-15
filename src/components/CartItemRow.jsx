@@ -76,10 +76,13 @@ export default function CartItemRow({ book, combo = null }) {
           </Link>
 
           {comboOff > 0 && (
-            <Link href={`/combos/${combo.slug}`} className="cart-row-combo">
+            <Link
+              href={`/combos/${combo.slug}`}
+              className="cart-row-combo"
+              title={`Combo ${combo.pct || 10}% off with ${combo.partners.join(", ")}`}
+            >
               <span className="cart-row-combo-star" aria-hidden="true">★</span>
-              Combo {combo.pct || 10}% off
-              <span className="cart-row-combo-with">with {combo.partners.join(", ")}</span>
+              Combo {combo.pct || 10}%
             </Link>
           )}
 

@@ -2,17 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import { Home, LayoutGrid, Package, Zap, Search } from "lucide-react";
+import { Home, LayoutGrid, Package, Zap, ShoppingBag } from "lucide-react";
 import { readProfileCache } from "@/utils/profileCache";
-import { trackEvent } from "@/lib/ga";
-
-// Loaded only when the centre Search button is first tapped.
-const SearchOverlay = dynamic(() => import("./SearchOverlay"), { ssr: false });
+import { useStore } from "@/context/StoreContext";
 
 /**
  * Fixed mobile-only bottom navigation for the storefront.
- * Tabs: Home · Categories · [Search, raised centre] · QuickReads · Orders. Hidden on tablets/desktop
+ * Tabs: Home · Cart · Categories · QuickReads · Orders. Hidden on tablets/desktop
  * (>=768px). The floating Checkout bar (CartBar) stacks just above this nav —
  * handled in CSS via `body.has-bottom-nav`.
  */
@@ -20,13 +16,8 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [orderCount, setOrderCount] = useState(0);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchMounted, setSearchMounted] = useState(false);
-  const openSearch = () => {
-    trackEvent("search_opened", { source: "bottom_nav" });
-    setSearchMounted(true);
-    setSearchOpen(true);
-  };
+  const { cart, qrCart } = useStore();
+  const cartCount = cart.reduce((n, i) => n + (i.qty || 1), 0) + (qrCart?.length || 0);
 
   // The bottom nav (and the cart bar / offer strip stacked on it) stays put
   // while scrolling — only the top navbar hides on scroll.
@@ -69,6 +60,7 @@ export default function MobileBottomNav() {
 
   const tabs = [
     { key: "home", label: "Home", Icon: Home, href: "/" },
+    { key: "cart", label: "Cart", Icon: ShoppingBag, href: "/bag", badge: cartCount },
     { key: "categories", label: "Categories", Icon: LayoutGrid, href: "/books" },
     { key: "quickreads", label: "QuickReads", Icon: Zap, href: "/my-quickreads" },
     {
@@ -89,27 +81,9 @@ export default function MobileBottomNav() {
       className="tbx-bottomnav"
       aria-label="Primary"
     >
-      {tabs.flatMap(({ key, label, Icon, href, badge }, idx) => {
+      {tabs.map(({ key, label, Icon, href, badge }) => {
         const active = isActive(href);
-        const centre =
-          idx === 2
-            ? [
-                <button
-                  key="search"
-                  type="button"
-                  className="tbx-bn-search"
-                  onClick={openSearch}
-                  aria-label="Search books"
-                >
-                  <span className="tbx-bn-search-ring" aria-hidden="true" />
-                  <span className="tbx-bn-search-btn">
-                    <Search size={22} strokeWidth={2.4} />
-                  </span>
-                  <span className="tbx-bn-label">Search</span>
-                </button>,
-              ]
-            : [];
-        return [...centre, (
+        return (
           <button
             key={key}
             type="button"
@@ -128,12 +102,9 @@ export default function MobileBottomNav() {
             </span>
             <span className="tbx-bn-label">{label}</span>
           </button>
-        )];
+        );
       })}
     </nav>
-    {searchMounted && (
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
-    )}
     </>
   );
 }

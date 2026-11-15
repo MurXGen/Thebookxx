@@ -2,6 +2,7 @@
 "use client";
 
 import { useStore } from "@/context/StoreContext";
+import OneRupeeUnlock from "@/components/OneRupeeUnlock";
 import { XmasSnow, XmasTree } from "@/components/XmasDecor";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
@@ -890,6 +891,18 @@ export default function BookDetailsModal({ book: bookProp }) {
             </a>
           ))}
         </nav>
+
+        {/* ₹1 (price-drop) book → nudge the one bestseller that unlocks it */}
+        {isOneRupee && !isOutOfStock && (
+          <OneRupeeUnlock
+            source="pdp"
+            className="pdp-sec"
+            sub={
+              (hasOneRupeeInCart ? "It's in your bag — " : "") +
+              "₹1 books ship with orders of ₹199+. Pick one, we add it in a tap."
+            }
+          />
+        )}
 
         {/* ===== About ===== */}
         <section className="pdp-sec" id="about" aria-labelledby="pdp-about-h">

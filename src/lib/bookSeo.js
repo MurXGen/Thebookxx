@@ -111,7 +111,7 @@ export function companionOf(book, related = relatedOf(book)) {
 }
 
 // Visible FAQ + FAQPage schema share this list. Answers stay factual and in
-// line with the real delivery rules (free above ₹199, COD fee applies).
+// line with the real delivery rules (free above ₹249, COD fee applies).
 export function faqsOf(book) {
   const { price, mrp, pct } = discountOf(book);
   const by = book.author ? ` by ${book.author}` : "";

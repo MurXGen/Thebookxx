@@ -978,6 +978,17 @@ export const BOOK_PAIRS = [
   ["bk-068", "bk-069"], // The Hard Thing About Hard Things + Blue Ocean Strategy
   ["bk-244", "bk-147"], // Dopamine Detox + Master Your Emotions
   ["bk-001", "bk-036"], // The Art of Spending Money + The 5 Types of Wealth
+  // ↓ Real "bought together" pairs from order data (most frequent first).
+  // These keep their order and lead the combo list (see POPULAR_FROM).
+  ["bk-005", "bk-006"], // Atomic Habits + The Psychology of Money
+  ["bk-092", "bk-093"], // Haunting Adeline + Hunting Adeline
+  ["bk-005", "bk-146"], // Atomic Habits + Can't Hurt Me
+  ["bk-005", "bk-009"], // Atomic Habits + The Courage to Be Disliked
+  ["bk-005", "bk-524"], // Atomic Habits + How to Win Friends and Influence People
+  ["bk-005", "bk-391"], // Atomic Habits + Ikigai
+  ["bk-001", "bk-006"], // The Art of Spending Money + The Psychology of Money
+  ["bk-007", "bk-011"], // Surrounded by Idiots + Talking with Psychopaths
+  ["bk-005", "bk-044"], // Atomic Habits + The Mountain Is You
 ];
 
 const comboSlugify = (t) =>
@@ -996,8 +1007,9 @@ const pairTheme = (names) => {
   const n = names.join(" ");
   if (/money|wealth|naval|rich dad|investor|investing/i.test(n)) return "build wealth";
   if (/startup|zero|hard thing|blue ocean|90 days|ceo/i.test(n)) return "build something big";
-  if (/power|human nature|idiots|never split|art of war/i.test(n)) return "read people better";
-  if (/stoic|secret|vibes|overthinking|believe everything|disliked|happy|dopamine|emotions|ikigai/i.test(n)) return "quiet the noise in your head";
+  if (/adeline/i.test(n)) return "binge the whole Cat and Mouse duet";
+  if (/power|human nature|idiots|psychopaths|win friends|never split|art of war/i.test(n)) return "read people better";
+  if (/stoic|secret|vibes|overthinking|believe everything|disliked|happy|dopamine|emotions|ikigai|mountain/i.test(n)) return "quiet the noise in your head";
   if (/wings of fire|ignited|hurt me|never finished|mindset|thinking/i.test(n)) return "build an unbreakable mindset";
   return "level up every day";
 };
@@ -1064,8 +1076,11 @@ const seededShuffle = (arr, seed = 7) => {
   return a;
 };
 const CLARITY_SLOTS = [0, 4, 9, 13, 18, 22]; // positions in the mixed pair list
+// Index in BOOK_PAIRS where the order-data pairs start.
+const POPULAR_FROM = BOOK_PAIRS.findIndex(([a, b]) => a === "bk-005" && b === "bk-006");
 function mixPairs(clarity, others) {
-  const rest = seededShuffle(others);
+  const popular = POPULAR_FROM >= 0 ? others.filter((c) => Number(c.id.slice(-2)) > POPULAR_FROM) : [];
+  const rest = [...popular, ...seededShuffle(others.filter((c) => !popular.includes(c)))];
   const out = [];
   let ci = 0;
   while (rest.length || ci < clarity.length) {

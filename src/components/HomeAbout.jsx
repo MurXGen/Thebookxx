@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 // see who we are right after the reader photos.
 const POINTS = [
   { k: "₹1", t: "Books from ₹1", s: "Lowest prices on bestsellers" },
-  { k: "₹199", t: "Free delivery", s: "On orders from ₹199" },
+  { k: "₹249", t: "Free delivery", s: "On orders from ₹249" },
   { k: "COD", t: "Cash on Delivery", s: "Or pay by UPI" },
   { k: "7d", t: "7-day replacement", s: "Damaged or wrong book" },
 ];

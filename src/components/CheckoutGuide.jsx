@@ -6,7 +6,7 @@ import { ChevronDown, Check } from "lucide-react";
 const STEPS = [
   { t: "Tap Proceed", s: "Review your books and tap Proceed to pay" },
   { t: "Add your address", s: "Pincode fills your city — just add house & phone" },
-  { t: "Choose how to pay", s: "UPI, pay in two parts, or Cash on Delivery" },
+  { t: "Choose how to pay", s: "Pay in two parts (₹99 now), UPI or Cash on Delivery" },
   { t: "Order placed!", s: "Ships within a day — track it from Orders" },
 ];
 
@@ -92,8 +92,8 @@ export default function CheckoutGuide() {
           {/* 2 · Payment */}
           <div className={`cg-fr${f === 2 ? " on" : ""}`}>
             <span className="cg-ttl">Payment</span>
-            <span className="cg-opt sel"><b />UPI<span className="cg-tick"><Check size={8} strokeWidth={4} /></span></span>
-            <span className="cg-opt"><b />2 parts</span>
+            <span className="cg-opt sel"><b />2 parts<span className="cg-tick"><Check size={8} strokeWidth={4} /></span></span>
+            <span className="cg-opt"><b />UPI</span>
             <span className="cg-opt"><b />COD</span>
             <span className="cg-btn gr">Pay<span className="cg-tap" /></span>
           </div>

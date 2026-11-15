@@ -405,7 +405,7 @@ function BookCard({ book: bookProp }) {
               />
               <meta
                 itemProp="shippingDetails"
-                content="Free delivery from ₹199 across India"
+                content="Free delivery from ₹249 across India"
               />
 
               {savings > 0 && (

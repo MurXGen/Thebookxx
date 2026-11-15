@@ -16,7 +16,7 @@ import { fetchProStatus, cachedProStatus } from "@/utils/proPlan";
 import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
 import { SavingsGlow, TopUpCard, BillCard, PolicyNote } from "@/components/BagSections";
-import BagAddons, { BAG_ADDONS_KEY, MAX_BAG_BOOKMARKS } from "@/components/BagAddons";
+import BagAddons, { BAG_ADDONS_KEY, MAX_BAG_BOOKMARKS, BAG_BOOKMARK_UNIT } from "@/components/BagAddons";
 import OrderSuccessCard from "@/components/UI/OrderSuccessCard";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
@@ -771,6 +771,8 @@ function BagContent() {
   // Faster picked in the bag → the pay bar / bill card show the Faster price.
   const fasterExtraBag = billFaster ? Math.max(0, fasterDeliveryCharge - standardDeliveryCharge) : 0;
   const bagFreeBookmarks = totalDiscounted >= 1000 ? 4 : totalDiscounted >= 500 ? 3 : 2;
+  // Bookmarks beyond the free tier are ₹9 each — same rule as checkout.
+  const bagBookmarkCharge = Math.max(0, bagBookmarks - bagFreeBookmarks) * BAG_BOOKMARK_UNIT;
 
   // QuickReads ride on the same physical-book bill (one combined checkout).
   const hasBundledQr = cartBooks.length > 0 && qrItems.length > 0;
@@ -1711,7 +1713,9 @@ ${itemsBlock}${qrLines}
               freeAt={FREE_DELIVERY_AT}
               topUp={walletTopUp}
               quickReads={bundledQrTotal}
-              toPay={totalWithStandardDelivery + bundledQrTotal + fasterExtraBag}
+              bookmarks={bagBookmarkCharge}
+              bookmarkQty={Math.max(0, bagBookmarks - bagFreeBookmarks)}
+              toPay={totalWithStandardDelivery + bundledQrTotal + fasterExtraBag + bagBookmarkCharge}
               onViewBill={() => setShowBill(true)}
             />
           )}
@@ -1757,7 +1761,7 @@ ${itemsBlock}${qrLines}
                 <small>
                   To pay{totalSaved > 0 ? ` · ₹${totalSaved} saved` : ""}
                 </small>
-                <b>₹{totalWithStandardDelivery + bundledQrTotal + fasterExtraBag}</b>
+                <b>₹{totalWithStandardDelivery + bundledQrTotal + fasterExtraBag + bagBookmarkCharge}</b>
                 <em>View bill ▴</em>
               </button>
               <button
@@ -1769,7 +1773,7 @@ ${itemsBlock}${qrLines}
                 {isShortening
                   ? "Preparing…"
                   : canCheckout
-                    ? `Proceed to pay ₹${totalWithStandardDelivery + bundledQrTotal + fasterExtraBag}`
+                    ? `Proceed to pay ₹${totalWithStandardDelivery + bundledQrTotal + fasterExtraBag + bagBookmarkCharge}`
                     : `Add ₹${amountNeededToCheckout} more`}
               </button>
             </div>

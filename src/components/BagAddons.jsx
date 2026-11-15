@@ -1,11 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Truck, Zap, Check } from "lucide-react";
+import { Zap, Check } from "lucide-react";
 import { showToast } from "@/context/ToastContext";
 
 export const BAG_ADDONS_KEY = "tbx_bag_addons";
-export const MAX_BAG_BOOKMARKS = 2; // checkout trims to 1 on Cash on Delivery
+export const MAX_BAG_BOOKMARKS = 10; // free up to the order tier, then ₹9 each (checkout trims to 1 on Cash on Delivery)
+export const BAG_BOOKMARK_UNIT = 9;
 
 const buzz = (ms) => {
   try {
@@ -88,12 +89,18 @@ export default function BagAddons({
         <span className="bga-txt">
           <b>Bookmarks</b>
           <small>
-            {bookmarks > 0 ? (
+            {bookmarks > freeBookmarks ? (
+              <>
+                {freeBookmarks} free + {bookmarks - freeBookmarks} × ₹{BAG_BOOKMARK_UNIT} ={" "}
+                <b className="bga-bm-paid">₹{(bookmarks - freeBookmarks) * BAG_BOOKMARK_UNIT}</b>
+              </>
+            ) : bookmarks > 0 ? (
               <>
                 <Check size={11} strokeWidth={3} /> {bookmarks} added · free
+                {bookmarks === freeBookmarks ? ` · more ₹${BAG_BOOKMARK_UNIT} each` : ""}
               </>
             ) : (
-              `Up to ${Math.min(freeBookmarks, MAX_BAG_BOOKMARKS)} free · tap +`
+              `${freeBookmarks} free · then ₹${BAG_BOOKMARK_UNIT} each`
             )}
           </small>
         </span>
@@ -122,41 +129,28 @@ export default function BagAddons({
         </span>
       </div>
 
-      <div className="bga-deliv" role="radiogroup" aria-label="Delivery type">
-        <span className="bga-deliv-head">Delivery type</span>
-        <button
-          type="button"
-          role="radio"
-          aria-checked={!faster}
-          className={`bga-opt${!faster ? " on" : ""}`}
-          onClick={() => onFaster(false)}
-        >
-          <span className="bga-radio" aria-hidden="true" />
-          <span className="bga-opt-top">
-            <Truck size={15} /> Standard
-            <em>{standardFee > 0 ? `₹${standardFee}` : "FREE"}</em>
-          </span>
-          <small>Arrives in {standardEta}</small>
-        </button>
-        <button
-          type="button"
-          role="radio"
-          aria-checked={faster}
-          className={`bga-opt bga-opt-fast${faster ? " on" : ""}`}
-          onClick={() => {
-            buzz(10);
-            onFaster(true);
-          }}
-        >
-          <span className="bga-radio" aria-hidden="true" />
-          <span className="bga-opt-top">
-            <Zap size={15} /> Faster
-            <em>+₹{fasterExtra}</em>
-          </span>
-          <small>Arrives in {fasterEta} · by air</small>
-        </button>
-      </div>
-      {faster && <p className="bga-note">Faster ships with online or two-part payment.</p>}
+      {/* Delivery: Standard is the default, so only Faster is offered as an opt-in */}
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={faster}
+        className={`bga-fast${faster ? " on" : ""}`}
+        onClick={() => {
+          buzz(10);
+          onFaster(!faster);
+        }}
+      >
+        <span className="bga-fast-ic" aria-hidden="true">
+          <Zap size={18} />
+        </span>
+        <span className="bga-fast-txt">
+          <b>Faster delivery</b>
+          <small>Arrives in {fasterEta} · +₹{fasterExtra}</small>
+        </span>
+        <span className="bga-check" aria-hidden="true">
+          {faster && <Check size={13} strokeWidth={3.5} />}
+        </span>
+      </button>
     </div>
   );
 }

@@ -129,6 +129,8 @@ export function BillCard({
   freeAt,
   topUp,
   quickReads = 0,
+  bookmarks = 0,
+  bookmarkQty = 0,
   toPay,
   onViewBill,
 }) {
@@ -153,6 +155,12 @@ export function BillCard({
         <div className="bg-bill-row">
           <span>QuickReads</span>
           <span>{inr(quickReads)}</span>
+        </div>
+      )}
+      {bookmarks > 0 && (
+        <div className="bg-bill-row">
+          <span>Extra bookmarks ({bookmarkQty})</span>
+          <span>{inr(bookmarks)}</span>
         </div>
       )}
       <div className="bg-bill-row dashed">

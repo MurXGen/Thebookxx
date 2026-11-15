@@ -282,6 +282,23 @@ export default function AddressModal({
   const [showSpeedModal, setShowSpeedModal] = useState(false);
   // Full-page payment selection sheet (UPI / COD / WhatsApp + coins toggle).
   const [showPaySelect, setShowPaySelect] = useState(false);
+  // "Order on WhatsApp" nudge on the payment step: if the shopper hasn't
+  // tapped Pay within 5s, show a tip by the WhatsApp icon for 2s.
+  const [payWaHint, setPayWaHint] = useState(false);
+  const payTappedRef = useRef(false);
+  useEffect(() => {
+    if (!showPaySelect) return;
+    payTappedRef.current = false;
+    const show = setTimeout(() => {
+      if (!payTappedRef.current) setPayWaHint(true);
+    }, 5000);
+    const hide = setTimeout(() => setPayWaHint(false), 7000);
+    return () => {
+      clearTimeout(show);
+      clearTimeout(hide);
+      setPayWaHint(false);
+    };
+  }, [showPaySelect]);
   // Which UPI app the shopper picked (Paytm / PhonePe / Google Pay / Other) —
   // used to show an "Open <app> app" button on the QR screen.
   const [chosenUpiApp, setChosenUpiApp] = useState("");
@@ -492,7 +509,7 @@ export default function AddressModal({
   // Open with the bag's add-on choices (bookmarks + delivery speed).
   useEffect(() => {
     if (!open) return;
-    setBookmarkQty(Math.max(0, Math.min(2, Number(initialBookmarks) || 0)));
+    setBookmarkQty(Math.max(0, Math.min(10, Number(initialBookmarks) || 0)));
     setFasterDelivery(!!initialFaster);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -1001,9 +1018,9 @@ export default function AddressModal({
   // Small-gap wallet top-up chosen in the bag: paid with this order, credited
   // to the shopper's wallet (once the order qualifies) for their next order.
   const topUp = Math.max(0, Math.round(Number(walletTopUp) || 0));
-  // Bookmark cap by payment type — 1 on Cash on Delivery orders, 2 on online
-  // paid orders (prepaid customers can add one extra).
-  const maxBookmarks = paySel === "COD" ? 1 : 2;
+  // Bookmark cap by payment type — 1 on Cash on Delivery orders; online orders
+  // can add up to 10 (free up to the order tier, then ₹9 each).
+  const maxBookmarks = paySel === "COD" ? 1 : 10;
 
   // Add-ons that ride on the bill. Gift wrap + chargeable bookmarks both apply
   // to EVERY flow (online, two-parts, COD) as real line items — never folded
@@ -3696,7 +3713,7 @@ export default function AddressModal({
                               showToast(
                                 paySel === "COD"
                                   ? "Only 1 bookmark per Cash on Delivery order. Pay online to add 2."
-                                  : "Up to 2 bookmarks per order.",
+                                  : "Up to 10 bookmarks per order.",
                                 "info",
                               );
                               return;
@@ -3875,17 +3892,44 @@ export default function AddressModal({
                       </button>
                     )}
                   </span>
+                  <span className="pay-wa-wrap">
+                    <AnimatePresence>
+                      {payWaHint && (
+                        <motion.span
+                          className="wa-tip pay-wa-tip"
+                          role="tooltip"
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 4 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <FaWhatsapp size={16} />
+                          <span>
+                            Prefer to order on WhatsApp?
+                            <small>We&apos;ll help you place it</small>
+                          </span>
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                    <button
+                      type="button"
+                      className="pay-sel-wa-ic"
+                      onClick={() => {
+                        setPayWaHint(false);
+                        setSupportOpen(true);
+                      }}
+                      aria-label="Need help? Order on WhatsApp"
+                      title="Need support?"
+                    >
+                      <FaWhatsapp size={20} color="#25D366" />
+                    </button>
+                  </span>
                   <button
                     type="button"
-                    className="pay-sel-wa-ic"
-                    onClick={() => setSupportOpen(true)}
-                    aria-label="Need support? Chat on WhatsApp"
-                    title="Need support?"
-                  >
-                    <FaWhatsapp size={20} color="#25D366" />
-                  </button>
-                  <button
-                    type="button"
+                    onPointerDown={() => {
+                      payTappedRef.current = true;
+                      setPayWaHint(false);
+                    }}
                     className="pri-mid-btn pay-confirm-btn af-proceed"
                     disabled={(!paySel && !isZeroPayable) || tooManyOneRupee}
                     onClick={() =>
@@ -6334,6 +6378,31 @@ export function UPIPaymentModal({
   summaryItems = [],
   codLaterAmount = 0,
 }) {
+  // On arrival, glide to the bottom and back up once, so the shopper sees
+  // everything below the QR (trust notes, links) before paying.
+  const upiScrollRef = useRef(null);
+  useEffect(() => {
+    const el = upiScrollRef.current;
+    if (!el) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const down = setTimeout(() => {
+      if (el.scrollHeight - el.clientHeight > 24) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    }, 1300); // after the QR card has settled
+    const up = setTimeout(() => el.scrollTo({ top: 0, behavior: "smooth" }), 2800);
+    const stop = () => {
+      clearTimeout(down);
+      clearTimeout(up);
+    };
+    // Any touch / wheel by the shopper cancels the preview.
+    el.addEventListener("pointerdown", stop, { once: true });
+    el.addEventListener("wheel", stop, { once: true, passive: true });
+    return () => {
+      stop();
+      el.removeEventListener("pointerdown", stop);
+      el.removeEventListener("wheel", stop);
+    };
+  }, []);
+
   // Success tick + failed screens replace the QR body for those two phases.
   if (upiPhase === "success" || upiPhase === "failed") {
     const failed = upiPhase === "failed";
@@ -6463,7 +6532,7 @@ export function UPIPaymentModal({
         <SwSteps at={2} />
         <XmasSnow className="sw-snow" density={0.5} max={40} ink />
 
-        <div className="upiv3 upiv3-scroll">
+        <div className="upiv3 upiv3-scroll" ref={upiScrollRef}>
           <span className="sw-cap">Scan to pay</span>
           {/* QR shows immediately; a 2s loader blurs it while it "generates" */}
           <motion.div

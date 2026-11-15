@@ -877,6 +877,18 @@ function BagContent() {
     if (!welcomeRule) return;
     saveBagCoupon(welcomeRule);
     setShowWelcome(false);
+    // Celebrate: a quick confetti burst (skipped for reduced-motion users).
+    import("canvas-confetti")
+      .then(({ default: confetti }) => {
+        const opts = { zIndex: 2147483646, disableForReducedMotion: true, colors: ["#dc2626", "#16a34a", "#f59e0b", "#ffffff", "#1ba672"] };
+        confetti({ ...opts, particleCount: 90, spread: 75, startVelocity: 42, origin: { x: 0.5, y: 0.75 } });
+        setTimeout(() => {
+          confetti({ ...opts, particleCount: 45, angle: 60, spread: 55, origin: { x: 0, y: 0.8 } });
+          confetti({ ...opts, particleCount: 45, angle: 120, spread: 55, origin: { x: 1, y: 0.8 } });
+        }, 180);
+      })
+      .catch(() => {});
+    showToast(`${welcomeRule.code} applied 🎉`, "success");
     trackEvent("welcome_coupon_applied", { cart_value: finalPayable });
   };
 
@@ -2198,10 +2210,10 @@ ${itemsBlock}${qrLines}
         walletTopUp={walletTopUp}
         totalOriginal={totalOriginal}
         totalDiscounted={totalDiscounted}
-        offerDiscount={offerDiscount}
+        offerDiscount={couponWins ? 0 : offerDiscount}
         offerLabel={offerLabel}
-        comboDiscount={pairCombo.discount}
-        unlockedOffer={unlockedOffer}
+        comboDiscount={couponWins ? 0 : pairCombo.discount}
+        unlockedOffer={couponWins ? null : unlockedOffer}
         onApplyOffer={handleApplyOffer}
         standardDeliveryCharge={standardDeliveryCharge}
         standardDeliveryLabel={standardDeliveryLabel}
@@ -2210,7 +2222,16 @@ ${itemsBlock}${qrLines}
         fasterUnavailable={fasterUnavailable}
         totalWithStandardDelivery={totalWithStandardDelivery}
         cartBooks={cartBooks}
-        isFasterDelivery={false}
+        isFasterDelivery={billFaster}
+        bookmarkCharge={bagBookmarkCharge}
+        bagCoupon={bagCoupon ? { code: bagCoupon.code, off: couponOff, short: couponShort } : null}
+        bagTotal={bagToPay}
+        bagTotalBefore={toPayBeforeCoupon}
+        freeDeliveryShort={
+          standardDeliveryCharge > 0 && totalDiscounted <= 1000
+            ? Math.max(0, FREE_DELIVERY_AT - totalDiscounted - walletTopUp)
+            : 0
+        }
         giftWrapCharge={giftWrapChargeEff}
         giftWrapSelected={giftWrap}
         hideDeliveryCharges={needsShippingNudge}

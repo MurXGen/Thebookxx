@@ -70848,3 +70848,12 @@ body:has(.wcp-back) .bag-fabs-tip { opacity: 0 !important; visibility: hidden !i
 
 /* Bag row combo badge: short "★ Combo 10%" on one line */
 .cart-row-combo { display: inline-flex !important; align-items: center; gap: 4px; width: auto !important; max-width: max-content; white-space: nowrap; flex-wrap: nowrap !important; }
+
+/* Bill modal: bag coupon + free-delivery hint */
+.bm2-coupon-tag { font-size: 11px; font-weight: 800; letter-spacing: .03em; color: #6b7280; border: 1px dashed #d1d5db; border-radius: 5px; padding: 1px 5px; }
+.bm2-coupon.on, .bm2-coupon.on .green { color: #1ba672; font-weight: 700; }
+.bm2-coupon.on .bm2-coupon-tag { color: #1ba672; border-color: #1ba672; background: #ecfdf5; }
+.bm2-free-hint { margin-top: 2px; font-size: 12px; font-weight: 700; color: #ea580c; }
+.bm2-total-was { margin-right: 6px; font-size: .72em; font-weight: 500; color: #9ca3af; }
+.bm2-total-new { color: #1ba672; }
+.bm2-coupon-save { margin: 8px 16px 0; padding: 8px 10px; border-radius: 10px; background: #ecfdf5; color: #15803d; font-size: 12.5px; font-weight: 700; text-align: center; }

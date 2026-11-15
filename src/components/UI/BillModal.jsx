@@ -49,6 +49,12 @@ export default function BillModal({
   // Exact bill from checkout (buildBillSnapshot). When present it drives every
   // line and the total, so View bill always matches the checkout footer.
   snapshot = null,
+  // Bag-only extras (ignored when a checkout snapshot is shown):
+  bookmarkCharge = 0, // extra bookmarks beyond the free ones
+  bagCoupon = null, // { code, off, short } — coupon picked in the bag (WELCOME10)
+  bagTotal = null, // bag "To pay" (after coupon)
+  bagTotalBefore = null, // bag "To pay" before the coupon (struck through)
+  freeDeliveryShort = 0, // ₹ more needed for free delivery
 }) {
   const S = snapshot;
   if (S) {
@@ -59,7 +65,11 @@ export default function BillModal({
     giftWrapCharge = S.gift || 0;
     walletTopUp = S.walletTopUp || 0;
     hideDeliveryCharges = false;
+    bagCoupon = null;
+    bagTotal = null;
+    freeDeliveryShort = 0;
   }
+  const bagCouponOn = !!bagCoupon && bagCoupon.off > 0;
   // A coupon at checkout switches offers (incl. the combo) off.
   const comboShown = S?.couponDiscount > 0 ? 0 : Math.min(comboDiscount || 0, offerDiscount || 0);
   useTrackView(
@@ -123,7 +133,7 @@ export default function BillModal({
 
   // Savings story: what TheBookX knocked off the MRP on this order.
   const itemSaving = Math.max(0, (totalOriginal || 0) - (totalDiscounted || 0));
-  const totalSaving = itemSaving + (offerDiscount || 0);
+  const totalSaving = itemSaving + (offerDiscount || 0) + (bagCouponOn ? bagCoupon.off : 0);
   const savingPct =
     totalOriginal > 0 ? Math.round((totalSaving / totalOriginal) * 100) : 0;
   // Split delivery: Handling & Care (big carts) and the Faster priority fee
@@ -139,7 +149,11 @@ export default function BillModal({
     stdDeliveryAmt = S.deliveryStd || 0;
     fasterExtra = S.priority || 0;
     finalTotal = S.total || 0;
+  } else if (bagTotal !== null) {
+    // Bag view: use the bag's own To pay so the two always match.
+    finalTotal = bagTotal;
   }
+  const struckTotal = bagCouponOn && bagTotalBefore > finalTotal ? bagTotalBefore : 0;
 
   return createPortal(
     <div
@@ -215,6 +229,24 @@ export default function BillModal({
               <span className="green">− ₹{S.couponDiscount}</span>
             </div>
           )}
+          {bagCoupon && (
+            <div className={`bill-row bm2-coupon${bagCouponOn ? " on" : ""}`}>
+              <span className="flex flex-col">
+                <span>
+                  <b className="bm2-coupon-tag">{bagCoupon.code}</b>{" "}
+                  {bagCouponOn ? "Coupon applied" : "Coupon saved"}
+                </span>
+                {!bagCouponOn && (
+                  <span className="bm2-muted">
+                    {bagCoupon.short > 0
+                      ? `Add ₹${bagCoupon.short} more to unlock 10% off`
+                      : "Your current offers already save more"}
+                  </span>
+                )}
+              </span>
+              {bagCouponOn && <span className="green">− ₹{bagCoupon.off}</span>}
+            </div>
+          )}
           {!S && unlockedOffer && onApplyOffer && (
             <button
               type="button"
@@ -271,6 +303,11 @@ export default function BillModal({
                   <span className="flex flex-col">
                     <span>Delivery</span>
                     <span className="bm2-muted">Standard · 4–9 days</span>
+                    {stdDeliveryAmt > 0 && freeDeliveryShort > 0 && (
+                      <span className="bm2-free-hint">
+                        Add ₹{freeDeliveryShort} more to get FREE delivery
+                      </span>
+                    )}
                   </span>
                   <span className={stdDeliveryAmt > 0 ? "" : "green"}>
                     {stdDeliveryAmt > 0 ? `+ ₹${stdDeliveryAmt}` : "FREE"}
@@ -319,10 +356,10 @@ export default function BillModal({
               <span className="orange">+ ₹{giftWrapCharge}</span>
             </div>
           )}
-          {S?.bookmarkCharge > 0 && (
+          {(S ? S.bookmarkCharge : bookmarkCharge) > 0 && (
             <div className="bill-row">
               <span>Extra bookmarks</span>
-              <span className="orange">+ ₹{S.bookmarkCharge}</span>
+              <span className="orange">+ ₹{S ? S.bookmarkCharge : bookmarkCharge}</span>
             </div>
           )}
           {S?.codFee > 0 && (
@@ -354,8 +391,15 @@ export default function BillModal({
             <strong>You pay</strong>
             <small>Inclusive of all taxes</small>
           </span>
-          <b>₹{finalTotal}</b>
+          <b className={struckTotal ? "bm2-total-new" : undefined}>
+            {struckTotal > 0 && <s className="bm2-total-was">₹{struckTotal}</s>}₹{finalTotal}
+          </b>
         </div>
+        {struckTotal > 0 && (
+          <p className="bm2-coupon-save">
+            🎉 {bagCoupon.code} saves you ₹{struckTotal - finalTotal} on this order
+          </p>
+        )}
 
         {/* What comes with every TheBookX order. */}
         <div className="bm2-perks">

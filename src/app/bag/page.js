@@ -819,6 +819,19 @@ function BagContent() {
   const [bagCoupon, setBagCoupon] = useState(null);
   const [welcomeRule, setWelcomeRule] = useState(null); // live WELCOME10 terms
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showBmOffer, setShowBmOffer] = useState(false); // below-min: free bookmark
+  // Offers they've seen but not claimed → a gift icon in the header reopens them.
+  const [offerDismissed, setOfferDismissed] = useState({ welcome: false, bm: false });
+  useEffect(() => {
+    try {
+      setOfferDismissed({
+        welcome: !!sessionStorage.getItem("tbx_welcome_seen"),
+        bm: !!sessionStorage.getItem("tbx_bmoffer_seen"),
+      });
+    } catch {
+      /* ignore */
+    }
+  }, []);
   useEffect(() => {
     const sync = () => setBagCoupon(readBagCoupon());
     sync();
@@ -826,38 +839,22 @@ function BagContent() {
     return () => window.removeEventListener(BAG_COUPON_EVENT, sync);
   }, []);
   const hasBooksForWelcome = cartBooks.length > 0;
+  // Read-only: fetch the live WELCOME10 terms once the bag has books.
   useEffect(() => {
-    if (!hasBooksForWelcome || readBagCoupon()) return;
-    try {
-      if (sessionStorage.getItem("tbx_welcome_seen")) return;
-    } catch {
-      /* ignore */
-    }
+    if (!hasBooksForWelcome || welcomeRule) return;
     let alive = true;
-    let t;
-    // Read-only: fetch the live terms so the popup only shows an active code.
     fetch("/api/coupons?cartValue=0")
       .then((r) => r.json())
       .then((j) => {
         const c = (j.coupons || []).find((x) => x.code === WELCOME_CODE && x.status === "active");
         if (!alive || !c) return;
         setWelcomeRule({ code: c.code, title: c.title, type: c.type, value: c.value, maxDiscount: c.maxDiscount || 0, minOrder: c.minOrder || 0 });
-        t = setTimeout(() => {
-          if (!alive) return;
-          setShowWelcome(true);
-          try {
-            sessionStorage.setItem("tbx_welcome_seen", "1");
-          } catch {
-            /* ignore */
-          }
-        }, 1200);
       })
       .catch(() => {});
     return () => {
       alive = false;
-      clearTimeout(t);
     };
-  }, [hasBooksForWelcome]);
+  }, [hasBooksForWelcome, welcomeRule]);
 
   // Same rules as checkout: a coupon REPLACES the cart offer (flat ₹-off,
   // combo, add-on discount) rather than stacking, and works on books +
@@ -873,21 +870,79 @@ function BagContent() {
   const bagToPay = couponWins ? toPayBeforeCoupon + offerDiscount - couponOff : toPayBeforeCoupon;
   const welcomeCalc = bagCouponOff(welcomeRule, couponBase, finalPayable);
   const welcomePreview = { off: Math.max(0, welcomeCalc.off - offerDiscount), short: welcomeCalc.short };
-  const applyWelcome = () => {
-    if (!welcomeRule) return;
-    saveBagCoupon(welcomeRule);
-    setShowWelcome(false);
-    // Celebrate: a quick confetti burst (skipped for reduced-motion users).
+  // Which popup (once per visit each):
+  //  • order at/above WELCOME10's minimum and the coupon beats current offers
+  //    → the WELCOME10 popup;
+  //  • below the minimum and no bookmark chosen yet → "Avail free bookmark".
+  const welcomeEligible =
+    hasBooksForWelcome && !!welcomeRule && !bagCoupon && welcomeCalc.short === 0 && welcomePreview.off > 0;
+  const bmOfferEligible =
+    hasBooksForWelcome && !!welcomeRule && welcomeCalc.short > 0 && bagBookmarks === 0;
+  useEffect(() => {
+    const kind = welcomeEligible ? "welcome" : bmOfferEligible ? "bm" : null;
+    if (!kind) return;
+    const key = kind === "welcome" ? "tbx_welcome_seen" : "tbx_bmoffer_seen";
+    try {
+      if (sessionStorage.getItem(key)) return;
+    } catch {
+      /* ignore */
+    }
+    const t = setTimeout(() => {
+      try {
+        sessionStorage.setItem(key, "1");
+      } catch {
+        /* ignore */
+      }
+      if (kind === "welcome") setShowWelcome(true);
+      else setShowBmOffer(true);
+    }, 1200);
+    return () => clearTimeout(t);
+  }, [welcomeEligible, bmOfferEligible]);
+
+  // Gift icon in the header: an offer they qualify for, saw, and didn't claim.
+  const giftOfferKind =
+    welcomeEligible && offerDismissed.welcome && !showWelcome
+      ? "welcome"
+      : bmOfferEligible && offerDismissed.bm && !showBmOffer
+        ? "bm"
+        : null;
+
+  const burstConfetti = (big = true) =>
     import("canvas-confetti")
       .then(({ default: confetti }) => {
         const opts = { zIndex: 2147483646, disableForReducedMotion: true, colors: ["#dc2626", "#16a34a", "#f59e0b", "#ffffff", "#1ba672"] };
-        confetti({ ...opts, particleCount: 90, spread: 75, startVelocity: 42, origin: { x: 0.5, y: 0.75 } });
+        confetti({ ...opts, particleCount: big ? 90 : 60, spread: 75, startVelocity: 42, origin: { x: 0.5, y: 0.75 } });
+        if (!big) return;
         setTimeout(() => {
           confetti({ ...opts, particleCount: 45, angle: 60, spread: 55, origin: { x: 0, y: 0.8 } });
           confetti({ ...opts, particleCount: 45, angle: 120, spread: 55, origin: { x: 1, y: 0.8 } });
         }, 180);
       })
       .catch(() => {});
+
+  // "Avail free bookmark": pick one bookmark for them and show it in Add-ons.
+  const availBookmark = () => {
+    setShowBmOffer(false);
+    setBagBookmarks((n) => Math.max(1, n));
+    burstConfetti(false);
+    showToast("1 free bookmark added to your order 🔖", "success");
+    trackEvent("bag_bookmark_offer_claimed", { cart_value: finalPayable });
+    setTimeout(() => {
+      const el = document.querySelector(".bga-bm");
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.remove("bga-flash");
+      void el.offsetWidth;
+      el.classList.add("bga-flash");
+    }, 250);
+  };
+
+  const applyWelcome = () => {
+    if (!welcomeRule) return;
+    saveBagCoupon(welcomeRule);
+    setShowWelcome(false);
+    // Celebrate: a quick confetti burst (skipped for reduced-motion users).
+    burstConfetti(true);
     showToast(`${welcomeRule.code} applied 🎉`, "success");
     trackEvent("welcome_coupon_applied", { cart_value: finalPayable });
   };
@@ -1552,12 +1607,23 @@ ${itemsBlock}${qrLines}
   return (
     <section className="section-680 flex flex-col gap-24 bag-page bag-xmas">
       <WelcomeCouponPopup
-        open={showWelcome && cartBooks.length > 0 && (welcomePreview.off > 0 || welcomePreview.short > 0)}
+        open={showWelcome && cartBooks.length > 0 && welcomePreview.off > 0}
         code={welcomeRule?.code || WELCOME_CODE}
         save={welcomePreview.off}
-        short={welcomePreview.short}
         onApply={applyWelcome}
-        onClose={() => setShowWelcome(false)}
+        onClose={() => {
+          setShowWelcome(false);
+          setOfferDismissed((d) => ({ ...d, welcome: true }));
+        }}
+      />
+      <WelcomeCouponPopup
+        variant="bookmark"
+        open={showBmOffer && cartBooks.length > 0}
+        onApply={availBookmark}
+        onClose={() => {
+          setShowBmOffer(false);
+          setOfferDismissed((d) => ({ ...d, bm: true }));
+        }}
       />
       {/* Christmas: light snowfall behind the bag */}
       <div className="pdp-fx" aria-hidden="true">
@@ -1568,6 +1634,22 @@ ${itemsBlock}${qrLines}
         subtitle={`${cartBooks.length} book${cartBooks.length > 1 ? "s" : ""} in cart`}
         right={
           <div className="bag-header-actions">
+            {giftOfferKind && (
+              <button
+                type="button"
+                className="bag-icon-btn bag-gift-btn"
+                onClick={() => {
+                  trackEvent("bag_gift_icon_tap", { offer: giftOfferKind });
+                  if (giftOfferKind === "welcome") setShowWelcome(true);
+                  else setShowBmOffer(true);
+                }}
+                aria-label={giftOfferKind === "welcome" ? "Open your WELCOME10 offer" : "Claim your free bookmark"}
+                title={giftOfferKind === "welcome" ? "WELCOME10 · 10% off" : "Free bookmark"}
+              >
+                <Gift size={19} />
+                <span className="bag-gift-dot" aria-hidden="true" />
+              </button>
+            )}
             <button
               type="button"
               className="bag-icon-btn"

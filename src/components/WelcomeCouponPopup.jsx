@@ -6,11 +6,14 @@
 
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { BadgePercent } from "lucide-react";
+import { BadgePercent, Bookmark } from "lucide-react";
 
 const DURATION = 5000;
 
-export default function WelcomeCouponPopup({ open, code, save, short = 0, onApply, onClose }) {
+// variant "coupon" (WELCOME10) or "bookmark" (below the coupon's minimum:
+// a free bookmark the shopper can claim in one tap).
+export default function WelcomeCouponPopup({ open, code, save, short = 0, onApply, onClose, variant = "coupon" }) {
+  const bm = variant === "bookmark";
   // Keep the latest onClose without restarting the 5s timer on re-renders.
   const closeRef = useRef(onClose);
   useEffect(() => {
@@ -27,7 +30,7 @@ export default function WelcomeCouponPopup({ open, code, save, short = 0, onAppl
   return createPortal(
     <div className="wcp-back" role="presentation" onClick={onClose}>
       <div
-        className="wcp"
+        className={`wcp${bm ? " wcp-bm" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="wcp-h"
@@ -35,22 +38,35 @@ export default function WelcomeCouponPopup({ open, code, save, short = 0, onAppl
       >
         <div className="wcp-badge" aria-hidden="true">
           <span className="wcp-burst" />
-          <BadgePercent size={30} strokeWidth={2.2} />
+          {bm ? <Bookmark size={30} strokeWidth={2.2} /> : <BadgePercent size={30} strokeWidth={2.2} />}
           {Array.from({ length: 10 }).map((_, i) => (
             <i key={i} className="wcp-conf" style={{ "--i": i }} />
           ))}
         </div>
-        <p className="wcp-k">Congratulations!</p>
-        <h2 id="wcp-h" className="wcp-h">
-          {save > 0 ? <>Save ₹{save} on this bag</> : <>Extra 10% off your books</>}
-        </h2>
-        <p className="wcp-sub">
-          Use code <b>{code}</b> for 10% off
-          {short > 0 ? ` · add ₹${short} more to unlock it` : " · applied instantly"}
-        </p>
-        <button type="button" className="bg-paybar-btn wcp-btn" onClick={onApply}>
-          YAY! Apply {code}
-        </button>
+        {bm ? (
+          <>
+            <p className="wcp-k">A gift for you!</p>
+            <h2 id="wcp-h" className="wcp-h">Get a free bookmark</h2>
+            <p className="wcp-sub">A collectible bookmark ships with your books · free with this order</p>
+            <button type="button" className="bg-paybar-btn wcp-btn" onClick={onApply}>
+              Avail free bookmark
+            </button>
+          </>
+        ) : (
+          <>
+            <p className="wcp-k">Congratulations!</p>
+            <h2 id="wcp-h" className="wcp-h">
+              {save > 0 ? <>Save ₹{save} on this bag</> : <>Extra 10% off your books</>}
+            </h2>
+            <p className="wcp-sub">
+              Use code <b>{code}</b> for 10% off
+              {short > 0 ? ` · add ₹${short} more to unlock it` : " · applied instantly"}
+            </p>
+            <button type="button" className="bg-paybar-btn wcp-btn" onClick={onApply}>
+              YAY! Apply {code}
+            </button>
+          </>
+        )}
         <button type="button" className="wcp-skip" onClick={onClose}>
           Maybe later
         </button>

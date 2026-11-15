@@ -70857,3 +70857,19 @@ body:has(.wcp-back) .bag-fabs-tip { opacity: 0 !important; visibility: hidden !i
 .bm2-total-was { margin-right: 6px; font-size: .72em; font-weight: 500; color: #9ca3af; }
 .bm2-total-new { color: #1ba672; }
 .bm2-coupon-save { margin: 8px 16px 0; padding: 8px 10px; border-radius: 10px; background: #ecfdf5; color: #15803d; font-size: 12.5px; font-weight: 700; text-align: center; }
+
+/* Bookmark variant of the bag popup + highlight on the Bookmarks add-on */
+.wcp-bm .wcp-badge { background: radial-gradient(circle at 30% 30%, #fb923c, #ea580c); box-shadow: 0 10px 24px rgba(234, 88, 12, .35); }
+.wcp-bm .wcp-burst { border-color: rgba(234, 88, 12, .35); }
+.bga-flash { animation: bgaFlash 1.6s ease-out; }
+@keyframes bgaFlash { 0%, 40% { box-shadow: 0 0 0 3px #fdba74, 0 0 0 7px rgba(253, 186, 116, .35); background: #fff7ed; } 100% { box-shadow: none; } }
+
+/* Bag header: gift icon for an unclaimed offer */
+.bag-gift-btn { position: relative; color: #dc2626 !important; border-color: #fecaca !important; background: #fff5f5 !important; animation: bagGiftWiggle 2.6s ease-in-out infinite, bagGiftIn .4s cubic-bezier(.2, 1.4, .4, 1); }
+.bag-gift-btn svg { animation: bagGiftHop 2.6s ease-in-out infinite; }
+.bag-gift-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 0 0 rgba(245, 158, 11, .6); animation: bagGiftPing 1.6s ease-out infinite; }
+@keyframes bagGiftIn { from { opacity: 0; transform: scale(.4); } }
+@keyframes bagGiftWiggle { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(-12deg); } 78% { transform: rotate(10deg); } 82% { transform: rotate(-8deg); } 86% { transform: rotate(5deg); } 90% { transform: rotate(0); } }
+@keyframes bagGiftHop { 0%, 70%, 100% { transform: translateY(0); } 76% { transform: translateY(-3px); } 84% { transform: translateY(0); } }
+@keyframes bagGiftPing { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, .6); } 100% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); } }
+@media (prefers-reduced-motion: reduce) { .bag-gift-btn, .bag-gift-btn svg, .bag-gift-dot { animation: none; } }

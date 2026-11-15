@@ -363,8 +363,7 @@ export default function HomeDock() {
   const askWhatsApp = () => {
     const msg =
       "Hi TheBookX! 👋 I'm browsing your store right now.\n\n" +
-      "Are there any extra discounts, combo deals or freebies running today that I shouldn't miss? " +
-      "I want to grab the best offer before I order 🙏";
+      "Could you suggest a good combo for me? And what freebies and bookmarks come with an order? 📚";
     window.open(`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
   };
 
@@ -512,13 +511,13 @@ export default function HomeDock() {
             >
               <FaWhatsapp size={18} />
               <span>
-                Ask us for today&apos;s best deals
-                <small>Quick replies on WhatsApp</small>
+                Hi! Looking for a good read?
+                <small>Ask us about combos, freebies &amp; bookmarks</small>
               </span>
             </motion.span>
           )}
         </AnimatePresence>
-        <button type="button" className="hd-wa" onClick={() => { setWaTip(false); askWhatsApp(); }} aria-label="Ask TheBookX on WhatsApp about today's best offers">
+        <button type="button" className="hd-wa" onClick={() => { setWaTip(false); askWhatsApp(); }} aria-label="Ask TheBookX on WhatsApp about combos, freebies and bookmarks">
           <FaWhatsapp size={22} />
         </button>
       </motion.div>

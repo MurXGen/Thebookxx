@@ -1,5 +1,6 @@
 "use client";
 
+import { XmasSnow } from "@/components/XmasDecor";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
 import {
@@ -1645,7 +1646,11 @@ Please cancel this order. Thank you `;
   };
 
   return (
-    <div className="my-orders-page">
+    <div className="my-orders-page prof-xmas">
+      {/* Christmas: light snowfall behind the profile sections */}
+      <div className="pdp-fx" aria-hidden="true">
+        <XmasSnow className="pdp-snowfall" density={0.8} ink />
+      </div>
       <div className="section-680 flex flex-col gap-24">
         {/* Header */}
         <div className="orders-header profile-header-row">

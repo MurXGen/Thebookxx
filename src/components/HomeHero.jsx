@@ -1,6 +1,7 @@
 "use client";
 
 import LiveActivity from "@/components/LiveActivity";
+import CommunityJoin from "@/components/CommunityJoin";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,7 +27,7 @@ import { getCartOffers } from "@/utils/cartOffers";
 import OfferTierList from "@/components/UI/OfferTierList";
 import { useStore } from "@/context/StoreContext";
 import SearchOverlay from "@/components/SearchOverlay";
-import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";
+import { XmasSnow, XmasTree } from "@/components/XmasDecor";
 import RecommendationModal from "@/components/RecommendationModal";
 
 // Static, above-the-fold hero. Gives the homepage a clear value proposition and
@@ -187,7 +188,6 @@ export default function HomeHero() {
       {/* Christmas: velvet backdrop bokeh, pine garland with baubles, live snow */}
       <div className="hx-bokeh" aria-hidden="true" />
       <XmasSnow />
-      <XmasGarland />
 
       <div className="hero-top">
         <div className="home-hero-inner">
@@ -233,6 +233,9 @@ export default function HomeHero() {
           </div>
 
           {/* Christmas gift — opens the scratch & win flow */}
+          {/* Community CTA, just above the Christmas gift */}
+          <CommunityJoin variant="hero" />
+
           <div className="hx-gift-row">
             {/* Snowy Christmas trees standing on the gift card */}
             <XmasTree size={64} gifts={false} className="hx-gift-tree left" />
@@ -241,15 +244,24 @@ export default function HomeHero() {
           </div>
 
           {/* Quiet trust line */}
-          <ul className="hx-trust">
-            <li>
-              <Star size={13} fill="#f59e0b" stroke="#f59e0b" /> 4.4 rating
-            </li>
-            <li>{titleCount}+ titles</li>
-            <li>7-day replacement</li>
-            <li>Cash on Delivery</li>
-            <li className="hx-trust-hi">Free bookmarks</li>
-          </ul>
+          {/* Trust points — a gentle, endless marquee (pauses on hover / touch).
+              The list is doubled so the loop is seamless; the copy is hidden
+              from screen readers. */}
+          <div className="hx-trust-marquee">
+            <div className="hx-trust-track">
+              {[0, 1].map((k) => (
+                <ul key={k} className="hx-trust" aria-hidden={k === 1 ? "true" : undefined}>
+                  <li>
+                    <Star size={13} fill="#f59e0b" stroke="#f59e0b" /> 4.4 rating
+                  </li>
+                  <li>{titleCount}+ titles</li>
+                  <li>7-day replacement</li>
+                  <li>Cash on Delivery</li>
+                  <li className="hx-trust-hi">Free bookmarks</li>
+                </ul>
+              ))}
+            </div>
+          </div>
 
           {/* Offers — auto-scrolling chips; tap any to see all reward tiers */}
           <div className="hero-offers-row hx-offers" role="list">

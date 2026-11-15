@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Users, ChevronRight, Heart } from "lucide-react";
+import { X, Users, ChevronRight, Heart, Gift, Sparkles, BookOpen, MessageCircle } from "lucide-react";
+import { XmasSnow } from "./XmasDecor";
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 
 const INSTAGRAM_URL = "https://www.instagram.com/thebookx.in/";
@@ -68,6 +69,30 @@ export default function CommunityJoin({ className = "", variant = "icon" }) {
         </span>
         <ChevronRight size={18} className="cct-arrow" />
       </button>
+    ) : variant === "hero" ? (
+      <button
+        type="button"
+        className={`cj-hero ${className}`}
+        onClick={() => setOpen(true)}
+        aria-label="Join our reader community on WhatsApp and Instagram"
+      >
+        <span className="cj-hero-faces" aria-hidden="true">
+          {avatars.slice(0, 3).map((src) => (
+            <img key={src} src={src} alt="" loading="lazy" onError={() => setBroken((p) => ({ ...p, [src]: true }))} />
+          ))}
+        </span>
+        <span className="cj-hero-txt">
+          <strong>Join 5,000+ readers</strong>
+          <small>Our WhatsApp &amp; Instagram community</small>
+        </span>
+        <span className="cj-hero-apps" aria-hidden="true">
+          <i className="wa"><FaWhatsapp size={14} /></i>
+          <i className="ig"><FaInstagram size={14} /></i>
+        </span>
+        <span className="cj-hero-go">
+          Join <ChevronRight size={15} />
+        </span>
+      </button>
     ) : variant === "pill" ? (
       <button
         type="button"
@@ -102,7 +127,7 @@ export default function CommunityJoin({ className = "", variant = "icon" }) {
           style={{ zIndex: 4000 }}
         >
           <motion.div
-            className="bill-modal community-sheet"
+            className="bill-modal community-sheet cj-sheet"
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -115,57 +140,55 @@ export default function CommunityJoin({ className = "", variant = "icon" }) {
               if (info.offset.y > 120 || info.velocity.y > 700) setOpen(false);
             }}
           >
-            <div className="bill-header">
-              <span className="weight-600 font-16">Join our community</span>
-              <span className="cursor-pointer" onClick={() => setOpen(false)}>
+            {/* Festive top: snow over a rose band, avatars + title */}
+            <div className="cj-top">
+              <XmasSnow className="cj-snow" density={0.8} max={30} />
+              <button type="button" className="cj-x" onClick={() => setOpen(false)} aria-label="Close">
                 <X size={18} />
-              </span>
+              </button>
+              {avatars.length > 0 && (
+                <div className="cj-faces">
+                  {avatars.map((src) => (
+                    <img key={src} src={src} alt="" loading="lazy" onError={() => setBroken((p) => ({ ...p, [src]: true }))} />
+                  ))}
+                  <span className="cj-faces-more">5k+</span>
+                </div>
+              )}
+              <h3 className="cj-title">Join our reader community</h3>
+              <p className="cj-sub">5,000+ book lovers already get the good stuff first.</p>
             </div>
 
-            {avatars.length > 0 && (
-              <div className="community-avatars">
-                {avatars.map((src) => (
-                  <img
-                    key={src}
-                    src={src}
-                    alt=""
-                    className="community-avatar"
-                    loading="lazy"
-                    onError={() => setBroken((p) => ({ ...p, [src]: true }))}
-                  />
-                ))}
-                <span className="community-avatars-note">
-                  Join 5,000+ book lovers
-                </span>
+            <div className="cj-body">
+              <span className="cj-cap">What you get</span>
+              <ul className="cj-perks">
+                <li><span className="cj-perk-ic"><Gift size={16} /></span>₹1 book drops, first</li>
+                <li><span className="cj-perk-ic"><Sparkles size={16} /></span>New arrivals &amp; restocks</li>
+                <li><span className="cj-perk-ic"><Heart size={16} /></span>Members-only offers</li>
+                <li><span className="cj-perk-ic"><MessageCircle size={16} /></span>Bookish chat &amp; picks</li>
+              </ul>
+
+              <span className="cj-cap">Pick where to join</span>
+              <div className="cj-apps">
+                <a href={WHATSAPP_GROUP_URL} target="_blank" rel="noopener noreferrer" className="cj-app wa" onClick={() => setOpen(false)}>
+                  <span className="cj-app-ic"><FaWhatsapp size={22} /></span>
+                  <span className="cj-app-txt">
+                    <b>WhatsApp group</b>
+                    <small>Drops &amp; offers, straight to chat</small>
+                  </span>
+                  <ChevronRight size={18} className="cj-app-go" />
+                </a>
+                <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="cj-app ig" onClick={() => setOpen(false)}>
+                  <span className="cj-app-ic"><FaInstagram size={22} /></span>
+                  <span className="cj-app-txt">
+                    <b>Instagram</b>
+                    <small>@thebookx.in · reels &amp; new books</small>
+                  </span>
+                  <ChevronRight size={18} className="cj-app-go" />
+                </a>
               </div>
-            )}
-
-            <p className="community-sub">
-              Be first to know about ₹1 drops, new arrivals and exclusive
-              offers. Pick where you&rsquo;d like to join us.
-            </p>
-
-            <div className="community-actions">
-              <a
-                href={WHATSAPP_GROUP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="community-btn wa"
-                onClick={() => setOpen(false)}
-              >
-                <FaWhatsapp size={20} />
-                <span>Join WhatsApp group</span>
-              </a>
-              <a
-                href={INSTAGRAM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="community-btn ig"
-                onClick={() => setOpen(false)}
-              >
-                <FaInstagram size={20} />
-                <span>Follow on Instagram</span>
-              </a>
+              <p className="cj-note">
+                <BookOpen size={13} /> Free to join · leave anytime · no spam
+              </p>
             </div>
           </motion.div>
         </motion.div>

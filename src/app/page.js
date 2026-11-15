@@ -18,7 +18,6 @@ import HomeAbout from "@/components/HomeAbout";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
 import QuickReadsTeaser from "@/components/QuickReadsTeaser";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
-import ReviewGallery from "@/components/ReviewGallery";
 import BundleDeals from "@/components/BundleDeals";
 import CategoryBrowse from "@/components/CategoryBrowse";
 import BookRail from "@/components/BookRail";
@@ -205,10 +204,7 @@ export default function HomePage() {
         <HomeHero />
       </div>
 
-      {/* Real reader photos — the first thing under the hero, for trust */}
-      <div id="hs-reviews" className="hs-anchor">
-        <ReviewGallery />
-      </div>
+      {/* Reader photos now live inside the hero ("Readers loving TheBookX"). */}
 
       {/* Who we are — short About us right under the reader photos */}
       <div id="hs-about" className="hs-anchor">

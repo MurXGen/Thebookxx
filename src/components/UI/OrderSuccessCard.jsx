@@ -1,6 +1,7 @@
 "use client";
 
 import PlacingOrder from "@/components/UI/PlacingOrder";
+import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -414,10 +415,23 @@ export default function OrderSuccessCard({
   };
 
   return (
-    <div className={`osc-overlay osc-full${pending ? " osc-pending" : ""}`}>
+    <div className={`osc-overlay osc-full osc-xmas${pending ? " osc-pending" : ""}`}>
       <div className="osc-modal">
+        {/* Christmas: light snowfall over the whole page */}
+        <XmasSnow className="osc-snow" density={0.6} max={50} ink />
         {/* ── Top: animated success tick + message ── */}
         <div className="osc-top">
+          <XmasGarland
+            className="osc-garland"
+            baubles={[
+              { l: 7, len: 16, c: "red", d: 0 },
+              { l: 22, len: 26, c: "gold", d: 0.5 },
+              { l: 78, len: 22, c: "red", d: 0.3 },
+              { l: 93, len: 14, c: "gold", d: 0.8 },
+            ]}
+          />
+          <XmasTree size={64} gifts={false} className="osc-tree l" />
+          <XmasTree size={78} className="osc-tree r" />
           {/* Light one-time confetti over the summary */}
           {!pending && (
           <span className="osc-confetti" aria-hidden="true">

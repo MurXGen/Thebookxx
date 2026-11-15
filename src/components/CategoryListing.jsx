@@ -1,5 +1,6 @@
 "use client";
 
+import { XmasSnow } from "@/components/XmasDecor";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -111,7 +112,7 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
 
   return (
     <div
-      className="category-page cat-themed"
+      className="category-page cat-themed cat-sw"
       style={{
         "--cat-a": theme.a,
         "--cat-b": theme.b,
@@ -119,6 +120,10 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
       }}
     >
       <Navbar />
+      {/* Christmas: light snowfall on the grey canvas */}
+      <div className="pdp-fx" aria-hidden="true">
+        <XmasSnow className="pdp-snowfall" density={0.7} ink />
+      </div>
 
       {/* Tree-root SVGs fixed to the left & right screen edges — tinted to the
           category's accent, kept light. */}
@@ -168,36 +173,55 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
           { label: `${displayName} Books` },
         ]}
       />
+      {/* Header section: back · title + count · filter, with quick sort chips */}
       <div className="section-1200">
-        <div className="cat-hero-min">
-          <Link
-            href="/books"
-            className="cat-hero-back"
-            aria-label="Back to categories"
-          >
-            <ArrowLeft size={18} />
-          </Link>
-          {/* Visible H1 — kept for SEO */}
-          <h1 className="cat-hero-title">{heading || `${displayName} Books`}</h1>
-        </div>
-      </div>
-
-      {/* Filter / sort toolbar */}
-      <div
-        className="section-1200 flex flex-row items-center justify-between flex-wrap gap-12"
-        style={{ paddingTop: 0 }}
-      >
-        <span className="font-12 dark-50 cat-count">
-          Showing <b>{filtered.length}</b> of {books.length} books
-        </span>
-        <button
-          className={`sec-mid-btn ${activeFilters ? "active" : ""}`}
-          onClick={() => setShowFilters((s) => !s)}
-          aria-expanded={showFilters}
-        >
-          <SlidersHorizontal size={14} />
-          Filter &amp; Sort{activeFilters ? ` (${activeFilters})` : ""}
-        </button>
+        <section className="cat-head-card">
+          <div className="cat-head-row">
+            <Link href="/books" className="cat-hero-back" aria-label="Back to categories">
+              <ArrowLeft size={18} />
+            </Link>
+            <span className="cat-head-txt">
+              {/* Visible H1 — kept for SEO */}
+              <h1 className="cat-hero-title">{heading || `${displayName} Books`}</h1>
+              <small className="cat-count">
+                {filtered.length === books.length
+                  ? `${books.length} books`
+                  : `${filtered.length} of ${books.length} books`}
+              </small>
+            </span>
+            <button
+              className={`cat-filter-btn${activeFilters ? " active" : ""}`}
+              onClick={() => setShowFilters((v) => !v)}
+              aria-expanded={showFilters}
+            >
+              <SlidersHorizontal size={14} />
+              Filter{activeFilters ? ` (${activeFilters})` : ""}
+            </button>
+          </div>
+          <div className="cat-chips" role="group" aria-label="Sort books">
+            {SORTS.map((o) => (
+              <button
+                key={o.key}
+                type="button"
+                className={`cat-chip${sortType === o.key ? " on" : ""}`}
+                onClick={() => setSortType(o.key)}
+              >
+                {o.label}
+              </button>
+            ))}
+            <button
+              type="button"
+              className={`cat-chip${priceMax === "199" && !priceMin ? " on" : ""}`}
+              onClick={() => {
+                const on = priceMax === "199" && !priceMin;
+                setPriceMin("");
+                setPriceMax(on ? "" : "199");
+              }}
+            >
+              Under ₹199
+            </button>
+          </div>
+        </section>
       </div>
 
       {showFilters && (
@@ -277,7 +301,12 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
           </button>
         </div>
       ) : (
-        <LazyBookGrid items={filtered} batch={20} />
+        <div className="section-1200">
+          <section className="cat-grid-card">
+            <span className="cat-cap">All {displayName} books</span>
+            <LazyBookGrid items={filtered} batch={20} />
+          </section>
+        </div>
       )}
       {children}
     </div>

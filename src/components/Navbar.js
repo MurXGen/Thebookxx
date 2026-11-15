@@ -19,6 +19,7 @@ import { HiOutlineShoppingBag } from "react-icons/hi2";
 import SearchMain from "./UI/SearchMain";
 import SearchOverlay from "./SearchOverlay";
 import DeliveryCheckBar from "./DeliveryCheckBar";
+import HomeNavbar from "./HomeNavbar";
 import { AnimatePresence, motion } from "framer-motion";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import InstallPWA from "./InstallPWA";
@@ -186,6 +187,30 @@ export default function Navbar() {
   }, []);
 
   const currentOffer = CART_OFFERS[index];
+
+  const openSearch = () => {
+    setSearchInitialQuery("");
+    setSearchOpen(true);
+  };
+
+  // Homepage: its own delivery-first header (other pages keep the bar below).
+  if (isHome) {
+    return (
+      <>
+        <header ref={navRef} className={`navbar-wrapper home-nav${navHidden ? " nav-hidden" : ""}`}>
+          <HomeNavbar onSearch={openSearch} />
+          {/* Kept mounted (bar hidden) so its pincode sheet still opens */}
+          <DeliveryCheckBar />
+        </header>
+        <div className="navbar-spacer" aria-hidden="true" style={{ height: navH }} />
+        <SearchOverlay
+          open={searchOpen}
+          onClose={() => setSearchOpen(false)}
+          initialQuery={searchInitialQuery}
+        />
+      </>
+    );
+  }
 
   return (
     <>

@@ -17,7 +17,7 @@ import {
 // /public/review/bookreviews/ named review-1.jpeg … review-N.jpeg. Any missing
 // image is skipped, and the carousel loops infinitely. Edit name/city/text to
 // match each photo; ratings are 1–5.
-const REVIEWS = [
+export const REVIEWS = [
   {
     img: "/review/bookreviews/thebookx-reader-order-ikigai-midnight-library-alchemist-monk-who-sold-his-ferrari.jpg",
     caption: "A 7-book TheBookX order, delivered sealed in shrink-wrap",

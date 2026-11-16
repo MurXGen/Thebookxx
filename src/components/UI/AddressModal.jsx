@@ -5111,6 +5111,7 @@ export default function AddressModal({
       <AnimatePresence>
         {showUPIPayment && (
           <UPIPaymentModal
+            onAutoConfirm={autoConfirmUpi}
             finalPayable={netPayable}
             walletApplied={walletAppliedTotal}
             fasterDelivery={fasterDelivery}
@@ -6418,6 +6419,7 @@ export function UPIPaymentModal({
   onSwitchToCOD,
   onCheckStatus,
   onTryAgain,
+  onAutoConfirm,
   summaryName = "",
   summaryItems = [],
   codLaterAmount = 0,
@@ -6740,7 +6742,7 @@ export function UPIPaymentModal({
               chosenApp={chosenApp}
               advance={advanceMode}
               onWhatsApp={SHOW_UPI_WHATSAPP ? onWhatsAppFallback : undefined}
-              onAutoConfirm={autoConfirmUpi}
+              onAutoConfirm={onAutoConfirm}
             />
           )}
 

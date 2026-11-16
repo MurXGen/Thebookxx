@@ -5,7 +5,7 @@ import { StoreProvider } from "@/context/StoreContext";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { ToastProvider } from "@/context/ToastContext";
 import RegisterSW from "@/components/RegisterSW";
-import SplashScreen from "@/components/UI/SplashScreen";
+// import SplashScreen from "@/components/UI/SplashScreen"; // splash paused
 import GlobalHaptics from "@/components/UI/GlobalHaptics";
 import ClickFeedback from "@/components/UI/ClickFeedback";
 import ShareSheetHost from "@/components/UI/ShareSheet";
@@ -247,7 +247,7 @@ export default function RootLayout({ children }) {
         <ToastProvider>
           <StoreProvider>
             <PLProvider>
-              <SplashScreen />
+              {/* Launch splash paused for now — re-add <SplashScreen /> to bring it back. */}
               <RegisterSW />
               <GlobalHaptics />
               {/* Tap feedback: top bar on navigation + spinner on busy buttons */}

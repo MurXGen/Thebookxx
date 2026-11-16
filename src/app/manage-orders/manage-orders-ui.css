@@ -8558,3 +8558,18 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
 .my-orders-page.mo-glass .mo2-pf-d { grid-column: span 4; }
 .my-orders-page.mo-glass .mo2-pf-t { grid-column: span 4; }
 .my-orders-page.mo-glass .mo2-parcel-save { grid-column: span 2; }
+
+/* 64 · Dispatch queue "Save all" (parcel drafts on every card) */
+.my-orders-page.mo-glass .mo-dispatch-mini.mo-dispatch-saveall {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--g-ink); color: var(--g-surface-solid, #fff); border-color: var(--g-ink);
+}
+.my-orders-page.mo-glass .mo-dispatch-mini.mo-dispatch-saveall b {
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--g-surface-solid, #fff); color: var(--g-ink); font-size: 11px;
+}
+.my-orders-page.mo-glass .mo-dispatch-mini.mo-dispatch-saveall:disabled {
+  background: transparent; color: var(--g-ink-3); border-color: rgb(var(--g-ink-rgb) / 0.12); cursor: default;
+}
+.my-orders-page.mo-glass .mo-dispatch-head-r { flex-wrap: wrap; }

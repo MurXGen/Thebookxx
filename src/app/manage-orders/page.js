@@ -10042,6 +10042,41 @@ export default function ManageOrdersPage() {
       [oid]: { "Weight(gm)": w, "Sizes(Lxbxh)": sizes },
     }));
   };
+  // Dispatch-card parcel state (weight, size with 22×16×(2×books) default,
+  // tracking) — shared by each card's Save and the queue's "Save all".
+  const parcelStateOf = (order) => {
+    const oid = order["Order ID"];
+    const w = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");
+    const savedS = String(order["Sizes(Lxbxh)"] || "").trim();
+    const trk = String(order.shippingId || order["Shipping ID"] || "").trim();
+    const saved = savedS.split(/[xX×*]/).map((x) => x.replace(/[^\d]/g, ""));
+    const hasSaved = saved.length === 3 && saved.every(Boolean);
+    const books = (order.parsedBooks || []).reduce(
+      (n, b) => n + (Number(b.quantity) || 1),
+      0,
+    );
+    const base = {
+      w,
+      l: hasSaved ? saved[0] : "22",
+      b: hasSaved ? saved[1] : "16",
+      h: hasSaved ? saved[2] : String(Math.max(1, books) * 2),
+    };
+    const d = { ...base, ...(parcelDrafts[oid] || {}) };
+    const t = String(trackDrafts[oid] ?? trk);
+    const sizes = [d.l, d.b, d.h].every(Boolean) ? `${d.l}x${d.b}x${d.h}` : "";
+    const dirty = d.w !== w || sizes !== savedS || t.trim() !== trk;
+    return { oid, w, trk, d, t, sizes, dirty, saveable: dirty && !!d.w };
+  };
+  const commitParcel = (order, st = parcelStateOf(order)) => {
+    queueShipSize(order, st.d.w || "", st.sizes);
+    const nt = st.t.trim();
+    if (nt && nt !== st.trk) queueTracking(order, nt);
+    setParcelDrafts((p) => {
+      const n = { ...p };
+      delete n[st.oid];
+      return n;
+    });
+  };
   const saveWeightSize = async () => {
     if (!wsOrder) return;
     const oid = wsOrder["Order ID"];
@@ -12411,29 +12446,13 @@ export default function ManageOrdersPage() {
                                   </div>
                                   {selCtx && (() => {
                                     // Dispatch only: the Parcel sheet's inputs, right on the card.
-                                    const saved = String(order["Sizes(Lxbxh)"] || "")
-                                      .split(/[xX×*]/)
-                                      .map((s) => s.replace(/[^\d]/g, ""));
-                                    const hasSaved = saved.length === 3 && saved.every(Boolean);
-                                    const dflt = { l: "22", b: "16", h: String(Math.max(1, bookCount) * 2) };
-                                    const base = {
-                                      w,
-                                      l: hasSaved ? saved[0] : dflt.l,
-                                      b: hasSaved ? saved[1] : dflt.b,
-                                      h: hasSaved ? saved[2] : dflt.h,
-                                    };
-                                    const d = { ...base, ...(parcelDrafts[orderId] || {}) };
-                                    const t = trackDrafts[orderId] ?? trk;
+                                    const st = parcelStateOf(order);
+                                    const { d, t, sizes, dirty } = st;
                                     const setD = (k, v) =>
                                       setParcelDrafts((p) => ({
                                         ...p,
                                         [orderId]: { ...(p[orderId] || {}), [k]: String(v).replace(/[^\d]/g, "") },
                                       }));
-                                    const sizes = [d.l, d.b, d.h].every(Boolean) ? `${d.l}x${d.b}x${d.h}` : "";
-                                    const dirty =
-                                      d.w !== w ||
-                                      sizes !== String(order["Sizes(Lxbxh)"] || "").trim() ||
-                                      String(t || "").trim() !== trk;
                                     const faster =
                                       /faster|express/i.test(String(order["Delivery Type"] || "")) ||
                                       /^e/i.test(String(t || trk || "").trim());
@@ -12445,14 +12464,7 @@ export default function ManageOrdersPage() {
                                         : null;
                                     const est = estimateWeight(order);
                                     const save = () => {
-                                      queueShipSize(order, d.w || "", sizes);
-                                      const nt = String(t || "").trim();
-                                      if (nt && nt !== trk) queueTracking(order, nt);
-                                      setParcelDrafts((p) => {
-                                        const n = { ...p };
-                                        delete n[orderId];
-                                        return n;
-                                      });
+                                      commitParcel(order, st);
                                       showToast("Parcel saved · push to the sheet when you're done", "success");
                                     };
                                     const ready = d.w && sizes && trk && !dirty;
@@ -16549,6 +16561,33 @@ export default function ManageOrdersPage() {
                         >
                           <Share2 size={14} /> Share
                         </button>
+                        {(() => {
+                          const toSave = dOrders
+                            .map((o) => [o, parcelStateOf(o)])
+                            .filter(([, st]) => st.saveable);
+                          return (
+                            <button
+                              type="button"
+                              className="mo-dispatch-mini mo-dispatch-saveall"
+                              disabled={!toSave.length}
+                              title={
+                                toSave.length
+                                  ? `Save weight, size & tracking on ${toSave.length} card${toSave.length === 1 ? "" : "s"}`
+                                  : "Nothing new to save — enter a weight on a card first"
+                              }
+                              onClick={() => {
+                                toSave.forEach(([o, st]) => commitParcel(o, st));
+                                showToast(
+                                  `Saved ${toSave.length} parcel${toSave.length === 1 ? "" : "s"} · push to the sheet when you're done`,
+                                  "success",
+                                );
+                              }}
+                            >
+                              <Check size={14} /> Save all
+                              {toSave.length > 0 && <b>{toSave.length}</b>}
+                            </button>
+                          );
+                        })()}
                         {dOrders.length > 0 && selN === 0 && (
                           <button
                             type="button"

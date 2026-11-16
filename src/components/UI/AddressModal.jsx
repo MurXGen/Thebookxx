@@ -344,6 +344,7 @@ export default function AddressModal({
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponApplying, setCouponApplying] = useState(false);
+  const [couponErr, setCouponErr] = useState(""); // inline error on the coupon page
   const [appliedCoupon, setAppliedCoupon] = useState(null); // {code,title,discount}
   const couponRedeemedRef = useRef(false);
   // Which method is currently highlighted on the "Choose payment method" sheet.
@@ -949,6 +950,7 @@ export default function AddressModal({
     }
   };
   const openCouponSheet = () => {
+    setCouponErr("");
     setShowCouponSheet(true);
     loadCoupons();
   };
@@ -956,6 +958,7 @@ export default function AddressModal({
     const code = String(rawCode || "").trim().toUpperCase();
     if (!code || couponApplying) return;
     setCouponApplying(true);
+    setCouponErr("");
     try {
       const res = await fetch("/api/coupons", {
         method: "POST",
@@ -983,10 +986,16 @@ export default function AddressModal({
         setShowCouponSheet(false);
         setCouponCode("");
       } else {
-        showToast(j.reason || "This coupon can't be applied", "error");
+        // Show it on the page (a toast hides behind the full-screen sheet).
+        const why = String(j.reason || "");
+        setCouponErr(
+          /expired|limit/i.test(why)
+            ? `${code} has expired or is fully used`
+            : why || `${code} can't be applied to this order`,
+        );
       }
     } catch {
-      showToast("Couldn't apply the coupon — try again", "error");
+      setCouponErr("Couldn't check the coupon. Try again.");
     } finally {
       setCouponApplying(false);
     }
@@ -4759,209 +4768,200 @@ export default function AddressModal({
         )}
       </AnimatePresence>
 
-      {/* ========== Apply coupon — slide-up (list + code entry) ========== */}
+      {/* ========== Apply coupon — full-screen, Swiggy-style sections ========== */}
       <AnimatePresence>
         {showCouponSheet && (
           <motion.div
-            className="bill-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowCouponSheet(false)}
-            style={{ maxWidth: "980px", margin: "0 auto" }}
+            className="cpx"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cpx-h"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.div
-              className="bill-modal coupon-modal"
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.34, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="bill-header">
-                <span className="weight-600 font-16 flex items-center gap-8">
-                  <Tag size={18} /> Apply coupon
-                </span>
-                <span
-                  className="cursor-pointer"
-                  onClick={() => setShowCouponSheet(false)}
-                >
-                  <X size={18} />
-                </span>
-              </div>
+            <header className="cpx-top">
+              <button
+                type="button"
+                className="cpx-back"
+                onClick={() => setShowCouponSheet(false)}
+                aria-label="Back"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <span className="cpx-top-t">
+                <b id="cpx-h">Apply coupon</b>
+                <small>Your order · ₹{Math.round(finalPayable)}</small>
+              </span>
+            </header>
 
-              {/* Code entry — matches the unlock modal's input style */}
-              <div className="input-group coupon-entry">
-                <label className="flex flex-row gap-4 items-center">
-                  <Tag size={14} />
-                  Coupon code
-                </label>
-                <div className="coupon-entry-row">
+            <div className="cpx-scroll">
+              {/* Code entry */}
+              <section className={`cpx-card cpx-entry${couponErr ? " err" : ""}`}>
+                <div className="cpx-field">
+                  <Tag size={16} className="cpx-field-ic" />
                   <input
-                    className="sec-mid-btn coupon-input"
                     placeholder="Enter coupon code"
                     value={couponCode}
-                    onChange={(e) =>
-                      setCouponCode(
-                        e.target.value.toUpperCase().replace(/\s+/g, ""),
-                      )
-                    }
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && applyCoupon(couponCode)
-                    }
+                    autoCapitalize="characters"
+                    onChange={(e) => {
+                      setCouponErr("");
+                      setCouponCode(e.target.value.toUpperCase().replace(/\s+/g, ""));
+                    }}
+                    onKeyDown={(e) => e.key === "Enter" && applyCoupon(couponCode)}
                   />
                   <button
                     type="button"
-                    className="coupon-apply-btn"
+                    className="cpx-apply-txt"
                     disabled={!couponCode.trim() || couponApplying}
                     onClick={() => applyCoupon(couponCode)}
                   >
-                    {couponApplying ? "Applying…" : "Apply"}
+                    {couponApplying ? <Loader2 size={15} className="cp-spin" /> : "APPLY"}
                   </button>
                 </div>
-                <span className="font-10 gray-500 mt-4">
-                  Have a code? Enter it or pick one below.
-                </span>
-              </div>
+                {couponErr && (
+                  <p className="cpx-err" role="alert">
+                    <AlertCircle size={14} /> {couponErr}
+                  </p>
+                )}
+              </section>
 
-              {/* Cart-offer reward the shopper has already unlocked. Only ONE
-                  discount applies — a coupon replaces this reward. */}
-              {offerDiscount > 0 && (
-                <div
-                  className={`cp-reward${offerActive ? " on" : ""}`}
-                >
-                  <span className="cp-reward-ic">
-                    {offerActive ? (
-                      <Check size={16} strokeWidth={3} />
-                    ) : (
-                      <Gift size={16} />
-                    )}
-                  </span>
-                  <div className="cp-reward-tx">
-                    <span className="cp-reward-name">
-                      {offerLabel || `₹${offerDiscount} OFF`}
-                    </span>
-                    <span className="cp-reward-sub">
-                      {offerActive
-                        ? "🎉 Applied — you've unlocked this cart reward!"
-                        : appliedCoupon
-                          ? "Your cart reward · replaced by the coupon below"
-                          : "Removed · tap to use this reward again"}
-                    </span>
-                  </div>
-                  {offerActive ? (
-                    <button
-                      type="button"
-                      className="coupon-use-btn coupon-remove-btn"
-                      onClick={() => setOfferOptedOut(true)}
-                    >
-                      Remove
-                    </button>
+              {/* Cart reward (only one offer per order) */}
+              {(offerDiscount > 0 || (unlockedOffer && onApplyOffer && !appliedCoupon)) && (
+                <section className="cpx-sec">
+                  <h3 className="cpx-lbl">Your cart reward</h3>
+                  {offerDiscount > 0 ? (
+                    <div className={`cpx-card cpx-reward${offerActive ? " on" : ""}`}>
+                      <span className="cpx-reward-ic">
+                        {offerActive ? <Check size={16} strokeWidth={3} /> : <Gift size={16} />}
+                      </span>
+                      <span className="cpx-reward-tx">
+                        <b>{offerLabel || `₹${offerDiscount} OFF`}</b>
+                        <small>
+                          {offerActive
+                            ? "Applied to this order"
+                            : appliedCoupon
+                              ? "Replaced by your coupon"
+                              : "Not applied"}
+                        </small>
+                      </span>
+                      {offerActive ? (
+                        <button
+                          type="button"
+                          className="cpx-act muted"
+                          onClick={() => setOfferOptedOut(true)}
+                        >
+                          REMOVE
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="cpx-act"
+                          onClick={() => {
+                            if (appliedCoupon) removeCoupon();
+                            setOfferOptedOut(false);
+                          }}
+                        >
+                          USE
+                        </button>
+                      )}
+                    </div>
                   ) : (
-                    <button
-                      type="button"
-                      className="coupon-use-btn"
-                      onClick={() => {
-                        if (appliedCoupon) removeCoupon();
-                        setOfferOptedOut(false);
-                      }}
-                    >
-                      Use this
-                    </button>
+                    <div className="cpx-card cpx-reward">
+                      <span className="cpx-reward-ic">
+                        <Gift size={16} />
+                      </span>
+                      <span className="cpx-reward-tx">
+                        <b>{unlockedOffer.reward} unlocked 🎁</b>
+                        <small>Save ₹{unlockedOffer.value} on this order</small>
+                      </span>
+                      <button
+                        type="button"
+                        className="cpx-act"
+                        onClick={() => onApplyOffer(unlockedOffer)}
+                      >
+                        APPLY
+                      </button>
+                    </div>
                   )}
-                </div>
-              )}
-              {unlockedOffer && onApplyOffer && !appliedCoupon && (
-                <div className="cp-reward">
-                  <span className="cp-reward-ic">
-                    <Gift size={16} />
-                  </span>
-                  <div className="cp-reward-tx">
-                    <span className="cp-reward-name">
-                      {unlockedOffer.reward} unlocked
-                    </span>
-                    <span className="cp-reward-sub">
-                      🎁 Tap Apply to save ₹{unlockedOffer.value} on this order
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    className="coupon-use-btn"
-                    onClick={() => onApplyOffer(unlockedOffer)}
-                  >
-                    Apply
-                  </button>
-                </div>
+                </section>
               )}
 
-              <div className="cp-note">
-                Only one offer can be used per order — applying a coupon replaces
-                your cart reward.
-              </div>
-
-              {/* Available coupons */}
-              <span className="cp-list-lbl">Available coupons</span>
-              <div className="coupon-list">
+              {/* Coupons */}
+              <section className="cpx-sec">
+                <h3 className="cpx-lbl">
+                  Available coupons <small>· 1 offer per order</small>
+                </h3>
                 {couponLoading ? (
-                  <div className="coupon-loading">
-                    <Loader2 size={18} className="cp-spin" />
-                    <span>Finding the best coupons for you…</span>
+                  <div className="cpx-card cpx-empty">
+                    <Loader2 size={18} className="cp-spin" /> Finding coupons for you…
                   </div>
                 ) : coupons.length === 0 ? (
-                  <div className="coupon-empty">No coupons available right now.</div>
+                  <div className="cpx-card cpx-empty">No coupons right now</div>
                 ) : (
-                  coupons.map((c) => {
-                    const expired = c.status !== "active" || !c.usable;
-                    const isApplied = appliedCoupon?.code === c.code;
-                    return (
-                      <div
-                        className={`coupon-card${expired ? " expired" : ""}${isApplied ? " applied" : ""}`}
-                        key={c.code}
-                      >
-                        <div className="coupon-card-l">
-                          <span className="coupon-code">{c.code}</span>
-                          <span className="coupon-title">{c.title}</span>
-                          {isApplied ? (
-                            <span className="coupon-badge ok">
-                              <Check size={11} strokeWidth={3} /> Applied
-                            </span>
-                          ) : c.status !== "active" ? (
-                            <span className="coupon-badge exp">Expired</span>
-                          ) : !c.usable && c.reason ? (
-                            <span className="coupon-badge warn">{c.reason}</span>
-                          ) : (
-                            <span className="coupon-badge ok">
-                              Save{" "}
-                              {c.type === "percent"
-                                ? `${c.value}%`
-                                : `₹${c.value}`}
-                            </span>
-                          )}
-                        </div>
-                        {isApplied ? (
-                          <button
-                            type="button"
-                            className="coupon-use-btn coupon-remove-btn"
-                            onClick={removeCoupon}
+                  <div className="cpx-list">
+                    {[...coupons]
+                      .sort((a, b) => {
+                        const ua = a.status === "active" && a.usable ? 0 : 1;
+                        const ub = b.status === "active" && b.usable ? 0 : 1;
+                        return ua - ub;
+                      })
+                      .map((c) => {
+                        const off = c.status !== "active" || !c.usable;
+                        const isApplied = appliedCoupon?.code === c.code;
+                        const amt = c.type === "percent" ? `${c.value}%` : `₹${c.value}`;
+                        return (
+                          <div
+                            key={c.code}
+                            className={`cpx-coupon${off ? " off" : ""}${isApplied ? " on" : ""}`}
                           >
-                            Remove
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="coupon-use-btn"
-                            disabled={expired || couponApplying}
-                            onClick={() => applyCoupon(c.code)}
-                          >
-                            {expired ? "Expired" : "Apply"}
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })
+                            <span className="cpx-stub" aria-hidden="true">
+                              <b>{amt}</b>
+                              <small>OFF</small>
+                            </span>
+                            <span className="cpx-coupon-main">
+                              <span className="cpx-coupon-row">
+                                <b className="cpx-code">{c.code}</b>
+                                {isApplied ? (
+                                  <button type="button" className="cpx-act muted" onClick={removeCoupon}>
+                                    REMOVE
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className="cpx-act"
+                                    disabled={off || couponApplying}
+                                    onClick={() => applyCoupon(c.code)}
+                                  >
+                                    APPLY
+                                  </button>
+                                )}
+                              </span>
+                              <span className="cpx-coupon-t">{c.title}</span>
+                              <span
+                                className={`cpx-coupon-s${isApplied ? " ok" : off ? " bad" : ""}`}
+                              >
+                                {isApplied ? (
+                                  <>
+                                    <Check size={12} strokeWidth={3} /> Applied to this order
+                                  </>
+                                ) : c.status !== "active" ? (
+                                  "Expired"
+                                ) : !c.usable && c.reason ? (
+                                  c.reason
+                                ) : (
+                                  `Save ${amt} on this order`
+                                )}
+                              </span>
+                            </span>
+                          </div>
+                        );
+                      })}
+                  </div>
                 )}
-              </div>
-            </motion.div>
+              </section>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

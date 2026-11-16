@@ -7,14 +7,14 @@ import {
   UPI_APPS,
   upiAppByName,
   launchUpiApp,
-  downloadUpiQr,
   copyUpiId,
 } from "@/utils/upiApps";
 import UpiAppPayModal from "./UpiAppPayModal";
 
 // A single "Open <app>" button shown directly below the Verify button on the
-// UPI QR screen. Copies the real UPI ID + auto-downloads the branded QR, then
-// (on mobile) shows a pay-handoff modal that survives app switching.
+// UPI QR screen. Copies the real UPI ID, then (on mobile) shows a full-page
+// pay guide (paste the ID, or download + upload the QR) that survives app
+// switching.
 export default function UpiAppLaunchRow({
   upiId,
   amount = 0,
@@ -58,21 +58,21 @@ export default function UpiAppLaunchRow({
   }, []);
 
   const handle = (app) => {
-    // Auto-download the branded QR + copy the UPI ID.
-    downloadUpiQr({ amount, upiId, advance });
+    // Only the UPI ID is copied here; the QR downloads from the guide's
+    // "Option 2" when the shopper wants it.
+    copyUpiId(upiId);
 
     if (isMobile) {
-      // Mobile: DON'T launch the app yet. Play the saving animation, show the
-      // how-to modal, and only open the app from the modal's CTA.
-      copyUpiId(upiId);
+      // Mobile: DON'T launch the app yet. Show the full-page "UPI ID copied"
+      // guide and only open the app from its CTA.
       setActiveApp(app || null);
-      setPayStage("saving");
+      setPayStage("ready");
       setPayOpen(true);
     } else {
       // Desktop: copy + open the store page + toast (no app to deep-link to).
       launchUpiApp(app, upiId);
       showToast(
-        `UPI ID copied & QR saved — open ${app ? app.label : "your UPI app"}, paste the ID and pay ₹${amount}`,
+        `Payment server busy. UPI ID copied: open ${app ? app.label : "your UPI app"}, paste it and pay ₹${amount}`,
         "success",
         { title: "Ready to pay", icon: "cart" },
       );

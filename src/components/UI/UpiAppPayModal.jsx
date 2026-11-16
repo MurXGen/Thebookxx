@@ -16,23 +16,23 @@ import {
   Check,
   AlertCircle,
 } from "lucide-react";
-import { copyUpiId, downloadUpiQr, lastQrResult } from "@/utils/upiApps";
+import { copyUpiId, downloadUpiQr } from "@/utils/upiApps";
+import UpiPayGuide from "./UpiPayGuide";
 import { FaWhatsapp } from "react-icons/fa";
 
 const VERIFY_SECONDS = 300; // 5 minutes
-const SAVING_MS = 1700;
 
-// Mobile hand-off modal (Bill-modal UI). Flow:
-//  saving  → animated "QR flying & saving + UPI ID copied" splash
-//  ready   → 2×2 how-to-pay steps + CTA that opens the app
-//  verifying → 5-minute verify countdown
+// Mobile hand-off after "Open <app>" (the UPI ID is already copied). Flow:
+//  ready     → full-page guide: paste the UPI ID, OR download the QR and
+//              upload it in the app (animated demos) + sticky "Open app" bar
+//  verifying → 5-minute verify countdown (Bill-modal UI)
 // Open state is mirrored to a ?upipay= URL param so an app-switch keeps it open.
 export default function UpiAppPayModal({
   open,
   appLabel = "your UPI app",
   amount = 0,
   advance = false,
-  initialStage = "saving",
+  initialStage = "ready",
   onClose,
   onLaunch,
   onWhatsApp,
@@ -40,19 +40,12 @@ export default function UpiAppPayModal({
 }) {
   const [stage, setStage] = useState(initialStage);
   const [copied, setCopied] = useState(false);
-  const [qrState, setQrState] = useState("pending"); // pending | ok | failed
+  // The QR is only downloaded when the shopper asks for it (Option 2).
+  const [qrState, setQrState] = useState("idle"); // idle | pending | ok | failed
   useEffect(() => {
-    const t = setTimeout(() => setQrState(lastQrResult()), 0);
-    // No result after 3s (e.g. page reloaded mid-download) → show the normal
-    // saved state; a late failure still flips it to failed.
-    const t2 = setTimeout(() => setQrState((q) => (q === "pending" ? "ok" : q)), 3000);
     const on = (e) => setQrState(e.detail?.ok ? "ok" : "failed");
     window.addEventListener("tbx:qr-download", on);
-    return () => {
-      clearTimeout(t);
-      clearTimeout(t2);
-      window.removeEventListener("tbx:qr-download", on);
-    };
+    return () => window.removeEventListener("tbx:qr-download", on);
   }, []);
   const saveQrAgain = () => {
     setQrState("pending");
@@ -76,20 +69,11 @@ export default function UpiAppPayModal({
       setParam("");
       return;
     }
-    setStage(initialStage);
-    setParam(initialStage);
+    const st = initialStage === "saving" ? "ready" : initialStage;
+    setStage(st);
+    setParam(st);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
-
-  // Auto-advance the saving splash → ready.
-  useEffect(() => {
-    if (!open || stage !== "saving") return;
-    const t = setTimeout(() => {
-      setStage("ready");
-      setParam("ready");
-    }, SAVING_MS);
-    return () => clearTimeout(t);
-  }, [open, stage]);
 
   // 5-minute verify countdown.
   useEffect(() => {
@@ -129,6 +113,22 @@ export default function UpiAppPayModal({
       : stage === "ready"
         ? `Pay with ${appLabel}`
         : "Getting things ready…";
+
+  if (stage !== "verifying") {
+    return createPortal(
+      <UpiPayGuide
+        appLabel={appLabel}
+        amount={amount}
+        upiId={upiId}
+        qrState={qrState}
+        onCopy={() => copyUpiId(upiId)}
+        onDownloadQr={saveQrAgain}
+        onLaunch={openApp}
+        onClose={close}
+      />,
+      document.body,
+    );
+  }
 
   return createPortal(
     <motion.div
@@ -264,6 +264,9 @@ export default function UpiAppPayModal({
                 <ShieldCheck size={30} />
               </span>
             </div>
+            <p className="upg-busy upg-busy-sm" role="status">
+              <AlertCircle size={14} /> Payment server busy. Paid in your UPI app? We&apos;ll verify it here.
+            </p>
             <h3 className="upm-title">Verifying your payment…</h3>
             <div className="upm-timer">
               {mm}:{ss}

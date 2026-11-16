@@ -3,6 +3,7 @@
 
 import { useStore } from "@/context/StoreContext";
 import OneRupeeUnlock from "@/components/OneRupeeUnlock";
+import PdpCombos from "@/components/PdpCombos";
 import { XmasSnow, XmasTree } from "@/components/XmasDecor";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
@@ -713,6 +714,9 @@ export default function BookDetailsModal({ book: bookProp }) {
               </a>
             </div>
             </div>
+
+            {/* Combos: compact strip right under the cover row */}
+            <PdpCombos book={book} />
 
             <div className="pdp-card pdp-buy">
             <div className="pdp-price">

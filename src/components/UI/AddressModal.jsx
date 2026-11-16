@@ -67,6 +67,7 @@ import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
 import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
+import { saveLastOrder } from "@/components/HomeResumeStrip";
 import { rewardNote } from "@/utils/orderRewards";
 import { PAYMENT_PENDING_STATUS, markPaymentPending } from "@/lib/paymentPending";
 import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
@@ -687,6 +688,19 @@ export default function AddressModal({
       if (digits.length === 10)
         localStorage.setItem("track_orders_phone", digits);
     } catch {}
+    // Remember the order on this device for the homepage "Track" strip.
+    if (oid) {
+      saveLastOrder({
+        orderId: oid,
+        phone: digits,
+        pending,
+        books: ctx.books.map((b) => ({
+          name: b.name,
+          qty: b.qty || 1,
+          cover: typeof b.image === "string" ? b.image : b.image?.src || "",
+        })),
+      });
+    }
     // Order-confirmation email (with the full bill breakdown) — only when the
     // shopper entered a valid email. Fire-and-forget so it never blocks success.
     try {

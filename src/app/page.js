@@ -14,6 +14,7 @@ import UnlockChip from "@/components/UI/UnlockChip";
 import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
 import HomeHero from "@/components/HomeHero";
+import HomeResumeStrip from "@/components/HomeResumeStrip";
 import HomeAbout from "@/components/HomeAbout";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
 import QuickReadsTeaser from "@/components/QuickReadsTeaser";
@@ -198,6 +199,9 @@ export default function HomePage() {
       {/* <IntroVideo /> */}
 
       <Navbar />
+
+      {/* Returning shoppers: bag total + next reward, or their recent order. */}
+      <HomeResumeStrip />
 
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <div id="hs-top" className="hs-anchor">

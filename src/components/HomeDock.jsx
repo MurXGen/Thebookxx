@@ -24,7 +24,6 @@ import {
 
 const SUPPORT_WHATSAPP = "917710892108";
 const OPEN_MS = 6500; // how long the index stays open before folding away
-const PEEK_KEY = "tbx_hs_peeked";
 const PARAM = "section"; // /?section=combos opens the homepage at that section
 
 // Homepage sections, top to bottom. `id` matches the hs-* anchors in page.js;
@@ -249,7 +248,7 @@ export default function HomeDock() {
     return () => clearTimeout(t);
   }, [hasSections]);
 
-  // Briefly name the section whenever a new one comes into view.
+  // Track the section in view (no auto-popups).
   useEffect(() => {
     if (lastActive.current === null) {
       lastActive.current = active;
@@ -257,10 +256,8 @@ export default function HomeDock() {
     }
     if (lastActive.current === active) return;
     lastActive.current = active;
-    clearTimeout(flashTimer.current);
-    const show = setTimeout(() => setFlash(true), 0);
-    flashTimer.current = setTimeout(() => setFlash(false), 1700);
-    return () => clearTimeout(show);
+    // The section-name chip no longer pops up on its own while scrolling (it
+    // read as the index opening); the index shows only when tapped.
   }, [active]);
   useEffect(() => () => clearTimeout(flashTimer.current), []);
 
@@ -286,23 +283,7 @@ export default function HomeDock() {
     };
   }, []);
 
-  // Show the index once per session so people see what's below.
-  useEffect(() => {
-    if (!sections.length) return;
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem(PEEK_KEY) === "1";
-    } catch {}
-    if (seen) return;
-    const t = setTimeout(() => {
-      if (deepLinked.current) return; // came for a specific section — don't cover it
-      openFor();
-      try {
-        sessionStorage.setItem(PEEK_KEY, "1");
-      } catch {}
-    }, 5300); // after the WhatsApp tooltip
-    return () => clearTimeout(t);
-  }, [sections.length, openFor]);
+  // The index never opens by itself (it was distracting) — only on a tap.
 
   useEffect(() => () => clearTimeout(closeTimer.current), []);
 

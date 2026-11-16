@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ChevronDown, Search, User, Wallet, Zap } from "lucide-react";
+import { ChevronDown, Search, Truck, User, Wallet, Zap } from "lucide-react";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { useStore } from "@/context/StoreContext";
@@ -87,7 +87,9 @@ export default function HomeNavbar({ onSearch }) {
       /* ignore */
     }
     const load = cached !== null ? Promise.resolve({ balance: Number(cached) || 0 }) : fetchWalletLedger(phone);
+    const timeout = setTimeout(() => alive && setWallet((w) => (w === null ? 0 : w)), 8000);
     load.then((l) => {
+      clearTimeout(timeout);
       if (!alive) return;
       setWallet(l.balance || 0);
       try {
@@ -95,9 +97,13 @@ export default function HomeNavbar({ onSearch }) {
       } catch {
         /* ignore */
       }
+    }).catch(() => {
+      clearTimeout(timeout);
+      if (alive) setWallet(0);
     });
     return () => {
       alive = false;
+      clearTimeout(timeout);
     };
   }, []);
 
@@ -130,8 +136,6 @@ export default function HomeNavbar({ onSearch }) {
           <Link href="/books">Books</Link>
           <Link href="/1rupee">₹1 Books</Link>
           <Link href="/combos">Combos</Link>
-          <Link href="/category/self-help">Self-help</Link>
-          <Link href="/category/fiction">Fiction</Link>
           <Link href="/quickreads">QuickReads</Link>
         </nav>
         <button
@@ -147,20 +151,28 @@ export default function HomeNavbar({ onSearch }) {
           <span>Search books, authors…</span>
         </button>
         <button type="button" className="hnd-del" onClick={openPincodeSheet} aria-label="Change delivery pincode">
+          <span className="hnd-del-ic" aria-hidden="true">
+            {fast ? <Zap size={15} /> : <Truck size={15} />}
+          </span>
           {ready ? (
-            <>
-              <b>{fast && <Zap size={13} className="hn-del-zap" />}{eta}</b>
-              <span>{pin ? `${city ? `${city} · ` : ""}${pin}` : "Set pincode"}</span>
-            </>
+            <span className="hnd-del-tx">
+              <b>Delivery in {eta}</b>
+              <span>
+                {pin ? `${city ? `${city} · ` : ""}${pin}` : "Set your pincode"}
+                <ChevronDown size={12} />
+              </span>
+            </span>
           ) : (
             <span className="hn-skel hn-skel-addr" />
           )}
         </button>
         <div className="hnd-acts">
-          <Link href="/wallet" className="hn-wallet" aria-label="Wallet">
-            <Wallet size={16} />
-            {walletKnown && wallet === null ? <span className="hn-skel hn-skel-wal" /> : <span>₹{wallet ?? 0}</span>}
-          </Link>
+          {walletKnown && (
+            <Link href="/wallet" className="hn-wallet" aria-label="Wallet">
+              <Wallet size={16} />
+              {wallet === null ? <span className="hn-skel hn-skel-wal" /> : <span>₹{wallet}</span>}
+            </Link>
+          )}
           <Link href="/profile" className="hn-ic" aria-label="Account">
             <User size={19} />
           </Link>
@@ -168,7 +180,6 @@ export default function HomeNavbar({ onSearch }) {
             <HiOutlineShoppingBag size={20} />
             {cartCount > 0 && <span className="hn-badge">{cartCount > 99 ? "99+" : cartCount}</span>}
           </Link>
-          <Link href="/books" className="hnd-cta">Shop bestsellers</Link>
         </div>
       </div>
     </div>

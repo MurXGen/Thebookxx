@@ -68,6 +68,7 @@ import { showToast } from "@/context/ToastContext";
 import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
 import { saveLastOrder } from "@/components/HomeResumeStrip";
+import { trackEvent } from "@/lib/ga";
 import { rewardNote } from "@/utils/orderRewards";
 import { PAYMENT_PENDING_STATUS, markPaymentPending } from "@/lib/paymentPending";
 import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
@@ -2304,6 +2305,30 @@ export default function AddressModal({
       setShowUPIPayment(false);
       finishToSuccess(upiOrderRef, advanceMode ? "ADV" : "UPI");
     }, 1900);
+  };
+
+  // The UPI-app verify countdown reached 4:00 → treat the order as confirmed:
+  // status → Processing (same as a confirmed order), then the normal success
+  // hand-off, which sends the confirmation email (store inbox CC'd).
+  const autoConfirmUpi = () => {
+    if (successHandedRef.current) return;
+    const oid = String(upiOrderRef || "").trim();
+    if (oid) {
+      fetch("/api/order-write", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true,
+        body: JSON.stringify({
+          action: "update",
+          orderId: oid,
+          data: { "Order Status": "Processing" },
+        }),
+      }).catch(() => {});
+    }
+    try {
+      trackEvent("upi_auto_confirmed", { order_id: oid, amount: upiTotalForFlow });
+    } catch (_) {}
+    finalizeUPISuccess();
   };
 
   // Admin tapped Failed → the payment didn't go through. Show a "transaction
@@ -6715,6 +6740,7 @@ export function UPIPaymentModal({
               chosenApp={chosenApp}
               advance={advanceMode}
               onWhatsApp={SHOW_UPI_WHATSAPP ? onWhatsAppFallback : undefined}
+              onAutoConfirm={autoConfirmUpi}
             />
           )}
 

@@ -1188,3 +1188,153 @@ export const getComboBySlug = (slug) =>
   combos.find((c) => c.slug === slug) || null;
 
 export const COMBO_CATEGORIES = [...new Set(combos.map((c) => c.category))];
+
+// ─────────────────────────────────────────────────────────────────────────
+// Auto-generated combos (built at load from the catalogue, so new books are
+// picked up automatically):
+//   • Author collections: 2, 3 and 4 books by the same author (when they exist)
+//   • Genre packs: 3 and 4 top books that share a specific genre + fiction /
+//     non-fiction side (e.g. mythology fiction never mixes with thrillers)
+// Each gets its own /combos/<slug> page + sitemap entry for SEO.
+// ─────────────────────────────────────────────────────────────────────────
+
+// Tags too broad to define a "genre" for matching.
+export const GENERIC_CATS = new Set([
+  "bestseller", "trending", "set", "boxset", "gifting", "indian-author", "hindi",
+  "fiction", "non-fiction", "novel", "humour",
+]);
+const catsOf = (b) => (b?.catalogue || []).map((c) => String(c).toLowerCase());
+export const primaryGenre = (b) => catsOf(b).find((c) => !GENERIC_CATS.has(c)) || "";
+export const bookSide = (b) => {
+  const c = catsOf(b);
+  return c.includes("fiction") ? "fiction" : c.includes("non-fiction") ? "non-fiction" : "";
+};
+// Does `other` belong on the same shelf as `book`? Same primary genre (or
+// the book's primary genre among its tags) and the same fiction side.
+export const sameShelf = (book, other) => {
+  const g = primaryGenre(book);
+  if (!g || !catsOf(other).includes(g)) return false;
+  const s = bookSide(book);
+  return !s || bookSide(other) === s;
+};
+
+const authorKey = (a) => String(a || "").toLowerCase().replace(/[^a-z]/g, "");
+const sellable = (b) =>
+  b && b.image && b.author && Number(b.discountedPrice) > 1 && b.stock !== 0;
+
+const GENRE_NAMES = {
+  "spirituality|fiction": "Mythology Fiction",
+  "spirituality|non-fiction": "Spiritual Reads",
+  "spirituality|": "Spiritual Reads",
+  "fantasy-scifi|fiction": "Fantasy & Sci-Fi",
+  "self-help|non-fiction": "Self-Help",
+  "self-help|": "Self-Help",
+  "dark-romance|fiction": "Dark Romance",
+  "young-adult|fiction": "Young Adult",
+  "graphic-novel|fiction": "Graphic Novel",
+  "science-tech|non-fiction": "Science & Tech",
+};
+const titleCaseCat = (c) =>
+  c.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+const genreName = (g, side) => GENRE_NAMES[`${g}|${side}`] || titleCaseCat(g);
+
+const seenSets = new Set(combos.map((c) => [...c.bookIds].sort().join(",")));
+const seenSlugs = new Set(combos.map((c) => c.slug));
+const shortTitle = (n) => String(n || "").split(/[:(]/)[0].trim();
+
+function makeAuto({ id, title, tagline, category, bookIds, kind, author, genre }) {
+  const key = [...bookIds].sort().join(",");
+  if (seenSets.has(key)) return null;
+  let slug = comboSlugify(title);
+  for (let i = 2; seenSlugs.has(slug); i++) slug = `${comboSlugify(title)}-${i}`;
+  seenSets.add(key);
+  seenSlugs.add(slug);
+  const c = { id, slug, title, tagline, category, bookIds, auto: kind, author, genre };
+  const items = getComboBooks(c);
+  const { price, mrp, savings } = getComboPricing(c);
+  const names = items.map((b) => shortTitle(b.name)).join(", ");
+  c.seoTitle = `${title}: ${items.length} Book Combo at ₹${price}${savings > 0 ? ` (Save ₹${savings})` : ""}`;
+  c.seoDescription = `Buy the ${title} (${names}) online at the lowest price on TheBookX. ${items.length} books for just ₹${price} (MRP ₹${mrp}) with Cash on Delivery, free delivery from ₹249 and 7-day replacement on damaged or wrong books across India.`;
+  return c;
+}
+
+// Author collections: 2, 3 and 4 books (first N in catalogue order).
+const byAuthor = new Map();
+books.filter(sellable).forEach((b) => {
+  const k = authorKey(b.author);
+  if (!k || /,|&| and /i.test(b.author)) return; // single-author only
+  if (!byAuthor.has(k)) byAuthor.set(k, []);
+  byAuthor.get(k).push(b);
+});
+export const authorCombos = [];
+byAuthor.forEach((list) => {
+  if (list.length < 2) return;
+  const author = list[0].author.trim();
+  [2, 3, 4].forEach((n) => {
+    if (list.length < n) return;
+    const ids = list.slice(0, n).map((b) => b.id);
+    const all = n === list.length;
+    const c = makeAuto({
+      id: `auto-author-${authorKey(author)}-${n}`,
+      title: all ? `${author} Complete Collection (${n} Books)` : `${author} ${n}-Book Combo`,
+      tagline: all ? `Every ${author} book we stock, in one bundle.` : `${n} ${author} favourites, bundled together.`,
+      category: "Author Collections",
+      bookIds: ids,
+      kind: "author",
+      author,
+    });
+    if (c) authorCombos.push(c);
+  });
+});
+
+// Genre packs: books grouped by primary genre + side.
+const byGenre = new Map();
+books.filter(sellable).forEach((b) => {
+  const g = primaryGenre(b);
+  if (!g) return;
+  const k = `${g}|${bookSide(b)}`;
+  if (!byGenre.has(k)) byGenre.set(k, []);
+  byGenre.get(k).push(b);
+});
+export const genreCombos = [];
+byGenre.forEach((list, k) => {
+  if (list.length < 3) return;
+  const [g, side] = k.split("|");
+  const name = genreName(g, side);
+  // Prefer bestsellers, and avoid one author filling the whole pack.
+  const ranked = [...list].sort(
+    (a, b) => Number(catsOf(b).includes("bestseller")) - Number(catsOf(a).includes("bestseller")),
+  );
+  const pick = [];
+  const authors = new Set();
+  ranked.forEach((b) => {
+    if (pick.length < 4 && !authors.has(authorKey(b.author))) {
+      pick.push(b);
+      authors.add(authorKey(b.author));
+    }
+  });
+  [
+    [3, `${name} Starter Pack`, `Three ${name.toLowerCase()} picks to start with.`],
+    [4, `Best of ${name}`, `Four of our best-loved ${name.toLowerCase()} books.`],
+  ].forEach(([n, title, tagline]) => {
+    if (pick.length < n) return;
+    const c = makeAuto({
+      id: `auto-genre-${comboSlugify(k)}-${n}`,
+      title,
+      tagline,
+      category: name,
+      bookIds: pick.slice(0, n).map((b) => b.id),
+      kind: "genre",
+      genre: k,
+    });
+    if (c) genreCombos.push(c);
+  });
+});
+
+// Added after bookSets/mixedBookSets so homepage rows keep the curated sets.
+combos.push(...authorCombos, ...genreCombos);
+COMBO_CATEGORIES.push(
+  ...[...new Set([...authorCombos, ...genreCombos].map((c) => c.category))].filter(
+    (c) => !COMBO_CATEGORIES.includes(c),
+  ),
+);

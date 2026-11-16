@@ -26,8 +26,6 @@ const FRAME_MS = 2300;
 // The name the UPI app shows for our account (either one is us).
 const PAYEE_NAMES = ["Uskillbook", "Murthy"];
 const PAYEE_TXT = PAYEE_NAMES.join(" or ");
-// Short gateway-busy note (the verify screen and desktop toast say it too).
-const BUSY_NOTE_SUB = "Pay via the 2 methods below for now.";
 
 // Loops 0..n-1 while the demo is on screen (and motion is allowed).
 function useLoop(n) {
@@ -245,16 +243,6 @@ export default function UpiPayGuide({
       </header>
 
       <div className="upg-scroll">
-        {/* Gateway notice: explains why we're asking them to pay in the app */}
-        <div className="upg-busy" role="status">
-          <span className="upg-busy-ic" aria-hidden="true">
-            <AlertCircle size={16} />
-          </span>
-          <span>
-            <b>Payment server busy.</b> {BUSY_NOTE_SUB}
-          </span>
-        </div>
-
         {/* Copied confirmation */}
         <section className="upg-card upg-copied">
           <span className="upg-tick" aria-hidden="true">

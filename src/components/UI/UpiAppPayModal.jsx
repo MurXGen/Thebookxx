@@ -15,12 +15,16 @@ import {
   Copy,
   Check,
   AlertCircle,
+  ChevronDown,
 } from "lucide-react";
 import { copyUpiId, downloadUpiQr } from "@/utils/upiApps";
 import UpiPayGuide from "./UpiPayGuide";
 import { FaWhatsapp } from "react-icons/fa";
 
 const VERIFY_SECONDS = 300; // 5 minutes
+// At 4 minutes into the countdown (1:00 left) the order is confirmed for the
+// shopper (status → Processing + confirmation email, store CC'd).
+const AUTO_CONFIRM_LEFT = 60;
 
 // Mobile hand-off after "Open <app>" (the UPI ID is already copied). Flow:
 //  ready     → full-page guide: paste the UPI ID, OR download the QR and
@@ -36,6 +40,7 @@ export default function UpiAppPayModal({
   onClose,
   onLaunch,
   onWhatsApp,
+  onAutoConfirm,
   upiId = "",
 }) {
   const [stage, setStage] = useState(initialStage);
@@ -84,6 +89,18 @@ export default function UpiAppPayModal({
     }, 1000);
     return () => clearInterval(timerRef.current);
   }, [open, stage]);
+
+  // Reached 4:00 of verifying → confirm the order (once).
+  const autoDoneRef = useRef(false);
+  useEffect(() => {
+    if (!open || stage !== "verifying" || autoDoneRef.current) return;
+    if (left > AUTO_CONFIRM_LEFT) return;
+    autoDoneRef.current = true;
+    clearInterval(timerRef.current);
+    setParam("");
+    onAutoConfirm?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [left, open, stage]);
 
   if (!open || typeof document === "undefined") return null;
 
@@ -254,82 +271,87 @@ export default function UpiAppPayModal({
           </div>
         )}
 
-        {/* ── Verifying ── */}
+        {/* ── Verifying: compact ring timer, steps, QR on demand ── */}
         {stage === "verifying" && (
-          <div className="upm-body upm-verifying">
-            <div className="upm-verify-graphic">
-              <span className="upm-radar" />
-              <span className="upm-radar two" />
-              <span className="upm-verify-badge">
-                <ShieldCheck size={30} />
+          <div className="upm-body upv">
+            <div className="upv-ring" role="timer" aria-label={`${mm}:${ss} left`}>
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <circle className="upv-track" cx="60" cy="60" r="52" />
+                <circle
+                  className="upv-prog"
+                  cx="60"
+                  cy="60"
+                  r="52"
+                  style={{ strokeDashoffset: 326.7 * (1 - left / VERIFY_SECONDS) }}
+                />
+              </svg>
+              <span className="upv-ring-in">
+                <ShieldCheck size={20} className="upv-shield" />
+                <b>
+                  {mm}:{ss}
+                </b>
               </span>
             </div>
-            <p className="upg-busy upg-busy-sm" role="status">
-              <AlertCircle size={14} /> Payment server busy. Paid in your UPI app? We&apos;ll verify it here.
-            </p>
-            <h3 className="upm-title">Verifying your payment…</h3>
-            <div className="upm-timer">
-              {mm}:{ss}
-            </div>
-            <p className="upm-text">
-              Hang tight — this can take a few minutes. Keep this screen open; it
-              stays open even if you switch apps.
-            </p>
-            {/* Not paid yet? Pay from here: QR + UPI ID + download. */}
-            <div className="upm-qrpay">
-              <span className="upm-qrpay-cap">Haven&apos;t paid yet? Scan &amp; pay ₹{amount}</span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/books/uskillbook.png" alt="TheBookX UPI QR code" className="upm-qrpay-img" />
-              {upiId && (
-                <div className="upm-qrpay-id">
-                  <span>{upiId}</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      copyUpiId(upiId);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 1800);
-                    }}
-                    data-no-busy
-                  >
-                    {copied ? (
-                      <>
-                        <Check size={13} strokeWidth={3} /> Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={13} /> Copy ID
-                      </>
-                    )}
+            <p className="upv-sub">Keep this open. We&apos;ll confirm ₹{amount} automatically.</p>
+
+            <ol className="upv-steps" aria-label="Progress">
+              <li className="done">
+                <span><Check size={11} strokeWidth={3.5} /></span>Paid
+              </li>
+              <li className="on">
+                <span />Verifying
+              </li>
+              <li>
+                <span />Confirmed
+              </li>
+            </ol>
+
+            {/* Not paid yet? QR + UPI ID, tucked away until asked for */}
+            <details className="upv-qr">
+              <summary>
+                <QrCode size={15} /> Haven&apos;t paid yet? Show QR
+                <ChevronDown size={15} className="upv-chev" />
+              </summary>
+              <div className="upv-qr-body">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/books/uskillbook.png" alt="TheBookX UPI QR code" />
+                <div className="upv-qr-side">
+                  {upiId && (
+                    <button
+                      type="button"
+                      className="upv-chip"
+                      onClick={() => {
+                        copyUpiId(upiId);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1800);
+                      }}
+                      data-no-busy
+                    >
+                      {copied ? <Check size={13} strokeWidth={3} /> : <Copy size={13} />}
+                      {copied ? "Copied" : "Copy UPI ID"}
+                    </button>
+                  )}
+                  <button type="button" className="upv-chip" onClick={saveQrAgain} data-no-busy>
+                    <Download size={13} /> Save QR
                   </button>
+                  <small>Pay ₹{amount} to {upiId}</small>
                 </div>
-              )}
-              <button
-                type="button"
-                className="upm-qrpay-dl"
-                onClick={saveQrAgain}
-                data-no-busy
-              >
-                <Download size={15} /> Download QR
-              </button>
-            </div>
-            <button type="button" className="upm-ghost" onClick={onLaunch}>
-              Open {appLabel} again
-            </button>
+              </div>
+            </details>
+
             {onWhatsApp && (
               <button type="button" className="upm-wa" onClick={onWhatsApp}>
                 <FaWhatsapp size={16} /> Confirm faster on WhatsApp
               </button>
             )}
-            {left === 0 && (
-              <p className="upm-slow">
-                Taking longer than usual? Tap the WhatsApp button above and
-                we&apos;ll confirm it right away.
-              </p>
-            )}
-            <button type="button" className="upm-cancel" onClick={close}>
-              Close
-            </button>
+            <div className="upv-actions">
+              <button type="button" className="upv-btn" onClick={close}>
+                Close
+              </button>
+              <button type="button" className="upv-btn pri" onClick={onLaunch}>
+                Open {appLabel}
+              </button>
+            </div>
           </div>
         )}
       </motion.div>

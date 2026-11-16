@@ -218,7 +218,8 @@ function FrequentlyBought({ book, companion, cart, onAdd }) {
 }
 
 // "Offer price ends in 01h 58m 16s, then ₹149" + "Extend offer for me".
-// Counts down to this device's real end (from the Timers sheet) and hides at 0.
+// Counts down to this device's real end (from the Timers sheet). "Extend"
+// appears only after it ends, next to an "Offer ended · discount over" note.
 function OfferTimer({ endsAt, after = null, compact = false }) {
   const [left, setLeft] = useState(null);
   useEffect(() => {
@@ -230,7 +231,24 @@ function OfferTimer({ endsAt, after = null, compact = false }) {
       clearInterval(id);
     };
   }, [endsAt]);
-  if (left === null || left <= 0) return null;
+  if (left === null) return null;
+  // Ended: show that the discount is over and only now offer "Extend".
+  if (left <= 0) {
+    if (!after) return null;
+    return (
+      <div className={`pdp-ot ended${compact ? " compact" : ""}`} role="status">
+        <p className="pdp-ot-main">
+          <Clock size={13} className="pdp-ot-ic" aria-hidden="true" />
+          <span>Offer ended</span>
+          <b className="pdp-ot-time pdp-ot-over" aria-hidden="true">00:00:00</b>
+          <span className="pdp-ot-then">· discount over</span>
+          <button type="button" className="pdp-ot-link" onClick={requestExtension} data-no-busy>
+            Extend offer
+          </button>
+        </p>
+      </div>
+    );
+  }
   const s = Math.floor(left / 1000);
   const d = Math.floor(s / 86400);
   const parts = [
@@ -258,11 +276,6 @@ function OfferTimer({ endsAt, after = null, compact = false }) {
           )}
         </b>
         {after && <span className="pdp-ot-then">· then ₹{after}</span>}
-        {after && (
-          <button type="button" className="pdp-ot-link" onClick={requestExtension} data-no-busy>
-            Extend
-          </button>
-        )}
       </p>
     </div>
   );
@@ -713,45 +726,33 @@ export default function BookDetailsModal({ book: bookProp }) {
                 <span>({reviewCount.toLocaleString("en-IN")})</span>
               </a>
             </div>
+            {/* Price, right under the title */}
+            <div className="pdp-hprice">
+              <span className="pdp-hprice-now">₹{price}</span>
+              {pct > 0 && (
+                <>
+                  <s className="pdp-hprice-mrp">₹{mrp}</s>
+                  <span className="pdp-hprice-off">{pct}% off</span>
+                </>
+              )}
+              <small className="pdp-hprice-tax">incl. of all taxes</small>
+            </div>
+            {offerEnd && <OfferTimer endsAt={offerEnd} after={priceAfter} />}
+            {/* Stock status, set off from the title by a divider */}
+            {!isOutOfStock && (
+              <p className={`pdp-stock pdp-head-stock${lowStock ? " low" : ""}`}>
+                <span className="pdp-stock-dot" />
+                {lowStock ? `Only ${book.stock} left in stock` : "In stock, ships within a day"}
+              </p>
+            )}
             </div>
 
             {/* Combos: compact strip right under the cover row */}
             <PdpCombos book={book} />
 
-            <div className="pdp-card pdp-buy">
-            <div className="pdp-price">
-              <div className="pdp-price-row">
-                <span className="pdp-now">₹{price}</span>
-                {pct > 0 && <span className="pdp-off">{pct}% OFF</span>}
-              </div>
-              <p className="pdp-price-mrp">Inclusive of all taxes</p>
-
-              {offerEnd && <OfferTimer endsAt={offerEnd} after={priceAfter} />}
-
-              {pct > 0 && (
-                <div className="pdp-bd2" aria-label={`MRP ₹${mrp}, discount ₹${save}, you pay ₹${price}`}>
-                  <div className="pdp-bd2-eq">
-                    <span><small>MRP</small><s>₹{mrp}</s></span>
-                    <i>−</i>
-                    <span className="g"><small>Discount</small>₹{save}</span>
-                    <i>=</i>
-                    <span className="k"><small>You pay</small>₹{price}</span>
-                  </div>
-                  <div className="pdp-bd-bar" aria-hidden="true">
-                    <span className="pay" style={{ width: `${100 - pct}%` }} />
-                    <span className="saved" style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-              )}
-
-              {!isOutOfStock && (
-                <p className={`pdp-stock${lowStock ? " low" : ""}`}>
-                  <span className="pdp-stock-dot" />
-                  {lowStock ? `Only ${book.stock} left in stock` : "In stock, ships within a day"}
-                </p>
-              )}
-            </div>
-            <div className="pdp-ctas">{ctas()}</div>
+            {/* Desktop buttons (phones use the sticky bottom bar) */}
+            <div className="pdp-card pdp-buy pdp-buy-ctas">
+              <div className="pdp-ctas">{ctas()}</div>
             </div>
 
             <FrequentlyBought book={book} companion={companion} cart={cart} onAdd={handleAddBundle} />

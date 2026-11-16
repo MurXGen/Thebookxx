@@ -21,6 +21,7 @@ export default function UpiAppLaunchRow({
   chosenApp = "",
   advance = false,
   onWhatsApp,
+  onAutoConfirm,
 }) {
   const primary = chosenApp ? upiAppByName(chosenApp) : null;
 
@@ -72,7 +73,7 @@ export default function UpiAppLaunchRow({
       // Desktop: copy + open the store page + toast (no app to deep-link to).
       launchUpiApp(app, upiId);
       showToast(
-        `Payment server busy. UPI ID copied: open ${app ? app.label : "your UPI app"}, paste it and pay ₹${amount}`,
+        `UPI ID copied: open ${app ? app.label : "your UPI app"}, paste it and pay ₹${amount}`,
         "success",
         { title: "Ready to pay", icon: "cart" },
       );
@@ -89,6 +90,10 @@ export default function UpiAppLaunchRow({
       onClose={() => setPayOpen(false)}
       onLaunch={() => launchUpiApp(activeApp, upiId)}
       onWhatsApp={onWhatsApp}
+      onAutoConfirm={() => {
+        setPayOpen(false);
+        onAutoConfirm?.();
+      }}
       upiId={upiId}
     />
   );

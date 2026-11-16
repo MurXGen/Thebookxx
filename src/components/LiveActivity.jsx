@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ShoppingBag, Zap, BookPlus, Star, Camera } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { REVIEWS } from "./ReviewGallery";
@@ -57,10 +57,30 @@ function Row({ items, reverse, duration, render }) {
 }
 
 // A real reader photo tile (from the reader-photos gallery).
+// Shimmer skeleton until the image loads; a photo that fails is dropped
+// instead of showing its alt text.
 function Photo({ r, hidden }) {
+  const imgRef = useRef(null);
+  const [state, setState] = useState("loading"); // loading | ok | failed
+  // Cached images can finish before React attaches onLoad/onError.
+  useEffect(() => {
+    const el = imgRef.current;
+    if (!el?.complete) return;
+    const t = setTimeout(() => setState(el.naturalWidth > 0 ? "ok" : "failed"), 0);
+    return () => clearTimeout(t);
+  }, []);
+  if (state === "failed") return null;
   return (
-    <figure className="la-photo">
-      <img src={r.img} alt={hidden ? "" : r.alt || `TheBookX reader photo${r.name ? ` from ${r.name}` : ""}`} loading="lazy" decoding="async" />
+    <figure className={`la-photo${state === "loading" ? " is-loading" : ""}`}>
+      <img
+        ref={imgRef}
+        src={r.img}
+        alt={hidden ? "" : r.alt || `TheBookX reader photo${r.name ? ` from ${r.name}` : ""}`}
+        loading="lazy"
+        decoding="async"
+        onLoad={() => setState("ok")}
+        onError={() => setState("failed")}
+      />
       <figcaption className="la-photo-cap">
         {r.rating ? (
           <span className="la-photo-stars" aria-label={`${r.rating} out of 5`}>{"★".repeat(r.rating)}</span>

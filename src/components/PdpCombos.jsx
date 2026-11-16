@@ -1,30 +1,54 @@
 "use client";
 
-// Compact combo strip on the book page: this book's combos first, then a few
-// other popular combos. Each card adds every book in the combo in one tap.
+// Compact combo strip on the book page: the author's collections, then combos
+// on the same shelf (genre + fiction side). Each card adds every book in one tap.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Plus, Check, Layers } from "lucide-react";
-import { combos, pairCombos, getComboBooks, getComboPricing } from "@/utils/combos";
+import { combos, getComboBooks, getComboPricing, primaryGenre, bookSide, sameShelf } from "@/utils/combos";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { trackEvent } from "@/lib/ga";
 
-const MAX = 8;
+const MAX = 60; // candidates kept
+const BATCH = 10; // cards revealed per scroll batch
 
-function pickCombos(bookId) {
-  const own = combos.filter((c) => c.bookIds.includes(bookId));
-  const seen = new Set(own.map((c) => c.id));
-  // Fill with other 2-book deals, then curated sets, so the row is never empty.
-  const others = [...pairCombos, ...combos].filter((c) => {
-    if (seen.has(c.id)) return false;
-    seen.add(c.id);
-    return true;
-  });
-  return [...own.map((c) => ({ c, own: true })), ...others.map((c) => ({ c, own: false }))]
-    .filter(({ c }) => getComboBooks(c).length >= 2 && getComboBooks(c).every((b) => b.stock !== 0))
-    .slice(0, MAX);
+// Order: this author's collections → curated combos with this book that stay
+// on its shelf → genre packs for its shelf → other on-shelf combos. A combo
+// only shows when every other book shares this book's genre (no mixed sets).
+function pickCombos(book) {
+  const authorK = String(book.author || "").toLowerCase().replace(/[^a-z]/g, "");
+  const inStock = (c) => {
+    const items = getComboBooks(c);
+    return items.length >= 2 && items.every((b) => b.stock !== 0);
+  };
+  const onShelf = (c) =>
+    getComboBooks(c).every((b) => b.id === book.id || sameShelf(book, b));
+  const shelf = `${primaryGenre(book)}|${bookSide(book)}`;
+
+  const tiers = [
+    // 1. Same author (with this book first in line)
+    combos
+      .filter((c) => c.auto === "author" && String(c.author || "").toLowerCase().replace(/[^a-z]/g, "") === authorK)
+      .sort((a, b) => Number(b.bookIds.includes(book.id)) - Number(a.bookIds.includes(book.id))),
+    // 2. Curated combos that include this book and stay on its shelf
+    combos.filter((c) => !c.auto && c.bookIds.includes(book.id) && onShelf(c)),
+    // 3. Genre packs for this shelf
+    combos.filter((c) => c.auto === "genre" && c.genre === shelf),
+    // 4. Other combos made only of same-shelf books
+    combos.filter((c) => !c.auto && !c.bookIds.includes(book.id) && getComboBooks(c).every((b) => sameShelf(book, b))),
+  ];
+  const seen = new Set();
+  const out = [];
+  tiers.forEach((list, t) =>
+    list.forEach((c) => {
+      if (seen.has(c.id) || !inStock(c)) return;
+      seen.add(c.id);
+      out.push({ c, own: t < 2 || c.bookIds.includes(book.id) });
+    }),
+  );
+  return out.slice(0, MAX);
 }
 
 function MiniCombo({ combo, own }) {
@@ -79,7 +103,38 @@ function MiniCombo({ combo, own }) {
 }
 
 export default function PdpCombos({ book }) {
-  const list = useMemo(() => pickCombos(book.id), [book.id]);
+  const list = useMemo(() => pickCombos(book), [book]);
+  const [shown, setShown] = useState(BATCH);
+  const rowRef = useRef(null);
+  const moreRef = useRef(null);
+
+  // Start over on a new book.
+  useEffect(() => {
+    const t = setTimeout(() => setShown(BATCH), 0);
+    rowRef.current?.scrollTo?.({ left: 0 });
+    return () => clearTimeout(t);
+  }, [book.id]);
+
+  // Reveal the next batch when the skeletons at the end scroll into view.
+  const hasMore = shown < list.length;
+  useEffect(() => {
+    const el = moreRef.current;
+    if (!hasMore || !el || !("IntersectionObserver" in window)) return;
+    let t;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting || t) return;
+        t = setTimeout(() => setShown((n) => Math.min(n + BATCH, list.length)), 450);
+      },
+      { root: rowRef.current, rootMargin: "0px 120px 0px 0px" },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      clearTimeout(t);
+    };
+  }, [hasMore, shown, list.length]);
+
   if (!list.length) return null;
   const hasOwn = list[0].own;
 
@@ -89,15 +144,28 @@ export default function PdpCombos({ book }) {
         <h2 id="pdc-h">
           <Layers size={15} strokeWidth={2.4} aria-hidden="true" />
           {hasOwn ? "Combos with this book" : "Popular combos"}
+          <span className="pdc-count">{list.length}</span>
         </h2>
         <Link href="/combos" className="pdc-all">
           See all
         </Link>
       </div>
-      <div className="pdc-row">
-        {list.map(({ c, own }) => (
+      <div className="pdc-row" ref={rowRef}>
+        {list.slice(0, shown).map(({ c, own }) => (
           <MiniCombo key={c.id} combo={c} own={own} />
         ))}
+        {hasMore && (
+          <div ref={moreRef} className="pdc-skel-group" aria-label="Loading more combos">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="pdc-card pdc-skel" aria-hidden="true">
+                <span className="pdc-skel-covers" />
+                <span className="pdc-skel-line" />
+                <span className="pdc-skel-line short" />
+                <span className="pdc-skel-foot" />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

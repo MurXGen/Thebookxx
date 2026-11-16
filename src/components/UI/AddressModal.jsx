@@ -3409,7 +3409,6 @@ export default function AddressModal({
                           </svg>
                         </span>
                         <span className="pm2-title">Pay Online</span>
-                        <span className="pm2-badge">Save ₹{codFeeAmount}</span>
                       </span>
                       <span className="pay-perks">
                         <span className="pay-perk pay-perk-ic pay-perk-bm">
@@ -3454,33 +3453,17 @@ export default function AddressModal({
                             </svg>
                           </span>
                           <span className="pm2-title">Pay in two parts</span>
-                          {codTotalWithFee > advanceOrderTotal && (
-                            <span className="pm2-badge">
-                              Save ₹{codTotalWithFee - advanceOrderTotal}
-                            </span>
-                          )}
                         </span>
                         <span className="pay-perks">
                           <span className="pay-perk pay-perk-ic pay-perk-bm">
                             <span className="pay-perk-pop" aria-hidden="true"><Bookmark size={12} strokeWidth={2.4} fill="currentColor" /></span>
                             Free bookmark
                           </span>
-                          <span className="pay-perk pay-perk-ic">
-                            <Banknote size={13} strokeWidth={2.2} aria-hidden="true" />
-                            No COD fee
-                          </span>
-                          {!fasterDelivery && standardDeliveryCharge === 0 && (
-                            <span className="pay-perk pay-perk-ic">
-                              <Truck size={13} strokeWidth={2.2} aria-hidden="true" />
-                              Free delivery
-                            </span>
-                          )}
                           <span className="pay-perk pay-perk-ic pay-perk-blue">
                             <Truck size={13} strokeWidth={2.2} aria-hidden="true" />
                             Rest at delivery
                           </span>
                         </span>
-                        <span className="pm2-reco">Recommended · most readers pick this</span>
                       </span>
                       <span className="pm2-pricecol">
                         <span className="pm2-price">₹{codAdvanceAmount}</span>
@@ -3494,31 +3477,17 @@ export default function AddressModal({
                       </span>
                     </button>
                     {paySel === "ADV" && (
-                    <div
-                      className="pay-split-row"
-                      onClick={() => setPaySel("ADV")}
-                    >
-                      <div className="pay-split-seg on">
-                        <span className="pay-split-amt">
-                          ₹{codAdvanceAmount}
-                          <svg width="16" height="16" viewBox="0 0 24 24">
-                            <path d="M4 4 L13 12 L4 20 Z" fill="#ff8500" />
-                            <path d="M9 4 L18 12 L9 20 Z" fill="#0a8f0c" />
-                          </svg>
+                      <div className="pay-split2" aria-label={`₹${codAdvanceAmount} now with UPI, ₹${advanceAtDoor} at delivery`}>
+                        <span className="pay-split2-seg on">
+                          <b>₹{codAdvanceAmount}</b>
+                          <small>now · UPI</small>
                         </span>
-                        <span className="pay-split-lbl">Pay with UPI now</span>
-                      </div>
-                      <span className="pay-split-plus" aria-hidden="true">
-                        +
-                      </span>
-                      <div className="pay-split-seg">
-                        <span className="pay-split-amt">₹{advanceAtDoor}</span>
-                        <span className="pay-split-lbl">
-                          Rest at delivery
-                          <small className="pay-split-note">Cash or online (UPI)</small>
+                        <span className="pay-split2-plus" aria-hidden="true">+</span>
+                        <span className="pay-split2-seg">
+                          <b>₹{advanceAtDoor}</b>
+                          <small>at delivery</small>
                         </span>
                       </div>
-                    </div>
                     )}
                   </div>
 

@@ -71147,3 +71147,14 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 @media (prefers-reduced-motion: reduce) { .upg-busy-ic svg { animation: none; } }
 .upg-busy-sm { margin: 0; padding: 7px 11px; border-radius: 12px; font-size: 12px; align-items: center; gap: 6px; text-align: left; }
 .upg-busy-sm svg { flex: none; color: #d97706; }
+
+/* Payment step: compact "Pay in two parts" breakdown (one slim row) */
+.pay-split2 { display: flex; align-items: center; gap: 6px; margin: -4px 14px 12px; padding: 4px; border-radius: 12px; background: #f6f6f9; }
+.pay-split2-seg { flex: 1; min-width: 0; display: flex; align-items: baseline; justify-content: center; gap: 5px; padding: 7px 8px; border-radius: 9px; white-space: nowrap; }
+.pay-split2-seg.on { background: #fff; box-shadow: 0 1px 3px rgba(28, 28, 40, 0.1); }
+.pay-split2-seg b { font-size: 14px; font-weight: 800; color: #1c1c28; }
+.pay-split2-seg small { font-size: 11px; font-weight: 600; color: #6b6b7b; overflow: hidden; text-overflow: ellipsis; }
+.pay-split2-plus { flex: none; font-size: 13px; font-weight: 800; color: #9a9aa8; }
+.pay-method-splittop.pm2 { gap: 8px; }
+.pay-method-split .pay-perks { gap: 5px; }
+.pay-method-split .pay-perk { padding-right: 7px; white-space: nowrap; }

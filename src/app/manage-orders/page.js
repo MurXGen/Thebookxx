@@ -23,6 +23,7 @@ import {
   downloadDecoratedAddressLabelsPDF,
   downloadGiftLabelsPDF,
   downloadLabelGridPDF,
+  downloadGiftNotesPDF,
 } from "@/utils/shippingForms";
 import {
   Search,
@@ -7714,6 +7715,33 @@ export default function ManageOrdersPage() {
     );
   };
 
+  // Gift note to print & tuck in the parcel: the note saved with the Gift Wrap
+  // add-on, else the order comment (reseller lines stripped). Gift orders only.
+  const giftNoteOf = (o) => {
+    if (!isGiftOrder(o)) return "";
+    const fromAddon = parseAddonsField(o["Gift Wrap"]).message;
+    return String(
+      fromAddon || giftMessageFor(o, orderNotes[o["Order ID"]]) || "",
+    ).trim();
+  };
+  const downloadGiftNotes = (list) => {
+    const notes = list
+      .map((o) => ({
+        to: o["Customer Name"],
+        message: giftNoteOf(o),
+        orderId: o["Order ID"],
+      }))
+      .filter((n) => n.message);
+    if (!notes.length) {
+      showToast("No gift notes in this selection.", "info");
+      return;
+    }
+    downloadGiftNotesPDF(
+      notes,
+      `gift_notes_${new Date().toISOString().slice(0, 10)}.pdf`,
+    );
+  };
+
   // Same count as the Orders filter chips (badge on the bottom Filters button).
   const filterChipCount = (() => {
     const st = Array.isArray(statusFilter) ? statusFilter : [statusFilter];
@@ -12444,6 +12472,14 @@ export default function ManageOrdersPage() {
                                       <ChevronRight size={15} />
                                     </button>
                                   </div>
+                                  {selCtx && giftNoteOf(order) && (
+                                    <div className="mo2-giftnote">
+                                      <span className="mo2-giftnote-h">
+                                        <Gift size={14} aria-hidden="true" /> Gift note · attach to parcel
+                                      </span>
+                                      <p>“{giftNoteOf(order)}”</p>
+                                    </div>
+                                  )}
                                   {selCtx && (() => {
                                     // Dispatch only: the Parcel sheet's inputs, right on the card.
                                     const st = parcelStateOf(order);
@@ -16811,6 +16847,27 @@ export default function ManageOrdersPage() {
                                           </span>
                                           <b>{scope.length}</b>
                                         </button>
+                                        {(() => {
+                                          const gn = scope.filter((o) => giftNoteOf(o)).length;
+                                          return (
+                                            <button
+                                              type="button"
+                                              className="mo-sheet-giftnotes"
+                                              disabled={!gn}
+                                              onClick={() => {
+                                                downloadGiftNotes(scope);
+                                                close();
+                                              }}
+                                            >
+                                              <Gift size={17} />
+                                              <span>
+                                                Gift notes
+                                                <em>{gn ? "Note cards to tuck in · up to 4 per page" : "No gift notes in these orders"}</em>
+                                              </span>
+                                              <b>{gn}</b>
+                                            </button>
+                                          );
+                                        })()}
                                         <button
                                           type="button"
                                           onClick={() => {
@@ -20595,6 +20652,27 @@ export default function ManageOrdersPage() {
                                             <b>{labelScope.length}</b>
                                           </button>
                                         ))}
+                                        {(() => {
+                                          const gn = labelScope.filter((o) => giftNoteOf(o)).length;
+                                          return (
+                                            <button
+                                              type="button"
+                                              className="mo-sheet-giftnotes"
+                                              disabled={!gn}
+                                              onClick={() => {
+                                                downloadGiftNotes(labelScope);
+                                                close();
+                                              }}
+                                            >
+                                              <Gift size={17} />
+                                              <span>
+                                                Gift notes
+                                                <em>{gn ? "Note cards to tuck in · up to 4 per page" : "No gift notes in these orders"}</em>
+                                              </span>
+                                              <b>{gn}</b>
+                                            </button>
+                                          );
+                                        })()}
                                       </div>
                                     </section>
 

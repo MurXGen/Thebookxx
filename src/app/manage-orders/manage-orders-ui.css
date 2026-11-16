@@ -8573,3 +8573,30 @@ body:has(.my-orders-page.mo-glass.mo-dark) {
   background: transparent; color: var(--g-ink-3); border-color: rgb(var(--g-ink-rgb) / 0.12); cursor: default;
 }
 .my-orders-page.mo-glass .mo-dispatch-head-r { flex-wrap: wrap; }
+
+/* 65 · Dispatch card gift note — "attach this note" reminder */
+.my-orders-page.mo-glass .mo2-giftnote {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px dashed rgb(190 24 93 / 0.45);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgb(253 242 248), rgb(255 247 237));
+}
+.my-orders-page.mo-glass .mo2-giftnote-h {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px; font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase;
+  color: #be185d;
+}
+.my-orders-page.mo-glass .mo2-giftnote p {
+  margin: 6px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #4a1d2c;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.my-orders-page.mo-glass.mo-dark .mo2-giftnote { background: rgb(190 24 93 / 0.1); border-color: rgb(244 114 182 / 0.4); }
+.my-orders-page.mo-glass.mo-dark .mo2-giftnote-h { color: #f9a8d4; }
+.my-orders-page.mo-glass.mo-dark .mo2-giftnote p { color: #fce7f3; }

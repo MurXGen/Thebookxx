@@ -3326,3 +3326,396 @@ export async function downloadLabelGridPDF(dataArray, filename, { mono = false }
 export function downloadBwLabelGridPDF(dataArray, filename) {
   return downloadLabelGridPDF(dataArray, filename, { mono: true });
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GIFT NOTES — printable note cards to tuck inside gift parcels. A4 landscape,
+   up to 4 per page; fewer notes print bigger:
+     1 → one large card centred on a gold-dressed page
+     2 → two tall cards side by side
+     3 → one tall card + two stacked
+     4 → 2 × 2 grid
+   White cards, gold ribbon stripes & gold frame, Poppins throughout.
+   notes: [{ to, message, orderId }].
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const GN_W = 2339; // A4 landscape @ ~200 dpi
+const GN_H = 1654;
+const GN_FONT = 'Poppins, "Helvetica Neue", Arial, sans-serif';
+const GOLD = "#c9a227";
+const GOLD_D = "#9c7a16";
+const GOLD_L = "#efdc9c";
+const INK = "#2b2618";
+
+function gnRand(seed) {
+  let s = (seed * 9301 + 49297) % 233280 || 7;
+  return () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+}
+
+function gnRoundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// Diagonal gold ribbon stripes filling a band.
+function gnStripes(ctx, x, y, w, h, sw) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, w, h);
+  ctx.clip();
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x, y, w, h);
+  const cols = [GOLD, "#ffffff", GOLD_L, "#ffffff"];
+  let i = 0;
+  for (let sx = x - h; sx < x + w + h; sx += sw) {
+    ctx.fillStyle = cols[i % cols.length];
+    ctx.beginPath();
+    ctx.moveTo(sx, y);
+    ctx.lineTo(sx + sw, y);
+    ctx.lineTo(sx + sw - h, y + h);
+    ctx.lineTo(sx - h, y + h);
+    ctx.closePath();
+    ctx.fill();
+    i += 1;
+  }
+  ctx.restore();
+}
+
+// Four-point sparkle.
+function gnSparkle(ctx, cx, cy, r, color) {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - r);
+  ctx.quadraticCurveTo(cx + r * 0.16, cy - r * 0.16, cx + r, cy);
+  ctx.quadraticCurveTo(cx + r * 0.16, cy + r * 0.16, cx, cy + r);
+  ctx.quadraticCurveTo(cx - r * 0.16, cy + r * 0.16, cx - r, cy);
+  ctx.quadraticCurveTo(cx - r * 0.16, cy - r * 0.16, cx, cy - r);
+  ctx.fill();
+  ctx.restore();
+}
+
+// Gold confetti: slips, dots and sparkles.
+function gnConfetti(ctx, x, y, w, h, n, seed, size = 1) {
+  const rnd = gnRand(seed);
+  const cols = [GOLD, GOLD_D, "#e3c766", GOLD_L];
+  for (let i = 0; i < n; i++) {
+    const px = x + rnd() * w;
+    const py = y + rnd() * h;
+    const k = rnd();
+    const c = cols[i % cols.length];
+    ctx.save();
+    ctx.globalAlpha = 0.6 + rnd() * 0.4;
+    if (k < 0.4) {
+      ctx.translate(px, py);
+      ctx.rotate(rnd() * Math.PI);
+      ctx.fillStyle = c;
+      ctx.fillRect(-3.5 * size, -8 * size, 7 * size, 16 * size);
+    } else if (k < 0.75) {
+      ctx.fillStyle = c;
+      ctx.beginPath();
+      ctx.arc(px, py, (3 + rnd() * 3) * size, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      gnSparkle(ctx, px, py, (7 + rnd() * 7) * size, c);
+    }
+    ctx.restore();
+  }
+}
+
+// Word-wrap `text` to `maxW`; long words are hard-broken.
+function gnWrap(ctx, text, maxW) {
+  const out = [];
+  String(text || "")
+    .split(/\r?\n/)
+    .forEach((para) => {
+      let line = "";
+      para.split(/\s+/).filter(Boolean).forEach((word) => {
+        let w = word;
+        while (ctx.measureText(w).width > maxW) {
+          let cut = w.length - 1;
+          while (cut > 1 && ctx.measureText(w.slice(0, cut)).width > maxW) cut -= 1;
+          if (line) {
+            out.push(line);
+            line = "";
+          }
+          out.push(w.slice(0, cut));
+          w = w.slice(cut);
+        }
+        const test = line ? `${line} ${w}` : w;
+        if (ctx.measureText(test).width > maxW && line) {
+          out.push(line);
+          line = w;
+        } else line = test;
+      });
+      out.push(line);
+    });
+  while (out.length && !out[out.length - 1]) out.pop();
+  return out;
+}
+
+function gnSpaced(ctx, text, cx, y, spacing) {
+  // Centred text with manual letter-spacing (canvas letterSpacing isn't universal).
+  const chars = String(text).split("");
+  const widths = chars.map((c) => ctx.measureText(c).width);
+  const total = widths.reduce((a, b) => a + b, 0) + spacing * (chars.length - 1);
+  let x = cx - total / 2;
+  const prev = ctx.textAlign;
+  ctx.textAlign = "left";
+  chars.forEach((c, i) => {
+    ctx.fillText(c, x, y);
+    x += widths[i] + spacing;
+  });
+  ctx.textAlign = prev;
+}
+
+function drawGiftNoteCard(ctx, x, y, w, h, note, seed, shadow) {
+  const s = Math.min(w, h) / 760; // design scale
+  const R = 22 * s;
+
+  // White card
+  ctx.save();
+  if (shadow) {
+    ctx.shadowColor = "rgba(120, 90, 20, 0.18)";
+    ctx.shadowBlur = 30 * s;
+    ctx.shadowOffsetY = 8 * s;
+  }
+  gnRoundRect(ctx, x, y, w, h, R);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  ctx.restore();
+
+  // Gold ribbon stripes along the top and bottom edges
+  const band = 30 * s;
+  ctx.save();
+  gnRoundRect(ctx, x, y, w, h, R);
+  ctx.clip();
+  gnStripes(ctx, x, y, w, band, 16 * s);
+  gnStripes(ctx, x, y + h - band, w, band, 16 * s);
+  ctx.fillStyle = GOLD;
+  ctx.fillRect(x, y + band, w, 2.5 * s);
+  ctx.fillRect(x, y + h - band - 2.5 * s, w, 2.5 * s);
+  ctx.restore();
+  gnRoundRect(ctx, x, y, w, h, R);
+  ctx.lineWidth = 2 * s;
+  ctx.strokeStyle = GOLD;
+  ctx.stroke();
+
+  // Inner frame: solid gold line + dotted hairline
+  const fx = x + 28 * s;
+  const fy = y + band + 20 * s;
+  const fw = w - 56 * s;
+  const fh = h - band * 2 - 40 * s;
+  gnRoundRect(ctx, fx, fy, fw, fh, 12 * s);
+  ctx.lineWidth = 1.8 * s;
+  ctx.strokeStyle = GOLD;
+  ctx.stroke();
+  gnRoundRect(ctx, fx + 9 * s, fy + 9 * s, fw - 18 * s, fh - 18 * s, 8 * s);
+  ctx.lineWidth = 1.2 * s;
+  ctx.strokeStyle = GOLD_L;
+  ctx.setLineDash([2 * s, 5 * s]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Corner sparkles on the frame
+  [
+    [fx, fy],
+    [fx + fw, fy],
+    [fx, fy + fh],
+    [fx + fw, fy + fh],
+  ].forEach(([cx, cy]) => {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, cy, 13 * s, 0, Math.PI * 2);
+    ctx.fill();
+    gnSparkle(ctx, cx, cy, 12 * s, GOLD);
+  });
+
+  // A light sprinkle of gold confetti near the stripes
+  ctx.save();
+  gnRoundRect(ctx, fx + 12 * s, fy + 12 * s, fw - 24 * s, fh - 24 * s, 8 * s);
+  ctx.clip();
+  const cn = Math.round(w / (55 * s));
+  gnConfetti(ctx, fx + 20 * s, fy + 12 * s, fw - 40 * s, fh * 0.1, cn, seed, s);
+  gnConfetti(ctx, fx + 20 * s, fy + fh * 0.9, fw - 40 * s, fh * 0.08, cn, seed + 13, s);
+  ctx.restore();
+
+  const cx = x + w / 2;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+
+  // Eyebrow
+  let ty = fy + fh * 0.2;
+  ctx.fillStyle = GOLD_D;
+  ctx.font = `600 ${Math.round(18 * s)}px ${GN_FONT}`;
+  gnSpaced(ctx, "A LITTLE NOTE FOR YOU", cx, ty, 5 * s);
+
+  // Recipient
+  const to = String(note.to || "").trim().split(/\s+/)[0] || "";
+  if (to) {
+    ty += 52 * s;
+    ctx.fillStyle = INK;
+    ctx.font = `600 ${Math.round(38 * s)}px ${GN_FONT}`;
+    const nm = to.charAt(0).toUpperCase() + to.slice(1).toLowerCase();
+    ctx.fillText(`Dear ${nm},`, cx, ty);
+  }
+
+  // Divider ── ✦ ──
+  ty += 26 * s;
+  ctx.strokeStyle = GOLD;
+  ctx.lineWidth = 1.6 * s;
+  ctx.beginPath();
+  ctx.moveTo(cx - 80 * s, ty);
+  ctx.lineTo(cx - 16 * s, ty);
+  ctx.moveTo(cx + 16 * s, ty);
+  ctx.lineTo(cx + 80 * s, ty);
+  ctx.stroke();
+  gnSparkle(ctx, cx, ty, 8 * s, GOLD);
+
+  // Message — auto-fit and centred in the space left
+  const top = ty + 30 * s;
+  const bottom = fy + fh * 0.8;
+  const maxW = fw * 0.8;
+  const msg = String(note.message || "").trim();
+  let size = 44 * s;
+  let lines = [];
+  let lh = 0;
+  for (; size >= 14 * s; size -= 1 * s) {
+    ctx.font = `400 ${Math.round(size)}px ${GN_FONT}`;
+    lines = gnWrap(ctx, msg, maxW);
+    lh = size * 1.55;
+    if (lines.length * lh <= bottom - top) break;
+  }
+  const maxLines = Math.max(1, Math.floor((bottom - top) / lh));
+  if (lines.length > maxLines) {
+    lines = lines.slice(0, maxLines);
+    lines[maxLines - 1] = lines[maxLines - 1].replace(/\s*\S*$/, "") + "…";
+  }
+  ctx.fillStyle = INK;
+  let my = top + (bottom - top - lines.length * lh) / 2 + size * 1.05;
+  lines.forEach((ln) => {
+    ctx.fillText(ln, cx, my);
+    my += lh;
+  });
+
+  // Sign-off + order ref
+  ctx.fillStyle = GOLD_D;
+  ctx.font = `500 ${Math.round(17 * s)}px ${GN_FONT}`;
+  gnSpaced(ctx, "WITH LOVE  ·  THEBOOKX", cx, fy + fh * 0.885, 3.5 * s);
+  if (note.orderId) {
+    ctx.fillStyle = "rgba(43, 38, 24, 0.4)";
+    ctx.font = `400 ${Math.round(12 * s)}px ${GN_FONT}`;
+    ctx.fillText(`#${String(note.orderId).slice(-6)}`, cx, fy + fh * 0.885 + 24 * s);
+  }
+}
+
+// Cell rectangles for 1–4 notes on one page.
+function gnLayout(n) {
+  const M = 46; // page margin
+  const G = 46; // gutter (cut line runs through it)
+  const W = GN_W - M * 2;
+  const H = GN_H - M * 2;
+  const colW = (W - G) / 2;
+  const rowH = (H - G) / 2;
+  if (n === 1) {
+    const w = 1600;
+    const h = 1130;
+    return [[(GN_W - w) / 2, (GN_H - h) / 2, w, h]];
+  }
+  if (n === 2) return [[M, M, colW, H], [M + colW + G, M, colW, H]];
+  if (n === 3)
+    return [
+      [M, M, colW, H],
+      [M + colW + G, M, colW, rowH],
+      [M + colW + G, M + rowH + G, colW, rowH],
+    ];
+  return [
+    [M, M, colW, rowH],
+    [M + colW + G, M, colW, rowH],
+    [M, M + rowH + G, colW, rowH],
+    [M + colW + G, M + rowH + G, colW, rowH],
+  ];
+}
+
+function buildGiftNotesPage(notes, pageIdx) {
+  const cv = document.createElement("canvas");
+  cv.width = GN_W;
+  cv.height = GN_H;
+  const ctx = cv.getContext("2d");
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, GN_W, GN_H);
+  const cells = gnLayout(notes.length);
+
+  if (notes.length === 1) {
+    // Gold-dressed page: ribbon stripes on every edge + scattered confetti
+    const b = 34;
+    gnStripes(ctx, 0, 0, GN_W, b, 22);
+    gnStripes(ctx, 0, GN_H - b, GN_W, b, 22);
+    ctx.save();
+    ctx.translate(0, GN_H);
+    ctx.rotate(-Math.PI / 2);
+    gnStripes(ctx, 0, 0, GN_H, b, 22);
+    gnStripes(ctx, 0, GN_W - b, GN_H, b, 22);
+    ctx.restore();
+    gnConfetti(ctx, b + 20, b + 20, GN_W - b * 2 - 40, GN_H - b * 2 - 40, 220, 31 + pageIdx, 1.8);
+  } else {
+    // Dashed cut guides through the gutters
+    ctx.save();
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([14, 12]);
+    ctx.beginPath();
+    ctx.moveTo(GN_W / 2, 14);
+    ctx.lineTo(GN_W / 2, GN_H - 14);
+    if (notes.length >= 3) {
+      ctx.moveTo(notes.length === 4 ? 14 : GN_W / 2, GN_H / 2);
+      ctx.lineTo(GN_W - 14, GN_H / 2);
+    }
+    ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.font = "26px sans-serif";
+    ctx.fillText("✂", GN_W / 2 - 13, 34);
+  }
+
+  notes.forEach((n, i) => {
+    const [x, y, w, h] = cells[i];
+    drawGiftNoteCard(ctx, x, y, w, h, n, 3 + pageIdx * 4 + i, notes.length === 1);
+  });
+  return cv;
+}
+
+// Canvas only draws a web font once it has loaded — wait for Poppins first.
+async function gnLoadFonts() {
+  if (typeof document === "undefined" || !document.fonts?.load) return;
+  try {
+    await Promise.all(
+      ["400", "500", "600"].map((wt) => document.fonts.load(`${wt} 32px Poppins`)),
+    );
+  } catch (_) {}
+}
+
+export async function downloadGiftNotesPDF(notes, filename) {
+  const list = (notes || []).filter((n) => String(n?.message || "").trim());
+  if (!list.length) return 0;
+  await gnLoadFonts();
+  const pages = [];
+  for (let i = 0; i < list.length; i += 4) {
+    const cv = buildGiftNotesPage(list.slice(i, i + 4), i / 4);
+    const url = cv.toDataURL("image/jpeg", 0.93);
+    pages.push({ data: dataUrlToBytes(url), w: cv.width, h: cv.height });
+  }
+  const blob = jpegPagesToPdf(pages, 0, { landscape: true });
+  triggerDownload(
+    blob,
+    filename || `gift_notes_${new Date().toISOString().slice(0, 10)}.pdf`,
+  );
+  return list.length;
+}

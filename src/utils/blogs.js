@@ -4,6 +4,216 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "national-press-day-2026-16-november-press-council-60-years-books-to-read-india": {
+    "id": "blog-121",
+    "title": "National Press Day 2026 (16 November): 60 Years of the Press Council of India, and the Books That Teach You to Read the News Better",
+    "slug": "national-press-day-2026-16-november-press-council-60-years-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-16",
+    "lastModified": "2026-11-16",
+    "excerpt": "National Press Day 2026 marks 60 years of the Press Council of India. Here is why it matters, and the books that help you read news and spot misinformation.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Today, 16 November 2026, is National Press Day in India. It is a quieter observance than most on the calendar, but this year it carries real weight: it marks exactly 60 years since the Press Council of India began functioning on 16 November 1966. For six decades, the Council has acted as the country's watchdog for press ethics, hearing complaints against publications and defending journalists against pressure."
+      },
+      {
+        "type": "paragraph",
+        "content": "National Press Day is usually discussed as a day for journalists. We think it is just as much a day for readers. Every one of us now consumes more news, headlines, forwards and short videos in a single day than our grandparents saw in a month. Knowing how to read that flood carefully is a life skill, and books remain one of the best ways to build it. Below, we explain what the day is about and suggest a reading list that will make you a sharper, calmer consumer of news."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "National Press Day 2026 at a glance",
+        "content": "Date: Monday, 16 November 2026. Why this date: the Press Council of India began functioning on 16 November 1966. Milestone: 60th anniversary of the Council. Last year's theme (2025): Safeguarding Press Credibility Amidst Rising Misinformation. The Council announces each year's theme and programme on its official website."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A short history of the Press Council of India"
+      },
+      {
+        "type": "paragraph",
+        "content": "The idea of a press council came from India's First Press Commission in the 1950s, which recommended a statutory body to maintain professional ethics in journalism. Parliament passed the Indian Press Council Act in 1965, and the Council started work on 16 November 1966, which is why National Press Day falls on this date."
+      },
+      {
+        "type": "paragraph",
+        "content": "The Council's story has not been smooth. It was abolished in 1975 during the Emergency, a period remembered for press censorship, and was re-established in 1979 under the Press Council Act of 1978. Today it is a statutory, quasi-judicial body that can examine complaints about press conduct and also take up cases where the freedom of the press is threatened."
+      },
+      {
+        "type": "blockquote",
+        "content": "A free press is not only the right of journalists. It is the right of every citizen to know, to question and to decide for themselves."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why this matters to readers in 2026"
+      },
+      {
+        "type": "paragraph",
+        "content": "Recent National Press Day themes have tracked the anxieties of the moment: media in the era of artificial intelligence in 2023, the changing nature of the press in 2024, and safeguarding press credibility amid rising misinformation in 2025. The common thread is trust. When anyone can publish anything, and when images and voices can be generated in seconds, the burden of judgement shifts onto the reader."
+      },
+      {
+        "type": "paragraph",
+        "content": "That is not a reason for cynicism. It is a reason to build habits: checking the source, separating reporting from opinion, noticing when a story is designed to make you angry, and waiting a day before forwarding something dramatic. Many of these habits are exactly what good books have been teaching for decades."
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Check who is speaking. Is it a named reporter, an official record, or an anonymous forward?",
+          "Separate facts from framing. The same number can be presented to frighten or to reassure.",
+          "Look for the date. Old stories recirculate constantly, especially around elections and festivals.",
+          "Notice your own reaction. Content built to provoke outrage deserves a second, slower look.",
+          "Read beyond the headline. Many misleading posts are accurate headlines attached to stories that say something else.",
+          "Pause before you share. A day's delay costs you nothing and often reveals the full picture."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books to read on National Press Day"
+      },
+      {
+        "type": "paragraph",
+        "content": "We have grouped our picks into three shelves: novels that show what happens when truth is controlled, non-fiction that explains how our minds handle information, and stories of people who recorded the truth of their times. Every title below is available on TheBookX."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Shelf 1: Fiction about truth, power and propaganda"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> by George Orwell: the definitive novel about a state that rewrites the news and the past. Phrases like \"Big Brother\" and \"doublethink\" came from here, and they still describe real things.",
+          "<a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> by George Orwell: a short fable about how slogans slowly change their meaning. Readable in an evening and ideal for teenagers.",
+          "<a href=\"/books/brave-new-world\" style=\"color:#fb8500;font-weight:600\">Brave New World</a> by Aldous Huxley: a different warning, in which people are not censored but distracted. It feels uncomfortably close to an endless scroll.",
+          "<a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> by Harper Lee: a story about how a community decides what is true, and how much courage it takes to stand against rumour.",
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy: the Booker-winning Indian novel about what families and societies choose to remember, and what they choose to bury."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Shelf 2: Non-fiction for thinking clearly about information"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/factfulness\" style=\"color:#fb8500;font-weight:600\">Factfulness</a> by Hans Rosling: perhaps the most useful book ever written on reading statistics in the news. It shows why most of us think the world is worse than the data says.",
+          "<a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman: explains the mental shortcuts that make us believe a headline before we have checked it.",
+          "<a href=\"/books/influence-the-psychology-of-persuasion\" style=\"color:#fb8500;font-weight:600\">Influence: The Psychology of Persuasion</a> by Robert Cialdini: once you know the six levers of persuasion, you will see them in every advertisement and viral post.",
+          "<a href=\"/books/talking-to-strangers\" style=\"color:#fb8500;font-weight:600\">Talking to Strangers</a> by Malcolm Gladwell: on why we default to believing people, and when that instinct leads us wrong.",
+          "<a href=\"/books/the-tipping-point\" style=\"color:#fb8500;font-weight:600\">The Tipping Point</a> by Malcolm Gladwell: how ideas and rumours spread like epidemics, written long before the word \"viral\" took over.",
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar: a practical guide to cutting through noise, separating what matters from what merely shouts, and making calmer decisions in a world of constant input."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Shelf 3: People who recorded the truth of their times"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> by Anne Frank: a first-hand record of life in hiding during the Second World War, and a reminder that honest witness can outlast any propaganda.",
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam: the former President's own account of his life and India's scientific journey, told plainly in his own words.",
+          "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari: argues that shared stories are what allow humans to cooperate at scale, which explains why controlling stories has always meant power.",
+          "<a href=\"/books/steve-jobs\" style=\"color:#fb8500;font-weight:600\">Steve Jobs</a> by Walter Isaacson: a model of long-form biographical reporting, built on more than forty interviews with Jobs himself and over a hundred with the people around him."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Build your National Press Day shelf",
+        "content": "Pick up these titles on TheBookX with books from ₹1, free delivery and Cash on Delivery across India. Know a journalist, a journalism student or a news-obsessed family member? Add gift wrapping for just ₹25 and send them a book for the day."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to mark National Press Day at home or in class"
+      },
+      {
+        "type": "paragraph",
+        "content": "You do not need to be in a newsroom to observe the day. A few simple ideas work well for families, schools and reading clubs."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Compare front pages: pick one story and read how two or three newspapers report it. Discuss what each chose to emphasise.",
+          "Run a fact-check hour: take three forwards from a family group and trace each back to its original source.",
+          "Read one Orwell together: Animal Farm is short enough for a single sitting and sparks great discussion with teenagers.",
+          "Write a letter to the editor: practise stating a fact, an opinion and a source clearly, in under 200 words.",
+          "Thank a journalist: local reporters often work long hours for little recognition. A note of appreciation goes a long way."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The reader's half of a free press"
+      },
+      {
+        "type": "paragraph",
+        "content": "Sixty years after the Press Council of India began its work, the health of the press depends on two groups of people: those who report the news, and those who read it. Journalists owe us accuracy and fairness. We owe them attention, patience and a willingness to pay for and support careful work. The books above will not make you a journalist, but they will make you the kind of reader good journalism deserves."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "This National Press Day, read one newspaper slowly, question one forward, and start one book that sharpens your thinking. Happy reading."
+      }
+    ],
+    "coverImage": "/blogs/national-press-day-2026-16-november-press-council-60-years-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/national-press-day-2026-16-november-press-council-60-years-books-to-read-india.jpeg",
+        "alt": "Young Indian woman reading a folded newspaper at a sunlit cafe table beside a cup of chai and a small stack of books",
+        "caption": "National Press Day, 16 November 2026, marks 60 years of the Press Council of India: a good day to read the news, and books, more carefully.",
+        "category": "Reading & Society"
+      }
+    ],
+    "keywords": [
+      "National Press Day 2026",
+      "National Press Day 16 November",
+      "Press Council of India 60 years",
+      "National Press Day books to read",
+      "books on journalism and media",
+      "books on misinformation",
+      "how to spot fake news books",
+      "press freedom books India"
+    ],
+    "categories": [
+      "Reading & Society",
+      "Book Recommendations",
+      "Non-Fiction"
+    ],
+    "faqs": [
+      {
+        "question": "Why is National Press Day celebrated on 16 November?",
+        "answer": "National Press Day is observed on 16 November because the Press Council of India began functioning on that date in 1966. The Council acts as a watchdog for press ethics and press freedom in India."
+      },
+      {
+        "question": "Is 2026 a special year for National Press Day?",
+        "answer": "Yes. National Press Day 2026 marks the 60th anniversary of the Press Council of India, which started work on 16 November 1966. The Council was abolished in 1975 during the Emergency and re-established in 1979."
+      },
+      {
+        "question": "What was the theme of National Press Day 2025?",
+        "answer": "The 2025 theme announced by the Press Council of India was Safeguarding Press Credibility Amidst Rising Misinformation. Each year's theme and programme are published on the Council's official website."
+      },
+      {
+        "question": "Which books help you spot misinformation and read the news better?",
+        "answer": "Factfulness by Hans Rosling, Thinking, Fast and Slow by Daniel Kahneman, Influence by Robert Cialdini and The Art of Clarity by Murthy Thevar are excellent starting points, alongside classics like 1984 and Animal Farm. All are available on TheBookX with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "literature-festival-season-2026-27-india-calendar-books-to-read": {
     "id": "blog-120",
     "title": "India Literature Festival Season 2026-27: Dates for JLF, Kerala, Bangalore and More, Plus What to Read Before You Go",

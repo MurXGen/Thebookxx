@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Package, ChevronRight, Clock, MessageCircle, AlertCircle } from "lucide-react";
+import { ArrowLeft, Package, ChevronRight, MessageCircle, AlertCircle, Truck, CheckCircle2, XCircle, LayoutList } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import SupportSheet from "@/components/profile/SupportSheet";
 import ReviewRewardCard from "@/components/ReviewRewardCard";
@@ -51,8 +51,9 @@ function parseSheetDate(v) {
   const s = String(v);
   const m = s.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?/);
   if (m) return new Date(+m[1], +m[2], +m[3], +(m[4] || 0), +(m[5] || 0), 0);
-  const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-  if (dmy) return new Date(+dmy[3], +dmy[2] - 1, +dmy[1]);
+  const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+  if (dmy)
+    return new Date(+dmy[3], +dmy[2] - 1, +dmy[1], +(dmy[4] || 0), +(dmy[5] || 0), +(dmy[6] || 0));
   const d = new Date(s);
   return isNaN(d) ? null : d;
 }
@@ -66,6 +67,23 @@ const STATUS_TONE = (st = "") => {
   return "ord-badge-amber";
 };
 
+// Which filter bucket an order falls in.
+const bucketOf = (o) => {
+  if (o._isUnconfirmed) return "unconfirmed";
+  const s = String(o._status || "").toLowerCase();
+  if (/cancel|refund|returned/.test(s)) return "cancelled";
+  if (/delivered|money received/.test(s)) return "delivered";
+  return "active";
+};
+
+const FILTERS = [
+  { k: "active", label: "Active", Icon: Truck },
+  { k: "delivered", label: "Delivered", Icon: CheckCircle2 },
+  { k: "unconfirmed", label: "Unconfirmed", Icon: AlertCircle },
+  { k: "cancelled", label: "Cancelled", Icon: XCircle },
+  { k: "all", label: "All", Icon: LayoutList },
+];
+
 export default function OrdersListPage() {
   const params = useParams();
   const router = useRouter();
@@ -74,6 +92,8 @@ export default function OrdersListPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSupport, setShowSupport] = useState(false);
+  // Default: active orders only (not delivered / cancelled / unconfirmed).
+  const [filter, setFilter] = useState("active");
   const [error, setError] = useState("");
   // Live countdown toast handle for the rate limiter.
   const cooldownRef = useRef(null);
@@ -201,16 +221,23 @@ export default function OrdersListPage() {
     );
   };
 
-  // Group by date label
+  // Counts per filter, then the visible list (newest first, already sorted).
+  const counts = orders.reduce(
+    (m, o) => {
+      m[bucketOf(o)] += 1;
+      m.all += 1;
+      return m;
+    },
+    { active: 0, delivered: 0, unconfirmed: 0, cancelled: 0, all: 0 },
+  );
+  const visible = filter === "all" ? orders : orders.filter((o) => bucketOf(o) === filter);
+
+  // Month sections ("November 2026"), recent → past.
   const groups = [];
   const byKey = {};
-  orders.forEach((o) => {
+  visible.forEach((o) => {
     const key = o._date
-      ? o._date.toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        })
+      ? o._date.toLocaleDateString("en-IN", { month: "long", year: "numeric" })
       : "Earlier";
     if (!byKey[key]) {
       byKey[key] = { label: key, items: [] };
@@ -218,6 +245,12 @@ export default function OrdersListPage() {
     }
     byKey[key].items.push(o);
   });
+  const fmtDay = (d) =>
+    d
+      ? d.toLocaleDateString("en-IN", { day: "numeric", month: "short" }) +
+        " · " +
+        d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })
+      : "";
 
   return (
     <main className="ord-page">
@@ -280,80 +313,90 @@ export default function OrdersListPage() {
           <span>When you place an order it will show up here.</span>
         </div>
       ) : (
-        <div className="ord-groups">
-          {groups.map((g) => (
-            <section className="ord-group" key={g.label}>
-              <div className="ord-group-date">
-                <Clock size={13} /> {g.label}
-                <span className="ord-group-count">{g.items.length}</span>
-              </div>
-              {g.items.map((o, i) => {
-                const oid = String(o["Order ID"] || "");
-                const total = o["Total Amount"] || o.revenue || "";
-                const count = o._books.reduce((s, b) => s + (b.qty || 1), 0);
-                const titleCount = o._books.length;
-                const names = o._books.map((b) => b.name).join(", ");
-                return (
-                  <Link
-                    key={oid || i}
-                    href={`/profile/${number}/orders/${encodeURIComponent(oid)}`}
-                    className={`ord-card${o._isUnconfirmed ? " ord-card-unconfirmed" : ""}`}
-                  >
-                    <div className="ord-card-row">
-                      {/* Covers removed to cut image requests — a lightweight
-                          icon + title count stands in; the book names are shown
-                          in full below. */}
-                      <div className="ord-card-covers">
-                        <span className="ord-cover ord-cover-ph">
+        <>
+          {/* Status filter — Active by default; All shows every order. */}
+          <div className="ord-filters" role="tablist" aria-label="Filter orders by status">
+            {FILTERS.filter((f) => f.k === "active" || f.k === "all" || counts[f.k] > 0).map(({ k, label, Icon }) => (
+              <button
+                key={k}
+                type="button"
+                role="tab"
+                aria-selected={filter === k}
+                className={`ord-filter${filter === k ? " on" : ""}`}
+                onClick={() => setFilter(k)}
+              >
+                <Icon size={14} />
+                {label}
+                <span className="ord-filter-n">{counts[k]}</span>
+              </button>
+            ))}
+          </div>
+
+          {visible.length === 0 ? (
+            <div className="ord-empty ord-empty-filter">
+              <Package size={24} />
+              <strong>
+                {filter === "active" ? "No active orders right now" : `No ${filter} orders`}
+              </strong>
+              <span>Your other orders are under All.</span>
+              <button type="button" className="ord-empty-btn" onClick={() => setFilter("all")}>
+                Show all {counts.all} orders
+              </button>
+            </div>
+          ) : (
+            <div className="ord-secs">
+              {groups.map((g) => (
+                <section className="ord-sec" key={g.label}>
+                  <header className="ord-sec-head">
+                    <span>{g.label}</span>
+                    <span className="ord-sec-n">
+                      {g.items.length} order{g.items.length === 1 ? "" : "s"}
+                    </span>
+                  </header>
+                  {g.items.map((o, i) => {
+                    const oid = String(o["Order ID"] || "");
+                    const total = o["Total Amount"] || o.revenue || "";
+                    const count = o._books.reduce((n, b) => n + (b.qty || 1), 0);
+                    const names = o._books.map((b) => b.name).join(", ");
+                    const pay = String(o["Payment Type"] || "").replace("Payment", "").trim();
+                    return (
+                      <Link
+                        key={oid || i}
+                        href={`/profile/${number}/orders/${encodeURIComponent(oid)}`}
+                        className={`ord-row${o._isUnconfirmed ? " ord-row-unconf" : ""}`}
+                      >
+                        <span className={`ord-row-ic ${bucketOf(o)}`} aria-hidden="true">
                           <Package size={18} />
-                          {titleCount > 0 && (
-                            <span className="ord-cover-ph-n">{titleCount}</span>
+                          {o._books.length > 1 && <i>{o._books.length}</i>}
+                        </span>
+                        <span className="ord-row-main">
+                          <span className="ord-row-top">
+                            <b>{fmtDay(o._date) || oid}</b>
+                            <span className={`ord-badge ${STATUS_TONE(o._status)}`}>{o._status}</span>
+                          </span>
+                          <span className="ord-row-names">{names || "—"}</span>
+                          <span className="ord-row-meta">
+                            {total ? <b>₹{total}</b> : null}
+                            <span>
+                              {count} item{count === 1 ? "" : "s"}
+                              {pay ? ` · ${pay}` : ""}
+                            </span>
+                          </span>
+                          {o._isUnconfirmed && (
+                            <span className="ord-row-note">
+                              <AlertCircle size={12} /> Not confirmed yet. Tap to view and contact support.
+                            </span>
                           )}
                         </span>
-                      </div>
-                      <div className="ord-card-main">
-                        <span className="ord-card-id">{oid || "Order"}</span>
-                        <div className="ord-card-names">{names || "—"}</div>
-                        <div className="ord-card-count">
-                          {count} item{count === 1 ? "" : "s"}
-                        </div>
-                      </div>
-                      <span className={`ord-badge ${STATUS_TONE(o._status)}`}>
-                        {o._status}
-                      </span>
-                    </div>
-                    {o._isUnconfirmed && (
-                      <div className="ord-unconf-note">
-                        <AlertCircle size={13} />
-                        <span>
-                          Not confirmed yet — we may be waiting for your payment
-                          or there&apos;s an issue with this order. Tap to view
-                          &amp; contact support.
-                        </span>
-                      </div>
-                    )}
-                    <div className="ord-card-foot">
-                      <div className="ord-card-foot-left">
-                        {total ? (
-                          <span className="ord-card-amt">₹{total}</span>
-                        ) : null}
-                        {o["Payment Type"] ? (
-                          <span className="ord-card-pay">
-                            {o["Payment Type"].replace("Payment", "").trim()}
-                          </span>
-                        ) : null}
-                      </div>
-                      <span className="ord-card-view">
-                        View details
-                        <ChevronRight size={15} />
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </section>
-          ))}
-        </div>
+                        <ChevronRight size={18} className="ord-row-go" />
+                      </Link>
+                    );
+                  })}
+                </section>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Share & earn — below the orders (not at the top). */}

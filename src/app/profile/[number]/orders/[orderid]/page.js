@@ -3153,6 +3153,20 @@ export default function OrderDetailPage() {
         </section>
       )}
 
+      {/* All orders shortcut — small strip under the name card. */}
+      {order && (
+        <Link href={`/profile/${number}/orders`} className="od-allorders">
+          <span className="od-allorders-ic" aria-hidden="true">
+            <Package size={16} />
+          </span>
+          <span className="od-allorders-tx">
+            <b>See all your orders</b>
+            <small>Track active orders and view past ones</small>
+          </span>
+          <ChevronRight size={16} className="od-allorders-go" />
+        </Link>
+      )}
+
       {/* Order status card — moved below the name/address card (standalone). */}
       {order && (
         <div className="od-map-eta od-eta-standalone">

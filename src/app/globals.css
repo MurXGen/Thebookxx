@@ -71378,3 +71378,9 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 /* Welcome coupon popup: green CTA (matches the green badge) */
 .bg-paybar-btn.wcp-btn { background: #1ba672 !important; border-color: #1ba672 !important; color: #fff !important; box-shadow: 0 10px 22px -12px rgba(27, 166, 114, 0.8); }
 .bg-paybar-btn.wcp-btn:hover { background: #158a5e !important; }
+
+/* Search overlay: combos strip + Combos tab grid */
+.sx-combos { margin: 0 0 14px; }
+.sx-combos .pdc-all { background: none; border: 0; cursor: pointer; font: inherit; }
+.sx-combo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.sx-combo-grid .pdc-card { flex: none; }

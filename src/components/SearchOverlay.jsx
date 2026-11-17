@@ -30,7 +30,10 @@ import {
   BookOpen,
   SlidersHorizontal,
   Info,
+  Layers,
 } from "lucide-react";
+import { combos, getComboBooks } from "@/utils/combos";
+import { MiniCombo } from "@/components/PdpCombos";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
@@ -38,6 +41,26 @@ import { useEffect, useRef, useState } from "react";
 // How many result cards (and therefore covers) to reveal per batch. The first
 // batch loads immediately; each scroll to the sentinel reveals another.
 const SEARCH_BATCH = 6;
+const COMBO_MAX = 40;
+
+// Combos for a search: ones whose title matches the query first, then ones
+// holding the best-matched books (in match order). Only fully in-stock combos.
+function matchCombos(query, matched) {
+  const q = loose(query || "");
+  const rank = new Map(matched.map((b, i) => [b.id, i]));
+  const out = [];
+  for (const c of combos) {
+    const items = getComboBooks(c);
+    if (items.length < 2 || items.some((b) => b.stock === 0)) continue;
+    const titleHit = q.length >= 3 && loose(c.title).includes(q);
+    let best = Infinity;
+    for (const id of c.bookIds) if (rank.has(id)) best = Math.min(best, rank.get(id));
+    if (!titleHit && best === Infinity) continue;
+    out.push({ c, score: titleHit ? -1 : best, own: best !== Infinity });
+  }
+  out.sort((a, b) => a.score - b.score || (a.c.auto ? 1 : 0) - (b.c.auto ? 1 : 0));
+  return out.slice(0, COMBO_MAX);
+}
 
 const normalize = (str = "") => str.toLowerCase().trim();
 
@@ -459,8 +482,15 @@ export default function SearchOverlay({
   // Grid items: each matched book, plus a QuickReads card right beside any
   // book that has a QuickRead (rendered as a normal card with a QR badge).
   const qrBooks = sortedBooks.filter((b) => hasQuickRead(b.id));
+  const comboHits = debouncedQuery ? matchCombos(debouncedQuery, sortedBooks) : [];
+  const noCombos = comboHits.length === 0;
+  useEffect(() => {
+    if (noCombos && resultTab === "combos") setResultTab("books");
+  }, [noCombos, resultTab]);
   const gridItems =
-    resultTab === "qr"
+    resultTab === "combos"
+      ? []
+      : resultTab === "qr"
       ? qrBooks.map((book) => ({ type: "qr", book }))
       : sortedBooks.map((book) => ({ type: "book", book }));
 
@@ -1149,15 +1179,31 @@ export default function SearchOverlay({
                                 </span>
                               )}
                             </div>
+                            {comboHits.length > 0 && (
+                              <button
+                                type="button"
+                                role="tab"
+                                aria-selected={resultTab === "combos"}
+                                className={`sx-tab${resultTab === "combos" ? " on" : ""}`}
+                                onClick={() => setResultTab("combos")}
+                              >
+                                <Layers size={14} /> Combos{" "}
+                                <span className="sx-tab-n">{comboHits.length}</span>
+                              </button>
+                            )}
                           </div>
 
                           {/* Result count + active filters */}
                           <div className="sx-res-head">
                             <span className="sx-res-count">
                               <b style={{ color: "var(--foreground)" }}>
-                                {gridItems.length}
+                                {resultTab === "combos" ? comboHits.length : gridItems.length}
                               </b>{" "}
-                              {resultTab === "qr"
+                              {resultTab === "combos"
+                                ? comboHits.length === 1
+                                  ? "combo"
+                                  : "combos"
+                                : resultTab === "qr"
                                 ? gridItems.length === 1
                                   ? "QuickRead"
                                   : "QuickReads"
@@ -1219,6 +1265,40 @@ export default function SearchOverlay({
                               the first few load their images; scrolling to the
                               sentinel reveals (and loads) more. Keeps cover
                               requests proportional to what's actually viewed. */}
+                          {/* Combos: a strip on the Books tab, a full grid on
+                              the Combos tab. Each card adds every book. */}
+                          {resultTab === "books" && comboHits.length > 0 && (
+                            <section className="pdc sx-combos" aria-label="Combos for this search">
+                              <div className="pdc-head">
+                                <h2>
+                                  <Layers size={15} strokeWidth={2.4} aria-hidden="true" />
+                                  Combos for &ldquo;{debouncedQuery}&rdquo;
+                                  <span className="pdc-count">{comboHits.length}</span>
+                                </h2>
+                                {comboHits.length > 6 && (
+                                  <button
+                                    type="button"
+                                    className="pdc-all"
+                                    onClick={() => setResultTab("combos")}
+                                  >
+                                    See all
+                                  </button>
+                                )}
+                              </div>
+                              <div className="pdc-row">
+                                {comboHits.slice(0, 10).map(({ c, own }) => (
+                                  <MiniCombo key={c.id} combo={c} own={own} source="search_combo" />
+                                ))}
+                              </div>
+                            </section>
+                          )}
+                          {resultTab === "combos" && (
+                            <div className="sx-combo-grid">
+                              {comboHits.map(({ c, own }) => (
+                                <MiniCombo key={c.id} combo={c} own={own} source="search_combo" />
+                              ))}
+                            </div>
+                          )}
                           <div className="book-grid">
                             {gridItems.slice(0, visibleN).map((item, idx) => (
                               <motion.div

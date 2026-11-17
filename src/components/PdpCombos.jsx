@@ -51,7 +51,7 @@ function pickCombos(book) {
   return out.slice(0, MAX);
 }
 
-function MiniCombo({ combo, own }) {
+export function MiniCombo({ combo, own, source = "pdp_combo" }) {
   const { addToCart } = useStore();
   const [added, setAdded] = useState(false);
   const items = getComboBooks(combo);
@@ -60,8 +60,8 @@ function MiniCombo({ combo, own }) {
 
   const add = () => {
     if (added) return;
-    items.forEach((b) => addToCart(b.id, "pdp_combo"));
-    trackEvent("pdp_combo_add", { combo_id: combo.id, own, price });
+    items.forEach((b) => addToCart(b.id, source));
+    trackEvent(`${source}_add`, { combo_id: combo.id, own, price });
     showToast(
       combo.discountPct ? `Combo added: ${combo.discountPct}% off applied in your bag` : `${count} books added to your bag`,
       "success",

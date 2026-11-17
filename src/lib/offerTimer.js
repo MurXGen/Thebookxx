@@ -9,6 +9,10 @@
 // Server-rendered surfaces (feeds, schema, AI APIs) keep the base price,
 // which is what new visitors see.
 
+// Master switch. false = no countdown on book pages, no ₹20 rise after it,
+// no Timers-sheet logging. Flip to true to bring the whole feature back.
+export const OFFER_ENABLED = false;
+
 export const OFFER_MINUTES = 120;
 export const PRICE_RISE = 20; // ₹ added per book after the offer ends
 const START_KEY = "tbx_offer_start";
@@ -35,6 +39,7 @@ export function deviceId() {
 
 // { started, endsAt, expired } for this device (nothing started → started=false)
 export function offerState(now = Date.now()) {
+  if (!OFFER_ENABLED) return { started: false, endsAt: 0, expired: false };
   try {
     const start = Number(localStorage.getItem(START_KEY) || 0);
     if (!start) return { started: false, endsAt: 0, expired: false };
@@ -86,6 +91,7 @@ function logStart(start, end, book, page) {
 // Called from a book page: starts the clock on first visit. Returns the state.
 export function startOffer(book) {
   const s = offerState();
+  if (!OFFER_ENABLED) return s;
   if (s.started) return s;
   try {
     const start = Date.now();
@@ -107,6 +113,7 @@ export function startOffer(book) {
 
 // Mark the sheet row Expired once per device.
 export function logExpiredOnce() {
+  if (!OFFER_ENABLED) return;
   try {
     if (localStorage.getItem(LOGGED_KEY) === "expired") return;
     localStorage.setItem(LOGGED_KEY, "expired");
@@ -119,6 +126,7 @@ export function logExpiredOnce() {
 // Pull this device's "Ends At" from the Timers sheet (you can edit it there to
 // extend or shorten the offer). Throttled; returns true if the end changed.
 export async function syncOfferFromSheet({ force = false } = {}) {
+  if (!OFFER_ENABLED) return false;
   try {
     if (!localStorage.getItem(START_KEY)) return false;
     const last = Number(localStorage.getItem(SYNC_KEY) || 0);
@@ -192,6 +200,7 @@ export function revertPriceRise(list) {
 
 // Raise prices in place (idempotent). ₹1 deals stay ₹1; never above MRP.
 export function applyPriceRise(list) {
+  if (!OFFER_ENABLED) return;
   raised = true;
   for (const b of list) {
     if (b._basePrice == null) b._basePrice = b.discountedPrice;

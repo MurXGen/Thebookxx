@@ -7,7 +7,7 @@ import { getReviewsByBook, getAverageRating } from "@/utils/reviews";
 import { BASE_FREE_BOOKMARKS } from "@/utils/orderRewards";
 
 export const SITE = "https://www.thebookx.in";
-export const FREE_DELIVERY_MIN = 199; // mirrors getDeliveryCharge (normal carts)
+export const FREE_DELIVERY_MIN = 149; // mirrors getDeliveryCharge (normal carts)
 
 // Offer deadline for the countdown on book pages. Set a REAL end time here
 // (site-wide sale) or as `offerEndsAt` on a book, e.g. "2026-11-15T23:59:00+05:30".
@@ -111,7 +111,7 @@ export function companionOf(book, related = relatedOf(book)) {
 }
 
 // Visible FAQ + FAQPage schema share this list. Answers stay factual and in
-// line with the real delivery rules (free above ₹249, COD fee applies).
+// line with the real delivery rules (free above ₹149, COD fee applies).
 export function faqsOf(book) {
   const { price, mrp, pct } = discountOf(book);
   const by = book.author ? ` by ${book.author}` : "";

@@ -71384,3 +71384,56 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .sx-combos .pdc-all { background: none; border: 0; cursor: pointer; font: inherit; }
 .sx-combo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
 .sx-combo-grid .pdc-card { flex: none; }
+
+/* "Facing issues? Make it COD" — outline twin of the green pay CTA */
+.cod-switch { width: 100%; min-height: 52px; margin-top: 8px; display: flex; align-items: center; gap: 10px; padding: 8px 14px; border: 1.5px solid #1ba672; border-radius: 14px; background: #fff; color: #0f5f43; font: inherit; text-align: left; cursor: pointer; transition: background .2s, transform .1s; }
+.cod-switch:hover { background: #f3fbf7; }
+.cod-switch:active { transform: scale(.98); }
+.cod-switch-ic { flex: none; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: #e8f7f0; color: #1ba672; }
+.cod-switch-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+.cod-switch-tx small { font-size: 11.5px; font-weight: 600; color: #6b7280; }
+.cod-switch-tx b { font-size: 14.5px; font-weight: 800; color: #0f5f43; }
+.cod-switch-chev { flex: none; color: #1ba672; }
+.upv .cod-switch { margin: 4px 0 10px; }
+
+/* Toasts sit above the full-page UPI pay guide (.upg) too. */
+.toast-container { z-index: 2147483300; }
+
+/* Bag gift card (below WELCOME10's minimum): free delivery + free bookmarks */
+.wcp-bm { width: min(360px, 100%); background: linear-gradient(180deg, #fff7ed 0%, #fff 46%); }
+.wcp-bm .wcp-badge { background: radial-gradient(circle at 30% 30%, #fb923c, #ea580c); animation: wcgBob 2.4s ease-in-out infinite; }
+.wcp-bm .wcp-k { color: #c2410c; font-weight: 800; }
+.wcp-plus { color: #ea580c; }
+.wcg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 16px; }
+.wcg-tile { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 8px 12px; border-radius: 16px; border: 1.5px dashed #e5e7eb; background: #fff; opacity: 0; animation: wcgIn .45s cubic-bezier(.2,1.3,.4,1) forwards; }
+.wcg-tile.bm { animation-delay: .12s; }
+.wcg-tile.del.on { border: 1.5px solid #1ba672; background: #f0fbf6; box-shadow: 0 10px 22px -16px rgba(27,166,114,.9); }
+.wcg-tile.bm.on { border: 1.5px solid #f97316; background: #fff7ed; box-shadow: 0 10px 22px -16px rgba(234,88,12,.9); }
+.wcg-ic { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: #fff; color: #1ba672; box-shadow: 0 4px 10px rgba(0,0,0,.06); overflow: hidden; }
+.wcg-tile.bm .wcg-ic { color: #ea580c; }
+.wcg-tile b { font-size: 14px; font-weight: 900; color: #111827; line-height: 1.15; }
+.wcg-tile small { font-size: 11px; color: #6b7280; line-height: 1.25; }
+.wcg-st { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 800; color: #b45309; background: #fef3c7; }
+.wcg-st.ok { color: #fff; background: #1ba672; }
+.wcg-tile.bm .wcg-st.ok { background: #ea580c; }
+.wcg-truck { animation: wcgDrive 1.6s ease-in-out infinite; }
+.wcg-bmk { animation: wcgSwing 2s ease-in-out infinite; transform-origin: 50% 0; }
+@keyframes wcgIn { from { opacity: 0; transform: translateY(10px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes wcgDrive { 0%, 100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
+@keyframes wcgSwing { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes wcgBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .wcg-tile, .wcg-truck, .wcg-bmk, .wcp-bm .wcp-badge { animation: none; opacity: 1; } }
+
+/* Bag: "Your books" dressed up once the free gifts are claimed */
+.bg-cart.freebies { position: relative; border: 1.5px solid transparent !important; background: linear-gradient(#fff, #fff) padding-box, linear-gradient(120deg, #1ba672, #f97316, #facc15, #1ba672) border-box !important; background-size: 100% 100%, 300% 300% !important; animation: bgFreeBorder 6s linear infinite; box-shadow: 0 14px 30px -22px rgba(234, 88, 12, .7); }
+.bg-freebies { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 6px; margin: 2px 0 10px; padding: 10px 12px; border-radius: 14px; background: linear-gradient(110deg, #ecfdf5 0%, #fff7ed 60%, #fef9c3 100%); border: 1px dashed rgba(234, 88, 12, .35); animation: wcgIn .45s cubic-bezier(.2,1.3,.4,1) both; }
+.bg-freebies-k { font-size: 12.5px; font-weight: 900; color: #9a3412; letter-spacing: .02em; }
+.bg-freebies-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.bg-fchip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; background: #1ba672; box-shadow: 0 4px 10px -6px rgba(27,166,114,.9); }
+.bg-fchip.bm { background: #ea580c; box-shadow: 0 4px 10px -6px rgba(234,88,12,.9); }
+.bg-fchip.off { background: #9ca3af; box-shadow: none; }
+.bg-freebies-spark { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #facc15; top: calc(15% + (var(--i) * 13%)); right: calc(4% + (var(--i) * 7%)); opacity: 0; animation: bgSpark 2.4s calc(var(--i) * .35s) ease-in-out infinite; }
+.bg-freebies-spark:nth-child(even) { background: #f97316; width: 4px; height: 4px; }
+@keyframes bgFreeBorder { to { background-position: 0 0, 300% 0; } }
+@keyframes bgSpark { 0%, 100% { opacity: 0; transform: scale(.4); } 50% { opacity: 1; transform: scale(1.2); } }
+@media (prefers-reduced-motion: reduce) { .bg-cart.freebies, .bg-freebies, .bg-freebies-spark { animation: none; } }

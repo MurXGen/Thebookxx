@@ -47,7 +47,7 @@ export default function CombosClient({
           combos at 10% off, plus {combos.length - clarityCombos.length - bookPairCombos.length} handpicked bundles across bestsellers, romance,
           thrillers, business, self-help, author collections and more. Every
           combo drops the whole set into your bag in one tap — with prices from
-          ₹1, Cash on Delivery and free delivery from ₹249.{" "}
+          ₹1, Cash on Delivery and free delivery from ₹149.{" "}
           <Link href="/book-sets">Looking for a whole series? Shop box sets →</Link>
         </p>}
       </header>

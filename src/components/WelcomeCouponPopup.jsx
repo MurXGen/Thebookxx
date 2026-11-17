@@ -6,14 +6,28 @@
 
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { BadgePercent, Bookmark } from "lucide-react";
+import { BadgePercent, Bookmark, Truck, Check, Gift } from "lucide-react";
 
 const DURATION = 5000;
+const GIFT_DURATION = 10000; // the free delivery + bookmarks card stays longer
 
 // variant "coupon" (WELCOME10) or "bookmark" (below the coupon's minimum:
 // a free bookmark the shopper can claim in one tap).
-export default function WelcomeCouponPopup({ open, code, save, short = 0, onApply, onClose, variant = "coupon" }) {
+export default function WelcomeCouponPopup({
+  open,
+  code,
+  save,
+  short = 0,
+  onApply,
+  onClose,
+  variant = "coupon",
+  freeBookmarks = 2,
+  deliveryFree = false,
+  deliveryShort = 0,
+  freeAt = 149,
+}) {
   const bm = variant === "bookmark";
+  const duration = bm ? GIFT_DURATION : DURATION;
   // Keep the latest onClose without restarting the 5s timer on re-renders.
   const closeRef = useRef(onClose);
   useEffect(() => {
@@ -21,9 +35,9 @@ export default function WelcomeCouponPopup({ open, code, save, short = 0, onAppl
   });
   useEffect(() => {
     if (!open) return;
-    const t = setTimeout(() => closeRef.current?.(), DURATION);
+    const t = setTimeout(() => closeRef.current?.(), duration);
     return () => clearTimeout(t);
-  }, [open]);
+  }, [open, duration]);
 
   if (!open || typeof document === "undefined") return null;
 
@@ -38,18 +52,47 @@ export default function WelcomeCouponPopup({ open, code, save, short = 0, onAppl
       >
         <div className="wcp-badge" aria-hidden="true">
           <span className="wcp-burst" />
-          {bm ? <Bookmark size={30} strokeWidth={2.2} /> : <BadgePercent size={30} strokeWidth={2.2} />}
+          {bm ? <Gift size={30} strokeWidth={2.2} /> : <BadgePercent size={30} strokeWidth={2.2} />}
           {Array.from({ length: 10 }).map((_, i) => (
             <i key={i} className="wcp-conf" style={{ "--i": i }} />
           ))}
         </div>
         {bm ? (
           <>
-            <p className="wcp-k">A gift for you!</p>
-            <h2 id="wcp-h" className="wcp-h">Get a free bookmark</h2>
-            <p className="wcp-sub">A collectible bookmark ships with your books · free with this order</p>
+            <p className="wcp-k">{deliveryFree ? "2 gifts unlocked for you!" : "Gifts waiting for you!"}</p>
+            <h2 id="wcp-h" className="wcp-h">
+              Free delivery <span className="wcp-plus">+</span> free bookmarks
+            </h2>
+            <div className="wcg-row">
+              <div className={`wcg-tile del${deliveryFree ? " on" : ""}`}>
+                <span className="wcg-ic">
+                  <Truck size={22} strokeWidth={2.2} className="wcg-truck" />
+                </span>
+                <b>FREE delivery</b>
+                {deliveryFree ? (
+                  <span className="wcg-st ok">
+                    <Check size={12} strokeWidth={3.2} /> Unlocked
+                  </span>
+                ) : (
+                  <span className="wcg-st">Add ₹{deliveryShort} more</span>
+                )}
+                <small>On orders from ₹{freeAt}</small>
+              </div>
+              <div className="wcg-tile bm on">
+                <span className="wcg-ic">
+                  <Bookmark size={22} strokeWidth={2.2} className="wcg-bmk" />
+                </span>
+                <b>
+                  {freeBookmarks} FREE bookmark{freeBookmarks > 1 ? "s" : ""}
+                </b>
+                <span className="wcg-st ok">
+                  <Check size={12} strokeWidth={3.2} /> Yours to claim
+                </span>
+                <small>Collectible, ships with your books</small>
+              </div>
+            </div>
             <button type="button" className="bg-paybar-btn wcp-btn" onClick={onApply}>
-              Avail free bookmark
+              Claim my free gifts
             </button>
           </>
         ) : (
@@ -70,7 +113,7 @@ export default function WelcomeCouponPopup({ open, code, save, short = 0, onAppl
         <button type="button" className="wcp-skip" onClick={onClose}>
           Maybe later
         </button>
-        <span className="wcp-bar" style={{ "--d": `${DURATION}ms` }} aria-hidden="true" />
+        <span className="wcp-bar" style={{ "--d": `${duration}ms` }} aria-hidden="true" />
       </div>
     </div>,
     document.body,

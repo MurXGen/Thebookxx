@@ -69,7 +69,7 @@ function emptyRows(pool) {
     {
       key: "under199",
       title: "Bestsellers under ₹199",
-      sub: "Delivery is free from ₹249, so two of these ship free",
+      sub: "Delivery is free from ₹149, so these ship free",
       items: take(byPop.filter((b) => b.discountedPrice <= 199)),
     },
     {

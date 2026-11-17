@@ -70,7 +70,7 @@ const MIN_BUDGET = 70;
 const MAX_BUNDLE = 6;
 // Below free-delivery level the budget is for the books alone (delivery is
 // shown as an extra) — a ₹150 budget means books under ₹150.
-const FREE_DELIVERY_AT = 199;
+const FREE_DELIVERY_AT = 149;
 const STRETCH_COUPON = "WELCOME10";
 const SUPPORT_WA = "917710892108";
 const SUPPORT_EMAIL = "uskillbook@gmail.com";

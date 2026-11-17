@@ -8,6 +8,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import CodSwitchBtn from "./CodSwitchBtn";
+import { showToast } from "@/context/ToastContext";
 import {
   X,
   Check,
@@ -108,9 +110,25 @@ export default function UpiPayGuide({
   onDownloadQr,
   onLaunch,
   onClose,
+  onSwitchToCOD,
+  codAmount = 0,
 }) {
   const [copied, setCopied] = useState(false);
+  // On arrival: the UPI ID was copied in the app-pick tap. Tell them (toast +
+  // haptic buzz) and how it gets confirmed.
+  useEffect(() => {
+    const t = setTimeout(
+      () =>
+        showToast(`Pay ₹${amount} through ${appLabel}. We'll verify it automatically.`, "success", {
+          title: "UPI ID copied",
+        }),
+      350,
+    );
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const copyAgain = () => {
+    showToast(`Paste it in ${appLabel} and pay ₹${amount}.`, "success", { title: "UPI ID copied" });
     onCopy?.();
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
@@ -325,6 +343,7 @@ export default function UpiPayGuide({
           Open {appLabel} &amp; pay ₹{amount}
           <ArrowRight size={17} />
         </button>
+        {onSwitchToCOD && <CodSwitchBtn onClick={onSwitchToCOD} amount={codAmount} />}
       </footer>
     </motion.div>
   );

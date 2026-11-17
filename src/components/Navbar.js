@@ -33,7 +33,7 @@ import { trackEvent } from "@/lib/ga";
 const TRUST_PROMOS = [
   {
     icon: Truck,
-    label: "Free delivery on orders from ₹249",
+    label: "Free delivery on orders from ₹149",
     color: "#22c55e",
   },
   {

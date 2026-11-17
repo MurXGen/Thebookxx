@@ -69,6 +69,7 @@ import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
 import { saveLastOrder } from "@/components/HomeResumeStrip";
 import { trackEvent } from "@/lib/ga";
+import { copyUpiId } from "@/utils/upiApps";
 import { rewardNote } from "@/utils/orderRewards";
 import { PAYMENT_PENDING_STATUS, markPaymentPending } from "@/lib/paymentPending";
 import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
@@ -194,6 +195,7 @@ export default function AddressModal({
   proActive = false,
   finalPayable,
   totalDiscounted,
+  couponDeliveryFee = 0,
   handleWhatsAppCheckout,
   handleCODCheckout,
   handleUPICheckout,
@@ -903,12 +905,12 @@ export default function AddressModal({
       c && c.type === "percent"
         ? Math.min(Math.round(((finalPayable + (offerDiscount || 0) + (standardDeliveryCharge || 0)) * (c.value || 0)) / 100), c.maxDiscount > 0 ? c.maxDiscount : Infinity)
         : Number(c?.value) || 0;
-    if (c && !(c.minOrder > 0 && finalPayable < c.minOrder) && est > (offerDiscount || 0)) {
+    if (c && !(c.minOrder > 0 && finalPayable < c.minOrder) && est - couponDeliveryFee > (offerDiscount || 0)) {
       setAppliedCoupon(c);
       couponRedeemedRef.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, finalPayable, offerDiscount, standardDeliveryCharge]);
+  }, [open, finalPayable, offerDiscount, standardDeliveryCharge, couponDeliveryFee]);
 
   const couponDiscount = (() => {
     if (!appliedCoupon) return 0;
@@ -1009,8 +1011,13 @@ export default function AddressModal({
 
   // Members ("TheBookX Exclusive") get free delivery on orders above ₹400.
   const proFreeDelivery = proActive && netPayable > 400;
+  // Free delivery from ₹149 is a cart offer: a (non-wallet) coupon replaces
+  // it, so ₹149–₹248 orders pay the ₹69 delivery again with a coupon.
+  const freeDelOfferLost = !!appliedCoupon && !isWalletCoupon && couponDeliveryFee > 0;
   const getDeliveryCharge = (isFaster) =>
-    proFreeDelivery ? 0 : isFaster ? fasterDeliveryCharge : standardDeliveryCharge;
+    proFreeDelivery
+      ? 0
+      : (isFaster ? fasterDeliveryCharge : standardDeliveryCharge) + (freeDelOfferLost ? couponDeliveryFee : 0);
 
   // Payment-step micro-interactions: light haptics + a bookmark that pops out
   // of (or tucks back into) the Bookmarks card on each +/−.
@@ -1999,6 +2006,9 @@ export default function AddressModal({
   // Chose a specific UPI app (Paytm / PhonePe / GPay / Other) → log the order
   // with that app as the source, then show the existing UPI QR modal.
   const chooseUpiApp = (app) => {
+    // Copy the UPI ID inside this tap (clipboard needs a user gesture): the
+    // pay guide opens straight away and says it's already copied.
+    copyUpiId(UPI_ID);
     try {
       localStorage.setItem("tbx_pref_upi", app);
     } catch {
@@ -4852,6 +4862,33 @@ export default function AddressModal({
                 )}
               </section>
 
+              {/* Free delivery (₹149+). Under ₹249 it's an offer a coupon replaces. */}
+              {(couponDeliveryFee > 0 || standardDeliveryCharge === 0) && (
+                <section className="cpx-sec">
+                  <h3 className="cpx-lbl">Free delivery</h3>
+                  <div className={`cpx-card cpx-reward cpx-freedel${freeDelOfferLost ? "" : " on"}`}>
+                    <span className="cpx-reward-ic">
+                      {freeDelOfferLost ? <Truck size={16} /> : <Check size={16} strokeWidth={3} />}
+                    </span>
+                    <span className="cpx-reward-tx">
+                      <b>FREE delivery {freeDelOfferLost ? "" : "· Availed"}</b>
+                      <small>
+                        {freeDelOfferLost
+                          ? `Replaced by your coupon · ₹${couponDeliveryFee} delivery added`
+                          : couponDeliveryFee > 0
+                            ? `You save ₹${couponDeliveryFee}. Applying a coupon removes this offer.`
+                            : "Applied to this order"}
+                      </small>
+                    </span>
+                    {freeDelOfferLost && (
+                      <button type="button" className="cpx-act" onClick={removeCoupon}>
+                        USE
+                      </button>
+                    )}
+                  </div>
+                </section>
+              )}
+
               {/* Cart reward (only one offer per order) */}
               {(offerDiscount > 0 || (unlockedOffer && onApplyOffer && !appliedCoupon)) && (
                 <section className="cpx-sec">
@@ -5143,6 +5180,7 @@ export default function AddressModal({
               clearUpiTimers();
               setUpiPhase("await");
               setShowUPIPayment(false);
+              setShowPayMethod(true); // back to payment options, not the address step
             }}
             onWhatsAppFallback={handleUPIWhatsAppVerify}
             onSwitchToCOD={switchToCODFromUPI}
@@ -6532,6 +6570,27 @@ export function UPIPaymentModal({
       </motion.div>
     );
   }
+
+  // An app was picked at checkout → skip the QR sheet and open the 2-step pay
+  // guide (UPI ID copied / download QR) straight away. Closing it goes back
+  // to the payment options.
+  if (chosenApp) {
+    return (
+      <UpiAppLaunchRow
+        upiId={upiId}
+        amount={totalToPay}
+        chosenApp={chosenApp}
+        advance={advanceMode}
+        onWhatsApp={SHOW_UPI_WHATSAPP ? onWhatsAppFallback : undefined}
+        onAutoConfirm={onAutoConfirm}
+        onSwitchToCOD={onSwitchToCOD}
+        codAmount={codLaterAmount}
+        onModalClose={onClose}
+        autoOpen
+      />
+    );
+  }
+
   return (
     <motion.div
       className="bill-modal-overlay upiv3-overlay"
@@ -6743,6 +6802,8 @@ export function UPIPaymentModal({
               advance={advanceMode}
               onWhatsApp={SHOW_UPI_WHATSAPP ? onWhatsAppFallback : undefined}
               onAutoConfirm={onAutoConfirm}
+              onSwitchToCOD={onSwitchToCOD}
+              codAmount={codLaterAmount}
             />
           )}
 

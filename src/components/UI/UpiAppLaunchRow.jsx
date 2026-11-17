@@ -22,6 +22,10 @@ export default function UpiAppLaunchRow({
   advance = false,
   onWhatsApp,
   onAutoConfirm,
+  onSwitchToCOD,
+  codAmount = 0,
+  onModalClose,
+  autoOpen = false,
 }) {
   const primary = chosenApp ? upiAppByName(chosenApp) : null;
 
@@ -58,6 +62,16 @@ export default function UpiAppLaunchRow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Opened straight from the checkout app picker: show the pay guide now (the
+  // UPI ID was copied in that tap) and render no button of our own.
+  useEffect(() => {
+    if (!autoOpen) return;
+    setActiveApp(primary || null);
+    setPayStage((st) => (st === "verifying" ? st : "ready"));
+    setPayOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoOpen]);
+
   const handle = (app) => {
     // Only the UPI ID is copied here; the QR downloads from the guide's
     // "Option 2" when the shopper wants it.
@@ -87,16 +101,30 @@ export default function UpiAppLaunchRow({
       amount={amount}
       advance={advance}
       initialStage={payStage}
-      onClose={() => setPayOpen(false)}
+      onClose={() => {
+        setPayOpen(false);
+        onModalClose?.();
+      }}
       onLaunch={() => launchUpiApp(activeApp, upiId)}
       onWhatsApp={onWhatsApp}
       onAutoConfirm={() => {
         setPayOpen(false);
         onAutoConfirm?.();
       }}
+      onSwitchToCOD={
+        onSwitchToCOD
+          ? () => {
+              setPayOpen(false);
+              onSwitchToCOD();
+            }
+          : undefined
+      }
+      codAmount={codAmount}
       upiId={upiId}
     />
   );
+
+  if (autoOpen) return modal;
 
   if (primary) {
     return (

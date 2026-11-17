@@ -123,7 +123,7 @@ export default function HomeNavbar({ onSearch }) {
       <div className="hnd-promo">
         <span>🎄 Christmas Sale — up to 50% off</span>
         <i aria-hidden="true">·</i>
-        <span>Free delivery from ₹249</span>
+        <span>Free delivery from ₹149</span>
         <i aria-hidden="true">·</i>
         <span>Cash on Delivery &amp; 7-day replacement</span>
       </div>

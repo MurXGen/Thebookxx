@@ -653,7 +653,7 @@ export default function MyOrdersPage() {
     }
     const freeDelivery = isFree || deliveryFee === 0;
     // When a handling/care fee is charged, label the line "Handling & Care"
-    // rather than "Delivery" (delivery itself is free above ₹249).
+    // rather than "Delivery" (delivery itself is free above ₹149).
     const isHandlingFee = /handling/i.test(order["Delivery Type"] || "");
     const deliveryLineLabel =
       !freeDelivery && isHandlingFee ? "Handling & Care" : "Delivery";

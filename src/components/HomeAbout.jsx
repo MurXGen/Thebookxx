@@ -8,7 +8,7 @@ import { ChevronRight } from "lucide-react";
 //  • Tablet / desktop: the fuller card with the short story.
 const POINTS = [
   { k: "₹1", t: "Books from ₹1", s: "Lowest prices on bestsellers" },
-  { k: "₹249", t: "Free delivery", s: "On orders from ₹249" },
+  { k: "₹149", t: "Free delivery", s: "On orders from ₹149" },
   { k: "COD", t: "Cash on Delivery", s: "Or pay by UPI" },
   { k: "7d", t: "7-day replacement", s: "Damaged or wrong book" },
 ];

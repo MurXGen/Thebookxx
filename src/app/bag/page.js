@@ -53,6 +53,7 @@ import {
   getMinCheckoutAmount,
   FREE_DELIVERY_AT as FREE_DELIVERY_AT_NORMAL,
   FREE_DELIVERY_AT_ONE_RUPEE,
+  couponDeliveryFee,
 } from "@/utils/cartOffers";
 import {
   ArrowLeft,
@@ -67,6 +68,8 @@ import {
   RotateCcw,
   FileText,
   X,
+  Truck,
+  Bookmark,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef, useCallback, Suspense } from "react";
@@ -772,6 +775,8 @@ function BagContent() {
     false,
     hasOneRupeeItem,
   );
+  // ₹149–₹248 orders get free delivery as an offer; a coupon replaces it.
+  const couponDelFee = couponDeliveryFee(totalDiscounted + walletTopUp, hasOneRupeeItem);
   // Faster delivery is available for every order (no weight cap / contact
   // support). Its price is the express tier of getDeliveryCharge — i.e.
   // standard + 50% of standard.
@@ -820,6 +825,15 @@ function BagContent() {
   const [welcomeRule, setWelcomeRule] = useState(null); // live WELCOME10 terms
   const [showWelcome, setShowWelcome] = useState(false);
   const [showBmOffer, setShowBmOffer] = useState(false); // below-min: free bookmark
+  // Claimed the free delivery + bookmarks gifts → "Your books" gets dressed up.
+  const [giftsClaimed, setGiftsClaimed] = useState(false);
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("tbx_gifts_claimed")) setGiftsClaimed(true);
+    } catch {
+      /* ignore */
+    }
+  }, []);
   // Offers they've seen but not claimed → a gift icon in the header reopens them.
   const [offerDismissed, setOfferDismissed] = useState({ welcome: false, bm: false });
   useEffect(() => {
@@ -864,12 +878,19 @@ function BagContent() {
     totalWithStandardDelivery + bundledQrTotal + fasterExtraBag + bagBookmarkCharge + giftCharge;
   const couponBase = toPayBeforeCoupon - bundledQrTotal + offerDiscount;
   const couponCalc = bagCouponOff(bagCoupon, couponBase, finalPayable);
-  const couponWins = couponCalc.off > offerDiscount;
+  // The coupon only wins if it beats the cart offer AND the free delivery it
+  // would take away.
+  const couponWins = couponCalc.off - couponDelFee > offerDiscount;
   const couponOff = couponWins ? couponCalc.off : 0; // shown on the coupon row
   const couponShort = couponCalc.short;
-  const bagToPay = couponWins ? toPayBeforeCoupon + offerDiscount - couponOff : toPayBeforeCoupon;
+  const bagToPay = couponWins
+    ? toPayBeforeCoupon + offerDiscount - couponOff + couponDelFee
+    : toPayBeforeCoupon;
   const welcomeCalc = bagCouponOff(welcomeRule, couponBase, finalPayable);
-  const welcomePreview = { off: Math.max(0, welcomeCalc.off - offerDiscount), short: welcomeCalc.short };
+  const welcomePreview = {
+    off: Math.max(0, welcomeCalc.off - offerDiscount - couponDelFee),
+    short: welcomeCalc.short,
+  };
   // Which popup (once per visit each):
   //  • order at/above WELCOME10's minimum and the coupon beats current offers
   //    → the WELCOME10 popup;
@@ -923,9 +944,20 @@ function BagContent() {
   // "Avail free bookmark": pick one bookmark for them and show it in Add-ons.
   const availBookmark = () => {
     setShowBmOffer(false);
-    setBagBookmarks((n) => Math.max(1, n));
+    setGiftsClaimed(true);
+    try {
+      sessionStorage.setItem("tbx_gifts_claimed", "1");
+    } catch {
+      /* ignore */
+    }
+    setBagBookmarks((n) => Math.max(bagFreeBookmarks, n));
     burstConfetti(false);
-    showToast("1 free bookmark added to your order 🔖", "success");
+    showToast(
+      baseDeliveryFee === 0
+        ? `Free delivery + ${bagFreeBookmarks} free bookmarks added to your order 🔖`
+        : `${bagFreeBookmarks} free bookmarks added · add ₹${Math.max(0, Math.ceil(FREE_DELIVERY_AT - totalDiscounted))} more for free delivery`,
+      "success",
+    );
     trackEvent("bag_bookmark_offer_claimed", { cart_value: finalPayable });
     setTimeout(() => {
       const el = document.querySelector(".bga-bm");
@@ -1619,6 +1651,10 @@ ${itemsBlock}${qrLines}
       <WelcomeCouponPopup
         variant="bookmark"
         open={showBmOffer && cartBooks.length > 0}
+        freeBookmarks={bagFreeBookmarks}
+        deliveryFree={baseDeliveryFee === 0}
+        deliveryShort={Math.max(0, Math.ceil(FREE_DELIVERY_AT - totalDiscounted))}
+        freeAt={FREE_DELIVERY_AT}
         onApply={availBookmark}
         onClose={() => {
           setShowBmOffer(false);
@@ -1711,7 +1747,11 @@ ${itemsBlock}${qrLines}
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
         <>
-          <div className={`cart-items-panel bg-cart${giftWrap ? " gifted" : ""}`}>
+          <div
+            className={`cart-items-panel bg-cart${giftWrap ? " gifted" : ""}${
+              giftsClaimed && bagBookmarks > 0 ? " freebies" : ""
+            }`}
+          >
             {giftWrap && <span className="bg-gift-band" aria-hidden="true" />}
             <div className="bg-cart-head">
               <b>
@@ -1727,6 +1767,30 @@ ${itemsBlock}${qrLines}
                 {cartBooks.reduce((n, b) => n + b.qty, 0) + qrItems.length === 1 ? "" : "s"}
               </span>
             </div>
+            {giftsClaimed && bagBookmarks > 0 && (
+              <div className="bg-freebies" role="status">
+                <span className="bg-freebies-k">
+                  <span aria-hidden="true">🎁</span> Free with this order
+                </span>
+                <span className="bg-freebies-chips">
+                  <span className={`bg-fchip del${couponWins && couponDelFee > 0 ? " off" : ""}`}>
+                    <Truck size={13} />{" "}
+                    {baseDeliveryFee === 0
+                      ? couponWins && couponDelFee > 0
+                        ? "Delivery: replaced by coupon"
+                        : "FREE delivery"
+                      : `FREE delivery at ₹${FREE_DELIVERY_AT}`}
+                  </span>
+                  <span className="bg-fchip bm">
+                    <Bookmark size={13} /> {Math.min(bagBookmarks, bagFreeBookmarks)} FREE bookmark
+                    {Math.min(bagBookmarks, bagFreeBookmarks) > 1 ? "s" : ""}
+                  </span>
+                </span>
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <i key={i} className="bg-freebies-spark" style={{ "--i": i }} aria-hidden="true" />
+                ))}
+              </div>
+            )}
             <div className="cart-items-list">
               {cartBooks.map((book) => (
                 <CartItemRow key={book.id} book={book} combo={pairCombo.perBook?.[book.id]} />
@@ -1947,7 +2011,9 @@ ${itemsBlock}${qrLines}
               totalDiscounted={totalDiscounted}
               offerDiscount={couponWins ? 0 : offerDiscount}
               offerLabel={offerLabel}
-              deliveryFee={billFaster ? fasterDeliveryCharge : standardDeliveryCharge}
+              deliveryFee={
+                (billFaster ? fasterDeliveryCharge : standardDeliveryCharge) + (couponWins ? couponDelFee : 0)
+              }
               deliveryFeeWithout={baseDeliveryFee}
               freeAt={FREE_DELIVERY_AT}
               topUp={walletTopUp}
@@ -2247,6 +2313,7 @@ ${itemsBlock}${qrLines}
         proActive={proActive}
         finalPayable={finalPayable}
         totalDiscounted={totalDiscounted}
+        couponDeliveryFee={couponDelFee}
         standardDeliveryCharge={standardDeliveryCharge}
         standardDeliveryLabel={standardDeliveryLabel}
         fasterDeliveryCharge={fasterDeliveryCharge}

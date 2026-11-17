@@ -20,6 +20,8 @@ import {
 import { copyUpiId, downloadUpiQr } from "@/utils/upiApps";
 import UpiPayGuide from "./UpiPayGuide";
 import { FaWhatsapp } from "react-icons/fa";
+import CodSwitchBtn from "./CodSwitchBtn";
+import { showToast } from "@/context/ToastContext";
 
 const VERIFY_SECONDS = 300; // 5 minutes
 // At 4 minutes into the countdown (1:00 left) the order is confirmed for the
@@ -41,6 +43,8 @@ export default function UpiAppPayModal({
   onLaunch,
   onWhatsApp,
   onAutoConfirm,
+  onSwitchToCOD,
+  codAmount = 0,
   upiId = "",
 }) {
   const [stage, setStage] = useState(initialStage);
@@ -48,10 +52,19 @@ export default function UpiAppPayModal({
   // The QR is only downloaded when the shopper asks for it (Option 2).
   const [qrState, setQrState] = useState("idle"); // idle | pending | ok | failed
   useEffect(() => {
-    const on = (e) => setQrState(e.detail?.ok ? "ok" : "failed");
+    const on = (e) => {
+      const ok = !!e.detail?.ok;
+      setQrState(ok ? "ok" : "failed");
+      // Toast (with a haptic buzz from the toast itself) for the download.
+      if (ok)
+        showToast(`Open ${appLabel} → Scan → upload the saved QR and pay ₹${amount}`, "success", {
+          title: "QR saved to your device",
+        });
+      else showToast("Couldn't save the QR. Tap Download again or paste the UPI ID.", "error", { title: "Download failed" });
+    };
     window.addEventListener("tbx:qr-download", on);
     return () => window.removeEventListener("tbx:qr-download", on);
-  }, []);
+  }, [appLabel, amount]);
   const saveQrAgain = () => {
     setQrState("pending");
     downloadUpiQr({ amount, upiId, advance });
@@ -113,6 +126,12 @@ export default function UpiAppPayModal({
     setParam("");
     onClose?.();
   };
+  const toCod = () => {
+    clearInterval(timerRef.current);
+    autoDoneRef.current = true; // no auto-confirm of the UPI order after this
+    setParam("");
+    onSwitchToCOD?.();
+  };
 
   const mm = String(Math.floor(left / 60)).padStart(2, "0");
   const ss = String(left % 60).padStart(2, "0");
@@ -142,6 +161,8 @@ export default function UpiAppPayModal({
         onDownloadQr={saveQrAgain}
         onLaunch={openApp}
         onClose={close}
+        onSwitchToCOD={onSwitchToCOD ? toCod : undefined}
+        codAmount={codAmount}
       />,
       document.body,
     );
@@ -344,6 +365,7 @@ export default function UpiAppPayModal({
                 <FaWhatsapp size={16} /> Confirm faster on WhatsApp
               </button>
             )}
+            {onSwitchToCOD && <CodSwitchBtn onClick={toCod} amount={codAmount} />}
             <div className="upv-actions">
               <button type="button" className="upv-btn" onClick={close}>
                 Close

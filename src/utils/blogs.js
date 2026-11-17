@@ -4,6 +4,190 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "international-students-day-2026-17-november-books-every-student-should-read-india": {
+    "id": "blog-122",
+    "title": "International Students' Day 2026 (17 November): The Story Behind the Day and 15 Books Every Student Should Read",
+    "slug": "international-students-day-2026-17-november-books-every-student-should-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-17",
+    "lastModified": "2026-11-17",
+    "excerpt": "International Students' Day, 17 November 2026: the Prague story behind it and 15 books every Indian student should read to study, think and grow better.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Today, 17 November 2026, is International Students' Day. In India it rarely makes the headlines, falling quietly between Children's Day and the start of winter exam preparation. But the day has one of the most moving origin stories on the calendar, and it is a good moment for every student, and every parent of a student, to ask a simple question: beyond the syllabus, what am I actually reading?"
+      },
+      {
+        "type": "paragraph",
+        "content": "Below we explain where International Students' Day comes from, why it still matters, and share a reading list built for Indian students: books that improve how you study, how you think, and how you see the world. Every title is available on TheBookX, with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "International Students' Day 2026 at a glance",
+        "content": "Date: Tuesday, 17 November 2026. Origin: the events of 17 November 1939 in Prague, when Nazi forces stormed Czech universities after student protests. First observed: 1941, by the International Students' Council in London. Why it matters today: it honours students' right to education, free inquiry and a voice in society."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why 17 November? The story behind the day"
+      },
+      {
+        "type": "paragraph",
+        "content": "In the autumn of 1939, Czechoslovakia was under Nazi occupation. On 28 October, students in Prague joined demonstrations marking the anniversary of Czechoslovak independence, and a medical student, Jan Opletal, was shot and later died of his wounds. His funeral in mid-November turned into another protest. The response was brutal: on 17 November 1939, the occupying forces raided Prague's universities, executed nine student leaders without trial and sent more than a thousand students to concentration camps. Czech universities were shut for the rest of the war."
+      },
+      {
+        "type": "paragraph",
+        "content": "Two years later, in 1941, the International Students' Council meeting in London declared 17 November International Students' Day so the world would remember. The date returned to history in 1989, when a student march in Prague on the 50th anniversary helped spark the peaceful Velvet Revolution. So this is not a day of greeting cards. It is a reminder that the freedom to learn, question and read has always had to be defended, very often by students themselves."
+      },
+      {
+        "type": "blockquote",
+        "content": "One child, one teacher, one book and one pen can change the world. — Malala Yousafzai"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What this day means for Indian students in 2026"
+      },
+      {
+        "type": "paragraph",
+        "content": "India has one of the largest student populations on earth, and most of that energy is pointed at one thing: exams. Boards, JEE, NEET, CUET, CAT, UPSC. Exam preparation matters, but students who read widely outside their textbooks consistently tell us the same thing: it makes them calmer, sharper and better at the exams too. Reading builds vocabulary, attention span, empathy and the ability to hold a long argument in your head. Those are exactly the skills that short videos and endless scrolling wear down."
+      },
+      {
+        "type": "paragraph",
+        "content": "So our suggestion for International Students' Day is practical. Pick one book from each section below: one that changes how you study, one that changes how you think, and one story that simply reminds you why learning is worth it."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books that change how you study"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear: the most useful book a student can read about consistency. Small daily systems, like 25 focused minutes before breakfast, beat heroic all-night sessions every time.",
+          "<a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport: why the ability to focus without distraction is becoming rare and valuable, and how to train it. Essential reading in the age of the phone.",
+          "<a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> by Mortimer Adler: the classic guide to reading actively, from skimming to analytical reading. It quietly transforms how you handle textbooks and reference material.",
+          "<a href=\"/books/eat-that-frog\" style=\"color:#fb8500;font-weight:600\">Eat That Frog!</a> by Brian Tracy: a short, punchy book on beating procrastination by tackling the hardest task first.",
+          "<a href=\"/books/word-power-made-easy\" style=\"color:#fb8500;font-weight:600\">Word Power Made Easy</a> by Norman Lewis: the evergreen vocabulary builder that generations of Indian students have used for CAT, GRE, CLAT and simply for writing better."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books that change how you think"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar: a practical guide to cutting through mental clutter, making decisions and knowing what actually matters. Ideal for students juggling exams, expectations and career choices.",
+          "<a href=\"/books/mindset-the-new-psychology-of-success\" style=\"color:#fb8500;font-weight:600\">Mindset: The New Psychology of Success</a> by Carol Dweck: the research behind the growth mindset. Once you understand that ability grows with effort, a bad test score stops feeling like a verdict.",
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel: the money lessons school never teaches. Read it before your first stipend or salary, not after.",
+          "<a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl: a short, profound book by a psychiatrist who survived the concentration camps. Given the history of this day, few books fit it better."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories that remind you why learning matters"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a> by Malala Yousafzai: the memoir of a schoolgirl who was attacked for insisting on her right to education. The spirit of International Students' Day in one book.",
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam: the autobiography of a boy from Rameswaram who studied his way to India's space and missile programmes and the Presidency. Still the most inspiring student story in Indian publishing.",
+          "<a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> by Anne Frank: written by a teenager in hiding during the same war that closed Prague's universities. A reminder that the urge to write, read and think survives even the darkest times.",
+          "<a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> by Chetan Bhagat: a funny, honest look at grades, pressure and friendship at an IIT. Most Indian students will recognise themselves in it.",
+          "<a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> by Harper Lee: a classic about justice and empathy, seen through the eyes of a young girl. Many readers say it is the book that taught them to think for themselves.",
+          "<a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> by Mitch Albom: a former student's weekly visits to his dying professor, and the lessons about life that no exam ever tests."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Reading on a student budget",
+        "content": "Books on TheBookX start from ₹1, delivery is free and Cash on Delivery is available across India, so you do not need a card or a big budget to start. Gifting one to a student this week? Add gift wrapping for just ₹25."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple 30-day reading plan for students"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Week 1: pick one book from the study section and read just 15 pages a day. Apply one idea immediately.",
+          "Week 2: switch to a story from the last section. Read before bed instead of scrolling; your sleep and memory will thank you.",
+          "Week 3: read one book from the thinking section and write a one-page summary of what you would change.",
+          "Week 4: discuss what you read with one friend or study group. Explaining an idea is the fastest way to truly learn it."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Honouring the day, the reader's way"
+      },
+      {
+        "type": "paragraph",
+        "content": "The students of Prague in 1939 paid an enormous price for the right to learn freely. Most of us will never face anything like it. The least we can do is use that freedom well: read beyond the syllabus, question what we are told, and keep learning long after the last exam. If you are a student, start one book today. If you know a student, put a good book in their hands."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Happy International Students' Day from all of us at TheBookX. Keep reading, keep asking questions."
+      }
+    ],
+    "coverImage": "/blogs/international-students-day-2026-17-november-books-every-student-should-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/international-students-day-2026-17-november-books-every-student-should-read-india.jpeg",
+        "alt": "Cheerful young Indian college student reading a book at a sunlit library table with notebooks and a cup of chai",
+        "caption": "International Students' Day, 17 November 2026: a reminder that the freedom to learn and read is worth celebrating.",
+        "category": "Education & Learning"
+      }
+    ],
+    "keywords": [
+      "International Students Day 2026",
+      "International Students Day 17 November",
+      "why is International Students Day celebrated",
+      "books every student should read",
+      "best books for students India",
+      "study habit books for students",
+      "self-help books for college students",
+      "books for exam preparation mindset"
+    ],
+    "categories": [
+      "Education & Learning",
+      "Book Recommendations",
+      "Non-Fiction"
+    ],
+    "faqs": [
+      {
+        "question": "Why is International Students' Day celebrated on 17 November?",
+        "answer": "It commemorates 17 November 1939, when Nazi forces stormed universities in Prague after student protests against the occupation, executed nine student leaders and sent more than a thousand students to concentration camps. The International Students' Council in London declared the day in 1941."
+      },
+      {
+        "question": "When is International Students' Day 2026?",
+        "answer": "International Students' Day 2026 falls on Tuesday, 17 November 2026. It is observed on the same date every year."
+      },
+      {
+        "question": "What are the best books for students to read outside the syllabus?",
+        "answer": "Atomic Habits, Deep Work and How to Read a Book improve how you study; Mindset, The Art of Clarity by Murthy Thevar and The Psychology of Money improve how you think; and Wings of Fire, I Am Malala and The Diary of a Young Girl remind you why learning matters."
+      },
+      {
+        "question": "Can students buy books affordably online in India?",
+        "answer": "Yes. On TheBookX, books start from ₹1 with free delivery and Cash on Delivery across India, so students can build a reading habit without a card or a large budget. Gift wrapping is available for ₹25."
+      }
+    ]
+  },
   "national-press-day-2026-16-november-press-council-60-years-books-to-read-india": {
     "id": "blog-121",
     "title": "National Press Day 2026 (16 November): 60 Years of the Press Council of India, and the Books That Teach You to Read the News Better",

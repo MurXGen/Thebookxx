@@ -11033,7 +11033,7 @@ export default function ManageOrdersPage() {
     }
   };
 
-  const openEditModal = (order) => {
+  const openEditModal = (order, opts = {}) => {
     setSelectedOrder(order);
     setFormData({
       orderId: order["Order ID"] || "",
@@ -11060,6 +11060,19 @@ export default function ManageOrdersPage() {
       origDateLocal: toLocalInput(getOrderDate(order)),
     });
     setShowEditModal(true);
+    // "Edit charges" from the bill → jump to the Bill section and focus the
+    // delivery / handling box.
+    if (opts.focus === "bill") {
+      setTimeout(() => {
+        const sec = document.querySelector(".mo-ef-bill");
+        if (!sec) return;
+        sec.scrollIntoView({ behavior: "smooth", block: "start" });
+        sec.classList.remove("mo-ef-flash");
+        void sec.offsetWidth;
+        sec.classList.add("mo-ef-flash");
+        sec.querySelector(".mo-editbill-inp input")?.focus({ preventScroll: true });
+      }, 380);
+    }
   };
 
   const copyToClipboard = (text, id) => {
@@ -12926,14 +12939,26 @@ export default function ManageOrdersPage() {
                                           · #{oidStr.slice(-6)}
                                         </span>
                                       </div>
-                                      <button
-                                        type="button"
-                                        className="mo-sheet-x"
-                                        onClick={() => setBillOrderId(null)}
-                                        aria-label="Close"
-                                      >
-                                        <X size={18} />
-                                      </button>
+                                      <div className="mo-bill-head-r">
+                                        <button
+                                          type="button"
+                                          className="mo-bill-editbtn"
+                                          onClick={() => {
+                                            setBillOrderId(null);
+                                            openEditModal(order);
+                                          }}
+                                        >
+                                          <Edit size={15} /> Edit order
+                                        </button>
+                                        <button
+                                          type="button"
+                                          className="mo-sheet-x"
+                                          onClick={() => setBillOrderId(null)}
+                                          aria-label="Close"
+                                        >
+                                          <X size={18} />
+                                        </button>
+                                      </div>
                                     </div>
                                     <div className="mo-sheet-body mo-bill-body">
                                       {books.length > 0 && (
@@ -13040,8 +13065,18 @@ export default function ManageOrdersPage() {
                                         );
                                         return (
                                           <div className="mo-bill-sec">
-                                            <div className="mo-bill-sec-t">
-                                              Bill breakdown
+                                            <div className="mo-bill-sec-t mo-bill-sec-t-row">
+                                              <span>Bill breakdown</span>
+                                              <button
+                                                type="button"
+                                                className="mo-bill-editcharges"
+                                                onClick={() => {
+                                                  setBillOrderId(null);
+                                                  openEditModal(order, { focus: "bill" });
+                                                }}
+                                              >
+                                                <Edit size={13} /> Edit charges
+                                              </button>
                                             </div>
                                             <div className="mo-bill-rows">
                                               {mrp > 0 && R("Total MRP", `₹${mrp}`)}
@@ -25897,14 +25932,14 @@ export default function ManageOrdersPage() {
                     </section>
 
                     {/* 5 · Bill */}
-                    <section className="mo-ef-sec">
+                    <section className="mo-ef-sec mo-ef-bill">
                       <h4>Bill</h4>
                       {showEditModal ? (
                         <div className="mo-editbill">
                           <div className="mo-editbill-head">
                             <span>Bill breakdown</span>
                             <span className="mo-editbill-auto">
-                              auto · {eb.isFaster ? "Faster" : "Standard"}
+                              {eb.isFaster ? "Faster" : "Standard"} · type to change a charge
                             </span>
                           </div>
                           <div className="mo-editbill-row">
@@ -26100,6 +26135,18 @@ export default function ManageOrdersPage() {
               })()}
 
               <div className="mo-edit-foot">
+                {showEditModal &&
+                  (() => {
+                    const fb = computeEditBreakdown(formData, selectedOrder || {});
+                    const was = parseFloat(String(selectedOrder?.["Total Amount"] ?? "").replace(/[^\d.]/g, "")) || 0;
+                    return (
+                      <div className="mo-edit-foot-total" aria-live="polite">
+                        <small>{fb.isCOD ? "Collect at door" : "Total"}</small>
+                        <b>₹{(fb.isCOD ? fb.codCollectible : fb.total).toLocaleString()}</b>
+                        {was > 0 && Math.round(was) !== fb.total && <s>₹{Math.round(was).toLocaleString()}</s>}
+                      </div>
+                    );
+                  })()}
                 <button
                   type="button"
                   className="mo-edit-cancel"

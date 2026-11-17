@@ -1754,10 +1754,10 @@ export default function OrderDetailPage() {
     const itemDiscountF =
       cItemDisc != null ? cItemDisc : Math.max(0, listingF - subF);
 
-    // Collected at the door = balance + the 1.5% COD collection charge — the
-    // same figure the out-for-delivery messages / Manage Orders use.
+    // Collected at the door = the balance. The COD fee in the bill is the only
+    // COD charge (no extra collection % on top).
     const codBalance = isCOD ? payOnDeliveryF : 0;
-    const payAtDoor = isCOD ? Math.round(codBalance * 1.015) : 0;
+    const payAtDoor = isCOD ? Math.round(codBalance) : 0;
     const codCollectCharge = Math.max(0, payAtDoor - codBalance);
 
     return {
@@ -2586,7 +2586,7 @@ export default function OrderDetailPage() {
       setShowUpgradeModal(false);
       // Let the team know so they prioritise dispatch for the faster delivery.
       const msg = isAdvanceUpgrade
-        ? `Hi TheBookX, I'm *upgrading order ${orderId} to Faster delivery* (+₹${upgradeExtra}). I've already paid the ₹99 advance — I'll pay the new balance of ₹${newCollect} (+1.5% COD collection) at delivery. Please dispatch it by air. 🙏`
+        ? `Hi TheBookX, I'm *upgrading order ${orderId} to Faster delivery* (+₹${upgradeExtra}). I've already paid the ₹99 advance — I'll pay the new balance of ₹${newCollect} at delivery. Please dispatch it by air. 🙏`
         : `Hi TheBookX, I've *upgraded to Faster delivery* (+₹${upgradeExtra}) for order ${orderId}. New total ₹${newTotal}. Please dispatch it faster by air. 🙏`;
       window.open(
         `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
@@ -2621,7 +2621,7 @@ export default function OrderDetailPage() {
     const codFee = Math.max(0, Math.round(bd.codFee || 0));
     const newTotal = Math.max(0, Math.round(oldTotal - codFee + upgradeExtra));
     const balance = Math.max(0, newTotal - 99);
-    return { oldTotal, codFee, newTotal, balance, atDoor: Math.round(balance * 1.015) };
+    return { oldTotal, codFee, newTotal, balance, atDoor: Math.round(balance) };
   })();
   // Runs when the shopper taps "I've paid, verify status": saves the order as
   // Faster + ₹99 advance and parks it on "Payment Pending" until the team taps
@@ -3027,7 +3027,7 @@ export default function OrderDetailPage() {
           liveCheck={false}
           onVerify={saveCodFasterUpgrade}
           teamTitle="⚡ *Faster delivery upgrade · ₹99 advance*"
-          teamNote={`🚚 COD → Faster (+₹${upgradeExtra}) · new total ₹${codUpgrade.newTotal} · collect ₹${codUpgrade.balance} (+1.5%) at door`}
+          teamNote={`🚚 COD → Faster (+₹${upgradeExtra}) · new total ₹${codUpgrade.newTotal} · collect ₹${codUpgrade.balance} at door`}
           doneToast="Upgrade saved! We're confirming your ₹99 — Faster delivery kicks in once it's verified."
           customer={{ name: custName, phone: order["Phone Number"] || number, address: order["Address"] }}
           items={payItems}
@@ -3807,7 +3807,7 @@ export default function OrderDetailPage() {
                       <span className="fdu-split-plus" aria-hidden="true">+</span>
                       <div className="fdu-split-seg">
                         <b>₹{codUpgrade.atDoor}</b>
-                        <span>At delivery · incl. 1.5% COD collection</span>
+                        <span>At delivery</span>
                       </div>
                     </div>
                   </div>
@@ -3829,7 +3829,7 @@ export default function OrderDetailPage() {
                       <div className="fdu-bill-row">
                         <span>New balance at delivery</span>
                         <span>
-                          ₹{Math.round(((bd.payOnDelivery || 0) + upgradeExtra) * 1.015)}
+                          ₹{Math.round((bd.payOnDelivery || 0) + upgradeExtra)}
                         </span>
                       </div>
                     )}
@@ -4121,8 +4121,8 @@ export default function OrderDetailPage() {
             </div>
             <span className="od-pay-due-note">
               {bd.advancePaid
-                ? `₹${bd.advanceAmount} already paid online · keep ₹${bd.payAtDoor} ready (incl. ₹${bd.codCollectCharge} COD collection charge) — cash or UPI to the delivery agent`
-                : `Keep ₹${bd.payAtDoor} ready (incl. ₹${bd.codCollectCharge} COD collection charge) — cash or UPI to the delivery agent`}
+                ? `₹${bd.advanceAmount} already paid online · keep ₹${bd.payAtDoor} ready — cash or UPI to the delivery agent`
+                : `Keep ₹${bd.payAtDoor} ready — cash or UPI to the delivery agent`}
             </span>
           </div>
         )}

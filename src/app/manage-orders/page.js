@@ -320,8 +320,8 @@ const waMessages = (order) => {
     ) || parsedBooks.reduce((s, b) => s + (b.total || b.price * (b.quantity || 1) || 0), 0);
 
   // COD collect-at-door amount for the Out-for-delivery message. For COD / ₹99-
-  // advance orders the customer pays the balance at the door PLUS a 1.5% COD
-  // charge. Prepaid online orders have nothing to collect.
+  // advance orders the customer pays the balance at the door (the COD fee is
+  // already in the bill; nothing extra). Prepaid online orders have nothing to collect.
   const advancePaidFlag = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
   const isCodOrder =
     /cash on delivery|\bcod\b/i.test(String(order?.["Payment Type"] || "")) ||
@@ -337,7 +337,7 @@ const waMessages = (order) => {
       : 0;
     return Math.max(0, grandTotal - adv);
   })();
-  const codPayAtDoor = Math.round(codCollectBase * 1.015);
+  const codPayAtDoor = Math.round(codCollectBase); // no extra % on top of the COD fee
 
   // Link block appended below every message: a divider, the customer's order
   // detail page link, their profile link, the tracking ID and the India Post
@@ -518,7 +518,7 @@ const emailMessages = (order) => {
       0,
     );
 
-  // COD collect-at-door amount (balance + 1.5% COD charge) for the OFD email.
+  // COD collect-at-door amount (the balance) for the OFD email.
   const advancePaidFlag = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
   const isCodOrder =
     /cash on delivery|\bcod\b/i.test(String(order?.["Payment Type"] || "")) ||
@@ -534,7 +534,7 @@ const emailMessages = (order) => {
       : 0;
     return Math.max(0, grandTotal - adv);
   })();
-  const codPayAtDoor = Math.round(codCollectBase * 1.015);
+  const codPayAtDoor = Math.round(codCollectBase); // no extra % on top of the COD fee
 
   const sign = `\n\nWarm regards,\nTeam TheBookX 📚\n${orderDetailUrl}`;
   const footer = (orderId ? `\n\nOrder ID: ${orderId}` : "") + sign;
@@ -13080,10 +13080,6 @@ export default function ManageOrdersPage() {
 
                                       {(() => {
                                         const rev = Number(order.revenue) || 0;
-                                        const fee = isCOD
-                                          ? Math.round(rev * 0.015)
-                                          : 0;
-                                        const net = Math.round(rev - fee);
                                         const ad = parseAddonsField(
                                           order["Gift Wrap"],
                                         );
@@ -13124,18 +13120,6 @@ export default function ManageOrdersPage() {
                                                   <span>Gift wrap</span>
                                                   <b>+₹{giftChg}</b>
                                                 </div>
-                                              )}
-                                              {isCOD && (
-                                                <>
-                                                  <div className="mo-bill-row muted">
-                                                    <span>COD commission · 1.5%</span>
-                                                    <b>−₹{fee.toLocaleString()}</b>
-                                                  </div>
-                                                  <div className="mo-bill-row">
-                                                    <span>Net receivable</span>
-                                                    <b>₹{net.toLocaleString()}</b>
-                                                  </div>
-                                                </>
                                               )}
                                               <div className="mo-bill-row muted">
                                                 <span>Cost</span>
@@ -20096,7 +20080,7 @@ export default function ManageOrdersPage() {
                                             Number(r.amount) ||
                                             0) - advAmt,
                                         );
-                                      const atDoor = Math.round(base * 1.015);
+                                      const atDoor = Math.round(base);
                                       if (!isCODr && !advPaid) {
                                         return (
                                           <div className="mo-track-paid-line online">
@@ -20115,7 +20099,6 @@ export default function ManageOrdersPage() {
                                           <span className="mo-track-paid-due">
                                             ₹{atDoor.toLocaleString()} to collect
                                             at door
-                                            <i> (incl. 1.5%)</i>
                                           </span>
                                         </div>
                                       );
@@ -25828,7 +25811,7 @@ export default function ManageOrdersPage() {
                           {eb.mode === "cod"
                             ? `Collect ₹${eb.codCollectible.toLocaleString()} at the door · COD fee ₹${eb.codFee}`
                             : eb.mode === "advance"
-                              ? `₹99 paid online · balance ₹${eb.codCollectible.toLocaleString()} · collect ₹${Math.round(eb.codCollectible * 1.015).toLocaleString()} at the door (incl. 1.5%)`
+                              ? `₹99 paid online · balance ₹${eb.codCollectible.toLocaleString()} · collect ₹${Math.round(eb.codCollectible).toLocaleString()} at the door`
                               : "Prepaid — nothing to collect at the door"}
                         </em>
                       </div>

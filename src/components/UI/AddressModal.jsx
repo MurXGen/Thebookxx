@@ -1119,9 +1119,9 @@ export default function AddressModal({
   );
   const advanceRemaining = Math.max(0, advanceOrderTotal - codAdvanceAmount);
   // What the customer actually hands over at the door on a two-part order:
-  // the balance + the 1.5% COD collection charge (same as the order page,
-  // out-for-delivery messages and the printed label).
-  const advanceAtDoor = Math.round(advanceRemaining * 1.015);
+  // the balance (same as the order page and out-for-delivery messages; no
+  // extra COD % on top).
+  const advanceAtDoor = Math.round(advanceRemaining);
   // COD always ships Standard, so its card is priced on the Standard bill —
   // switching delivery type above doesn't change the COD card.
   const codStdRaw = getTotalWithDelivery(false) + addOnsCharge;

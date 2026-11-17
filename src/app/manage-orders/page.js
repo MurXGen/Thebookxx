@@ -10878,7 +10878,17 @@ export default function ManageOrdersPage() {
         : num("Subtotal") || num("Total Amount");
     const isFaster = /faster|express/i.test(fd.deliveryType || "");
     const hasOneRupee = lines.some((b) => Number(b.price) === 1);
-    const delivery = getDeliveryCharge(subtotal, isFaster, hasOneRupee);
+    // Manual overrides from the Edit order modal ("" = use the automatic value).
+    const ovr = (v) =>
+      v === "" || v == null || !Number.isFinite(Number(v))
+        ? null
+        : Math.max(0, Math.round(Number(v)));
+    const deliveryAuto = getDeliveryCharge(subtotal, isFaster, hasOneRupee);
+    const deliveryOverridden = ovr(fd.deliveryOverride) != null;
+    const delivery = deliveryOverridden ? ovr(fd.deliveryOverride) : deliveryAuto;
+    // Above ₹1000 the delivery line is the "Handling & Care" fee.
+    const isHandling =
+      subtotal > 1000 || /handling/i.test(fd.deliveryType || "");
     const giftFee = /^yes/i.test(fd.giftWrap || "")
       ? parseFloat(fd.giftWrapCharge) || 0
       : 0;
@@ -10902,7 +10912,9 @@ export default function ManageOrdersPage() {
       offerDiscount -
       couponDiscount -
       walletApplied;
-    const codFee = mode === "cod" ? getCodFee(Math.max(0, preCod)) : 0;
+    const codFeeAuto = mode === "cod" ? getCodFee(Math.max(0, preCod)) : 0;
+    const codFeeOverridden = mode === "cod" && ovr(fd.codFeeOverride) != null;
+    const codFee = codFeeOverridden ? ovr(fd.codFeeOverride) : codFeeAuto;
     const total = Math.max(0, Math.round(preCod + codFee));
     const mrp = num("Total MRP");
     const itemDiscount = mrp > 0 ? Math.max(0, mrp - subtotal) : 0;
@@ -10913,6 +10925,9 @@ export default function ManageOrdersPage() {
       subtotal,
       isFaster,
       delivery,
+      deliveryAuto,
+      deliveryOverridden,
+      isHandling,
       giftFee,
       bookmarkFee,
       quickReadsTotal,
@@ -10923,6 +10938,8 @@ export default function ManageOrdersPage() {
       advancePaid,
       isCOD,
       codFee,
+      codFeeAuto,
+      codFeeOverridden,
       total,
       mrp,
       itemDiscount,
@@ -10978,6 +10995,9 @@ export default function ManageOrdersPage() {
       "Gift Wrap Charge": String(b.giftFee),
       Subtotal: String(b.subtotal),
       "Delivery Charge": String(b.delivery),
+      // Keep the Handling & Care column in step with the delivery line so
+      // every bill shows the same figure the total was built from.
+      "Handling & Care": String(b.isHandling ? b.delivery : 0),
       "COD Fee": String(b.codFee),
       "Total Amount": String(b.total),
       // Same payment columns checkout writes for each method.
@@ -12985,13 +13005,16 @@ export default function ManageOrdersPage() {
                                         const sub = bn("Subtotal");
                                         const itemDisc = bn("Item Discount");
                                         const deliv = bn("Delivery Charge");
-                                        const hc =
-                                          bn("Handling & Care") ||
-                                          (/handling/i.test(
-                                            order["Delivery Type"] || "",
-                                          )
-                                            ? deliv
-                                            : 0);
+                                        // "Delivery Charge" is what the order total was
+                                        // built from, so it wins; the separate
+                                        // "Handling & Care" column is only a fallback
+                                        // (they can disagree after edits).
+                                        const isHandlingBand =
+                                          /handling/i.test(order["Delivery Type"] || "") ||
+                                          bn("Handling & Care") > 0;
+                                        const hc = isHandlingBand
+                                          ? deliv || bn("Handling & Care")
+                                          : 0;
                                         const gift = bn("Gift Wrap Charge");
                                         const bm = bn("Bookmark Charge");
                                         const qr = bn("QuickReads Total");
@@ -25896,16 +25919,39 @@ export default function ManageOrdersPage() {
                               </b>
                             </div>
                           )}
-                          <div className="mo-editbill-row">
+                          {/* Editable: blank = automatic (store rules) */}
+                          <div className="mo-editbill-row mo-editbill-edit">
                             <span>
-                              Delivery
+                              {eb.isHandling ? "Handling & Care" : "Delivery"}
                               {eb.isFaster ? " · Faster" : ""}
+                              <small>
+                                {eb.deliveryOverridden
+                                  ? `manual · auto ₹${eb.deliveryAuto}`
+                                  : "auto"}
+                              </small>
                             </span>
-                            <b>
-                              {eb.delivery > 0
-                                ? `₹${eb.delivery.toLocaleString()}`
-                                : "FREE"}
-                            </b>
+                            <span className="mo-editbill-inp">
+                              ₹
+                              <input
+                                type="number"
+                                min="0"
+                                inputMode="numeric"
+                                aria-label="Delivery / handling charge"
+                                placeholder={String(eb.deliveryAuto)}
+                                value={formData.deliveryOverride ?? ""}
+                                onChange={(e) => setField("deliveryOverride", e.target.value)}
+                              />
+                              {eb.deliveryOverridden && (
+                                <button
+                                  type="button"
+                                  className="mo-editbill-reset"
+                                  onClick={() => setField("deliveryOverride", "")}
+                                  aria-label="Use the automatic delivery charge"
+                                >
+                                  auto
+                                </button>
+                              )}
+                            </span>
                           </div>
                           {eb.giftFee > 0 && (
                             <div className="mo-editbill-row">
@@ -25949,10 +25995,38 @@ export default function ManageOrdersPage() {
                               </b>
                             </div>
                           )}
-                          {eb.codFee > 0 && (
-                            <div className="mo-editbill-row">
-                              <span>COD fee</span>
-                              <b>₹{eb.codFee.toLocaleString()}</b>
+                          {eb.mode === "cod" && (
+                            <div className="mo-editbill-row mo-editbill-edit">
+                              <span>
+                                COD fee
+                                <small>
+                                  {eb.codFeeOverridden
+                                    ? `manual · auto ₹${eb.codFeeAuto}`
+                                    : "auto"}
+                                </small>
+                              </span>
+                              <span className="mo-editbill-inp">
+                                ₹
+                                <input
+                                  type="number"
+                                  min="0"
+                                  inputMode="numeric"
+                                  aria-label="COD fee"
+                                  placeholder={String(eb.codFeeAuto)}
+                                  value={formData.codFeeOverride ?? ""}
+                                  onChange={(e) => setField("codFeeOverride", e.target.value)}
+                                />
+                                {eb.codFeeOverridden && (
+                                  <button
+                                    type="button"
+                                    className="mo-editbill-reset"
+                                    onClick={() => setField("codFeeOverride", "")}
+                                    aria-label="Use the automatic COD fee"
+                                  >
+                                    auto
+                                  </button>
+                                )}
+                              </span>
                             </div>
                           )}
                           <div className="mo-editbill-sep" />

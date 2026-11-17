@@ -71437,3 +71437,12 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 @keyframes bgFreeBorder { to { background-position: 0 0, 300% 0; } }
 @keyframes bgSpark { 0%, 100% { opacity: 0; transform: scale(.4); } 50% { opacity: 1; transform: scale(1.2); } }
 @media (prefers-reduced-motion: reduce) { .bg-cart.freebies, .bg-freebies, .bg-freebies-spark { animation: none; } }
+
+/* Manage orders · Edit order: editable delivery / COD fee rows */
+.mo-editbill-edit { align-items: center; }
+.mo-editbill-edit > span:first-child { display: flex; flex-direction: column; }
+.mo-editbill-edit small { font-size: 11px; font-weight: 600; color: #9ca3af; }
+.mo-editbill-inp { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; }
+.mo-editbill-inp input { width: 84px; height: 34px; padding: 0 8px; border: 1px solid #d1d5db; border-radius: 10px; font: inherit; font-weight: 800; text-align: right; background: #fff; color: inherit; }
+.mo-editbill-inp input:focus { outline: 2px solid #1ba672; outline-offset: 1px; }
+.mo-editbill-reset { border: 0; background: #f3f4f6; color: #374151; font: inherit; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 8px; cursor: pointer; }

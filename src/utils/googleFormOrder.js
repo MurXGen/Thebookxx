@@ -119,8 +119,9 @@ export const updateOrderRow = async (orderId, fields) => {
       body: JSON.stringify({ action: "update", orderId, data: fields || {} }),
     });
     const j = await res.json().catch(() => ({}));
-    return j.success === false
-      ? { success: false, error: j.error }
+    // A non-2xx (rate limit, server error) is a failure too.
+    return !res.ok || j.success === false
+      ? { success: false, error: j.error || `HTTP ${res.status}` }
       : { success: true };
   } catch (error) {
     console.error("updateOrderRow failed:", error);

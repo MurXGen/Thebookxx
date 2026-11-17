@@ -11023,6 +11023,8 @@ export default function ManageOrdersPage() {
         revenue: b.total,
         parsedBooks: b.lines,
       });
+      // Posts no-cors to the Apps Script (no readable response), so a thrown
+      // network error is the only failure we can detect here.
       await updateOrderRow(formData.orderId, fields);
       showToast("Order updated", "success");
       setShowEditModal(false);

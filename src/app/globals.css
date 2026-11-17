@@ -71507,3 +71507,16 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .ord-row-go { flex: none; align-self: center; color: #9ca3af; }
 .ord-empty-filter { gap: 6px; }
 .ord-empty-btn { margin-top: 8px; height: 40px; padding: 0 16px; border: 0; border-radius: 12px; background: #111827; color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
+
+/* Help sheet · "Paid but not verified" slide-up panel */
+.sps-paid { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 18px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+.sps-paid-x { position: absolute; top: 4px; right: 4px; width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 50%; background: #f3f4f6; color: #374151; cursor: pointer; }
+.sps-paid-ic { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 16px; background: #ecfdf5; color: #059669; }
+.sps-paid h3 { margin: 4px 0 0; font-size: 18px; font-weight: 900; color: #111827; }
+.sps-paid-lead { margin: 0; font-size: 13.5px; color: #4b5563; line-height: 1.45; }
+.sps-paid-steps { list-style: none; margin: 6px 0 4px; padding: 0; width: 100%; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.sps-paid-steps li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: #f9fafb; font-size: 13px; color: #374151; line-height: 1.4; }
+.sps-paid-steps b { flex: none; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: #111827; color: #fff; font-size: 12px; }
+.sps-paid-ctas { width: 100%; display: flex; gap: 8px; margin-top: 4px; }
+.sps-paid-orders { flex: 1; height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; background: #111827; color: #fff; font-size: 15px; font-weight: 800; text-decoration: none; }
+.sps-paid-wa { flex: none; height: 50px; padding: 0 16px; display: inline-flex; align-items: center; gap: 7px; border: 0; border-radius: 14px; background: #25d366; color: #fff; font: inherit; font-size: 14.5px; font-weight: 800; cursor: pointer; }

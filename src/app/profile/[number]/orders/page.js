@@ -93,7 +93,12 @@ export default function OrdersListPage() {
   const [loading, setLoading] = useState(true);
   const [showSupport, setShowSupport] = useState(false);
   // Default: active orders only (not delivered / cancelled / unconfirmed).
-  const [filter, setFilter] = useState("active");
+  const [filter, setFilterRaw] = useState("active");
+  const [filterPicked, setFilterPicked] = useState(false);
+  const setFilter = (k) => {
+    setFilterPicked(true);
+    setFilterRaw(k);
+  };
   const [error, setError] = useState("");
   // Live countdown toast handle for the rate limiter.
   const cooldownRef = useRef(null);
@@ -230,7 +235,9 @@ export default function OrdersListPage() {
     },
     { active: 0, delivered: 0, unconfirmed: 0, cancelled: 0, all: 0 },
   );
-  const visible = filter === "all" ? orders : orders.filter((o) => bucketOf(o) === filter);
+  // No active orders → start on All so they still see their history.
+  const effFilter = filter === "active" && !filterPicked && counts.active === 0 ? "all" : filter;
+  const visible = effFilter === "all" ? orders : orders.filter((o) => bucketOf(o) === effFilter);
 
   // Month sections ("November 2026"), recent → past.
   const groups = [];
@@ -321,8 +328,8 @@ export default function OrdersListPage() {
                 key={k}
                 type="button"
                 role="tab"
-                aria-selected={filter === k}
-                className={`ord-filter${filter === k ? " on" : ""}`}
+                aria-selected={effFilter === k}
+                className={`ord-filter${effFilter === k ? " on" : ""}`}
                 onClick={() => setFilter(k)}
               >
                 <Icon size={14} />
@@ -336,7 +343,7 @@ export default function OrdersListPage() {
             <div className="ord-empty ord-empty-filter">
               <Package size={24} />
               <strong>
-                {filter === "active" ? "No active orders right now" : `No ${filter} orders`}
+                {effFilter === "active" ? "No active orders right now" : `No ${effFilter} orders`}
               </strong>
               <span>Your other orders are under All.</span>
               <button type="button" className="ord-empty-btn" onClick={() => setFilter("all")}>

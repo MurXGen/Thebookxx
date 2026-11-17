@@ -12,7 +12,11 @@ import {
   Copy,
   Ban,
   Wallet,
+  ShieldCheck,
+  Package,
+  ChevronRight,
 } from "lucide-react";
+import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 
 const SUPPORT_WHATSAPP = "917710892108";
@@ -98,6 +102,7 @@ export default function SupportSheet({
     { label: "Where is my order?", msg: `Hi TheBookX, I'd like an update on where my order is${ref}.${sig}${linkLine}` },
     { label: "Delivery estimate", msg: `Hi TheBookX, when can I expect my order${ref} to be delivered?${sig}${linkLine}` },
     { label: "Change delivery address", msg: `Hi TheBookX, I'd like to change the delivery address for my order${ref}.${sig}${linkLine}` },
+    { label: "Paid but not verified", msg: `Hi TheBookX, I've paid for my order${ref} but it still shows as not verified. Please check and confirm it.${sig}${linkLine}` },
     { label: "Payment help", msg: `Hi TheBookX, I need help with the payment for my order${ref}.${sig}${linkLine}` },
     { label: "Wrong or damaged item", msg: `Hi TheBookX, I received a wrong or damaged item${ref} and need help.${sig}${linkLine}` },
     { label: "Bookmark compensation", msg: `Hi TheBookX, I'd like to claim compensation for my missing bookmark${ref}.${sig}${linkLine}` },
@@ -108,6 +113,8 @@ export default function SupportSheet({
 
   const [selected, setSelected] = useState(0);
   const [autoReply, setAutoReply] = useState(false);
+  // "Paid but not verified" → slide-up panel pointing to their order history.
+  const [paidOpen, setPaidOpen] = useState(false);
   const topic = topics[selected] || topics[0];
   const isCancel = topic.label === "Cancel my order";
 
@@ -170,6 +177,10 @@ export default function SupportSheet({
         transition={{ duration: 0.34, ease: "easeOut" }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* "Paid but not verified" swaps the sheet's content (one sheet, no
+            stacked modals); the reasons come back with the ✕. */}
+        {!paidOpen && (
+        <>
         <div className="support-head">
           <div className="support-head-titles">
             <span className="support-head-title">
@@ -223,7 +234,14 @@ export default function SupportSheet({
                   key={t.label}
                   type="button"
                   className={`support-reason${selected === i ? " active" : ""}`}
-                  onClick={() => setSelected(i)}
+                  onClick={() => {
+                    setSelected(i);
+                    if (t.label === "Paid but not verified") {
+                      // Scroll the sheet to the top so the panel sits flush.
+                      document.querySelector(".support-sheet")?.scrollTo?.({ top: 0 });
+                      setPaidOpen(true);
+                    }
+                  }}
                 >
                   <span
                     className={`support-reason-radio${selected === i ? " on" : ""}`}
@@ -336,6 +354,66 @@ export default function SupportSheet({
               </div>
             )}
           </>
+        )}
+        </>
+        )}
+
+        {/* Paid but not verified — replaces the reasons in the same sheet */}
+        {paidOpen && (
+          <motion.div
+            className="sps-paid"
+            aria-labelledby="sps-paid-h"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <button
+              type="button"
+              className="sps-paid-x"
+              onClick={() => setPaidOpen(false)}
+              aria-label="Back"
+            >
+              <X size={18} />
+            </button>
+            <span className="sps-paid-ic" aria-hidden="true">
+              <ShieldCheck size={24} />
+            </span>
+            <h3 id="sps-paid-h">Paid, but not verified yet?</h3>
+            <p className="sps-paid-lead">
+              Don&apos;t worry, your payment is safe. It usually gets matched to
+              your order within a few minutes.
+            </p>
+            <ul className="sps-paid-steps">
+              <li>
+                <b>1</b> Check your order history. A paid order often shows up as
+                a separate, confirmed order.
+              </li>
+              <li>
+                <b>2</b> Still not there? Message us your payment screenshot and
+                we&apos;ll confirm it right away.
+              </li>
+            </ul>
+            <div className="sps-paid-ctas">
+              {num ? (
+                <Link
+                  href={`/profile/${num}/orders`}
+                  className="sps-paid-orders"
+                  onClick={() => onClose && onClose()}
+                >
+                  <Package size={17} /> See my orders
+                  <ChevronRight size={16} />
+                </Link>
+              ) : null}
+              <button
+                type="button"
+                className="sps-paid-wa"
+                onClick={openWhatsApp}
+                aria-label="Chat with us on WhatsApp"
+              >
+                <FaWhatsapp size={18} /> WhatsApp
+              </button>
+            </div>
+          </motion.div>
         )}
       </motion.div>
     </motion.div>

@@ -71466,7 +71466,7 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .mo-dark .mo-edit-foot-total b { color: #f9fafb; }
 
 /* Order details: "See all your orders" strip under the name card */
-.od-allorders { display: flex; align-items: center; gap: 12px; margin: 10px 0 0; padding: 12px 14px; border-radius: 16px; background: #fff; border: 1px solid #eceff3; color: #111827; text-decoration: none; box-shadow: 0 6px 18px -14px rgba(17, 24, 39, .35); transition: transform .15s, border-color .2s; }
+.od-allorders { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 12px 14px; border-radius: 16px; background: #fff; border: 1px solid #eceff3; color: #111827; text-decoration: none; box-shadow: 0 6px 18px -14px rgba(17, 24, 39, .35); transition: transform .15s, border-color .2s; }
 .od-allorders:hover { border-color: #fd6b01; }
 .od-allorders:active { transform: scale(.99); }
 .od-allorders-ic { flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; background: #fff3e8; color: #fd6b01; }

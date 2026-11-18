@@ -44,6 +44,7 @@ export default function UpiAppPayModal({
   onWhatsApp,
   onAutoConfirm,
   onSwitchToCOD,
+  onPollStatus,
   codAmount = 0,
   upiId = "",
 }) {
@@ -109,6 +110,26 @@ export default function UpiAppPayModal({
     }, 1000);
     return () => clearInterval(timerRef.current);
   }, [open, stage]);
+
+  // While verifying: check the order every 5s, so a confirmation from our
+  // team lands right away (the parent switches to the success screen).
+  const pollRef = useRef(onPollStatus);
+  useEffect(() => {
+    pollRef.current = onPollStatus;
+  });
+  useEffect(() => {
+    if (!open || stage !== "verifying" || !pollRef.current) return;
+    pollRef.current();
+    const id = setInterval(() => pollRef.current?.(), 5000);
+    return () => clearInterval(id);
+  }, [open, stage]);
+
+  // 30s into verifying (e.g. they came back without paying) → show the QR.
+  const qrRef = useRef(null);
+  useEffect(() => {
+    if (!open || stage !== "verifying") return;
+    if (left === VERIFY_SECONDS - 30 && qrRef.current) qrRef.current.open = true;
+  }, [left, open, stage]);
 
   // Reached 4:00 of verifying → confirm the order (once).
   const autoDoneRef = useRef(false);
@@ -340,7 +361,7 @@ export default function UpiAppPayModal({
             </ol>
 
             {/* Not paid yet? QR + UPI ID, tucked away until asked for */}
-            <details className="upv-qr">
+            <details className="upv-qr" ref={qrRef}>
               <summary>
                 <QrCode size={15} /> Haven&apos;t paid yet? Show QR
                 <ChevronDown size={15} className="upv-chev" />
@@ -377,7 +398,7 @@ export default function UpiAppPayModal({
                 <FaWhatsapp size={16} /> Confirm faster on WhatsApp
               </button>
             )}
-            {onSwitchToCOD && <CodSwitchBtn onClick={toCod} amount={codAmount} />}
+            {onSwitchToCOD && <CodSwitchBtn onClick={toCod} amount={codAmount} variant="link" />}
             <div className="upv-actions">
               <button type="button" className="upv-btn" onClick={close}>
                 Close
@@ -387,8 +408,7 @@ export default function UpiAppPayModal({
                   type="button"
                   className="upv-btn pri"
                   onClick={() => {
-                    const d = document.querySelector(".upv-qr");
-                    if (d) d.open = !d.open;
+                    if (qrRef.current) qrRef.current.open = !qrRef.current.open;
                   }}
                 >
                   Show QR

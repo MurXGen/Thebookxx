@@ -23,6 +23,7 @@ export default function UpiAppLaunchRow({
   onWhatsApp,
   onAutoConfirm,
   onSwitchToCOD,
+  onPollStatus,
   codAmount = 0,
   onModalClose,
   autoOpen = false,
@@ -120,6 +121,7 @@ export default function UpiAppLaunchRow({
           : undefined
       }
       codAmount={codAmount}
+      onPollStatus={onPollStatus}
       upiId={upiId}
     />
   );

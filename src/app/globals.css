@@ -71615,3 +71615,8 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
   .upg-qrprev-back { align-items: center; }
   .upg-qrprev { width: min(440px, 92vw); border-radius: 22px; }
 }
+
+/* Verifying screen: COD switch as a quiet tertiary link */
+.cod-switch-link { align-self: center; margin: 2px auto 8px; padding: 6px 4px; border: 0; background: none; color: #6b7280; font: inherit; font-size: 12.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.cod-switch-link:hover { color: #111827; }
+.upg-qrprev-id { width: 100%; margin-top: 4px !important; }

@@ -2320,6 +2320,21 @@ export default function AddressModal({
   // The UPI-app verify countdown reached 4:00 → treat the order as confirmed:
   // status → Processing (same as a confirmed order), then the normal success
   // hand-off, which sends the confirmation email (store inbox CC'd).
+  // Verifying screen polls this every 5s: a team / Telegram "Passed" mark
+  // jumps to success, a "Failed" mark to the failed screen.
+  const pollUpiStatus = async () => {
+    const oid = String(upiOrderRef || "").trim();
+    if (!oid || successHandedRef.current) return null;
+    try {
+      const r = await fetchOrderStatusById(oid);
+      if (r?.confirmed) finalizeUPISuccess();
+      else if (r?.failed) triggerUpiFailed();
+      return r;
+    } catch {
+      return null;
+    }
+  };
+
   const autoConfirmUpi = () => {
     if (successHandedRef.current) return;
     const oid = String(upiOrderRef || "").trim();
@@ -5149,6 +5164,7 @@ export default function AddressModal({
         {showUPIPayment && (
           <UPIPaymentModal
             onAutoConfirm={autoConfirmUpi}
+            onPollStatus={pollUpiStatus}
             finalPayable={netPayable}
             walletApplied={walletAppliedTotal}
             fasterDelivery={fasterDelivery}
@@ -6458,6 +6474,7 @@ export function UPIPaymentModal({
   onCheckStatus,
   onTryAgain,
   onAutoConfirm,
+  onPollStatus,
   summaryName = "",
   summaryItems = [],
   codLaterAmount = 0,
@@ -6583,6 +6600,7 @@ export function UPIPaymentModal({
         advance={advanceMode}
         onWhatsApp={SHOW_UPI_WHATSAPP ? onWhatsAppFallback : undefined}
         onAutoConfirm={onAutoConfirm}
+        onPollStatus={onPollStatus}
         onSwitchToCOD={onSwitchToCOD}
         codAmount={codLaterAmount}
         onModalClose={onClose}
@@ -6802,6 +6820,7 @@ export function UPIPaymentModal({
               advance={advanceMode}
               onWhatsApp={SHOW_UPI_WHATSAPP ? onWhatsAppFallback : undefined}
               onAutoConfirm={onAutoConfirm}
+              onPollStatus={onPollStatus}
               onSwitchToCOD={onSwitchToCOD}
               codAmount={codLaterAmount}
             />

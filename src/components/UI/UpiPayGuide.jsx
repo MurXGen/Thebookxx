@@ -450,8 +450,14 @@ export default function UpiPayGuide({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={QR_SRC} alt="TheBookX UPI QR code" className="upg-qrprev-img" />
               <span className="upg-qrprev-name">
-                <BadgeCheck size={14} /> {PAYEE_TXT} · {upiId}
+                <BadgeCheck size={14} /> Shows as {PAYEE_TXT}
               </span>
+              <div className="upg-idrow upg-qrprev-id">
+                <code>{upiId}</code>
+                <button type="button" onClick={copyAgain} data-no-busy>
+                  {copied ? <><Check size={13} strokeWidth={3} /> Copied</> : <><Copy size={13} /> Copy UPI ID</>}
+                </button>
+              </div>
               <button
                 type="button"
                 className={`upg-dlbtn${qrState === "ok" ? " ok" : ""}`}

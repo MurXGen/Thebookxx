@@ -71673,3 +71673,40 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 @keyframes upiRipple { 0% { transform: scale(0); opacity: .7; } 100% { transform: scale(16); opacity: 0; } }
 @keyframes upiBtnBreath { 0%, 100% { box-shadow: 0 8px 20px -12px rgba(27, 166, 114, .9), 0 0 0 0 rgba(27, 166, 114, .45); } 50% { box-shadow: 0 8px 20px -12px rgba(27, 166, 114, .9), 0 0 0 8px rgba(27, 166, 114, 0); } }
 @media (prefers-reduced-motion: reduce) { .upiv3-modal .upiopen-btn, .upiv3-modal .upiopen-btn::before, .upiv3-modal .upiopen-btn::after { animation: none; } }
+
+/* UPI "Payment confirmed": keep the green tick badge (a shared flat-icon rule
+   had stripped its background, leaving a white tick on white). */
+.upiv3-result.is-success .upiv3-result-icon {
+  background: linear-gradient(135deg, #22c55e, #15803d) !important;
+  box-shadow: 0 12px 28px -10px rgba(22, 163, 74, 0.75), 0 0 0 8px rgba(34, 197, 94, 0.14) !important;
+  color: #fff !important;
+  animation: upiv3PopIn 0.4s cubic-bezier(0.17, 0.67, 0.3, 1.33), upiTickGlow 2s 0.4s ease-in-out infinite;
+}
+@keyframes upiTickGlow { 50% { box-shadow: 0 12px 28px -10px rgba(22, 163, 74, 0.75), 0 0 0 14px rgba(34, 197, 94, 0.06); } }
+
+/* "Placing order to …" v2: green ring, teardrop home pin, tap ripples */
+.po2 .po-ring { width: 184px; height: 184px; }
+.po2 .po-halo { position: absolute; inset: -18px; border-radius: 50%; background: radial-gradient(circle, rgba(34, 197, 94, 0.18), transparent 68%); animation: poHalo 2.8s ease-in-out infinite; }
+@keyframes poHalo { 50% { transform: scale(1.08); opacity: .6; } }
+.po2 .po-track { stroke: #e3ece7; }
+.po2 .po-sweep { stroke: #16a34a; }
+.po2 .po-map { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04); }
+.po-ripple { position: absolute; left: 50%; top: 64%; width: 26px; height: 10px; margin: -5px 0 0 -13px; border-radius: 50%; border: 2px solid rgba(22, 163, 74, 0.7); opacity: 0; animation: poRipple 2.1s ease-out infinite; }
+.po-ripple.d2 { animation-delay: .7s; }
+.po-ripple.d3 { animation-delay: 1.4s; }
+@keyframes poRipple { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(4.2); opacity: 0; } }
+.po-shadow { position: absolute; left: 50%; top: 64%; width: 22px; height: 7px; margin: -3px 0 0 -11px; border-radius: 50%; background: rgba(0, 0, 0, 0.22); filter: blur(1px); animation: poShadow 1.4s ease-in-out infinite; }
+@keyframes poShadow { 50% { transform: scale(.7); opacity: .5; } }
+.po-pin2 { position: absolute; left: 50%; top: 64%; width: 44px; height: 55px; margin: -55px 0 0 -22px; animation: poPinBob 1.4s ease-in-out infinite; filter: drop-shadow(0 6px 8px rgba(21, 128, 61, 0.35)); }
+.po-pin2-shape { width: 100%; height: 100%; display: block; }
+.po-pin2-ic { position: absolute; left: 0; right: 0; top: 9px; display: grid; place-items: center; color: #fff; }
+@keyframes poPinBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+.po2 .po-title { display: inline-flex; align-items: baseline; gap: 2px; font-size: 15px; font-weight: 700; color: #6b7280; }
+.po-dots { display: inline-flex; gap: 3px; margin-left: 3px; }
+.po-dots i { width: 4px; height: 4px; border-radius: 50%; background: #16a34a; animation: poDot 1.2s ease-in-out infinite; }
+.po-dots i:nth-child(2) { animation-delay: .15s; }
+.po-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes poDot { 0%, 80%, 100% { transform: translateY(0); opacity: .35; } 40% { transform: translateY(-4px); opacity: 1; } }
+.po2 .po-label { font-size: 26px; letter-spacing: -.01em; }
+.po2 .po-addr { padding: 8px 12px; margin-top: 4px; border-radius: 12px; background: #f6f7f8; font-size: 13.5px; }
+@media (prefers-reduced-motion: reduce) { .po2 .po-halo, .po-ripple, .po-shadow, .po-pin2, .po-dots i, .upiv3-result.is-success .upiv3-result-icon { animation: none !important; } }

@@ -71,6 +71,13 @@ export default function UpiAppPayModal({
     setTimeout(() => setQrState((q) => (q === "pending" ? "ok" : q)), 3000);
   };
   const [left, setLeft] = useState(VERIFY_SECONDS);
+  // Desktop: no UPI app to open, so the verifying screen offers the QR instead.
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    setIsDesktop(
+      !/android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent || "") && window.innerWidth >= 768,
+    );
+  }, []);
   const timerRef = useRef(null);
 
   const setParam = (val) => {
@@ -160,6 +167,11 @@ export default function UpiAppPayModal({
         onCopy={() => copyUpiId(upiId)}
         onDownloadQr={saveQrAgain}
         onLaunch={openApp}
+        onPaid={() => {
+          // Desktop: paid by scanning with their phone → straight to verifying.
+          setStage("verifying");
+          setParam("verifying");
+        }}
         onClose={close}
         onSwitchToCOD={onSwitchToCOD ? toCod : undefined}
         codAmount={codAmount}
@@ -370,9 +382,22 @@ export default function UpiAppPayModal({
               <button type="button" className="upv-btn" onClick={close}>
                 Close
               </button>
-              <button type="button" className="upv-btn pri" onClick={onLaunch}>
-                Open {appLabel}
-              </button>
+              {isDesktop ? (
+                <button
+                  type="button"
+                  className="upv-btn pri"
+                  onClick={() => {
+                    const d = document.querySelector(".upv-qr");
+                    if (d) d.open = !d.open;
+                  }}
+                >
+                  Show QR
+                </button>
+              ) : (
+                <button type="button" className="upv-btn pri" onClick={onLaunch}>
+                  Open {appLabel}
+                </button>
+              )}
             </div>
           </div>
         )}

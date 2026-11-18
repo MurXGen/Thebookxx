@@ -120,8 +120,6 @@ export default function UpiPayGuide({
   codAmount = 0,
 }) {
   const [copied, setCopied] = useState(false);
-  // Which way to pay is shown: the QR (first) or the UPI ID.
-  const [way, setWay] = useState("qr");
   const [qrPreview, setQrPreview] = useState(false);
   // Desktop: shoppers scan with their phone, so the QR leads (not the UPI ID).
   const [desktop, setDesktop] = useState(false);
@@ -324,96 +322,54 @@ export default function UpiPayGuide({
           </section>
         )}
 
-        {/* Pay-to card: our QR (tap to enlarge) + the UPI ID */}
+        {/* Two ways to pay (phones): Option 1 = QR, OR, Option 2 = UPI ID */}
         {!desktop && (
-        <section className="upg-card upg-payto">
-          <button
-            type="button"
-            className="upg-qrthumb"
-            onClick={() => setQrPreview(true)}
-            aria-label="View the QR code larger"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={QR_SRC} alt="TheBookX UPI QR code" />
-            <span className="upg-qrthumb-zoom">
-              <Maximize2 size={11} /> View
-            </span>
-          </button>
-          <div className="upg-payto-tx">
-            <span className="upg-payto-k">Pay to TheBookX</span>
-            <b className="upg-payto-amt">₹{amount}</b>
-            <span className="upg-payto-name">
-              <BadgeCheck size={13} /> Shows as <b>{PAYEE_NAMES[0]}</b> or <b>{PAYEE_NAMES[1]}</b>
-            </span>
-            <div className="upg-idrow">
-              <code>{upiId}</code>
-              <button type="button" onClick={copyAgain} data-no-busy>
-                {copied ? <><Check size={13} strokeWidth={3} /> Copied</> : <><Copy size={13} /> Copy</>}
+          <>
+            <section className="upg-card">
+              <div className="upg-h">
+                <span className="upg-opt">Option 1</span>
+                <h3>Download the QR & upload it in the app</h3>
+              </div>
+              <PayDemo label="How to pay by uploading the QR" steps={qrSteps} frames={qrFrames} />
+              <button
+                type="button"
+                className={`upg-dlbtn${qrState === "ok" ? " ok" : ""}${qrState === "failed" ? " fail" : ""}`}
+                onClick={onDownloadQr}
+                disabled={qrState === "pending"}
+                data-no-busy
+              >
+                {qrState === "pending" ? (
+                  <>
+                    <span className="upiv3-spin dark" /> Saving QR…
+                  </>
+                ) : qrState === "ok" ? (
+                  <>
+                    <Check size={16} strokeWidth={3} /> QR saved · download again
+                  </>
+                ) : qrState === "failed" ? (
+                  <>
+                    <AlertCircle size={16} /> Download failed · try again
+                  </>
+                ) : (
+                  <>
+                    <Download size={16} /> Download QR code
+                  </>
+                )}
               </button>
+            </section>
+
+            <div className="upg-or" role="separator">
+              <span>OR</span>
             </div>
-          </div>
-        </section>
-        )}
 
-        {/* Two ways to pay — QR first, then the UPI ID (phones) */}
-        {!desktop && (
-        <>
-        <div className="upg-ways" role="tablist" aria-label="How to pay">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={way === "qr"}
-            className={`upg-way${way === "qr" ? " on" : ""}`}
-            onClick={() => setWay("qr")}
-          >
-            <QrCode size={15} /> Scan / upload QR
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={way === "id"}
-            className={`upg-way${way === "id" ? " on" : ""}`}
-            onClick={() => setWay("id")}
-          >
-            <ClipboardPaste size={15} /> Paste UPI ID
-          </button>
-        </div>
-
-        {way === "qr" ? (
-          <section className="upg-card upg-waycard" key="qr">
-            <PayDemo label="How to pay by uploading the QR" steps={qrSteps} frames={qrFrames} />
-            <button
-              type="button"
-              className={`upg-dlbtn${qrState === "ok" ? " ok" : ""}${qrState === "failed" ? " fail" : ""}`}
-              onClick={onDownloadQr}
-              disabled={qrState === "pending"}
-              data-no-busy
-            >
-              {qrState === "pending" ? (
-                <>
-                  <span className="upiv3-spin dark" /> Saving QR…
-                </>
-              ) : qrState === "ok" ? (
-                <>
-                  <Check size={16} strokeWidth={3} /> QR saved · download again
-                </>
-              ) : qrState === "failed" ? (
-                <>
-                  <AlertCircle size={16} /> Download failed · try again
-                </>
-              ) : (
-                <>
-                  <Download size={16} /> Download QR code
-                </>
-              )}
-            </button>
-          </section>
-        ) : (
-          <section className="upg-card upg-waycard" key="id">
-            <PayDemo label="How to pay with the UPI ID" steps={idSteps} frames={idFrames} />
-          </section>
-        )}
-        </>
+            <section className="upg-card">
+              <div className="upg-h">
+                <span className="upg-opt">Option 2</span>
+                <h3>Pay by pasting the UPI ID</h3>
+              </div>
+              <PayDemo label="How to pay with the UPI ID" steps={idSteps} frames={idFrames} />
+            </section>
+          </>
         )}
 
         <p className="upg-safe">

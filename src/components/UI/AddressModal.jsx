@@ -67,6 +67,7 @@ import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
 import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
+import UpiPayToCard from "./UpiPayToCard";
 import { saveLastOrder } from "@/components/HomeResumeStrip";
 import { trackEvent } from "@/lib/ga";
 import { copyUpiId } from "@/utils/upiApps";
@@ -6628,27 +6629,6 @@ export function UPIPaymentModal({
     );
   }
 
-  // An app was picked at checkout → skip the QR sheet and open the 2-step pay
-  // guide (UPI ID copied / download QR) straight away. Closing it goes back
-  // to the payment options.
-  if (chosenApp) {
-    return (
-      <UpiAppLaunchRow
-        upiId={upiId}
-        amount={totalToPay}
-        chosenApp={chosenApp}
-        advance={advanceMode}
-        onWhatsApp={SHOW_UPI_WHATSAPP ? onWhatsAppFallback : undefined}
-        onAutoConfirm={onAutoConfirm}
-        onPollStatus={onPollStatus}
-        onSwitchToCOD={onSwitchToCOD}
-        codAmount={codLaterAmount}
-        onModalClose={onClose}
-        autoOpen
-      />
-    );
-  }
-
   return (
     <motion.div
       className="bill-modal-overlay upiv3-overlay"
@@ -6696,10 +6676,18 @@ export function UPIPaymentModal({
         <XmasSnow className="sw-snow" density={0.5} max={40} ink />
 
         <div className="upiv3 upiv3-scroll" ref={upiScrollRef}>
-          <span className="sw-cap">Scan to pay</span>
+          {/* Phones: compact pay-to card (the full QR card is too tall). */}
+          <UpiPayToCard
+            hero
+            className="upiv3-payto-mob"
+            amount={totalToPay}
+            upiId={upiId}
+            advance={advanceMode}
+          />
+          <span className="sw-cap upiv3-desk-only">Scan to pay</span>
           {/* QR shows immediately; a 2s loader blurs it while it "generates" */}
           <motion.div
-            className="upiv3-qr"
+            className="upiv3-qr upiv3-desk-only"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
@@ -6836,7 +6824,7 @@ export function UPIPaymentModal({
           </motion.div>
 
           {/* Trust footer */}
-          <span className="sw-cap">Safe &amp; tracked</span>
+          <span className="sw-cap upiv3-desk-only">Safe &amp; tracked</span>
           <div className="upiv3-trust">
             <span>
               <ShieldCheck size={13} /> 256-bit encrypted

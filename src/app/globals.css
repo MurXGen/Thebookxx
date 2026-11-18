@@ -71644,3 +71644,32 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 /* Bag pay bar: compact "Proceed" on the same row as the amounts */
 .bg-paybar > .bg-paybar-left { flex: 1 1 0; min-width: 0; }
 .bg-paybar > .bg-paybar-btn { flex: none !important; margin-left: auto; min-height: 44px; padding: 0 22px; white-space: nowrap; }
+
+/* QR screen: compact pay-to card on phones, full QR card on desktop */
+.upiv3-payto-mob { margin-bottom: 4px; }
+@media (min-width: 769px) { .upiv3-payto-mob { display: none !important; } }
+@media (max-width: 768px) { .upiv3-desk-only { display: none !important; } }
+
+/* QR screen (phones): QR on the left (fades in), details on the right, hint below */
+.upg-payto.hero { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px 14px; padding: 14px; }
+.upg-payto.hero .upg-qrthumb { width: min(148px, 40vw); height: min(148px, 40vw); padding: 8px; border-radius: 16px; }
+.upg-payto.hero .upg-qrthumb img { animation: upgQrReveal 1s ease-out both; }
+.upg-payto.hero .upg-payto-amt { font-size: 26px; }
+.upg-payto.hero .upg-idrow.is-copied { border-style: solid; border-color: #1ba672; background: #f0fbf6; }
+.upg-payto-how { grid-column: 1 / -1; margin: 0; padding: 8px 10px; border-radius: 10px; background: #f9fafb; font-size: 12.5px; font-weight: 600; color: #4b5563; line-height: 1.4; }
+.upg-payto-how b { color: #0f5f43; }
+@keyframes upgQrReveal { from { opacity: 0; filter: blur(8px); transform: scale(.94); } to { opacity: 1; filter: none; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .upg-payto.hero .upg-qrthumb img { animation: none; } }
+/* Safe & tracked: no caption, tight row on phones */
+@media (max-width: 768px) {
+  .upiv3-modal .upiv3-trust { margin-top: 10px; padding: 8px 12px !important; }
+}
+
+/* QR screen: water-ripple on the "Open <app>" button to draw the tap */
+.upiv3-modal .upiopen-btn { position: relative; overflow: hidden; isolation: isolate; animation: upiBtnBreath 2.4s ease-in-out infinite; }
+.upiv3-modal .upiopen-btn::before,
+.upiv3-modal .upiopen-btn::after { content: ""; position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: rgba(255, 255, 255, 0.45); z-index: -1; transform: scale(0); opacity: 0; animation: upiRipple 2.4s ease-out infinite; pointer-events: none; }
+.upiv3-modal .upiopen-btn::after { animation-delay: 1.2s; }
+@keyframes upiRipple { 0% { transform: scale(0); opacity: .7; } 100% { transform: scale(16); opacity: 0; } }
+@keyframes upiBtnBreath { 0%, 100% { box-shadow: 0 8px 20px -12px rgba(27, 166, 114, .9), 0 0 0 0 rgba(27, 166, 114, .45); } 50% { box-shadow: 0 8px 20px -12px rgba(27, 166, 114, .9), 0 0 0 8px rgba(27, 166, 114, 0); } }
+@media (prefers-reduced-motion: reduce) { .upiv3-modal .upiopen-btn, .upiv3-modal .upiopen-btn::before, .upiv3-modal .upiopen-btn::after { animation: none; } }

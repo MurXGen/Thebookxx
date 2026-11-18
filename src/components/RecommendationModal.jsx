@@ -30,7 +30,7 @@ import { useStore } from "@/context/StoreContext";
 import { trackCartEvent } from "@/utils/cartEvents";
 import { showToast } from "@/context/ToastContext";
 import { getCatalogueData } from "@/utils/catalogueUtils";
-import { getDeliveryCharge, getCodFee } from "@/utils/cartOffers";
+import { getDeliveryCharge, getCodFee, freeDeliveryAt } from "@/utils/cartOffers";
 
 // Get all unique categories from books with their frequency
 const getAllCategoriesWithFrequency = () => {
@@ -70,7 +70,6 @@ const MIN_BUDGET = 70;
 const MAX_BUNDLE = 6;
 // Below free-delivery level the budget is for the books alone (delivery is
 // shown as an extra) — a ₹150 budget means books under ₹150.
-const FREE_DELIVERY_AT = 149;
 const STRETCH_COUPON = "WELCOME10";
 const SUPPORT_WA = "917710892108";
 const SUPPORT_EMAIL = "uskillbook@gmail.com";
@@ -264,7 +263,7 @@ const payable = (amount, hasRupee, cod, budget, coupon = null) => {
   const net = amount - off;
   const delivery = getDeliveryCharge(net, false, hasRupee);
   const codFee = cod ? getCodFee(net + delivery) : 0;
-  const booksOnly = budget != null && budget < FREE_DELIVERY_AT;
+  const booksOnly = budget != null && budget < freeDeliveryAt();
   return {
     off,
     delivery,

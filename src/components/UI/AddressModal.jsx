@@ -1052,6 +1052,46 @@ export default function AddressModal({
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   };
 
+  // Payment options: once per opening, glide slowly from the top to the
+  // bottom so the shopper sees every section (add-ons → wallet → delivery →
+  // payment). Any touch / wheel / key stops it.
+  useEffect(() => {
+    if (!showPaySelect) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    let stopped = false;
+    const stop = () => {
+      stopped = true;
+      cancelAnimationFrame(raf);
+    };
+    const start = setTimeout(() => {
+      const el = paySelRef.current;
+      if (!el || stopped) return;
+      const to = el.scrollHeight - el.clientHeight;
+      if (to < 40) return;
+      el.scrollTop = 0;
+      const dur = Math.min(5200, Math.max(3200, to * 4.5)); // slow & steady
+      const t0 = performance.now();
+      const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+      const step = (now) => {
+        if (stopped) return;
+        const t = Math.min(1, (now - t0) / dur);
+        el.scrollTop = to * ease(t);
+        if (t < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+      el.addEventListener("pointerdown", stop, { once: true });
+      el.addEventListener("wheel", stop, { once: true, passive: true });
+      el.addEventListener("touchstart", stop, { once: true, passive: true });
+      window.addEventListener("keydown", stop, { once: true });
+    }, 700);
+    return () => {
+      clearTimeout(start);
+      stop();
+      window.removeEventListener("keydown", stop);
+    };
+  }, [showPaySelect]);
+
   // What Faster costs on top of Standard (the priority fee).
   const fasterExtra = Math.max(
     0,

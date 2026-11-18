@@ -51,7 +51,9 @@ import {
   getDeliveryDescription,
   getOriginalCharge,
   getMinCheckoutAmount,
-  FREE_DELIVERY_AT as FREE_DELIVERY_AT_NORMAL,
+  freeDeliveryAt,
+  FREE_DELIVERY_OFFER_AT,
+  GIFTS_CLAIMED_KEY,
   FREE_DELIVERY_AT_ONE_RUPEE,
   couponDeliveryFee,
 } from "@/utils/cartOffers";
@@ -741,7 +743,8 @@ function BagContent() {
   // shopper can pay that small gap as wallet credit (used on their next order)
   // instead of a delivery fee. Shown only when the gap is ≤ ₹TOPUP_MAX.
   const TOPUP_MAX = 50;
-  const FREE_DELIVERY_AT = hasOneRupeeItem ? FREE_DELIVERY_AT_ONE_RUPEE : FREE_DELIVERY_AT_NORMAL;
+  // ₹249 by default; ₹149 once the bag's gift offer has been claimed.
+  const FREE_DELIVERY_AT = hasOneRupeeItem ? FREE_DELIVERY_AT_ONE_RUPEE : freeDeliveryAt();
   // Gift wrap add-on price by order value: +₹15 up to ₹500, +₹35 above.
   const giftCharge = giftWrap ? (totalDiscounted > 500 ? 35 : 15) : 0;
   const baseCheckoutValue = totalDiscounted + giftCharge;
@@ -829,7 +832,7 @@ function BagContent() {
   const [giftsClaimed, setGiftsClaimed] = useState(false);
   useEffect(() => {
     try {
-      if (sessionStorage.getItem("tbx_gifts_claimed")) setGiftsClaimed(true);
+      if (sessionStorage.getItem(GIFTS_CLAIMED_KEY)) setGiftsClaimed(true);
     } catch {
       /* ignore */
     }
@@ -946,16 +949,18 @@ function BagContent() {
     setShowBmOffer(false);
     setGiftsClaimed(true);
     try {
-      sessionStorage.setItem("tbx_gifts_claimed", "1");
+      sessionStorage.setItem(GIFTS_CLAIMED_KEY, "1");
     } catch {
       /* ignore */
     }
     setBagBookmarks((n) => Math.max(bagFreeBookmarks, n));
     burstConfetti(false);
+    // Claiming switches free delivery to the ₹149 offer.
+    const freeNow = !hasOneRupeeItem && totalDiscounted >= FREE_DELIVERY_OFFER_AT;
     showToast(
-      baseDeliveryFee === 0
+      freeNow
         ? `Free delivery + ${bagFreeBookmarks} free bookmarks added to your order 🔖`
-        : `${bagFreeBookmarks} free bookmarks added · add ₹${Math.max(0, Math.ceil(FREE_DELIVERY_AT - totalDiscounted))} more for free delivery`,
+        : `${bagFreeBookmarks} free bookmarks added · add ₹${Math.max(0, Math.ceil(FREE_DELIVERY_OFFER_AT - totalDiscounted))} more for free delivery`,
       "success",
     );
     trackEvent("bag_bookmark_offer_claimed", { cart_value: finalPayable });
@@ -1652,9 +1657,9 @@ ${itemsBlock}${qrLines}
         variant="bookmark"
         open={showBmOffer && cartBooks.length > 0}
         freeBookmarks={bagFreeBookmarks}
-        deliveryFree={baseDeliveryFee === 0}
-        deliveryShort={Math.max(0, Math.ceil(FREE_DELIVERY_AT - totalDiscounted))}
-        freeAt={FREE_DELIVERY_AT}
+        deliveryFree={!hasOneRupeeItem && totalDiscounted >= FREE_DELIVERY_OFFER_AT}
+        deliveryShort={Math.max(0, Math.ceil(FREE_DELIVERY_OFFER_AT - totalDiscounted))}
+        freeAt={FREE_DELIVERY_OFFER_AT}
         onApply={availBookmark}
         onClose={() => {
           setShowBmOffer(false);
@@ -1747,6 +1752,8 @@ ${itemsBlock}${qrLines}
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
         <>
+          {/* Savings first, above the books */}
+          {cartBooks.length > 0 && <SavingsGlow amount={totalSaved} mrp={totalOriginal} />}
           <div
             className={`cart-items-panel bg-cart${giftWrap ? " gifted" : ""}${
               giftsClaimed && bagBookmarks > 0 ? " freebies" : ""
@@ -1921,7 +1928,6 @@ ${itemsBlock}${qrLines}
           {/* Savings — slim green strip (the "add more" strip docks on the pay bar) */}
           {/* Animated "how to checkout" walkthrough (hideable) */}
           {cartBooks.length > 0 && <CheckoutGuide />}
-          {cartBooks.length > 0 && <SavingsGlow amount={totalSaved} mrp={totalOriginal} />}
 
           {cartBooks.length > 0 && (
             <TopUpCard
@@ -2084,6 +2090,12 @@ ${itemsBlock}${qrLines}
                   {couponOff > 0 && <s className="bg-paybar-was">₹{toPayBeforeCoupon}</s>}
                   <span className={couponOff > 0 ? "bg-paybar-new" : undefined}>₹{bagToPay}</span>
                 </b>
+                {/* How far from free delivery (₹149 with the claimed gift, else ₹249) */}
+                {baseDeliveryFee > 0 && totalDiscounted <= 1000 && FREE_DELIVERY_AT > totalDiscounted && (
+                  <span className="bg-paybar-free">
+                    Add ₹{Math.ceil(FREE_DELIVERY_AT - totalDiscounted - walletTopUp)} more for free delivery
+                  </span>
+                )}
                 <em>View bill ▴</em>
               </button>
               <button

@@ -71620,3 +71620,16 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .cod-switch-link { align-self: center; margin: 2px auto 8px; padding: 6px 4px; border: 0; background: none; color: #6b7280; font: inherit; font-size: 12.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .cod-switch-link:hover { color: #111827; }
 .upg-qrprev-id { width: 100%; margin-top: 4px !important; }
+
+/* Bag pay bar: small "Add ₹X more for free delivery" hint under To pay */
+.bg-paybar-free { display: block; font-size: 11px; font-weight: 700; color: #b45309; line-height: 1.2; white-space: nowrap; }
+
+/* Bag: "Pack this as a gift" row sits flush (no rounded corners) */
+.bg-cart .bg-gift { border-radius: 0 !important; }
+
+/* Payment options order: route · Make it special · Use wallet · Delivery type · Payment method */
+.pay-sel > .sw-route { order: -10; }
+.pay-sel > .pa-grid-block { order: -6; }
+.pay-sel > .pay-sel-coins { order: -5; }
+.pay-sel > .dtype { order: -4; }
+.pay-sel > .pay-methods { order: -3; }

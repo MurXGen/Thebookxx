@@ -1,18 +1,32 @@
 // utils/cartOffers.js
 
-// Free standard delivery from this order value (carts WITHOUT a ₹1 book).
-// ₹1-book carts keep their own ₹399 threshold.
-export const FREE_DELIVERY_AT = 149;
-export const FREE_DELIVERY_AT_ONE_RUPEE = 399;
-// Free delivery from ₹149 is an OFFER for orders under ₹249: like the other
-// cart offers it doesn't stack with a coupon. With a coupon applied, orders of
-// ₹149–₹248 pay the normal ₹69 delivery again (₹249+ stays free either way).
+// Free standard delivery (carts WITHOUT a ₹1 book) is from ₹249 by default.
+// Claiming the bag's "Free delivery + free bookmarks" gift lowers it to ₹149
+// for that browser session (sessionStorage flag set by the bag). ₹1-book carts
+// keep their own ₹399 threshold.
 export const FREE_DELIVERY_BASE_AT = 249;
+export const FREE_DELIVERY_OFFER_AT = 149;
+export const FREE_DELIVERY_AT = FREE_DELIVERY_BASE_AT; // default, for static copy
+export const FREE_DELIVERY_AT_ONE_RUPEE = 399;
+export const GIFTS_CLAIMED_KEY = "tbx_gifts_claimed";
+export const freeDeliveryOfferOn = () => {
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem(GIFTS_CLAIMED_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+// The threshold that applies right now (₹149 once the gift is claimed).
+export const freeDeliveryAt = () =>
+  freeDeliveryOfferOn() ? FREE_DELIVERY_OFFER_AT : FREE_DELIVERY_BASE_AT;
+// Like the other cart offers, the ₹149 offer doesn't stack with a coupon:
+// with a coupon applied, ₹149–₹248 orders pay the normal ₹69 again.
 export const BELOW_FREE_FEE = 69;
 export const couponDeliveryFee = (orderAmount = 0, hasOneRupeeItem = false) => {
   const amt = Number(orderAmount) || 0;
-  if (hasOneRupeeItem) return 0;
-  return amt >= FREE_DELIVERY_AT && amt < FREE_DELIVERY_BASE_AT ? BELOW_FREE_FEE : 0;
+  if (hasOneRupeeItem || !freeDeliveryOfferOn()) return 0;
+  return amt >= FREE_DELIVERY_OFFER_AT && amt < FREE_DELIVERY_BASE_AT ? BELOW_FREE_FEE : 0;
 };
 
 // Get base offers based on whether ₹1 items are present
@@ -64,14 +78,14 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
     return [
       {
         min: 0,
-        target: FREE_DELIVERY_AT,
+        target: freeDeliveryAt(),
         type: "free_shipping",
         reward: "FREE delivery",
         message: "Add ₹{remaining} more for FREE delivery",
         icon: "gift",
       },
       {
-        min: FREE_DELIVERY_AT,
+        min: freeDeliveryAt(),
         target: 450,
         type: "flat",
         value: 50,
@@ -159,7 +173,7 @@ export const getDeliveryCharge = (
   } else if (hasOneRupeeItem) {
     standard = amt < 399 ? 100 : 0;
   } else {
-    standard = amt < FREE_DELIVERY_AT ? 69 : 0;
+    standard = amt < freeDeliveryAt() ? 69 : 0;
   }
 
   // Faster / Express = the standard charge (incl. any Handling & Care) PLUS a
@@ -193,7 +207,7 @@ export const getDeliveryLabel = (
     return "Free Delivery" + express;
   }
   // Normal carts
-  if (amt < FREE_DELIVERY_AT) return "Delivery" + express; // ₹69
+  if (amt < freeDeliveryAt()) return "Delivery" + express; // ₹69
   return "Free Delivery" + express;
 };
 
@@ -220,8 +234,8 @@ export const getDeliveryDescription = (
     if (amt < 399) return "₹100 delivery — free on orders above ₹399." + eta;
     return "Free delivery on this order." + eta;
   }
-  if (amt < FREE_DELIVERY_AT)
-    return `₹69 delivery — free on orders above ₹${FREE_DELIVERY_AT}.` + eta;
+  if (amt < freeDeliveryAt())
+    return `₹69 delivery — free on orders above ₹${freeDeliveryAt()}.` + eta;
   return "Free delivery on this order." + eta;
 };
 

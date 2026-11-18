@@ -71640,3 +71640,7 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .bg-paybar-plus { font-size: 13px; font-weight: 700; color: var(--dark-50, #6b7280); }
 .bg-paybar-del { font-size: 13px; font-weight: 800; color: #374151; white-space: nowrap; }
 .bg-paybar-del.free { color: #1ba672; }
+
+/* Bag pay bar: compact "Proceed" on the same row as the amounts */
+.bg-paybar > .bg-paybar-left { flex: 1 1 0; min-width: 0; }
+.bg-paybar > .bg-paybar-btn { flex: none !important; margin-left: auto; min-height: 44px; padding: 0 22px; white-space: nowrap; }

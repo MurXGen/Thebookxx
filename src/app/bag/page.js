@@ -2127,7 +2127,7 @@ ${itemsBlock}${qrLines}
                 {isShortening
                   ? "Preparing…"
                   : canCheckout
-                    ? `Proceed to pay ₹${bagToPay}`
+                    ? "Proceed"
                     : `Add ₹${amountNeededToCheckout} more`}
               </button>
             </div>

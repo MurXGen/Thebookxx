@@ -2086,10 +2086,30 @@ ${itemsBlock}${qrLines}
                 <small>
                   To pay{totalSaved > 0 ? ` · ₹${totalSaved} saved` : ""}
                 </small>
-                <b>
-                  {couponOff > 0 && <s className="bg-paybar-was">₹{toPayBeforeCoupon}</s>}
-                  <span className={couponOff > 0 ? "bg-paybar-new" : undefined}>₹{bagToPay}</span>
-                </b>
+                {/* Cart value + delivery (+ add-ons) instead of one total, so
+                    shoppers see what the delivery charge is. */}
+                {(() => {
+                  const del =
+                    (billFaster ? fasterDeliveryCharge : standardDeliveryCharge) +
+                    (couponWins ? couponDelFee : 0);
+                  const extras = giftCharge + bagBookmarkCharge + walletTopUp + bundledQrTotal;
+                  const items = Math.max(0, Math.round(bagToPay - del - extras));
+                  return (
+                    <span className="bg-paybar-split">
+                      <b className={couponOff > 0 ? "bg-paybar-new" : undefined}>₹{items}</b>
+                      <span className="bg-paybar-plus">+</span>
+                      <span className={`bg-paybar-del${del > 0 ? "" : " free"}`}>
+                        {del > 0 ? `₹${del} delivery` : "FREE delivery"}
+                      </span>
+                      {extras > 0 && (
+                        <>
+                          <span className="bg-paybar-plus">+</span>
+                          <span className="bg-paybar-del">₹{extras} add-ons</span>
+                        </>
+                      )}
+                    </span>
+                  );
+                })()}
                 {/* How far from free delivery (₹149 with the claimed gift, else ₹249) */}
                 {baseDeliveryFee > 0 && totalDiscounted <= 1000 && FREE_DELIVERY_AT > totalDiscounted && (
                   <span className="bg-paybar-free">

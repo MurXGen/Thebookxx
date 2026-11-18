@@ -71633,3 +71633,10 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .pay-sel > .pay-sel-coins { order: -5; }
 .pay-sel > .dtype { order: -4; }
 .pay-sel > .pay-methods { order: -3; }
+
+/* Bag pay bar: "₹129 + ₹69 delivery" instead of one total */
+.bg-paybar-split { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 0 5px; line-height: 1.15; }
+.bg-paybar-split b { font-size: 19px; font-weight: 800; }
+.bg-paybar-plus { font-size: 13px; font-weight: 700; color: var(--dark-50, #6b7280); }
+.bg-paybar-del { font-size: 13px; font-weight: 800; color: #374151; white-space: nowrap; }
+.bg-paybar-del.free { color: #1ba672; }

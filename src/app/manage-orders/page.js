@@ -1,7 +1,14 @@
 // app/manage-orders/page.js
 "use client";
 
-import VisitorsPanel from "@/components/manage-orders/VisitorsPanel";
+import dynamic from "next/dynamic";
+import { cartWhatsApp } from "@/utils/cartRecovery";
+import OrdersMap from "@/components/manage-orders/OrdersMap";
+// Visitors (abandoned-cart analytics) loads only when its tab is opened.
+const VisitorsPanel = dynamic(
+  () => import("@/components/manage-orders/VisitorsPanel"),
+  { ssr: false, loading: () => <p className="vz-empty">Loading abandoned carts…</p> },
+);
 import {
   useState,
   useEffect,
@@ -1526,33 +1533,6 @@ const splitLeadEmoji = (label) => {
   const str = String(label || "");
   const m = str.match(/^(\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*)\s*/u);
   return m ? [m[1], str.slice(m[0].length)] : ["✉️", str];
-};
-
-// Abandoned-cart "Books" snapshot ("Name, Other Name x2, …") → catalogue
-// ids. Names can contain commas, so match known titles longest-first.
-const CART_BOOKS_BY_LEN = [...(ALL_BOOKS || [])]
-  .filter((b) => b && b.id && b.name)
-  .sort((a, b) => b.name.length - a.name.length);
-const parseCartBooks = (str) => {
-  let rest = String(str || "").trim();
-  const out = [];
-  while (rest) {
-    const hit = CART_BOOKS_BY_LEN.find((b) =>
-      rest.toLowerCase().startsWith(b.name.toLowerCase()),
-    );
-    if (!hit) {
-      const cut = rest.indexOf(", ");
-      if (cut < 0) break;
-      rest = rest.slice(cut + 2);
-      continue;
-    }
-    rest = rest.slice(hit.name.length);
-    const q = rest.match(/^ x(\d+)/);
-    if (q) rest = rest.slice(q[0].length);
-    out.push({ id: hit.id, name: hit.name, qty: q ? Number(q[1]) : 1 });
-    rest = rest.replace(/^,\s*/, "");
-  }
-  return out;
 };
 
 const isActiveOrder = (order) => {
@@ -4812,37 +4792,12 @@ export default function ManageOrdersPage() {
   // Open carts link to /bag?shared=… which puts their exact books back in
   // the bag in one tap.
   const whatsappCart = (c) => {
-    const phone = String(c?.phone || "").replace(/\D/g, "").slice(-10);
-    if (phone.length !== 10) {
+    const wa = cartWhatsApp(c);
+    if (!wa) {
       showToast("No phone number for this cart yet.", "error");
       return;
     }
-    const SITE = "https://www.thebookx.in";
-    const first = (c?.name || "").trim().split(/\s+/)[0] || "there";
-    const converted = /convert/i.test(String(c?.status || ""));
-    let msg;
-    if (converted && c?.orderId) {
-      msg =
-        `Hi ${first} 👋 Thanks for ordering from TheBookX! 📚\n\n` +
-        `Track your order here:\n${SITE}/profile/${phone}/orders/${encodeURIComponent(c.orderId)}`;
-    } else {
-      const picks = parseCartBooks(c?.books);
-      const shown = picks[0]?.name;
-      const more = picks.length > 1 ? ` + ${picks.length - 1} more` : "";
-      const link = picks.length
-        ? `${SITE}/bag?shared=${picks.map((p) => `${p.id}:${p.qty}`).join(",")}`
-        : `${SITE}/bag`;
-      msg =
-        `Hi ${first} 👋 Your books are still waiting in your TheBookX bag 📚\n\n` +
-        (shown ? `*${shown}*${more}\n\n` : "") +
-        `Tap to add them back & checkout in a minute 👇\n${link}\n\n` +
-        `Free delivery across India 🚚 Reply here if you need any help!`;
-    }
-    window.open(
-      `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
+    window.open(wa.url, "_blank", "noopener,noreferrer");
   };
   const addNote = async () => {
     const title = noteTitle.trim();
@@ -20943,6 +20898,10 @@ export default function ManageOrdersPage() {
                       </div>
                     </div>
                   )}
+
+                  {/* Where the orders in view come from — follows every
+                      filter and search above. Collapsible; map loads on open. */}
+                  <OrdersMap orders={filteredOrders} dateOf={getOrderDate} onOpenOrder={setBillOrderId} />
 
                   {orderView === "cards" ? (
                     <>

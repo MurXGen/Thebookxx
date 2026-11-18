@@ -1,13 +1,17 @@
 "use client";
 
-// Manage-orders → Visitors → Insights. Cart analytics from the "Abandoned
-// Cart" sheet tab only (via /api/abandoned-cart): how many bags become
-// orders, where they leak (size, value, bill, contact), which books get left
-// behind, what's recoverable right now — and a short list of what to improve,
-// worked out from those numbers. Read-only.
+// Manage-orders → Visitors. Abandoned-cart analytics from the "Abandoned
+// Cart" sheet tab only (via /api/abandoned-cart). Rows are merged to ONE cart
+// per shopper — every session on the same device, and the same phone number
+// across devices — before anything is counted. Shows conversion, timing (gap
+// between new carts, time active in the bag), the latest abandoned cart, where
+// bags leak, which books get attention, what to improve, and every cart in a
+// compact table (loaded in pages as you scroll). Read-only.
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { RefreshCw, Loader2, AlertTriangle, Lightbulb, CheckCircle2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { RefreshCw, Loader2, AlertTriangle, Lightbulb, CheckCircle2, Search } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
+import { parseCartBooks, cartWhatsApp } from "@/utils/cartRecovery";
 
 const DAY = 864e5;
 const RANGES = [
@@ -32,12 +36,100 @@ const toMs = (s) => {
   if (!m) return 0;
   return new Date(+m[3], +m[2] - 1, +m[1], +m[4], +m[5], +(m[6] || 0)).getTime();
 };
-// "Title A, Title B x2" → titles.
-const titlesOf = (s) =>
-  String(s || "")
-    .split(",")
-    .map((t) => t.replace(/\s+x\d+\s*$/i, "").trim())
-    .filter(Boolean);
+// Books snapshot → titles (catalogue-aware, so titles with commas stay whole).
+const titlesOf = (s) => parseCartBooks(s).map((b) => b.name);
+
+// Duration → "2 min", "1 h 5 min", "3 d".
+const dur = (ms) => {
+  if (!(ms > 0)) return "—";
+  const m = Math.round(ms / 60000);
+  if (m < 1) return `${Math.max(1, Math.round(ms / 1000))} s`;
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} h${m % 60 ? ` ${m % 60} min` : ""}`;
+  const d = Math.floor(h / 24);
+  return `${d} d${h % 24 ? ` ${h % 24} h` : ""}`;
+};
+const ago = (ms) => (ms ? `${dur(Date.now() - ms)} ago` : "—");
+const fmtTime = (ms) =>
+  ms
+    ? new Date(ms).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })
+    : "—";
+const dayLabel = (ms) => {
+  const d = new Date(ms);
+  d.setHours(0, 0, 0, 0);
+  const t = new Date();
+  t.setHours(0, 0, 0, 0);
+  const diff = Math.round((t - d) / DAY);
+  if (diff === 0) return "Today";
+  if (diff === 1) return "Yesterday";
+  return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+};
+
+// One cart per shopper: union rows that share a device id (several sessions /
+// duplicate rows on one device) or a phone number (same person, two devices).
+// The newest row is the live bag; first-added is the earliest; converted if
+// any row converted; click counters take the highest.
+function mergeCarts(rows) {
+  const parent = new Map();
+  const find = (k) => {
+    while (parent.get(k) !== k) {
+      parent.set(k, parent.get(parent.get(k)));
+      k = parent.get(k);
+    }
+    return k;
+  };
+  const union = (a, b) => {
+    if (!parent.has(a)) parent.set(a, a);
+    if (!parent.has(b)) parent.set(b, b);
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent.set(ra, rb);
+  };
+  const keysOf = (r) => {
+    const ks = [`d:${r.deviceId || r.cartKey}`];
+    if (/^\d{10}$/.test(r.phone || "")) ks.push(`p:${r.phone}`);
+    return ks;
+  };
+  rows.forEach((r) => {
+    const ks = keysOf(r);
+    ks.forEach((k) => union(ks[0], k));
+  });
+  const groups = new Map();
+  rows.forEach((r) => {
+    const g = find(keysOf(r)[0]);
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(r);
+  });
+  return [...groups.values()].map((list) => {
+    const byNew = [...list].sort((a, b) => b.upd - a.upd);
+    const live = byNew[0];
+    const pick = (f) => byNew.map((r) => r[f]).find((v) => v) || "";
+    const conv = byNew.find((r) => r.done);
+    return {
+      ...live,
+      name: pick("name"),
+      phone: pick("phone"),
+      orderId: conv?.orderId || pick("orderId"),
+      status: conv ? conv.status || "Converted" : live.status,
+      done: !!conv,
+      at: Math.min(...list.map((r) => r.at || Infinity).filter(Number.isFinite)) || live.at,
+      upd: live.upd,
+      suggestClicks: Math.max(...list.map((r) => r.suggestClicks || 0)),
+      viewBillClicks: Math.max(...list.map((r) => r.viewBillClicks || 0)),
+      handlingInfoClicks: Math.max(...list.map((r) => r.handlingInfoClicks || 0)),
+      rowsMerged: list.length,
+      devices: new Set(list.map((r) => r.deviceId || r.cartKey)).size,
+    };
+  });
+}
+const PAGE = 40;
+const REC_FILTERS = [
+  ["open", "Open"],
+  ["all", "All"],
+  ["done", "Ordered"],
+  ["empty", "Emptied"],
+];
 const sourceOf = (src) => {
   const s = String(src || "").trim();
   if (!s || s === "/") return "Home page";
@@ -70,6 +162,10 @@ export default function InsightsPanel() {
   const [range, setRange] = useState("30");
   const [bookSort, setBookSort] = useState("left");
   const [showAll, setShowAll] = useState(false);
+  const [recFilter, setRecFilter] = useState("open");
+  const [recQuery, setRecQuery] = useState("");
+  const [recShown, setRecShown] = useState(PAGE);
+  const sentinel = useRef(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -94,14 +190,16 @@ export default function InsightsPanel() {
     const now = Date.now();
     const days = RANGES.find((r) => r[0] === range)?.[2];
     const since = days ? now - days * DAY : 0;
-    const all = rows
-      .map((c) => ({
+    const merged = mergeCarts(
+      rows.map((c) => ({
         ...c,
         at: toMs(c.firstAdded) || toMs(c.lastUpdated),
         upd: toMs(c.lastUpdated) || toMs(c.firstAdded),
         done: /convert/i.test(c.status) || !!c.orderId,
-      }))
-      .filter((c) => !since || c.at >= since);
+      })),
+    );
+    const dupRows = rows.length - merged.length;
+    const all = merged.filter((c) => !since || c.at >= since);
     const emptied = all.filter((c) => c.itemCount <= 0 && !c.done);
     // Everything below is about real bags (at least one book, or ordered).
     const carts = all.filter((c) => c.itemCount > 0 || c.done);
@@ -186,13 +284,37 @@ export default function InsightsPanel() {
       }
     });
 
+    // Timing: gap between one shopper starting a cart and the next one.
+    const arrivals = all.map((c) => c.at).filter(Boolean).sort((x, y) => x - y);
+    const gaps = arrivals.slice(1).map((t, i) => t - arrivals[i]);
+    const sortedGaps = [...gaps].sort((x, y) => x - y);
+    let longest = { ms: 0, from: 0 };
+    gaps.forEach((g, i) => {
+      if (g > longest.ms) longest = { ms: g, from: arrivals[i] };
+    });
+    const hours = Array(24).fill(0);
+    arrivals.forEach((t) => (hours[new Date(t).getHours()] += 1));
+    const peak = hours.indexOf(Math.max(...hours));
+    const active = open.map((c) => c.upd - c.at).filter((x) => x > 0).sort((x, y) => x - y);
+    const timing = {
+      avgGap: gaps.length ? gaps.reduce((s2, g) => s2 + g, 0) / gaps.length : 0,
+      medGap: sortedGaps.length ? sortedGaps[Math.floor(sortedGaps.length / 2)] : 0,
+      longest,
+      peak: arrivals.length ? peak : null,
+      // Median, so shoppers who return days later don't skew it.
+      avgActive: active.length ? active[Math.floor(active.length / 2)] : 0,
+      perDay: arrivals.length ? arrivals.length / Math.max(1, (now - (since || arrivals[0])) / DAY) : 0,
+      sinceLast: arrivals.length ? now - arrivals[arrivals.length - 1] : 0,
+    };
+    const lastOpen = [...open].sort((x, y) => y.upd - x.upd)[0] || null;
+
     // ── What to improve — rules over the numbers above ─────────────────
     const tips = [];
     const add = (tone, title, body) => tips.push({ tone, title, body });
     const hot = recover[0].value + recover[1].value;
     const hotN = recover[0].reach + recover[1].reach;
     if (hotN > 0)
-      add("act", `Recover ${inr(hot)} in the last 3 days`, `${hotN} open bag${hotN === 1 ? "" : "s"} from the last 3 days have a phone number. Send the WhatsApp nudge from Track orders → Abandoned carts today — fresh bags convert best.`);
+      add("act", `Recover ${inr(hot)} in the last 3 days`, `${hotN} open bag${hotN === 1 ? "" : "s"} from the last 3 days have a phone number. Send the WhatsApp nudge from the table below today — fresh bags convert best.`);
     if (kpi.carts >= MIN_N && kpi.phoneShare < 50)
       add("warn", `Only ${kpi.phoneShare}% of bags have a phone number`, `The rest can't be followed up. Ask for a WhatsApp number earlier — when a book is added or with the offer timer — not only at checkout.`);
     const billY = byAction[0], billN = byAction[1];
@@ -224,8 +346,50 @@ export default function InsightsPanel() {
     if (!tips.length && kpi.carts)
       add("good", "No obvious leaks in this range", "Keep nudging fresh bags on WhatsApp and watch the books table for titles people leave behind.");
 
-    return { kpi, recover, bySize, byValue, bySource, byAction, bookList, daily, tips };
+    return { kpi, recover, bySize, byValue, bySource, byAction, bookList, daily, tips, timing, lastOpen, all, dupRows, merged: merged.length };
   }, [rows, range]);
+
+  // Every cart (merged) for the records table: filter + search, newest first.
+  const records = useMemo(() => {
+    const q = recQuery.trim().toLowerCase();
+    const isEmpty = (c) => c.itemCount <= 0 && !c.done;
+    return a.all
+      .filter((c) =>
+        recFilter === "open"
+          ? !c.done && !isEmpty(c)
+          : recFilter === "done"
+            ? c.done
+            : recFilter === "empty"
+              ? isEmpty(c)
+              : true,
+      )
+      .filter(
+        (c) =>
+          !q ||
+          `${c.name} ${c.phone} ${c.books} ${c.orderId}`.toLowerCase().includes(q),
+      )
+      .sort((x, y) => y.upd - x.upd);
+  }, [a.all, recFilter, recQuery]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setRecShown(PAGE), 0);
+    return () => clearTimeout(t);
+  }, [recFilter, recQuery, range]);
+
+  // Lazy-render the table: next page when the sentinel scrolls into view.
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (es) => {
+        if (es.some((e) => e.isIntersecting))
+          setRecShown((n) => (n < records.length ? n + PAGE : n));
+      },
+      { rootMargin: "400px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [records.length, recShown]);
 
   const books = useMemo(() => {
     const by = {
@@ -299,6 +463,87 @@ export default function InsightsPanel() {
           <b>{k.phoneShare}%</b>
           <span>Bags with a phone number</span>
         </div>
+      </div>
+
+      {a.dupRows > 0 && (
+        <p className="vzi-dedupe">
+          One cart per shopper: {a.dupRows} duplicate row{a.dupRows === 1 ? "" : "s"} (same device or same phone) merged — {a.merged} unique carts in the sheet.
+        </p>
+      )}
+
+      <div className="vzi-grid">
+        <section className="vzi-card">
+          <h3 className="vzi-h">Timing</h3>
+          <p className="vzi-sub">How often a new shopper starts a bag, and how long they stay</p>
+          <div className="vzi-kv vzi-kv3">
+            <div>
+              <b>{dur(a.timing.avgGap)}</b>
+              <span>Avg gap between new carts</span>
+            </div>
+            <div>
+              <b>{dur(a.timing.medGap)}</b>
+              <span>Typical gap (median)</span>
+            </div>
+            <div>
+              <b>{dur(a.timing.sinceLast)}</b>
+              <span>Since the last new cart</span>
+            </div>
+            <div>
+              <b>{dur(a.timing.longest.ms)}</b>
+              <span>Longest idle · from {fmtTime(a.timing.longest.from)}</span>
+            </div>
+            <div>
+              <b>{dur(a.timing.avgActive)}</b>
+              <span>Typical time in bag before leaving</span>
+            </div>
+            <div>
+              <b>{a.timing.peak == null ? "—" : `${((a.timing.peak + 11) % 12) + 1} ${a.timing.peak < 12 ? "am" : "pm"}`}</b>
+              <span>Busiest hour · {a.timing.perDay.toFixed(1)} carts/day</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="vzi-card vzi-last">
+          <h3 className="vzi-h">Last abandoned cart</h3>
+          <p className="vzi-sub">The most recent open bag</p>
+          {a.lastOpen ? (
+            (() => {
+              const c = a.lastOpen;
+              const wa = cartWhatsApp(c);
+              const bks = parseCartBooks(c.books);
+              return (
+                <div className="vzi-last-b">
+                  <div className="vzi-last-top">
+                    <div>
+                      <b>{c.name || (c.phone ? `+91 ${c.phone}` : "Guest shopper")}</b>
+                      <small>
+                        {ago(c.upd)} · {inr(c.cartValue)} · {c.itemCount} book{c.itemCount === 1 ? "" : "s"}
+                      </small>
+                    </div>
+                    {wa ? (
+                      <a className="vzi-wa" href={wa.url} target="_blank" rel="noopener noreferrer">
+                        <FaWhatsapp size={15} /> Nudge
+                      </a>
+                    ) : (
+                      <span className="vzi-nowa">No phone</span>
+                    )}
+                  </div>
+                  <ul className="vzi-last-books">
+                    {bks.slice(0, 4).map((b) => (
+                      <li key={b.name}>
+                        {b.name}
+                        {b.qty > 1 ? ` ×${b.qty}` : ""}
+                      </li>
+                    ))}
+                    {bks.length > 4 && <li className="more">+{bks.length - 4} more</li>}
+                  </ul>
+                </div>
+              );
+            })()
+          ) : (
+            <p className="vz-empty">{loading ? "Loading…" : "No open bags in this range."}</p>
+          )}
+        </section>
       </div>
 
       {/* What to improve */}
@@ -425,6 +670,96 @@ export default function InsightsPanel() {
               </button>
             )}
           </>
+        )}
+      </section>
+
+      <section className="vzi-card vzi-recs">
+        <div className="vzi-head-row">
+          <div>
+            <h3 className="vzi-h">All carts</h3>
+            <p className="vzi-sub">
+              {records.length} cart{records.length === 1 ? "" : "s"} · one per shopper · newest activity first
+            </p>
+          </div>
+          <div className="vzi-rec-tools">
+            <label className="vzi-search">
+              <Search size={14} />
+              <input
+                value={recQuery}
+                onChange={(e) => setRecQuery(e.target.value)}
+                placeholder="Name, phone, book…"
+                aria-label="Search carts"
+              />
+            </label>
+            <div className="vz-filters" role="tablist" aria-label="Filter carts">
+              {REC_FILTERS.map(([key, label]) => (
+                <button key={key} type="button" className={recFilter === key ? "on" : ""} onClick={() => setRecFilter(key)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        {records.length === 0 ? (
+          <p className="vz-empty">{loading ? "Loading…" : "No carts match."}</p>
+        ) : (
+          <div className="vzi-rec-list">
+            {records.slice(0, recShown).map((c, i, arr) => {
+              const day = dayLabel(c.upd);
+              const newDay = i === 0 || dayLabel(arr[i - 1].upd) !== day;
+              const wa = cartWhatsApp(c);
+              const bks = parseCartBooks(c.books);
+              const empty = c.itemCount <= 0 && !c.done;
+              return (
+                <div key={`${c.cartKey}-${c.at}`}>
+                  {newDay && <div className="vzi-rec-sep">{day}</div>}
+                  <div className="vzi-rec">
+                    <div className="vzi-rec-who">
+                      <b>{c.name || (c.phone ? `+91 ${c.phone}` : "Guest")}</b>
+                      <small>
+                        {c.name && c.phone ? `${c.phone} · ` : ""}
+                        {new Date(c.upd).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
+                        {c.rowsMerged > 1 ? ` · ${c.rowsMerged} sessions` : ""}
+                      </small>
+                    </div>
+                    <div className="vzi-rec-books" title={bks.map((b) => b.name).join(", ")}>
+                      {bks.length ? (
+                        <>
+                          {bks[0].name}
+                          {bks.length > 1 && <em> +{bks.length - 1}</em>}
+                        </>
+                      ) : (
+                        <span className="muted">Bag emptied</span>
+                      )}
+                    </div>
+                    <div className="vzi-rec-v">
+                      <b>{c.cartValue ? inr(c.cartValue) : "—"}</b>
+                      <small>
+                        {c.itemCount} item{c.itemCount === 1 ? "" : "s"} · {sourceOf(c.source)}
+                      </small>
+                    </div>
+                    <span className={`vzi-pill ${c.done ? "done" : empty ? "empty" : "open"}`}>
+                      {c.done ? "Ordered" : empty ? "Emptied" : "Open"}
+                    </span>
+                    {wa ? (
+                      <a className="vzi-wa sm" href={wa.url} target="_blank" rel="noopener noreferrer" title="WhatsApp this shopper" aria-label="WhatsApp this shopper">
+                        <FaWhatsapp size={15} />
+                      </a>
+                    ) : (
+                      <span className="vzi-wa sm off" title="No phone number" aria-hidden="true">
+                        <FaWhatsapp size={15} />
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            {recShown < records.length && (
+              <div ref={sentinel} className="vzi-rec-more">
+                <Loader2 size={14} className="vz-spin" /> Loading more…
+              </div>
+            )}
+          </div>
         )}
       </section>
     </div>

@@ -41,6 +41,54 @@ const fmtTs = (d) => {
 
 const only10 = (v) => String(v || "").replace(/\D/g, "").slice(-10);
 
+// ── Duplicate-row guard ────────────────────────────────────────────────────
+// The "does a row exist?" check reads the sheet via gviz, which can lag a few
+// seconds behind writes — so two saves close together both saw "no row" and
+// both appended. Now:
+//  • the browser tells us when it already has a row (`known`), and we update
+//    straight away, appending only if the sheet says no row matched;
+//  • this server instance remembers keys it has written (recentRows);
+//  • requests for the same key are run one at a time (keyChain).
+const RECENT_TTL = 30 * 60 * 1000;
+const recentRows = new Map(); // cartKey → last write ms
+const keyChain = new Map(); // cartKey → tail promise
+const markRow = (k) => {
+  recentRows.set(k, Date.now());
+  if (recentRows.size > 5000) {
+    const cut = Date.now() - RECENT_TTL;
+    for (const [key, t] of recentRows) if (t < cut) recentRows.delete(key);
+  }
+};
+const isRecent = (k) => {
+  const t = recentRows.get(k);
+  return !!t && Date.now() - t < RECENT_TTL;
+};
+function serial(key, fn) {
+  const prev = keyChain.get(key) || Promise.resolve();
+  const run = prev.catch(() => {}).then(fn);
+  const tail = run.catch(() => {});
+  keyChain.set(key, tail);
+  tail.then(() => {
+    if (keyChain.get(key) === tail) keyChain.delete(key);
+  });
+  return run;
+}
+const notFound = (r) =>
+  r && r.success === false && /not\s*found|no\s*(row|match|such)|unknown\s*(id|key)|does\s*n.?t\s*exist/i.test(String(r.error || ""));
+// Update the key's row, or append `appendData` when it truly doesn't exist.
+async function upsertCart(key, updateData, appendData, known) {
+  if (known || isRecent(key) || (await cartRowExists(key))) {
+    const r = await cartUpdate(key, updateData);
+    if (!notFound(r)) {
+      if (r?.success !== false) markRow(key);
+      return { mode: "update", ok: r?.success !== false };
+    }
+  }
+  const r = await cartAppend(appendData);
+  if (r?.success !== false) markRow(key);
+  return { mode: "append", ok: r?.success !== false };
+}
+
 // Admin list — every tracked cart, newest activity first.
 export async function GET(request) {
   const ip = clientIp(request);
@@ -127,38 +175,44 @@ export async function POST(request) {
           { status: 400 },
         );
       const now = fmtTs(new Date());
-      const rows = await cartAllRows();
-      const row = rows.find(
-        (r) => String(r["Cart Key"] ?? "").trim() === cartKey,
-      );
-      if (row) {
-        const cur = Number(row[col] || 0) || 0;
-        await cartUpdate(cartKey, { [col]: cur + 1, "Last Updated": now });
-      } else {
-        await cartAppend({
-          "Cart Key": cartKey,
-          Name: "",
-          Phone: only10(body.phone),
-          "Device ID": String(body.deviceId || cartKey).trim(),
-          Books: "",
-          "Item Count": 0,
-          "Cart Value": 0,
-          Source: String(body.source || "").trim(),
-          "First Added": now,
-          "Last Updated": now,
-          Status: "Active",
-          "Order ID": "",
-          [col]: 1,
-        });
-      }
-      return Response.json({ success: true, event: true });
+      const known = !!body.known;
+      const res = await serial(cartKey, async () => {
+        // Need the current count to increment, so read the row (if any).
+        const rows = await cartAllRows();
+        const row = rows.find(
+          (r) => String(r["Cart Key"] ?? "").trim() === cartKey,
+        );
+        const cur = Number(row?.[col] || 0) || 0;
+        return upsertCart(
+          cartKey,
+          { [col]: cur + 1, "Last Updated": now },
+          {
+            "Cart Key": cartKey,
+            Name: "",
+            Phone: only10(body.phone),
+            "Device ID": String(body.deviceId || cartKey).trim(),
+            Books: "",
+            "Item Count": 0,
+            "Cart Value": 0,
+            Source: String(body.source || "").trim(),
+            "First Added": now,
+            "Last Updated": now,
+            Status: "Active",
+            "Order ID": "",
+            [col]: 1,
+          },
+          known || !!row,
+        );
+      });
+      return Response.json({ success: res.ok, event: true, row: res.ok });
     }
 
     // Fill in Name / Phone on an existing row when the shopper logs in or
     // enters their details later (login modal, scratch-card modal, checkout).
     // Only touches the identity columns — never the Books snapshot.
     if (action === "identity") {
-      const exists = await cartRowExists(cartKey);
+      const exists =
+        !!body.known || isRecent(cartKey) || (await cartRowExists(cartKey));
       if (!exists) return Response.json({ success: true, skipped: true });
       const upd = { "Last Updated": fmtTs(new Date()) };
       const nm = String(body.name || "").trim();
@@ -192,20 +246,22 @@ export async function POST(request) {
       "Last Updated": now,
     };
 
-    const exists = await cartRowExists(cartKey);
-    if (exists) {
-      // Keep First Added + any prior Converted status untouched.
-      await cartUpdate(cartKey, common);
-      return Response.json({ success: true, mode: "update" });
-    }
-    await cartAppend({
-      "Cart Key": cartKey,
-      ...common,
-      "First Added": now,
-      Status: "Active",
-      "Order ID": "",
-    });
-    return Response.json({ success: true, mode: "append" });
+    // Keep First Added + any prior Converted status untouched on update.
+    const res = await serial(cartKey, () =>
+      upsertCart(
+        cartKey,
+        common,
+        {
+          "Cart Key": cartKey,
+          ...common,
+          "First Added": now,
+          Status: "Active",
+          "Order ID": "",
+        },
+        !!body.known,
+      ),
+    );
+    return Response.json({ success: res.ok, mode: res.mode, row: res.ok });
   } catch (e) {
     return Response.json(
       { success: false, error: String(e) },

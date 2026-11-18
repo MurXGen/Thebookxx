@@ -55,13 +55,28 @@ export function trackCartEvent(event) {
     source: window.location?.pathname || "",
   };
   const send = () => {
+    // Tell the server when this device already has a sheet row, so it updates
+    // it instead of risking a duplicate append (shared with the cart sync).
+    let known = false;
+    try {
+      known = localStorage.getItem("tbx_cart_row") === deviceId;
+    } catch {}
     try {
       fetch("/api/abandoned-cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, known }),
         keepalive: true,
-      }).catch(() => {});
+      })
+        .then((r) => r.json())
+        .then((j) => {
+          if (j && j.row) {
+            try {
+              localStorage.setItem("tbx_cart_row", deviceId);
+            } catch {}
+          }
+        })
+        .catch(() => {});
     } catch {}
   };
   if (typeof window.requestIdleCallback === "function") {

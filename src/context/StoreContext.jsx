@@ -211,6 +211,10 @@ export function StoreProvider({ children }) {
   // taps collapse into a single write.
   const cartSyncTimer = useRef(null);
   const cartSyncedOnce = useRef(false);
+  // One cart save in flight per tab; a newer snapshot waits and replaces any
+  // older queued one, so two saves never race to create the same sheet row.
+  const cartSyncBusy = useRef(false);
+  const cartSyncNext = useRef(null);
 
   const getDeviceId = () => {
     if (typeof window === "undefined") return "";
@@ -268,17 +272,51 @@ export function StoreProvider({ children }) {
       cartValue: cartTotal,
       source: `${window.location.pathname || ""}`,
     };
-    // Run the write in idle time so it never competes with the add-to-cart tap.
+    queueCartSave(payload);
+  };
+
+  // Send cart saves one at a time. `known` tells the server this device already
+  // has a sheet row (remembered after the first successful save), so it
+  // updates instead of checking a lagging read and appending a duplicate.
+  const queueCartSave = (payload) => {
+    if (cartSyncBusy.current) {
+      cartSyncNext.current = payload;
+      return;
+    }
+    cartSyncBusy.current = true;
     const fire = () => {
+      let known = false;
+      try {
+        known = localStorage.getItem("tbx_cart_row") === payload.deviceId;
+      } catch {}
+      const done = () => {
+        cartSyncBusy.current = false;
+        const next = cartSyncNext.current;
+        cartSyncNext.current = null;
+        if (next) queueCartSave(next);
+      };
       try {
         fetch("/api/abandoned-cart", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ ...payload, known }),
           keepalive: true,
-        }).catch(() => {});
-      } catch {}
+        })
+          .then((r) => r.json())
+          .then((j) => {
+            if (j && j.row) {
+              try {
+                localStorage.setItem("tbx_cart_row", payload.deviceId);
+              } catch {}
+            }
+          })
+          .catch(() => {})
+          .finally(done);
+      } catch {
+        done();
+      }
     };
+    // Run the write in idle time so it never competes with the add-to-cart tap.
     if (typeof window.requestIdleCallback === "function") {
       window.requestIdleCallback(fire, { timeout: 2000 });
     } else {
@@ -345,6 +383,13 @@ export function StoreProvider({ children }) {
           cartKey: deviceId,
           phone,
           name,
+          known: (() => {
+            try {
+              return localStorage.getItem("tbx_cart_row") === deviceId;
+            } catch {
+              return false;
+            }
+          })(),
         }),
         keepalive: true,
       }).catch(() => {});

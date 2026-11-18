@@ -124,7 +124,7 @@ export default function HomeHero() {
         url: ORIGIN,
         name: "TheBookX",
         description:
-          "Buy books online in India starting at ₹1 — bestsellers, self-help & fiction with free delivery from ₹149, Cash on Delivery and 7-day replacement.",
+          "Buy books online in India starting at ₹1 — bestsellers, self-help & fiction with free delivery from ₹249, Cash on Delivery and 7-day replacement.",
         potentialAction: {
           "@type": "SearchAction",
           target: `${ORIGIN}/?q={search_term_string}`,
@@ -170,7 +170,7 @@ export default function HomeHero() {
       <div className="hero-seo">
         <h2>
           Buy bestselling books online in India at the lowest prices — starting
-          at ₹1 with free delivery from ₹149, Cash on Delivery and 7-day replacement.
+          at ₹1 with free delivery from ₹249, Cash on Delivery and 7-day replacement.
         </h2>
         <p>Popular books on TheBookX:</p>
         <ul>
@@ -217,7 +217,7 @@ export default function HomeHero() {
 
           <p className="home-hero-sub">
             Hand-picked bestsellers, self-help &amp; fiction from just ₹1 — free
-            delivery from ₹149, Cash on Delivery &amp; 7-day replacement on damaged or wrong books across India.
+            delivery from ₹249, Cash on Delivery &amp; 7-day replacement on damaged or wrong books across India.
           </p>
 
           {/* Primary actions — Search + Suggest */}

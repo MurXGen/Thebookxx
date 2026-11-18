@@ -38,7 +38,7 @@ function buildCategories() {
 
 export const metadata = {
   title: "All Book Categories: Fiction, Self-Help, Business & More",
-  description: `Browse ${books.length}+ books across every category on TheBookX: fiction, self-help, business, finance, thrillers, romance, children's books and more. Genuine copies, Cash on Delivery and free delivery above ₹149.`,
+  description: `Browse ${books.length}+ books across every category on TheBookX: fiction, self-help, business, finance, thrillers, romance, children's books and more. Genuine copies, Cash on Delivery and free delivery above ₹249.`,
   alternates: { canonical: `${SITE}/books` },
   openGraph: {
     title: "All Book Categories | TheBookX",

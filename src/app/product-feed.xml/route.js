@@ -75,7 +75,7 @@ export async function GET() {
   <channel>
     <title>TheBookX — Buy Books Online in India</title>
     <link>${SITE}</link>
-    <description>Books at the lowest prices in India, starting at ₹1. Free delivery from ₹149 and Cash on Delivery.</description>
+    <description>Books at the lowest prices in India, starting at ₹1. Free delivery from ₹249 and Cash on Delivery.</description>
 ${items}
 ${comboFeedItems(SITE, esc)}
   </channel>

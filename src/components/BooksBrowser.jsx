@@ -175,7 +175,7 @@ export default function BooksBrowser({ categories, totalBooks }) {
                 {i < arr.length - 2 ? ", " : i === arr.length - 2 ? " and " : ""}
               </span>
             ))}{" "}
-            to niche shelves. Every order ships within a day with Cash on Delivery, free delivery above ₹149 and
+            to niche shelves. Every order ships within a day with Cash on Delivery, free delivery above ₹249 and
             7-day replacement.
           </p>
         </section>

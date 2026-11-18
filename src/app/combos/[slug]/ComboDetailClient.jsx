@@ -128,7 +128,7 @@ export default function ComboDetailClient({ combo, related = [], faqs = [], abou
               <Banknote size={15} /> Cash on Delivery
             </li>
             <li>
-              <Truck size={15} /> Free delivery from ₹149
+              <Truck size={15} /> Free delivery from ₹249
             </li>
             <li>
               <RotateCcw size={15} /> 7-day replacement

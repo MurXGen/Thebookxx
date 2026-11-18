@@ -1254,7 +1254,7 @@ function makeAuto({ id, title, tagline, category, bookIds, kind, author, genre }
   const { price, mrp, savings } = getComboPricing(c);
   const names = items.map((b) => shortTitle(b.name)).join(", ");
   c.seoTitle = `${title}: ${items.length} Book Combo at ₹${price}${savings > 0 ? ` (Save ₹${savings})` : ""}`;
-  c.seoDescription = `Buy the ${title} (${names}) online at the lowest price on TheBookX. ${items.length} books for just ₹${price} (MRP ₹${mrp}) with Cash on Delivery, free delivery from ₹149 and 7-day replacement on damaged or wrong books across India.`;
+  c.seoDescription = `Buy the ${title} (${names}) online at the lowest price on TheBookX. ${items.length} books for just ₹${price} (MRP ₹${mrp}) with Cash on Delivery, free delivery from ₹249 and 7-day replacement on damaged or wrong books across India.`;
   return c;
 }
 

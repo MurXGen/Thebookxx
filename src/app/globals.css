@@ -71710,3 +71710,10 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .po2 .po-label { font-size: 26px; letter-spacing: -.01em; }
 .po2 .po-addr { padding: 8px 12px; margin-top: 4px; border-radius: 12px; background: #f6f7f8; font-size: 13.5px; }
 @media (prefers-reduced-motion: reduce) { .po2 .po-halo, .po-ripple, .po-shadow, .po-pin2, .po-dots i, .upiv3-result.is-success .upiv3-result-icon { animation: none !important; } }
+
+/* Bag: "You placed an order X mins ago" strip (bag is kept after ordering) */
+.bg-recent { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: #eef6ff; border: 1px solid #dbeafe; color: #1e3a8a; text-decoration: none; font-size: 13px; }
+.bg-recent-ic { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 9px; background: #fff; color: #2563eb; }
+.bg-recent-tx { flex: 1; min-width: 0; }
+.bg-recent-tx b { font-weight: 800; }
+.bg-recent-go { flex: none; display: inline-flex; align-items: center; gap: 2px; font-weight: 800; color: #2563eb; }

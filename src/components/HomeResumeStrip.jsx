@@ -22,7 +22,7 @@ const MAX_ORDERS = 6;
 const OPEN_KEY = "tbx_resume_open"; // remembers the accordion state
 const DAY = 86400000;
 
-function readOrders() {
+export function readOrders() {
   let list = [];
   try {
     list = JSON.parse(localStorage.getItem(ORDERS_KEY) || "[]");

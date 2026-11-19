@@ -85,3 +85,54 @@ export function trackCartEvent(event) {
     send();
   }
 }
+
+// Which offer pop-ups this device has claimed ("Free delivery + bookmarks",
+// "WELCOME10"). Kept on the device and written to the shopper's Abandoned Cart
+// row in the "Offer Claimed" column (all claimed offers, comma-separated).
+export const OFFERS_CLAIMED_KEY = "tbx_offers_claimed";
+export function trackOfferClaim(label) {
+  if (typeof window === "undefined" || !label) return;
+  let list = [];
+  try {
+    list = JSON.parse(localStorage.getItem(OFFERS_CLAIMED_KEY) || "[]") || [];
+  } catch {
+    list = [];
+  }
+  if (!list.includes(label)) list.push(label);
+  try {
+    localStorage.setItem(OFFERS_CLAIMED_KEY, JSON.stringify(list));
+  } catch {}
+  const deviceId = getDeviceId();
+  if (!deviceId) return;
+  let phone = "";
+  let known = false;
+  try {
+    phone = String(localStorage.getItem("track_orders_phone") || "").replace(/\D/g, "").slice(-10);
+    known = localStorage.getItem("tbx_cart_row") === deviceId;
+  } catch {}
+  try {
+    fetch("/api/abandoned-cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "offer",
+        offers: list.join(", "),
+        cartKey: deviceId,
+        deviceId,
+        phone,
+        source: window.location?.pathname || "",
+        known,
+      }),
+      keepalive: true,
+    })
+      .then((r) => r.json())
+      .then((j) => {
+        if (j && j.row) {
+          try {
+            localStorage.setItem("tbx_cart_row", deviceId);
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  } catch {}
+}

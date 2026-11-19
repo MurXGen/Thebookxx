@@ -53,7 +53,9 @@ import {
   getMinCheckoutAmount,
   freeDeliveryAt,
   FREE_DELIVERY_OFFER_AT,
-  GIFTS_CLAIMED_KEY,
+  freeDeliveryOfferOn,
+  claimGiftOffer,
+  GIFT_CLAIMED_EVENT,
   FREE_DELIVERY_AT_ONE_RUPEE,
   couponDeliveryFee,
 } from "@/utils/cartOffers";
@@ -72,7 +74,11 @@ import {
   X,
   Truck,
   Bookmark,
+  PackageCheck,
+  ChevronRight,
 } from "lucide-react";
+import { readOrders } from "@/components/HomeResumeStrip";
+import { trackOfferClaim } from "@/utils/cartEvents";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { createPortal } from "react-dom";
@@ -828,15 +834,46 @@ function BagContent() {
   const [welcomeRule, setWelcomeRule] = useState(null); // live WELCOME10 terms
   const [showWelcome, setShowWelcome] = useState(false);
   const [showBmOffer, setShowBmOffer] = useState(false); // below-min: free bookmark
+  // Most recent order on this device (kept bag → remind them they ordered).
+  const [recentOrder, setRecentOrder] = useState(null);
+  useEffect(() => {
+    const load = () => {
+      const o = readOrders()[0];
+      // Show for 48 hours after ordering.
+      setRecentOrder(o && o.ts && Date.now() - o.ts < 48 * 3600 * 1000 ? o : null);
+    };
+    load();
+    const id = setInterval(load, 60 * 1000); // keep "X mins ago" fresh
+    return () => clearInterval(id);
+  }, [successCtx]);
+  const agoLabel = (ts) => {
+    const m = Math.max(0, Math.round((Date.now() - ts) / 60000));
+    if (m < 1) return "just now";
+    if (m < 60) return `${m} min${m === 1 ? "" : "s"} ago`;
+    const h = Math.round(m / 60);
+    return `${h} hr${h === 1 ? "" : "s"} ago`;
+  };
   // Claimed the free delivery + bookmarks gifts → "Your books" gets dressed up.
   const [giftsClaimed, setGiftsClaimed] = useState(false);
   useEffect(() => {
-    try {
-      if (sessionStorage.getItem(GIFTS_CLAIMED_KEY)) setGiftsClaimed(true);
-    } catch {
-      /* ignore */
-    }
+    // Claimed on this device (home / book page pop-up or here).
+    const sync = () => setGiftsClaimed(freeDeliveryOfferOn());
+    sync();
+    window.addEventListener(GIFT_CLAIMED_EVENT, sync);
+    return () => window.removeEventListener(GIFT_CLAIMED_EVENT, sync);
   }, []);
+  // Claimed elsewhere (home / book page) → add the free bookmarks once here.
+  useEffect(() => {
+    if (!giftsClaimed || cartBooks.length === 0) return;
+    try {
+      if (localStorage.getItem("tbx_gift_bm_applied") === "1") return;
+      localStorage.setItem("tbx_gift_bm_applied", "1");
+    } catch {
+      return;
+    }
+    setBagBookmarks((n) => Math.max(bagFreeBookmarks, n));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [giftsClaimed, cartBooks.length]);
   // Offers they've seen but not claimed → a gift icon in the header reopens them.
   const [offerDismissed, setOfferDismissed] = useState({ welcome: false, bm: false });
   useEffect(() => {
@@ -901,7 +938,7 @@ function BagContent() {
   const welcomeEligible =
     hasBooksForWelcome && !!welcomeRule && !bagCoupon && welcomeCalc.short === 0 && welcomePreview.off > 0;
   const bmOfferEligible =
-    hasBooksForWelcome && !!welcomeRule && welcomeCalc.short > 0 && bagBookmarks === 0;
+    hasBooksForWelcome && !!welcomeRule && welcomeCalc.short > 0 && bagBookmarks === 0 && !giftsClaimed;
   useEffect(() => {
     const kind = welcomeEligible ? "welcome" : bmOfferEligible ? "bm" : null;
     if (!kind) return;
@@ -947,12 +984,14 @@ function BagContent() {
   // "Avail free bookmark": pick one bookmark for them and show it in Add-ons.
   const availBookmark = () => {
     setShowBmOffer(false);
-    setGiftsClaimed(true);
+    claimGiftOffer();
+    trackOfferClaim("Free delivery + bookmarks");
     try {
-      sessionStorage.setItem(GIFTS_CLAIMED_KEY, "1");
+      localStorage.setItem("tbx_gift_bm_applied", "1");
     } catch {
       /* ignore */
     }
+    setGiftsClaimed(true);
     setBagBookmarks((n) => Math.max(bagFreeBookmarks, n));
     burstConfetti(false);
     // Claiming switches free delivery to the ₹149 offer.
@@ -982,6 +1021,7 @@ function BagContent() {
     burstConfetti(true);
     showToast(`${welcomeRule.code} applied 🎉`, "success");
     trackEvent("welcome_coupon_applied", { cart_value: finalPayable });
+    trackOfferClaim(welcomeRule.code || "WELCOME10");
   };
 
   // Returns the COD fee amount only when paymentType is COD
@@ -1444,8 +1484,9 @@ ${itemsBlock}${qrLines}
     }
     if (!canCheckout) {
       showToast(
-        `Add ₹${amountNeededToCheckout} more to checkout (minimum ₹${MIN_CHECKOUT_AMOUNT})`,
+        `Minimum cart value for checkout is ₹${MIN_CHECKOUT_AMOUNT}. Add ₹${amountNeededToCheckout} more.`,
         "warning",
+        { title: "Almost there" },
       );
       return;
     }
@@ -1752,6 +1793,26 @@ ${itemsBlock}${qrLines}
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
         <>
+          {recentOrder && (
+            <Link
+              href={
+                String(recentOrder.phone || "").length === 10
+                  ? `/profile/${recentOrder.phone}/orders/${encodeURIComponent(recentOrder.orderId)}`
+                  : "/profile"
+              }
+              className="bg-recent"
+            >
+              <span className="bg-recent-ic" aria-hidden="true">
+                <PackageCheck size={15} />
+              </span>
+              <span className="bg-recent-tx">
+                You placed an order <b>{agoLabel(recentOrder.ts)}</b>
+              </span>
+              <span className="bg-recent-go">
+                View <ChevronRight size={14} />
+              </span>
+            </Link>
+          )}
           {/* Savings first, above the books */}
           {cartBooks.length > 0 && <SavingsGlow amount={totalSaved} mrp={totalOriginal} />}
           <div
@@ -2094,12 +2155,16 @@ ${itemsBlock}${qrLines}
                     (couponWins ? couponDelFee : 0);
                   const extras = giftCharge + bagBookmarkCharge + walletTopUp + bundledQrTotal;
                   const items = Math.max(0, Math.round(bagToPay - del - extras));
+                  // Gift claimed: delivery is free on every order they can place
+                  // (₹149 minimum), so show FREE instead of the ₹69 below-₹149 fee.
+                  const shownDel =
+                    giftsClaimed && !hasOneRupeeItem ? Math.max(0, del - baseDeliveryFee) : del;
                   return (
                     <span className="bg-paybar-split">
                       <b className={couponOff > 0 ? "bg-paybar-new" : undefined}>₹{items}</b>
                       <span className="bg-paybar-plus">+</span>
-                      <span className={`bg-paybar-del${del > 0 ? "" : " free"}`}>
-                        {del > 0 ? `₹${del} delivery` : "FREE delivery"}
+                      <span className={`bg-paybar-del${shownDel > 0 ? "" : " free"}`}>
+                        {shownDel > 0 ? `₹${shownDel} delivery` : "FREE delivery"}
                       </span>
                       {extras > 0 && (
                         <>
@@ -2111,7 +2176,8 @@ ${itemsBlock}${qrLines}
                   );
                 })()}
                 {/* How far from free delivery (₹149 with the claimed gift, else ₹249) */}
-                {baseDeliveryFee > 0 && totalDiscounted <= 1000 && FREE_DELIVERY_AT > totalDiscounted && (
+                {!(giftsClaimed && !hasOneRupeeItem) &&
+                  baseDeliveryFee > 0 && totalDiscounted <= 1000 && FREE_DELIVERY_AT > totalDiscounted && (
                   <span className="bg-paybar-free">
                     Add ₹{Math.ceil(FREE_DELIVERY_AT - totalDiscounted - walletTopUp)} more for free delivery
                   </span>
@@ -2122,13 +2188,9 @@ ${itemsBlock}${qrLines}
                 type="button"
                 className="pri-mid-btn bg-paybar-btn"
                 onClick={handleConfirmOrderClick}
-                aria-disabled={isCheckoutDisabled}
+                aria-disabled={isShortening}
               >
-                {isShortening
-                  ? "Preparing…"
-                  : canCheckout
-                    ? "Proceed"
-                    : `Add ₹${amountNeededToCheckout} more`}
+                {isShortening ? "Preparing…" : "Proceed"}
               </button>
             </div>
           ) : (
@@ -2288,9 +2350,7 @@ ${itemsBlock}${qrLines}
           onTrack={() => {
             const d = successCtx.phone;
             const oid = successCtx.orderId;
-            try {
-              clearCart && clearCart();
-            } catch {}
+            // The bag is kept after ordering (a strip shows the recent order).
             if (typeof window !== "undefined") {
               if (d && d.length === 10 && oid)
                 window.location.assign(
@@ -2300,10 +2360,7 @@ ${itemsBlock}${qrLines}
             }
           }}
           onClose={() => {
-            // "Keep shopping" → clear the bag and go to the homepage.
-            try {
-              clearCart && clearCart();
-            } catch {}
+            // "Keep shopping" → homepage. The bag is kept as it was.
             setSuccessCtx(null);
             router.push("/");
           }}

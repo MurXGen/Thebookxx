@@ -10,6 +10,7 @@ import GlobalHaptics from "@/components/UI/GlobalHaptics";
 import ClickFeedback from "@/components/UI/ClickFeedback";
 import ShareSheetHost from "@/components/UI/ShareSheet";
 import OfferPricing from "@/components/OfferPricing";
+import GiftOfferPrompt from "@/components/GiftOfferPrompt";
 import { Suspense } from "react";
 import RainEffect from "@/components/UI/RainEffect";
 import { PLProvider } from "@/context/PLContext";
@@ -255,6 +256,8 @@ export default function RootLayout({ children }) {
                 <ClickFeedback />
               </Suspense>
               <ShareSheetHost />
+              {/* First visit (home / book page): free delivery + bookmarks gift */}
+              <GiftOfferPrompt />
               <AnalyticsTracker />
               {/* Monsoon rain effect — temporarily disabled. Re-enable by
                   uncommenting the line below. */}

@@ -59,23 +59,19 @@ export default function WelcomeCouponPopup({
         </div>
         {bm ? (
           <>
-            <p className="wcp-k">{deliveryFree ? "2 gifts unlocked for you!" : "Gifts waiting for you!"}</p>
+            <p className="wcp-k">2 gifts unlocked for you!</p>
             <h2 id="wcp-h" className="wcp-h">
               Free delivery <span className="wcp-plus">+</span> free bookmarks
             </h2>
             <div className="wcg-row">
-              <div className={`wcg-tile del${deliveryFree ? " on" : ""}`}>
+              <div className="wcg-tile del on">
                 <span className="wcg-ic">
                   <Truck size={22} strokeWidth={2.2} className="wcg-truck" />
                 </span>
                 <b>FREE delivery</b>
-                {deliveryFree ? (
-                  <span className="wcg-st ok">
-                    <Check size={12} strokeWidth={3.2} /> Unlocked
-                  </span>
-                ) : (
-                  <span className="wcg-st">Add ₹{deliveryShort} more</span>
-                )}
+                <span className="wcg-st ok">
+                  <Check size={12} strokeWidth={3.2} /> Unlocked
+                </span>
                 <small>On orders from ₹{freeAt}</small>
               </div>
               <div className="wcg-tile bm on">

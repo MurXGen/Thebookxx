@@ -9,13 +9,28 @@ export const FREE_DELIVERY_OFFER_AT = 149;
 export const FREE_DELIVERY_AT = FREE_DELIVERY_BASE_AT; // default, for static copy
 export const FREE_DELIVERY_AT_ONE_RUPEE = 399;
 export const GIFTS_CLAIMED_KEY = "tbx_gifts_claimed";
+// Claimed once on this device (home / book page / bag pop-up) → kept.
 export const freeDeliveryOfferOn = () => {
   if (typeof window === "undefined") return false;
   try {
-    return sessionStorage.getItem(GIFTS_CLAIMED_KEY) === "1";
+    return (
+      localStorage.getItem(GIFTS_CLAIMED_KEY) === "1" ||
+      sessionStorage.getItem(GIFTS_CLAIMED_KEY) === "1"
+    );
   } catch {
     return false;
   }
+};
+export const GIFT_CLAIMED_EVENT = "tbx:gift-claimed";
+// Claim the "Free delivery + free bookmarks" gift on this device.
+export const claimGiftOffer = () => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(GIFTS_CLAIMED_KEY, "1");
+  } catch {}
+  try {
+    window.dispatchEvent(new Event(GIFT_CLAIMED_EVENT));
+  } catch {}
 };
 // The threshold that applies right now (₹149 once the gift is claimed).
 export const freeDeliveryAt = () =>
@@ -252,7 +267,7 @@ export const getOriginalCharge = (orderAmount, isFasterDelivery = false) => {
 // now check out below ₹149 (a ₹69 delivery fee applies); ₹1-book carts keep
 // the higher ₹499 threshold.
 export const getMinCheckoutAmount = (hasOneRupeeItem = false) => {
-  return hasOneRupeeItem ? 199 : 99;
+  return hasOneRupeeItem ? 199 : 149;
 };
 
 export const CART_OFFERS = (() => {

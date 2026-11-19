@@ -8,6 +8,7 @@
 // POST (default: sync)  { cartKey, name, phone, deviceId, books, itemCount,
 //                         cartValue, source }
 // POST { action: "convert", cartKey, orderId }  → Status = Converted (+ order id)
+// POST { action: "offer", cartKey, offers }    → "Offer Claimed" column
 //
 // Stored in the "Abandoned Cart" tab. Columns:
 //   Cart Key | Name | Phone | Device ID | Books | Item Count | Cart Value |
@@ -205,6 +206,38 @@ export async function POST(request) {
         );
       });
       return Response.json({ success: res.ok, event: true, row: res.ok });
+    }
+
+    // Offer pop-up claimed ("Free delivery + bookmarks", "WELCOME10") →
+    // "Offer Claimed" column (the device's full list, comma-separated).
+    if (action === "offer") {
+      const offers = String(body.offers || "").trim().slice(0, 200);
+      if (!offers)
+        return Response.json({ success: false, error: "no offer" }, { status: 400 });
+      const now = fmtTs(new Date());
+      const res = await serial(cartKey, () =>
+        upsertCart(
+          cartKey,
+          { "Offer Claimed": offers, "Last Updated": now },
+          {
+            "Cart Key": cartKey,
+            Name: "",
+            Phone: only10(body.phone),
+            "Device ID": String(body.deviceId || cartKey).trim(),
+            Books: "",
+            "Item Count": 0,
+            "Cart Value": 0,
+            Source: String(body.source || "").trim(),
+            "First Added": now,
+            "Last Updated": now,
+            Status: "Active",
+            "Order ID": "",
+            "Offer Claimed": offers,
+          },
+          !!body.known,
+        ),
+      );
+      return Response.json({ success: res.ok, offer: true, row: res.ok });
     }
 
     // Fill in Name / Phone on an existing row when the shopper logs in or

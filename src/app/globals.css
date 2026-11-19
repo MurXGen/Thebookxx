@@ -71717,3 +71717,11 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .bg-recent-tx { flex: 1; min-width: 0; }
 .bg-recent-tx b { font-weight: 800; }
 .bg-recent-go { flex: none; display: inline-flex; align-items: center; gap: 2px; font-weight: 800; color: #2563eb; }
+
+/* ── Full COD blocked on orders of ₹1,000+ ── */
+.pay-method.pm2.pm2-blocked { opacity: .62; background: #f8fafc; cursor: not-allowed; }
+.pay-method.pm2.pm2-blocked .pm2-title { color: #64748b; }
+.pay-method.pm2.pm2-blocked .pay-method-radio { border-color: #cbd5e1; background: #f1f5f9; }
+.pay-method.pm2.pm2-blocked .pay-perk { white-space: normal; line-height: 1.3; }
+.pm2-cod-ask { display: block; margin: 6px 2px 2px; font-size: 12.5px; color: #475569; text-decoration: none; text-align: center; }
+.pm2-cod-ask b { color: #15803d; text-decoration: underline; text-underline-offset: 2px; }

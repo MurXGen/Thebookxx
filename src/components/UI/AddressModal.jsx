@@ -81,6 +81,10 @@ const SHOW_UPI_WHATSAPP = false;
 import { encodeAddonsField } from "@/utils/addonsField";
 
 const PINCODE_DATA_KEY = "user_pincode";
+// Orders at or above this value can't be placed as full Cash on Delivery.
+const COD_MAX_ORDER = 1000;
+// Faster delivery can be combined with Cash on Delivery up to this many books.
+const COD_FASTER_MAX_BOOKS = 2;
 // UPI apps on the Payment options sheet.
 const UPI_APPS = [
   { k: "Google Pay", c: "#1a73e8" },
@@ -358,10 +362,15 @@ export default function AddressModal({
   // now + rest at delivery) — it beats plain COD on AOV and cancellations.
   // Falls back to full online when the whole bill is ₹99 or less.
   const defaultPaySel = () => (upiTotalForFlow > codAdvanceAmount ? "ADV" : "UPI");
-  // COD isn't offered with Faster delivery — flip back to Pay Online if chosen.
+  // Books in the order (by quantity). Faster delivery works with Cash on
+  // Delivery only on small orders (1–2 books); bigger COD orders ship Standard.
+  const codBookCount = cartBooks.reduce((n, b) => n + (Number(b?.qty ?? b?.quantity) || 1), 0);
+  const codFasterOk = codBookCount <= COD_FASTER_MAX_BOOKS;
+  const codFaster = fasterDelivery && codFasterOk;
+  // Faster + COD on a 3+ book order → flip back to Pay Online.
   useEffect(() => {
-    if (fasterDelivery && paySel === "COD") setPaySel("UPI");
-  }, [fasterDelivery, paySel]);
+    if (fasterDelivery && paySel === "COD" && !codFasterOk) setPaySel("UPI");
+  }, [fasterDelivery, paySel, codFasterOk]);
   // Which delivery speed is highlighted in the chooser (tap to select).
   const [deliverySel, setDeliverySel] = useState("standard");
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
@@ -1163,11 +1172,26 @@ export default function AddressModal({
   // the balance (same as the order page and out-for-delivery messages; no
   // extra COD % on top).
   const advanceAtDoor = Math.round(advanceRemaining);
-  // COD always ships Standard, so its card is priced on the Standard bill —
+  // COD ships Standard (Faster only on 1–2 books), so its card is priced on that bill —
   // switching delivery type above doesn't change the COD card.
-  const codStdRaw = getTotalWithDelivery(false) + addOnsCharge;
+  const codStdRaw = getTotalWithDelivery(codFaster) + addOnsCharge;
   const codFeeStd = proActive ? 0 : Math.max(29, Math.round(codStdRaw * 0.059));
   const codStdTotal = Math.max(0, codStdRaw + codFeeStd - couponWalletExtra(codStdRaw + codFeeStd));
+  // Full Cash on Delivery is off for orders of ₹1,000 and above (big COD
+  // parcels get refused / marked "door locked" and come back). Those shoppers
+  // pay ₹99 now + rest at delivery, or pay in full online.
+  const codBlocked = codStdRaw >= COD_MAX_ORDER;
+  // Chose Cash on Delivery while Faster delivery was on → back to Standard.
+  const codStandardToast = () =>
+    showToast(
+      `Cash on Delivery with ${COD_FASTER_MAX_BOOKS + 1}+ books ships by Standard delivery (4–9 days). Want it faster? Pay online, or pay ₹${codAdvanceAmount} now and the rest at delivery.`,
+      "info",
+      { title: "Switched to Standard delivery" },
+    );
+  useEffect(() => {
+    if (codBlocked && paySel === "COD") setPaySel(defaultPaySel());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codBlocked, paySel]);
   // Full wallet actually used (goods + charges it covers for the standard flow)
   // — used for display and when storing the order.
   const walletAppliedTotal =
@@ -1176,7 +1200,7 @@ export default function AddressModal({
   // Payment options sheet: amount due now, and what "pay on delivery" costs
   // (Standard delivery + COD fee — the same sum the COD order records).
   const payNowAmount = advanceMode ? codAdvanceAmount : getTotalWithDelivery(fasterDelivery) + addOnsCharge;
-  const codPayLaterRaw = netPayable + getDeliveryCharge(false) + addOnsCharge + codFeeAmount;
+  const codPayLaterRaw = netPayable + getDeliveryCharge(codFaster) + addOnsCharge + codFeeAmount;
   const codPayLaterAmount = Math.max(0, codPayLaterRaw - couponWalletExtra(codPayLaterRaw));
 
   // Only ONE ₹1 book is allowed per order. Count the total quantity of
@@ -1872,10 +1896,10 @@ export default function AddressModal({
       paymentId: `COD-${Date.now()}`,
     });
     // Now log the CONFIRMED order (plain name, no "(unconfirmed)" tag).
-    // COD always ships Standard (Faster is online-only).
-    setFasterDelivery(false);
-    submitToGoogleForm("COD", false, true, oid);
-    triggerCODSuccess(false, oid);
+    // COD ships Standard, except Faster on 1–2 book orders.
+    if (!codFaster) setFasterDelivery(false);
+    submitToGoogleForm("COD", codFaster, true, oid);
+    triggerCODSuccess(codFaster, oid);
     // Push the COD order to Telegram (previously only UPI notified — the COD
     // success modal never invoked its onContinue handler). Fire-and-forget so
     // it never blocks the success screen.
@@ -2014,9 +2038,13 @@ export default function AddressModal({
       setGiftCode("");
       setShowPayMethod(true);
     } else if (method === "COD") {
+      if (codBlocked) {
+        setPaySel(defaultPaySel());
+        return;
+      }
       const oid = ensureCheckoutOid();
-      // COD always ships Standard (Faster is online-only).
-      codConfirmRef.current = { oid, isFaster: false };
+      // COD ships Standard, except Faster on 1–2 book orders.
+      codConfirmRef.current = { oid, isFaster: codFaster };
       // --- COD confirmation / review sheet DISABLED for a smoother,
       //     block-free checkout. Previously we wrote the order as
       //     "(unconfirmed)" and showed the COD review sheet, flipping it to
@@ -2187,6 +2215,7 @@ export default function AddressModal({
   };
 
   const handleCODClick = () => {
+    if (codBlocked) return;
     if (!isFormValid()) return;
     // NOTE: Form submission is intentionally NOT here, it now fires inside
     // handleProceedWithFasterDelivery / handleProceedWithoutFasterDelivery
@@ -2547,6 +2576,7 @@ export default function AddressModal({
   // and place the order directly (skips the fee-disclosure step).
   // "Can't pay online? Continue with Cash on Delivery" on the UPI screen.
   const switchToCODFromUPI = () => {
+    if (codBlocked) return;
     setShowUPIPayment(false);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "COD_from_UPI",
@@ -2559,11 +2589,11 @@ export default function AddressModal({
     });
     // Faster delivery is online-only: a COD order always ships Standard, so it
     // is placed (and charged) without the Faster fee.
-    setFasterDelivery(false);
+    if (!codFaster) setFasterDelivery(false);
     setPaySel("COD");
-    submitToGoogleForm("COD", false, true, oid);
-    triggerCODSuccess(false, oid);
-    notifyCODToTelegram(false);
+    submitToGoogleForm("COD", codFaster, true, oid);
+    triggerCODSuccess(codFaster, oid);
+    notifyCODToTelegram(codFaster);
   };
 
   // Combine the structured parts into one deliverable address string.
@@ -3443,17 +3473,32 @@ export default function AddressModal({
                   {/* Faster delivery — opt-in (Standard by default); ticking it
                       adds the priority fee to the bill live. Not with COD. */}
                   <div
-                    className={`fdx${fasterDelivery ? " on" : ""}${paySel === "COD" ? " off" : ""}`}
+                    className={`fdx${fasterDelivery ? " on" : ""}${paySel === "COD" && !codFasterOk ? " off" : ""}`}
                   >
                     <button
                       type="button"
                       className="fdx-main"
                       role="radio"
                       aria-checked={fasterDelivery}
-                      aria-disabled={paySel === "COD"}
-                      disabled={paySel === "COD"}
+                      aria-disabled={paySel === "COD" && !codFasterOk}
                       onClick={() => {
-                        if (paySel === "COD" || fasterDelivery) return;
+                        if (fasterDelivery) return;
+                        if (paySel === "COD" && !codFasterOk) {
+                          // Faster is online-only: move them to Pay in two
+                          // parts (₹99 now) so they still get it faster.
+                          const next = defaultPaySel();
+                          setPaySel(next);
+                          setFasterDelivery(true);
+                          buzz(8);
+                          showToast(
+                            next === "ADV"
+                              ? `Switched to Pay in two parts: ₹${codAdvanceAmount} now, the rest at delivery. Faster delivery needs an online payment.`
+                              : "Switched to Pay Online. Faster delivery needs an online payment.",
+                            "info",
+                            { title: `Faster delivery on · arrives in ${fasterDays}` },
+                          );
+                          return;
+                        }
                         setFasterDelivery(true);
                         buzz(8);
                       }}
@@ -3466,8 +3511,8 @@ export default function AddressModal({
                           <Zap size={15} className="fdx-zap" /> Faster delivery
                         </span>
                         <span className="fdx-sub">
-                          {paySel === "COD"
-                            ? "Not available with Cash on Delivery"
+                          {paySel === "COD" && !codFasterOk
+                            ? `Not with Cash on Delivery on 3+ books · pay ₹${codAdvanceAmount} now to get it in ${fasterDays}`
                             : `Arrives in ${fasterDays}`}
                         </span>
                       </span>
@@ -3608,14 +3653,24 @@ export default function AddressModal({
                   {/* Cash on Delivery — unavailable with Faster delivery */}
                   <button
                     type="button"
+                    aria-disabled={codBlocked}
                     onClick={() => {
-                      if (fasterDelivery) {
+                      if (codBlocked) {
+                        setPaySel(defaultPaySel());
+                        showToast(
+                          `Pay ₹${codAdvanceAmount} now and the rest at delivery, or pay online in full.`,
+                          "info",
+                          { title: `Cash on Delivery isn't available on orders of ₹${COD_MAX_ORDER}+` },
+                        );
+                        return;
+                      }
+                      if (fasterDelivery && !codFasterOk) {
                         setFasterDelivery(false);
-                        showToast("Cash on Delivery uses Standard delivery", "info");
+                        codStandardToast();
                       }
                       setPaySel("COD");
                     }}
-                    className={`pay-method pm2${paySel === "COD" ? " selected" : ""}`}
+                    className={`pay-method pm2${paySel === "COD" ? " selected" : ""}${codBlocked ? " pm2-blocked" : ""}`}
                   >
                     <span className="pm2-main">
                       <span className="pm2-titlerow">
@@ -3637,7 +3692,15 @@ export default function AddressModal({
                         <span className="pm2-title">Cash on Delivery</span>
                       </span>
                       <span className="pay-perks">
-                        {proActive ? (
+                        {codBlocked ? (
+                          <span className="pay-perk pay-perk-ic pay-perk-red">
+                            Not available on orders of ₹{COD_MAX_ORDER}+ · Pay ₹{codAdvanceAmount} now instead
+                          </span>
+                        ) : fasterDelivery && !codFasterOk ? (
+                          <span className="pay-perk pay-perk-ic pay-perk-red">
+                            Standard delivery only on 3+ books
+                          </span>
+                        ) : proActive ? (
                           <span className="pay-perk">No COD fee · Member</span>
                         ) : (
                           <span className="pay-perk pay-perk-ic pay-perk-red">
@@ -3647,9 +3710,11 @@ export default function AddressModal({
                         )}
                       </span>
                     </span>
-                    <span className="pm2-pricecol">
-                      <span className="pm2-price">₹{codStdTotal}</span>
-                    </span>
+                    {!codBlocked && (
+                      <span className="pm2-pricecol">
+                        <span className="pm2-price">₹{codStdTotal}</span>
+                      </span>
+                    )}
                     <span
                       className={`pay-method-radio${paySel === "COD" ? " on" : ""}`}
                       aria-hidden="true"
@@ -3657,6 +3722,21 @@ export default function AddressModal({
                       {paySel === "COD" && <Check size={13} strokeWidth={3} />}
                     </span>
                   </button>
+                  {codBlocked && (
+                    <a
+                      className="pm2-cod-ask"
+                      href={`https://wa.me/917710892108?text=${encodeURIComponent(
+                        `Hi TheBookX, I'd like Cash on Delivery for my order of ₹${codStdTotal}` +
+                          ` (${codBookCount} book${codBookCount === 1 ? "" : "s"})` +
+                          `${name ? ` — ${name}` : ""}${pincode ? `, pincode ${pincode}` : ""}. Can you allow COD?`,
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackEvent("cod_ask_whatsapp", { amount: codStdTotal })}
+                    >
+                      Really need Cash on Delivery? <b>Ask us on WhatsApp</b>
+                    </a>
+                  )}
                 </div>
 
                 {/* Coins toggle (default off) */}
@@ -3999,7 +4079,7 @@ export default function AddressModal({
                         onClick={() =>
                           onViewBill(
                             paySel === "COD"
-                              ? buildBillSnapshot("COD", false)
+                              ? buildBillSnapshot("COD", codFaster)
                               : paySel === "ADV"
                                 ? buildBillSnapshot("COD", fasterDelivery, true)
                                 : buildBillSnapshot("UPI", fasterDelivery),
@@ -4780,15 +4860,15 @@ export default function AddressModal({
                       </span>
                       <ChevronRight size={16} className="po-more-chev" />
                     </button>
-                    {!advanceMode && (
+                    {!advanceMode && !codBlocked && (
                       <button
                         type="button"
                         className="po-more"
                         onClick={() => {
                           setShowPayMethod(false);
-                          if (fasterDelivery) {
+                          if (fasterDelivery && !codFasterOk) {
                             setFasterDelivery(false);
-                            showToast("Cash on Delivery uses Standard delivery", "info");
+                            codStandardToast();
                           }
                           setPaySel("COD");
                         }}
@@ -5240,7 +5320,7 @@ export default function AddressModal({
               setShowPayMethod(true); // back to payment options, not the address step
             }}
             onWhatsAppFallback={handleUPIWhatsAppVerify}
-            onSwitchToCOD={switchToCODFromUPI}
+            onSwitchToCOD={codBlocked ? undefined : switchToCODFromUPI}
             onCheckStatus={handleCheckUPIStatus}
             onTryAgain={handleTryAgainUpi}
             codLaterAmount={codPayLaterAmount}

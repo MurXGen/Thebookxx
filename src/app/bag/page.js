@@ -960,13 +960,17 @@ function BagContent() {
     return () => clearTimeout(t);
   }, [welcomeEligible, bmOfferEligible]);
 
-  // Gift icon in the header: an offer they qualify for, saw, and didn't claim.
+  // Gift icon in the header, next to Search: shown whenever they haven't
+  // claimed an offer yet (WELCOME10 when it applies, else the free delivery +
+  // bookmarks gift), so the offer is always one tap away — never "missed".
   const giftOfferKind =
-    welcomeEligible && offerDismissed.welcome && !showWelcome
-      ? "welcome"
-      : bmOfferEligible && offerDismissed.bm && !showBmOffer
-        ? "bm"
-        : null;
+    cartBooks.length === 0 || showWelcome || showBmOffer
+      ? null
+      : welcomeEligible
+        ? "welcome"
+        : !giftsClaimed && !bagCoupon && !hasOneRupeeItem
+          ? "bm"
+          : null;
 
   const burstConfetti = (big = true) =>
     import("canvas-confetti")
@@ -1725,8 +1729,10 @@ ${itemsBlock}${qrLines}
                   if (giftOfferKind === "welcome") setShowWelcome(true);
                   else setShowBmOffer(true);
                 }}
-                aria-label={giftOfferKind === "welcome" ? "Open your WELCOME10 offer" : "Claim your free bookmark"}
-                title={giftOfferKind === "welcome" ? "WELCOME10 · 10% off" : "Free bookmark"}
+                aria-label={
+                  giftOfferKind === "welcome" ? "Open your WELCOME10 offer" : "Claim free delivery + free bookmarks"
+                }
+                title={giftOfferKind === "welcome" ? "WELCOME10 · 10% off" : "Your gifts: free delivery + bookmarks"}
               >
                 <Gift size={19} />
                 <span className="bag-gift-dot" aria-hidden="true" />
@@ -1793,26 +1799,6 @@ ${itemsBlock}${qrLines}
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
         <>
-          {recentOrder && (
-            <Link
-              href={
-                String(recentOrder.phone || "").length === 10
-                  ? `/profile/${recentOrder.phone}/orders/${encodeURIComponent(recentOrder.orderId)}`
-                  : "/profile"
-              }
-              className="bg-recent"
-            >
-              <span className="bg-recent-ic" aria-hidden="true">
-                <PackageCheck size={15} />
-              </span>
-              <span className="bg-recent-tx">
-                You placed an order <b>{agoLabel(recentOrder.ts)}</b>
-              </span>
-              <span className="bg-recent-go">
-                View <ChevronRight size={14} />
-              </span>
-            </Link>
-          )}
           {/* Savings first, above the books */}
           {cartBooks.length > 0 && <SavingsGlow amount={totalSaved} mrp={totalOriginal} />}
           <div
@@ -1984,6 +1970,28 @@ ${itemsBlock}${qrLines}
               standardEta={etaWin.std}
               fasterEta={etaWin.fast}
             />
+          )}
+
+          {/* Recent order — below the add-ons */}
+          {recentOrder && (
+            <Link
+              href={
+                String(recentOrder.phone || "").length === 10
+                  ? `/profile/${recentOrder.phone}/orders/${encodeURIComponent(recentOrder.orderId)}`
+                  : "/profile"
+              }
+              className="bg-recent"
+            >
+              <span className="bg-recent-ic" aria-hidden="true">
+                <PackageCheck size={15} />
+              </span>
+              <span className="bg-recent-tx">
+                You placed an order <b>{agoLabel(recentOrder.ts)}</b>
+              </span>
+              <span className="bg-recent-go">
+                View <ChevronRight size={14} />
+              </span>
+            </Link>
           )}
 
           {/* Savings — slim green strip (the "add more" strip docks on the pay bar) */}

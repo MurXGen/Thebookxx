@@ -3,6 +3,7 @@
 
 import dynamic from "next/dynamic";
 import { cartWhatsApp } from "@/utils/cartRecovery";
+import { estimatePostage, fmtRs, RATES_EFFECTIVE } from "@/utils/indiaPostRates";
 import OrdersMap from "@/components/manage-orders/OrdersMap";
 // Visitors (abandoned-cart analytics) loads only when its tab is opened.
 const VisitorsPanel = dynamic(
@@ -148,6 +149,7 @@ import {
 import { getDeliveryCharge, getCodFee } from "@/utils/cartOffers";
 import {
   classifyOrderProduct,
+  productFromTracking,
   SPEED_MAX_GRAMS,
   buildPreviewRow,
   downloadIpWorkbook,
@@ -253,6 +255,56 @@ const downloadCsv = (filename, headers, rows) => {
 
 const PROFILE_URL = "https://www.thebookx.in/profile";
 const INDIA_POST_URL = "https://www.indiapost.gov.in";
+
+// Speed Post or not: a booked tracking ID decides (E… Speed, C… Contractual);
+// without one, the customer's Faster/Express choice does.
+// Postage estimates for BOTH products (bulk contractual rates), with the one
+// that applies highlighted. `p` = { grams, pincode, state, l, b, h }.
+const estTip = (e) =>
+  [
+    `${e.productLabel} · ${e.zoneLabel} (${e.zoneWhy})`,
+    `${e.slab}: ${fmtRs(e.base)} + 18% GST ${fmtRs(e.gst)} = ${fmtRs(e.total)}`,
+    e.volumetricHigher
+      ? `Size weight ${e.volumetricGrams} g is more than the ${e.grams} g gross — if billed by size it costs more`
+      : "",
+    `Gazette rates from ${RATES_EFFECTIVE}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+const postageBoth = (p, active, cls = "mo-est") => {
+  const sp = estimatePostage({ ...p, product: "speed" });
+  const ct = estimatePostage({ ...p, product: "contractual" });
+  if (!sp || !ct) return null;
+  const diff = Math.round((sp.total - ct.total) * 100) / 100;
+  const chip = (e, key, label) => (
+    <span className={`mo-est-chip${active === key ? " on" : ""}`} title={estTip(e)}>
+      <small>{label}</small>
+      <b>{fmtRs(e.total)}</b>
+    </span>
+  );
+  return (
+    <span className={cls}>
+      <span className="mo-est-chips">
+        {chip(sp, "speed", "Speed Post")}
+        {chip(ct, "contractual", "Contractual")}
+      </span>
+      <small className="mo-est-meta">
+        incl. GST · {sp.zoneLabel}
+        {diff > 0 ? ` · Speed costs ${fmtRs(diff)} more` : diff < 0 ? ` · Speed saves ${fmtRs(-diff)}` : ""}
+        {sp.volumetricHigher ? " · size weight higher" : ""}
+      </small>
+    </span>
+  );
+};
+
+const isSpeedShip = (order, tracking) => {
+  const byTrk = productFromTracking(
+    tracking ?? (order?.shippingId || order?.["Shipping ID"] || ""),
+  );
+  if (byTrk) return byTrk === "speed";
+  return /faster|express/i.test(String(order?.["Delivery Type"] || ""));
+};
+
 const REVIEW_URL = "https://www.thebookx.in/review";
 
 // Polite "some books are out of stock" WhatsApp message listing the specific
@@ -301,9 +353,7 @@ const waMessages = (order) => {
 
   // Faster (express) orders arrive quicker than standard. Detect via the
   // Delivery Type column, or an India Post Speed-post tracking ID (starts "E").
-  const isFaster =
-    /faster|express/i.test(String(order?.["Delivery Type"] || "")) ||
-    /^e/i.test(tracking);
+  const isFaster = isSpeedShip(order, tracking);
   // Realistic India Post delivery window shown in the shipping messages.
   const etaWindow = isFaster ? "1–6 days" : "5–9 days";
 
@@ -493,9 +543,7 @@ const emailMessages = (order) => {
   const tracking = String(
     order?.shippingId || order?.["Shipping ID"] || "",
   ).trim();
-  const isFaster =
-    /faster|express/i.test(String(order?.["Delivery Type"] || "")) ||
-    /^e/i.test(tracking);
+  const isFaster = isSpeedShip(order, tracking);
   const etaWindow = isFaster ? "1–6 days" : "5–9 days";
 
   const phone10 = String(order?.["Phone Number"] || "")
@@ -7571,9 +7619,13 @@ export default function ManageOrdersPage() {
       note: gift ? "" : cleanNote(note),
       isGift: gift,
       // Faster / express orders get the "Priority Express" label variant.
-      isFaster:
-        /faster|express/i.test(String(o["Delivery Type"] || "")) ||
-        /^e/i.test(String(o.shippingId || o["Shipping ID"] || "").trim()),
+      // Tracking ID decides when present (E… Speed, C… Contractual).
+      isFaster: (() => {
+        const byTrk = productFromTracking(o.shippingId || o["Shipping ID"]);
+        return byTrk
+          ? byTrk === "speed"
+          : /faster|express/i.test(String(o["Delivery Type"] || ""));
+      })(),
       giftQrUrl,
     };
   };
@@ -9724,9 +9776,7 @@ export default function ManageOrdersPage() {
   const [emailTplOrder, setEmailTplOrder] = useState(null); // order for the picker
   const [emailingOrder, setEmailingOrder] = useState(""); // template key being sent
   const emailStatusTemplates = (order) => {
-    const faster =
-      /faster|express/i.test(String(order?.["Delivery Type"] || "")) ||
-      /^e/i.test(String(order?.shippingId || order?.["Shipping ID"] || "").trim());
+    const faster = isSpeedShip(order);
     const eta = faster ? "1–6 days" : "5–9 days";
     // Dates from the order's own timestamp.
     const od = (() => {
@@ -12072,9 +12122,7 @@ export default function ManageOrdersPage() {
                                 card itself carries the look (no tag on top). */}
                             {(() => {
                               const deliv = String(order["Delivery Type"] || "");
-                              const fasterD =
-                                /faster|express/i.test(deliv) ||
-                                /^e/i.test(String(order.shippingId || "").trim());
+                              const fasterD = isSpeedShip(order);
                               const giftO = isGiftOrder(order);
                               if (!fasterD && !giftO) return null;
                               return (
@@ -12312,9 +12360,7 @@ export default function ManageOrdersPage() {
                                 bookmark; each shown only when it has a value. */}
                             {(() => {
                               const deliv = String(order["Delivery Type"] || "");
-                              const fasterD =
-                                /faster|express/i.test(deliv) ||
-                                /^e/i.test(String(order.shippingId || "").trim());
+                              const fasterD = isSpeedShip(order);
                               const addonsB = parseAddonsField(
                                 String(order["Gift Wrap"] || ""),
                               );
@@ -12479,15 +12525,18 @@ export default function ManageOrdersPage() {
                                         ...p,
                                         [orderId]: { ...(p[orderId] || {}), [k]: String(v).replace(/[^\d]/g, "") },
                                       }));
-                                    const faster =
-                                      /faster|express/i.test(String(order["Delivery Type"] || "")) ||
-                                      /^e/i.test(String(t || trk || "").trim());
+                                    // Tracking ID decides first (E… Speed, C… Contractual),
+                                    // then express opted, then weight.
+                                    const byTrk = productFromTracking(String(t || trk || "").trim());
+                                    const faster = /faster|express/i.test(String(order["Delivery Type"] || ""));
                                     const wn = parseInt(d.w, 10);
-                                    const kind = faster
-                                      ? "speed"
-                                      : wn > 0
-                                        ? wn < SPEED_MAX_GRAMS ? "speed" : "contract"
-                                        : null;
+                                    const kind = byTrk
+                                      ? byTrk === "speed" ? "speed" : "contract"
+                                      : faster
+                                        ? "speed"
+                                        : wn > 0
+                                          ? wn < SPEED_MAX_GRAMS ? "speed" : "contract"
+                                          : null;
                                     const est = estimateWeight(order);
                                     const save = () => {
                                       commitParcel(order, st);
@@ -12509,9 +12558,11 @@ export default function ManageOrdersPage() {
                                             <span className={`mo2-kind ${kind}`}>
                                               {kind === "speed" ? "Speed Post" : "Contractual"}
                                               <em>
-                                                {faster
-                                                  ? "express opted"
-                                                  : `${wn < SPEED_MAX_GRAMS ? "under" : "≥"} ${SPEED_MAX_GRAMS} g`}
+                                                {byTrk
+                                                  ? `${byTrk === "speed" ? "E" : "C"}… tracking ID`
+                                                  : faster
+                                                    ? "express opted"
+                                                    : `${wn < SPEED_MAX_GRAMS ? "under" : "≥"} ${SPEED_MAX_GRAMS} g`}
                                               </em>
                                             </span>
                                           ) : (
@@ -12583,6 +12634,12 @@ export default function ManageOrdersPage() {
                                             {dirty ? "Save" : "Saved"}
                                           </button>
                                         </div>
+                                      {kind &&
+                                        postageBoth(
+                                          { grams: d.w, pincode: order["Pincode"], state: order["State"], l: d.l, b: d.b, h: d.h },
+                                          kind === "speed" ? "speed" : "contractual",
+                                          "mo-est mo2-parcel-est",
+                                        )}
                                       </div>
                                     );
                                   })()}
@@ -12593,6 +12650,27 @@ export default function ManageOrdersPage() {
                                           📦 {[w && `${w} g`, sz].filter(Boolean).join(" · ")}
                                         </span>
                                       )}
+                                      {w &&
+                                        (() => {
+                                          const dims = String(order["Sizes(Lxbxh)"] || "").split(/[xX×*]/);
+                                          const pp = { grams: w, pincode: order["Pincode"], state: order["State"], l: dims[0], b: dims[1], h: dims[2] };
+                                          const sp = estimatePostage({ ...pp, product: "speed" });
+                                          const ct = estimatePostage({ ...pp, product: "contractual" });
+                                          if (!sp || !ct) return null;
+                                          const act = classifyOrderProduct(order);
+                                          return (
+                                            <span className="mo-est-inline">
+                                              💰{" "}
+                                              <span className={act === "speed" ? "on" : ""} title={estTip(sp)}>
+                                                Speed {fmtRs(sp.total)}
+                                              </span>
+                                              {" · "}
+                                              <span className={act !== "speed" ? "on" : ""} title={estTip(ct)}>
+                                                Contr. {fmtRs(ct.total)}
+                                              </span>
+                                            </span>
+                                          );
+                                        })()}
                                       {trk && <span>🚚 {trk}</span>}
                                     </p>
                                   )}
@@ -15882,8 +15960,7 @@ export default function ManageOrdersPage() {
                       // Same rule as the card art: Speed = faster/express
                       // delivery or a Speed Post (E…) article.
                       if (
-                        /faster|express/i.test(String(o["Delivery Type"] || "")) ||
-                        /^e/i.test(String(o.shippingId || o["Shipping ID"] || "").trim())
+                        isSpeedShip(o)
                       )
                         days[i].speed += 1;
                       if (isGiftOrder(o)) days[i].gift += 1;
@@ -20553,6 +20630,75 @@ export default function ManageOrdersPage() {
                                       )}
                                     </section>
 
+                                    {/* Bulk → Dispatch queue (selected, or all in view). */}
+                                    {(() => {
+                                      const ids = labelScope.map((o) => o["Order ID"]).filter(Boolean);
+                                      const fresh = ids.filter((id) => !dispatchIds.includes(id));
+                                      const queued = ids.length - fresh.length;
+                                      const addAll = (open) => {
+                                        if (fresh.length) persistDispatch([...dispatchIds, ...fresh]);
+                                        showToast(
+                                          fresh.length
+                                            ? `Moved ${fresh.length} order${fresh.length === 1 ? "" : "s"} to the Dispatch queue`
+                                            : "Already in the Dispatch queue",
+                                          "success",
+                                        );
+                                        setSelectedIds([]);
+                                        close();
+                                        if (open) {
+                                          setActiveTab("book");
+                                          setBookSubTab("queue");
+                                          try {
+                                            localStorage.setItem("mo_active_tab", "book");
+                                          } catch {}
+                                        }
+                                      };
+                                      return (
+                                        <section className="mo-sheet-sec">
+                                          <h4>Dispatch queue · {scopeTxt}</h4>
+                                          <div className="mo-sheet-list">
+                                            <button type="button" disabled={!ids.length} onClick={() => addAll(true)}>
+                                              <Send size={17} />
+                                              <span>
+                                                Move to Dispatch &amp; open it
+                                                <em>
+                                                  {fresh.length
+                                                    ? `${fresh.length} new${queued ? ` · ${queued} already queued` : ""}`
+                                                    : "All already in the queue — just opens it"}
+                                                </em>
+                                              </span>
+                                              <b>{fresh.length}</b>
+                                            </button>
+                                            <button type="button" disabled={!fresh.length} onClick={() => addAll(false)}>
+                                              <ListPlus size={17} />
+                                              <span>
+                                                Add to Dispatch queue
+                                                <em>Stay on Orders</em>
+                                              </span>
+                                              <b>{fresh.length}</b>
+                                            </button>
+                                            {queued > 0 && (
+                                              <button
+                                                type="button"
+                                                onClick={() => {
+                                                  persistDispatch(dispatchIds.filter((id) => !ids.includes(id)));
+                                                  showToast(`Removed ${queued} from the Dispatch queue`, "success");
+                                                  close();
+                                                }}
+                                              >
+                                                <X size={17} />
+                                                <span>
+                                                  Remove from Dispatch queue
+                                                  <em>{queued} of these are queued</em>
+                                                </span>
+                                                <b>{queued}</b>
+                                              </button>
+                                            )}
+                                          </div>
+                                        </section>
+                                      );
+                                    })()}
+
                                     <section className="mo-sheet-sec">
                                       <h4>
                                         India Post booking ·{" "}
@@ -20671,6 +20817,22 @@ export default function ManageOrdersPage() {
                                             </button>
                                           );
                                         })()}
+                                        {/* Book covers — same export as the Dispatch queue. */}
+                                        <button
+                                          type="button"
+                                          disabled={!labelScope.length}
+                                          onClick={() => {
+                                            downloadCoversPNG("all", labelScope);
+                                            close();
+                                          }}
+                                        >
+                                          <Images size={17} />
+                                          <span>
+                                            Book covers
+                                            <em>One image of every cover, to pick books</em>
+                                          </span>
+                                          <b>{labelScope.length}</b>
+                                        </button>
                                       </div>
                                     </section>
 
@@ -21554,13 +21716,17 @@ export default function ManageOrdersPage() {
                           always Speed; otherwise under SPEED_MAX_GRAMS = Speed,
                           at or over it = Standard (Contractual). */}
                       {(() => {
-                        const faster =
-                          /faster|express/i.test(
-                            String(wsOrder["Delivery Type"] || ""),
-                          ) ||
-                          /^e/i.test(
-                            String(wsOrder.shippingId || "").trim(),
-                          );
+                        // Tracking ID (typed/scanned here or saved) decides
+                        // first: E… = Speed, C… = Contractual.
+                        const byTrk = productFromTracking(
+                          String(
+                            trackDrafts[wsOrder["Order ID"]] ??
+                              (wsOrder.shippingId || wsOrder["Shipping ID"] || ""),
+                          ).trim(),
+                        );
+                        const faster = /faster|express/i.test(
+                          String(wsOrder["Delivery Type"] || ""),
+                        );
                         const w = parseInt(
                           String(wsWeight).replace(/[^\d]/g, ""),
                           10,
@@ -21568,7 +21734,10 @@ export default function ManageOrdersPage() {
                         const hasW = Number.isFinite(w) && w > 0;
                         let kind = null;
                         let reason = "";
-                        if (faster) {
+                        if (byTrk) {
+                          kind = byTrk === "speed" ? "speed" : "standard";
+                          reason = `${byTrk === "speed" ? "E" : "C"}… tracking ID${hasW && (byTrk === "speed") !== (w < SPEED_MAX_GRAMS) ? ` (overrides ${w} g)` : ""}`;
+                        } else if (faster) {
                           kind = "speed";
                           reason = "Express delivery opted";
                         } else if (hasW) {
@@ -21595,6 +21764,13 @@ export default function ManageOrdersPage() {
                             {reason && (
                               <span className="mo-ws-kind-r">{reason}</span>
                             )}
+                            {kind &&
+                              hasW &&
+                              postageBoth(
+                                { grams: w, pincode: wsOrder["Pincode"], state: wsOrder["State"], l: wsL, b: wsB, h: wsH },
+                                kind === "speed" ? "speed" : "contractual",
+                                "mo-est mo-ws-est",
+                              )}
                           </div>
                         );
                       })()}

@@ -8955,3 +8955,31 @@ body.mo-map-fs-open .my-orders-page .mo-section { will-change: auto !important; 
   align-self: flex-start; margin-top: 4px; padding: 2px 8px; border-radius: 999px;
   background: #f3f4f6; color: #374151 !important; font-size: 11.5px !important; font-weight: 700;
 }
+
+/* 72 · Postage estimate (bulk contractual rates) */
+.my-orders-page.mo-glass .mo-est, .mo-est {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  margin-top: 8px; padding: 7px 10px; border-radius: 9px;
+  background: rgb(var(--g-ink-rgb, 17 24 39) / 0.04); border: 1px dashed rgb(var(--g-ink-rgb, 17 24 39) / 0.15);
+  cursor: help;
+}
+.mo-est b { font-size: 13.5px; font-weight: 800; color: var(--g-ink, #111827); white-space: nowrap; }
+.mo-est small { font-size: 11.5px; color: var(--g-ink-3, #6b7280); text-align: right; }
+.mo-ws-est { width: 100%; }
+.my-orders-page.mo-glass .mo-est-inline { font-weight: 700; color: var(--g-ink); cursor: help; }
+
+/* 73 · Both postage estimates (Speed + Contractual) */
+.mo-est { flex-direction: column; align-items: stretch; gap: 6px; cursor: default; }
+.mo-est-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mo-est-chip {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 6px;
+  padding: 6px 9px; border-radius: 8px; border: 1px solid rgb(var(--g-ink-rgb, 17 24 39) / 0.12);
+  background: var(--g-surface-solid, #fff); cursor: help; opacity: 0.72;
+}
+.mo-est-chip small { font-size: 11px; color: var(--g-ink-3, #6b7280); }
+.mo-est-chip b { font-size: 13.5px; }
+.mo-est-chip.on { opacity: 1; border-color: var(--g-ink, #111827); box-shadow: inset 0 0 0 1px var(--g-ink, #111827); }
+.mo-est-meta { font-size: 11px; color: var(--g-ink-3, #6b7280); text-align: left !important; }
+.my-orders-page.mo-glass .mo-est-inline { font-weight: 600; color: var(--g-ink-3); }
+.my-orders-page.mo-glass .mo-est-inline .on { color: var(--g-ink); font-weight: 800; }
+.my-orders-page.mo-glass .mo-est-inline span { cursor: help; }

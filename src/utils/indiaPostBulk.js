@@ -254,7 +254,21 @@ export const SPEED_MAX_GRAMS = 500;
 //   • Parcels 500 g and OVER  → CONTRACTUAL (normal parcel)
 // Weight comes from the operator-entered "Weight(gm)" saved on the order; if
 // that's blank we fall back to the catalogue estimate.
+// Product from the India Post tracking ID itself: "E…" articles are Speed
+// Post, "C…" are Contractual. When a tracking ID exists it is the source of
+// truth (the parcel was actually booked that way), even if the weight says
+// otherwise. Returns "speed" | "contractual" | null.
+export function productFromTracking(id) {
+  const t = String(id || "").trim().toUpperCase();
+  if (/^E[A-Z]/.test(t)) return "speed";
+  if (/^C[A-Z]/.test(t)) return "contractual";
+  return null;
+}
+
 export function classifyOrderProduct(order) {
+  // 0) A booked tracking ID decides: E… = Speed, C… = Contractual.
+  const byTrk = productFromTracking(order?.shippingId || order?.["Shipping ID"]);
+  if (byTrk) return byTrk;
   // 1) Faster / express delivery always goes Speed.
   const deliv = String(order?.["Delivery Type"] || "");
   if (/faster|express/i.test(deliv)) return "speed";

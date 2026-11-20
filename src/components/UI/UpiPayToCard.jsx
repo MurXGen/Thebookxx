@@ -50,9 +50,73 @@ export default function UpiPayToCard({
     setTimeout(() => setQrState((q) => (q === "pending" ? "ok" : q)), 3000);
   };
 
+  // Animated "download" arrow (drops into the tray).
+  const dlIcon = (
+    <svg className="upg-dlarrow" viewBox="0 0 24 24" aria-hidden="true">
+      <g className="upg-dlarrow-a">
+        <path d="M12 3v11" />
+        <path d="M7 10l5 5 5-5" />
+      </g>
+      <path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17" />
+    </svg>
+  );
+
+  const card = hero ? (
+    // QR screen (phones): big QR in the centre, then Copy UPI ID + Download QR.
+    <section className={`upg-card upg-payto hero2 ${className}`}>
+      <div className="upg-h2-top">
+        <span className="upg-payto-k">Pay to TheBookX</span>
+        <b className="upg-payto-amt">₹{amount}</b>
+      </div>
+      <button
+        type="button"
+        className="upg-h2-qr"
+        onClick={() => setPreview(true)}
+        aria-label="View the QR code larger"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={QR_SRC} alt="TheBookX UPI QR code" />
+      </button>
+      <span className="upg-payto-name">
+        <BadgeCheck size={13} /> Shows as <b>Uskillbook</b> or <b>Murthy</b>
+      </span>
+      <div className="upg-h2-actions">
+        <button
+          type="button"
+          className={`upg-h2-btn${copied ? " ok" : ""}`}
+          onClick={copy}
+          data-no-busy
+        >
+          {copied ? <Check size={16} strokeWidth={3} /> : <Copy size={16} />}
+          {copied ? "UPI ID copied" : "Copy UPI ID"}
+        </button>
+        <button
+          type="button"
+          className={`upg-h2-btn dl${qrState === "ok" ? " ok" : ""}`}
+          onClick={download}
+          disabled={qrState === "pending"}
+          data-no-busy
+        >
+          {qrState === "pending" ? (
+            <span className="upiv3-spin dark" />
+          ) : qrState === "ok" ? (
+            <Check size={16} strokeWidth={3} />
+          ) : (
+            dlIcon
+          )}
+          {qrState === "pending" ? "Saving…" : qrState === "ok" ? "QR saved" : "Download QR"}
+        </button>
+      </div>
+      <code className="upg-h2-id">{upiId}</code>
+      <p className="upg-payto-how">
+        Open the app, then upload this QR or paste the UPI ID and pay ₹{amount}.
+      </p>
+    </section>
+  ) : null;
+
   return (
     <>
-      <section className={`upg-card upg-payto${hero ? " hero" : ""} ${className}`}>
+      {card || <section className={`upg-card upg-payto ${className}`}>
         <button
           type="button"
           className="upg-qrthumb"
@@ -71,19 +135,14 @@ export default function UpiPayToCard({
           <span className="upg-payto-name">
             <BadgeCheck size={13} /> Shows as <b>Uskillbook</b> or <b>Murthy</b>
           </span>
-          <div className={`upg-idrow${hero && copied ? " is-copied" : ""}`}>
+          <div className="upg-idrow">
             <code>{upiId}</code>
             <button type="button" onClick={copy} data-no-busy>
               {copied ? <><Check size={13} strokeWidth={3} /> Copied</> : <><Copy size={13} /> Copy</>}
             </button>
           </div>
         </div>
-        {hero && (
-          <p className="upg-payto-how">
-            <b>UPI ID copied.</b> Open the app, then upload this QR or paste the UPI ID and pay ₹{amount}.
-          </p>
-        )}
-      </section>
+      </section>}
 
       {typeof document !== "undefined" &&
         createPortal(

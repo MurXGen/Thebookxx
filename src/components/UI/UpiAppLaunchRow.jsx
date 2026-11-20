@@ -74,15 +74,15 @@ export default function UpiAppLaunchRow({
   }, [autoOpen]);
 
   const handle = (app) => {
-    // Only the UPI ID is copied here; the QR downloads from the guide's
-    // "Option 2" when the shopper wants it.
+    // Copy the UPI ID first (needs this tap), then hand off to the app.
     copyUpiId(upiId);
 
     if (isMobile) {
-      // Mobile: DON'T launch the app yet. Show the full-page "UPI ID copied"
-      // guide and only open the app from its CTA.
+      // Mobile: open the UPI app straight away and start verifying here, so
+      // they come back to the "checking your payment" screen.
+      launchUpiApp(app, upiId);
       setActiveApp(app || null);
-      setPayStage("ready");
+      setPayStage("verifying");
       setPayOpen(true);
     } else {
       // Desktop: copy + open the store page + toast (no app to deep-link to).

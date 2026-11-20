@@ -8983,3 +8983,82 @@ body.mo-map-fs-open .my-orders-page .mo-section { will-change: auto !important; 
 .my-orders-page.mo-glass .mo-est-inline { font-weight: 600; color: var(--g-ink-3); }
 .my-orders-page.mo-glass .mo-est-inline .on { color: var(--g-ink); font-weight: 800; }
 .my-orders-page.mo-glass .mo-est-inline span { cursor: help; }
+
+/* 74 · Delivery-time estimate under each postage chip */
+.mo-est-chip { flex-direction: column; align-items: stretch; gap: 2px; }
+.mo-est-chip-top { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+.mo-est-eta { font-size: 11px; font-weight: 600; color: var(--g-ink-3, #6b7280); }
+.mo-est-chip.on .mo-est-eta { color: var(--g-ink-2, #374151); }
+.my-orders-page.mo-glass .mo-est-inline small { font-weight: 500; color: var(--g-ink-3); }
+
+/* 75 · Postage estimate — flat (no nested boxes), mobile friendly.
+   Lives inside the Parcel section as a ruled block: two option rows
+   (dot · name · price / delivery days) and a one-line note. */
+.mo-est, .my-orders-page.mo-glass .mo-est {
+  display: block;
+  margin: 10px 0 0;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid rgb(var(--g-ink-rgb, 17 24 39) / 0.1);
+  border-radius: 0;
+  background: none;
+  cursor: default;
+}
+.mo-est-opts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 16px;
+}
+.mo-est-opt {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  grid-template-areas: "dot name price" ". eta eta";
+  align-items: center;
+  column-gap: 7px;
+  row-gap: 1px;
+  padding: 2px 0;
+  cursor: help;
+  color: var(--g-ink-3, #6b7280);
+}
+.mo-est-dot {
+  grid-area: dot;
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 1.5px solid rgb(var(--g-ink-rgb, 17 24 39) / 0.3);
+}
+.mo-est-name {
+  grid-area: name;
+  font-size: 12px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mo-est-name em {
+  margin-left: 6px; font-style: normal; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em; color: #15803d;
+}
+.mo-est-price { grid-area: price; font-size: 13.5px; font-weight: 700; color: inherit; }
+.mo-est-eta { grid-area: eta; font-size: 11.5px; font-weight: 500; }
+.mo-est-opt.on { color: var(--g-ink, #111827); }
+.mo-est-opt.on .mo-est-dot { background: #16a34a; border-color: #16a34a; }
+.mo-est-opt.on .mo-est-price { font-weight: 800; }
+.mo-est-meta {
+  display: block; margin-top: 6px;
+  font-size: 11px; color: var(--g-ink-3, #6b7280); text-align: left !important;
+}
+.mo-dark .mo-est-name em { color: #4ade80; }
+/* Phones: the two options stack, one row each */
+@media (max-width: 480px) {
+  .mo-est-opts { grid-template-columns: 1fr; row-gap: 6px; }
+  .mo-est-opt { grid-template-areas: "dot name price" ". eta ."; }
+}
+/* Order card line: keep it to one tidy wrap on phones */
+@media (max-width: 480px) {
+  .my-orders-page.mo-glass .mo2-shipline { flex-wrap: wrap; row-gap: 4px; }
+  .my-orders-page.mo-glass .mo-est-inline { flex-basis: 100%; }
+}
+.mo-ws-kind { flex-wrap: wrap; }
+.mo-ws-kind .mo-ws-est { flex-basis: 100%; }
+/* Stack the two options whenever the card itself is narrow (desktop grid too) */
+.mo-est, .my-orders-page.mo-glass .mo-est { container-type: inline-size; }
+@container (max-width: 440px) {
+  .mo-est-opts { grid-template-columns: 1fr; row-gap: 6px; }
+  .mo-est-opt { grid-template-areas: "dot name price" ". eta ."; }
+}

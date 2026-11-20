@@ -264,6 +264,7 @@ const estTip = (e) =>
   [
     `${e.productLabel} · ${e.zoneLabel} (${e.zoneWhy})`,
     `${e.slab}: ${fmtRs(e.base)} + 18% GST ${fmtRs(e.gst)} = ${fmtRs(e.total)}`,
+    `Usually delivered in ${e.eta} after booking`,
     e.volumetricHigher
       ? `Size weight ${e.volumetricGrams} g is more than the ${e.grams} g gross — if billed by size it costs more`
       : "",
@@ -277,14 +278,19 @@ const postageBoth = (p, active, cls = "mo-est") => {
   if (!sp || !ct) return null;
   const diff = Math.round((sp.total - ct.total) * 100) / 100;
   const chip = (e, key, label) => (
-    <span className={`mo-est-chip${active === key ? " on" : ""}`} title={estTip(e)}>
-      <small>{label}</small>
-      <b>{fmtRs(e.total)}</b>
+    <span className={`mo-est-opt${active === key ? " on" : ""}`} title={estTip(e)}>
+      <i className="mo-est-dot" aria-hidden="true" />
+      <span className="mo-est-name">
+        {label}
+        {active === key && <em>applies</em>}
+      </span>
+      <b className="mo-est-price">{fmtRs(e.total)}</b>
+      <span className="mo-est-eta">{e.eta}</span>
     </span>
   );
   return (
     <span className={cls}>
-      <span className="mo-est-chips">
+      <span className="mo-est-opts">
         {chip(sp, "speed", "Speed Post")}
         {chip(ct, "contractual", "Contractual")}
       </span>
@@ -12662,11 +12668,11 @@ export default function ManageOrdersPage() {
                                             <span className="mo-est-inline">
                                               💰{" "}
                                               <span className={act === "speed" ? "on" : ""} title={estTip(sp)}>
-                                                Speed {fmtRs(sp.total)}
+                                                Speed {fmtRs(sp.total)} <small>({sp.eta})</small>
                                               </span>
                                               {" · "}
                                               <span className={act !== "speed" ? "on" : ""} title={estTip(ct)}>
-                                                Contr. {fmtRs(ct.total)}
+                                                Contr. {fmtRs(ct.total)} <small>({ct.eta})</small>
                                               </span>
                                             </span>
                                           );

@@ -89,6 +89,15 @@ export const RATE_TABLES = {
   },
 };
 
+// Typical delivery time (days) after booking, by product and zone. These are
+// working estimates from our own shipments — India Post publishes no
+// guaranteed times for these products. Tune as you see real delivery data.
+export const DELIVERY_DAYS = {
+  speed: { local: [1, 2], state: [2, 3], zone: [2, 4], other: [3, 6] },
+  contractual: { local: [2, 4], state: [3, 5], zone: [5, 7], other: [5, 9] },
+};
+export const fmtDays = ([a, b]) => (a === b ? `${a} day${a === 1 ? "" : "s"}` : `${a}–${b} days`);
+
 // ── Zone rules (from Mumbai) ────────────────────────────────────────────────
 export const ORIGIN = { city: "Mumbai", state: "Maharashtra", pincode: "400019" };
 // Local = Mumbai city & suburbs delivery area (pincodes 4000xx–4001xx).
@@ -156,7 +165,10 @@ export function estimatePostage({ product = "contractual", grams, pincode, state
   }
   const gst = Math.round(base * GST_RATE * 100) / 100;
   const vol = volumetricGrams(l, b, h);
+  const days = DELIVERY_DAYS[product === "speed" ? "speed" : "contractual"][zone];
   return {
+    days,
+    eta: fmtDays(days),
     product: key,
     productLabel: table.label,
     zone,

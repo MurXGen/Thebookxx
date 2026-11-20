@@ -1,0 +1,14 @@
+# Netlify hosting for TheBookX (Next.js 16, App Router).
+# Netlify's Next.js runtime (OpenNext) is applied automatically; it serves the
+# pages, API routes (as functions) and the edge OG/Twitter image routes.
+# Environment variables (Apps Script URLs, Redis, Telegram, India Post,
+# Shiprocket, …) are set in Netlify → Site configuration → Environment
+# variables — never in this file.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_TELEMETRY_DISABLED = "1"

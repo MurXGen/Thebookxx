@@ -59,6 +59,27 @@ const nextConfig = {
     ];
   },
 
+  // Keep the server bundle small. The combo share-image route reads covers
+  // from public/books with a runtime path, which makes Next.js trace ALL of
+  // public/ (~180 MB) into the server function — over Netlify's 250 MB limit.
+  // Nothing on the server reads these other folders; they're still served as
+  // normal static files.
+  outputFileTracingExcludes: {
+    "*": [
+      "public/review/**",
+      "public/blogs/**",
+      "public/sounds/**",
+      "public/**/*.mp4",
+      "public/_promo-*.html",
+      "public/intro-image.jpeg",
+      "public/unlock-offer.jpeg",
+      "tmp/**",
+      "exports/**",
+      "tools/**",
+      "**/*.bak",
+    ],
+  },
+
   images: {
     // Disable image optimization to avoid Vercel usage charges
     unoptimized: true,

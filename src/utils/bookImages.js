@@ -684,7 +684,7 @@ export const bookImages = {
   "focus-on-what-matters": `${BOOK_IMAGE_BASE_PATH}/focus-on-what-matters.jpeg`,
   "do-it-today": `${BOOK_IMAGE_BASE_PATH}/do-it-today.jpeg`,
   "think-straight": `${BOOK_IMAGE_BASE_PATH}/think-straight.jpeg`,
-  "we-are-there-for-each-other": `${BOOK_IMAGE_BASE_PATH}/we-are-there-for-each-other.jpeg`,
+  "we-are-there-for-each-other": `${BOOK_IMAGE_BASE_PATH}/we-are-there-for-each-other.png`,
   "always-remember": `${BOOK_IMAGE_BASE_PATH}/always-remember.jpeg`,
   "nothing-like-the-movies": `${BOOK_IMAGE_BASE_PATH}/nothing-like-the-movies.jpeg`,
   "the-maidens": `${BOOK_IMAGE_BASE_PATH}/the-maidens.jpeg`,

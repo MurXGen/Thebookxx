@@ -1,7 +1,7 @@
 // Google Merchant Center items for book combos (bundles). Shared by
 // /merchant-feed.xml and /product-feed.xml so combos show in Google Shopping
-// alongside single books. Uses the combo's combined-cover share image as the
-// main picture and each book cover as an additional image.
+// alongside single books. Uses the combo's square covers image (square-image)
+// as the main picture and each book cover as an additional image.
 import { combos, getComboBooks, getComboPricing } from "@/utils/combos";
 
 const abs = (site, src) =>
@@ -48,7 +48,7 @@ export function comboFeedItems(site, esc, freeFrom = 199) {
       <g:title>${esc(title)}</g:title>
       <g:description>${esc(desc)}</g:description>
       <g:link>${esc(link)}</g:link>
-      <g:image_link>${esc(`${link}/opengraph-image`)}</g:image_link>
+      <g:image_link>${esc(`${link}/square-image`)}</g:image_link>
 ${extra}
       <g:availability>${inStock ? "in_stock" : "out_of_stock"}</g:availability>
       <g:price>${list}.00 INR</g:price>

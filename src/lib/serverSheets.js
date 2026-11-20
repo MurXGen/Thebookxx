@@ -78,6 +78,14 @@ export const EXCHANGE_SHEET_NAME =
 //   Status | Author
 export const NOTES_SHEET_NAME = process.env.NOTES_SHEET_NAME || "Notes";
 
+// ── Book Visibility ────────────────────────────────────────────────────────
+// Show/hide books without a deploy. Tab "Book Visibility" with header row:
+//   Book ID | Show
+// Show is TRUE/FALSE (or a checkbox, Yes/No, On/Off). FALSE = the book is
+// hidden everywhere on the site. Books not listed stay visible.
+export const BOOK_VISIBILITY_SHEET_NAME =
+  process.env.BOOK_VISIBILITY_SHEET_NAME || "Book Visibility";
+
 export const ABANDONED_CART_SHEET_NAME =
   process.env.ABANDONED_CART_SHEET_NAME || "Abandoned Cart";
 // Pincodes entered in the delivery stripe (one row per device).

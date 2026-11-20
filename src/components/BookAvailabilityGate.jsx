@@ -7,8 +7,9 @@ import { notFound } from "next/navigation";
 // available on Saturday & Sunday (all day), and 6pm–9pm on weekdays. Outside
 // those windows the URL returns the 404 page. Times use the visitor's browser
 // clock. Keyed by slug (slugify(name)).
+// ("We Are There For Each Other" is controlled from the "Book Visibility"
+// sheet tab instead.)
 const GATED_SLUGS = new Set([
-  "we-are-there-for-each-other",
   "technical-analysis-of-financial-markets",
 ]);
 

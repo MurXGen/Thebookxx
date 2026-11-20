@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import CodSwitchBtn from "./CodSwitchBtn";
 import { showToast } from "@/context/ToastContext";
+import { downloadUpiQr } from "@/utils/upiApps";
 import {
   X,
   Check,
@@ -106,58 +107,35 @@ const MiniQr = ({ className = "" }) => (
   </span>
 );
 
-export default function UpiPayGuide({
+// The two ways to pay on a phone — Option 1: download the QR and upload it in
+// the app, OR Option 2: paste the UPI ID — each with a looping mini-phone demo.
+// Used by the full-page guide and under the checkout QR screen. Without
+// onDownloadQr it saves the QR itself (downloadUpiQr) and tracks the result.
+export function UpiPayOptions({
   appLabel = "your UPI app",
   amount = 0,
   upiId = "",
-  qrState = "idle", // idle | pending | ok | failed
-  onCopy,
-  onDownloadQr,
-  onLaunch,
-  onPaid,
-  onClose,
-  onSwitchToCOD,
-  codAmount = 0,
+  advance = false,
+  qrState: qrStateProp,
+  onDownloadQr: onDownloadQrProp,
+  tabs = false, // desktop: show the two options as tabs
 }) {
-  const [copied, setCopied] = useState(false);
-  const [qrPreview, setQrPreview] = useState(false);
-  // Desktop: shoppers scan with their phone, so the QR leads (not the UPI ID).
-  const [desktop, setDesktop] = useState(false);
+  const [tab, setTab] = useState(0);
+  const [ownQr, setOwnQr] = useState("idle");
   useEffect(() => {
-    const check = () => {
-      const touch = /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent || "");
-      setDesktop(!touch && window.innerWidth >= 768);
-    };
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-  // On arrival: the UPI ID was copied in the app-pick tap. Tell them (toast +
-  // haptic buzz) and how it gets confirmed.
-  useEffect(() => {
-    const t = setTimeout(
-      () => {
-        const isDesk =
-          !/android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent || "") && window.innerWidth >= 768;
-        showToast(
-          isDesk
-            ? `Scan the QR with any UPI app on your phone and pay ₹${amount}. We'll verify it automatically.`
-            : `Pay ₹${amount} through ${appLabel}. We'll verify it automatically.`,
-          "success",
-          { title: isDesk ? "Scan to pay" : "UPI ID copied" },
-        );
-      },
-      350,
-    );
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const copyAgain = () => {
-    showToast(`Paste it in ${appLabel} and pay ₹${amount}.`, "success", { title: "UPI ID copied" });
-    onCopy?.();
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
-  };
+    if (onDownloadQrProp) return;
+    const on = (e) => setOwnQr(e.detail?.ok ? "ok" : "failed");
+    window.addEventListener("tbx:qr-download", on);
+    return () => window.removeEventListener("tbx:qr-download", on);
+  }, [onDownloadQrProp]);
+  const qrState = onDownloadQrProp ? qrStateProp || "idle" : ownQr;
+  const onDownloadQr =
+    onDownloadQrProp ||
+    (() => {
+      setOwnQr("pending");
+      downloadUpiQr({ amount, upiId, advance });
+      setTimeout(() => setOwnQr((q) => (q === "pending" ? "ok" : q)), 3000);
+    });
   const shortId = upiId.length > 16 ? `${upiId.slice(0, 13)}…` : upiId;
 
   const idSteps = [
@@ -264,6 +242,131 @@ export default function UpiPayGuide({
     },
   ];
 
+  const one = (
+    <section className="upg-card">
+      <div className="upg-h">
+        <span className="upg-opt">Option 1</span>
+        <h3>Download the QR & upload it in the app</h3>
+      </div>
+      <PayDemo label="How to pay by uploading the QR" steps={qrSteps} frames={qrFrames} />
+      <button
+        type="button"
+        className={`upg-dlbtn${qrState === "ok" ? " ok" : ""}${qrState === "failed" ? " fail" : ""}`}
+        onClick={onDownloadQr}
+        disabled={qrState === "pending"}
+        data-no-busy
+      >
+        {qrState === "pending" ? (
+          <>
+            <span className="upiv3-spin dark" /> Saving QR…
+          </>
+        ) : qrState === "ok" ? (
+          <>
+            <Check size={16} strokeWidth={3} /> QR saved · download again
+          </>
+        ) : qrState === "failed" ? (
+          <>
+            <AlertCircle size={16} /> Download failed · try again
+          </>
+        ) : (
+          <>
+            <Download size={16} /> Download QR code
+          </>
+        )}
+      </button>
+    </section>
+  );
+  const two = (
+    <section className="upg-card">
+      <div className="upg-h">
+        <span className="upg-opt">Option 2</span>
+        <h3>Pay by pasting the UPI ID</h3>
+      </div>
+      <PayDemo label="How to pay with the UPI ID" steps={idSteps} frames={idFrames} />
+    </section>
+  );
+
+  // Tabs (desktop): one demo at a time so everything fits on one screen.
+  if (tabs) {
+    return (
+      <div className="upg-tabsw">
+        <div className="upg-tabs" role="tablist" aria-label="Ways to pay">
+          <button type="button" role="tab" aria-selected={tab === 0} className={tab === 0 ? "on" : ""} onClick={() => setTab(0)} data-no-busy>
+            <QrCode size={14} /> Upload the QR
+          </button>
+          <button type="button" role="tab" aria-selected={tab === 1} className={tab === 1 ? "on" : ""} onClick={() => setTab(1)} data-no-busy>
+            <ClipboardPaste size={14} /> Paste the UPI ID
+          </button>
+        </div>
+        {tab === 0 ? one : two}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {one}
+      <div className="upg-or" role="separator">
+        <span>OR</span>
+      </div>
+      {two}
+    </>
+  );
+}
+
+export default function UpiPayGuide({
+  appLabel = "your UPI app",
+  amount = 0,
+  upiId = "",
+  qrState = "idle", // idle | pending | ok | failed
+  onCopy,
+  onDownloadQr,
+  onLaunch,
+  onPaid,
+  onClose,
+  onSwitchToCOD,
+  codAmount = 0,
+}) {
+  const [copied, setCopied] = useState(false);
+  const [qrPreview, setQrPreview] = useState(false);
+  // Desktop: shoppers scan with their phone, so the QR leads (not the UPI ID).
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    const check = () => {
+      const touch = /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent || "");
+      setDesktop(!touch && window.innerWidth >= 768);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  // On arrival: the UPI ID was copied in the app-pick tap. Tell them (toast +
+  // haptic buzz) and how it gets confirmed.
+  useEffect(() => {
+    const t = setTimeout(
+      () => {
+        const isDesk =
+          !/android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent || "") && window.innerWidth >= 768;
+        showToast(
+          isDesk
+            ? `Scan the QR with any UPI app on your phone and pay ₹${amount}. We'll verify it automatically.`
+            : `Pay ₹${amount} through ${appLabel}. We'll verify it automatically.`,
+          "success",
+          { title: isDesk ? "Scan to pay" : "UPI ID copied" },
+        );
+      },
+      350,
+    );
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const copyAgain = () => {
+    showToast(`Paste it in ${appLabel} and pay ₹${amount}.`, "success", { title: "UPI ID copied" });
+    onCopy?.();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
+
   return (
     <motion.div
       className="upg"
@@ -324,52 +427,7 @@ export default function UpiPayGuide({
 
         {/* Two ways to pay (phones): Option 1 = QR, OR, Option 2 = UPI ID */}
         {!desktop && (
-          <>
-            <section className="upg-card">
-              <div className="upg-h">
-                <span className="upg-opt">Option 1</span>
-                <h3>Download the QR & upload it in the app</h3>
-              </div>
-              <PayDemo label="How to pay by uploading the QR" steps={qrSteps} frames={qrFrames} />
-              <button
-                type="button"
-                className={`upg-dlbtn${qrState === "ok" ? " ok" : ""}${qrState === "failed" ? " fail" : ""}`}
-                onClick={onDownloadQr}
-                disabled={qrState === "pending"}
-                data-no-busy
-              >
-                {qrState === "pending" ? (
-                  <>
-                    <span className="upiv3-spin dark" /> Saving QR…
-                  </>
-                ) : qrState === "ok" ? (
-                  <>
-                    <Check size={16} strokeWidth={3} /> QR saved · download again
-                  </>
-                ) : qrState === "failed" ? (
-                  <>
-                    <AlertCircle size={16} /> Download failed · try again
-                  </>
-                ) : (
-                  <>
-                    <Download size={16} /> Download QR code
-                  </>
-                )}
-              </button>
-            </section>
-
-            <div className="upg-or" role="separator">
-              <span>OR</span>
-            </div>
-
-            <section className="upg-card">
-              <div className="upg-h">
-                <span className="upg-opt">Option 2</span>
-                <h3>Pay by pasting the UPI ID</h3>
-              </div>
-              <PayDemo label="How to pay with the UPI ID" steps={idSteps} frames={idFrames} />
-            </section>
-          </>
+          <UpiPayOptions appLabel={appLabel} amount={amount} upiId={upiId} qrState={qrState} onDownloadQr={onDownloadQr} />
         )}
 
         <p className="upg-safe">

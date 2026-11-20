@@ -67,6 +67,7 @@ import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
 import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
+import { UpiPayOptions } from "./UpiPayGuide";
 import UpiPayToCard from "./UpiPayToCard";
 import { saveLastOrder } from "@/components/HomeResumeStrip";
 import { trackEvent } from "@/lib/ga";
@@ -440,6 +441,10 @@ export default function AddressModal({
   // "timeout" — no confirmation in 30s; offer a WhatsApp verify fallback
   const [upiPhase, setUpiPhase] = useState("await");
   const [verifyCountdown, setVerifyCountdown] = useState(30);
+  // Desktop (no UPI app on this device): no "Open app" button and no
+  // auto-started countdown; the timer starts when they tap "I've paid".
+  const [upiDesk, setUpiDesk] = useState(false);
+  const upiDeskTimedRef = useRef(false);
   const [upiOrderRef, setUpiOrderRef] = useState("");
   const upiPollRef = useRef({ poll: null, tick: null });
   // Once the shopper taps "Check again"/"I've paid", we optimistically flip
@@ -1330,10 +1335,13 @@ export default function AddressModal({
     setUpiPhase("await");
     setUpiReassured(false);
     processingMarkedRef.current = false;
+    const desk = isUpiDesktop();
+    setUpiDesk(desk);
+    upiDeskTimedRef.current = false;
     const t = setTimeout(() => {
       setQrUnlocked(true);
       setVerifyCountdown(30);
-      setUpiPhase("counting");
+      setUpiPhase(desk ? "ready" : "counting");
       trackPurchase({
         cartItems: cartBooks,
         totalAmount: netPayable,
@@ -3557,7 +3565,8 @@ export default function AddressModal({
                     onClick={() => {
                       setPaySel("UPI");
                     }}
-                    className={`pay-method pm2${paySel === "UPI" ? " selected" : ""}`}
+                    className={`pay-method pm2 pm-pop${paySel === "UPI" ? " selected" : ""}`}
+                    style={{ "--pm-i": 0 }}
                   >
                     <span className="pm2-main">
                       <span className="pm2-titlerow">
@@ -3596,7 +3605,8 @@ export default function AddressModal({
 
                   {/* Pay in two parts — ₹99 online now + rest at delivery */}
                   <div
-                    className={`pay-method pay-method-split${paySel === "ADV" ? " selected" : ""}`}
+                    className={`pay-method pay-method-split pm-pop${paySel === "ADV" ? " selected" : ""}`}
+                    style={{ "--pm-i": 1 }}
                   >
                     <button
                       type="button"
@@ -3670,7 +3680,8 @@ export default function AddressModal({
                       }
                       setPaySel("COD");
                     }}
-                    className={`pay-method pm2${paySel === "COD" ? " selected" : ""}${codBlocked ? " pm2-blocked" : ""}`}
+                    className={`pay-method pm2 pm-pop${paySel === "COD" ? " selected" : ""}${codBlocked ? " pm2-blocked" : ""}`}
+                    style={{ "--pm-i": 2 }}
                   >
                     <span className="pm2-main">
                       <span className="pm2-titlerow">
@@ -5307,7 +5318,18 @@ export default function AddressModal({
             verifyCountdown={verifyCountdown}
             reassured={upiReassured}
             chosenApp={chosenUpiApp}
-            onVerifyStatus={handleVerifyPending}
+            onVerifyStatus={() => {
+              // Desktop: the first tap starts the 30s check (timer in the
+              // button); after that it runs the usual pending check.
+              if (upiDesk && !upiDeskTimedRef.current) {
+                upiDeskTimedRef.current = true;
+                setVerifyCountdown(30);
+                setUpiPhase("counting");
+                return;
+              }
+              handleVerifyPending();
+            }}
+            desk={upiDesk}
             upiId={UPI_ID}
             onRevealQR={handleUPIPaymentClick}
             onCopyUpi={handleCopyUpiId}
@@ -6564,6 +6586,15 @@ export function CODSuccessModal({
 }
 
 // =====================================================================
+// Desktop = no UPI app on this device: scan the QR with a phone instead.
+export function isUpiDesktop() {
+  if (typeof window === "undefined") return false;
+  return (
+    !/android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent || "") &&
+    !!window.matchMedia?.("(min-width: 769px)").matches
+  );
+}
+
 // ============== Sub-component: UPIPaymentModal =======================
 // =====================================================================
 export function UPIPaymentModal({
@@ -6584,6 +6615,7 @@ export function UPIPaymentModal({
   reassured = false,
   chosenApp = "",
   onVerifyStatus,
+  desk: deskProp, // desktop layout; worked out here when not passed
   upiId,
   onRevealQR,
   onCopyUpi,
@@ -6600,6 +6632,8 @@ export function UPIPaymentModal({
   summaryItems = [],
   codLaterAmount = 0,
 }) {
+  const [deskAuto] = useState(() => isUpiDesktop());
+  const desk = deskProp ?? deskAuto;
   // On arrival, glide to the bottom and back up once, so the shopper sees
   // everything below the QR (trust notes, links) before paying.
   const upiScrollRef = useRef(null);
@@ -6913,14 +6947,33 @@ export function UPIPaymentModal({
               <Package size={13} /> Tracked end-to-end
             </span>
           </div>
+
+          {/* Desktop: they pay by scanning the QR above with their phone */}
+          <div className="upiv3-deskscan upiv3-desk-only">
+            <span className="upiv3-deskscan-ic" aria-hidden="true">
+              <Smartphone size={20} />
+            </span>
+            <span>
+              <b>On a computer? Scan the QR with your phone</b>
+              <small>
+                Open any UPI app on your phone, tap Scan, and pay ₹{totalToPay}. We confirm it here automatically.
+              </small>
+            </span>
+          </div>
+
+          {/* The two ways to pay (download QR / paste UPI ID): under the trust
+              strip on phones, the right-hand column on desktop */}
+          <div className="upiv3-options">
+            <UpiPayOptions amount={totalToPay} upiId={upiId} advance={advanceMode} tabs={desk} />
+          </div>
         </div>
 
         {/* Fixed footer — UPI id / Save QR + verify actions + COD link */}
         <div className="upiv3-footer">
 
 
-          {/* Primary: open the UPI app */}
-          {qrUnlocked && (
+          {/* Primary: open the UPI app (phones only; desktop scans the QR) */}
+          {qrUnlocked && !desk && (
             <UpiAppLaunchRow
               upiId={upiId}
               amount={totalToPay}

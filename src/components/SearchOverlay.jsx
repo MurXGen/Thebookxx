@@ -33,6 +33,8 @@ import {
   Layers,
 } from "lucide-react";
 import { combos, getComboBooks } from "@/utils/combos";
+import { fuzzyMatchBooks, didYouMean } from "@/utils/fuzzySearch";
+import { isBookHidden, isSwitchableBook, useHiddenBooksVersion } from "@/utils/bookVisibility";
 import { MiniCombo } from "@/components/PdpCombos";
 import Link from "next/link";
 import { createPortal } from "react-dom";
@@ -342,7 +344,7 @@ export default function SearchOverlay({
     (priceMax != null ? 1 : 0) +
     (genre ? 1 : 0) +
     (sortType !== "relevance" ? 1 : 0);
-  const matchedBooks = !debouncedQuery
+  const exactBooks = !debouncedQuery
     ? filtersActive
       ? books
       : []
@@ -435,6 +437,19 @@ export default function SearchOverlay({
           priceMatch
         );
       });
+  // Nothing matched exactly → typo-tolerant fallback ("rixh da" → Rich Dad
+  // Poor Dad) with "Did you mean" suggestions.
+  const fuzzyHits =
+    debouncedQuery && exactBooks.length === 0 && !parsePriceQuery(debouncedQuery)
+      ? fuzzyMatchBooks(debouncedQuery, books)
+      : [];
+  const isFuzzy = fuzzyHits.length > 0;
+  // Drop a book switched off in the "Book Visibility" sheet (only checked
+  // when a switchable book is actually among the results).
+  const rawMatched = isFuzzy ? fuzzyHits.map((h) => h.book) : exactBooks;
+  useHiddenBooksVersion(rawMatched.some((b) => isSwitchableBook(b.id)));
+  const matchedBooks = rawMatched.filter((b) => !isBookHidden(b.id));
+  const suggestions = isFuzzy ? didYouMean(fuzzyHits) : [];
   const filteredBooks = matchedBooks.filter(
     (b) =>
       (priceMax == null || Number(b.discountedPrice) <= priceMax) &&
@@ -446,7 +461,7 @@ export default function SearchOverlay({
   // typing chain (e.g. "off" then "off cam" keeps only "off cam") and dedupes.
   useEffect(() => {
     const term = debouncedQuery.trim();
-    if (!open || term.length < 2 || filteredBooks.length === 0) return;
+    if (!open || term.length < 2 || filteredBooks.length === 0 || isFuzzy) return;
     setRecentSearches((prev) => {
       const tl = term.toLowerCase();
       const cleaned = prev.filter((r) => {
@@ -1124,6 +1139,27 @@ export default function SearchOverlay({
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.15 }}
                         >
+                          {/* Typo fallback: what they probably meant */}
+                          {isFuzzy && (
+                            <div className="sx-dym" role="status">
+                              <span className="sx-dym-t">
+                                No exact match for &ldquo;{debouncedQuery}&rdquo;. Did you mean:
+                              </span>
+                              <span className="sx-dym-chips">
+                                {suggestions.map((t) => (
+                                  <button
+                                    key={t}
+                                    type="button"
+                                    className="sx-dym-chip"
+                                    onClick={() => setQuery(t)}
+                                    data-no-busy
+                                  >
+                                    {t}
+                                  </button>
+                                ))}
+                              </span>
+                            </div>
+                          )}
                           {/* Books / QuickReads tabs */}
                           <div
                             className="sx-tabs"
@@ -1210,7 +1246,9 @@ export default function SearchOverlay({
                                 : gridItems.length === 1
                                   ? "book"
                                   : "books"}
-                              {debouncedQuery ? (
+                              {isFuzzy ? (
+                                " closest to your search"
+                              ) : debouncedQuery ? (
                                 <> for &ldquo;{debouncedQuery}&rdquo;</>
                               ) : (
                                 " match your filters"

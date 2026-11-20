@@ -4,6 +4,7 @@ import { books } from "@/utils/book";
 import { notFound, redirect } from "next/navigation";
 import BookDetailsModal from "@/components/BookDeatilsModel";
 import BookAvailabilityGate from "@/components/BookAvailabilityGate";
+import { isBookHiddenServer } from "@/lib/bookVisibility";
 import { pairCombos, getComboPricing, CLARITY_ID } from "@/utils/combos";
 import {
   SITE,
@@ -179,6 +180,9 @@ export default async function BookDetailsPage({ params }) {
     // 3⃣ Not found at all
     notFound();
   }
+
+  // Switched off in the "Book Visibility" sheet tab → 404.
+  if (await isBookHiddenServer(book.id)) notFound();
 
   // All structured data is rendered on the server so crawlers and AI
   // assistants read it in the first HTML (Product/Book, offer, breadcrumbs,

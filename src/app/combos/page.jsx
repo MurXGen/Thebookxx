@@ -71,7 +71,7 @@ function buildJsonLd() {
           name: `${combo.title} (Combo of ${books.length} Books)`,
           description: combo.seoDescription,
           category: combo.category,
-          image: images.length ? images : [`${PAGE_URL}`],
+          image: [`${PAGE_URL}/${combo.slug}/square-image`, ...images],
           brand: { "@type": "Brand", name: "TheBookX" },
           url: `${PAGE_URL}/${combo.slug}`,
           offers: {

@@ -158,7 +158,9 @@ function comboJsonLd(combo) {
   const url = comboUrl(combo);
   const isPair = !!combo.discountPct;
   const inStock = items.every((b) => b.stock !== 0);
-  const images = [`${url}/opengraph-image`, ...items.map((b) => abs(b.image)).filter(Boolean)];
+  // Square covers image first (Google shows product images in square tiles),
+  // then the wide share card and each book cover.
+  const images = [`${url}/square-image`, `${url}/opengraph-image`, ...items.map((b) => abs(b.image)).filter(Boolean)];
 
   const product = {
     "@type": "Product",

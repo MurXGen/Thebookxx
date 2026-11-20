@@ -1,4 +1,5 @@
-import { books } from "@/utils/book";
+import { books as allBooks } from "@/utils/book";
+import { getHiddenBookIds } from "@/lib/bookVisibility";
 import { combos, getComboBooks } from "@/utils/combos";
 import { authorData, getAllAuthors } from "@/utils/author";
 import { reviewsData } from "@/utils/reviews";
@@ -27,7 +28,7 @@ function getAllAuthorsFromBooks() {
   const authorMap = new Map();
 
   // Get authors from books
-  books.forEach((book) => {
+  allBooks.forEach((book) => {
     if (book.author && !authorMap.has(book.author)) {
       authorMap.set(book.author, {
         name: book.author,
@@ -111,6 +112,9 @@ const getLastModified = () => {
 };
 
 export default async function sitemap() {
+  // Leave out books switched off in the "Book Visibility" sheet tab.
+  const hidden = await getHiddenBookIds();
+  const books = allBooks.filter((b) => !hidden.includes(String(b.id).toLowerCase()));
   const baseUrl = "https://thebookx.in";
   const now = getLastModified();
 

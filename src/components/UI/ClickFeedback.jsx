@@ -3,8 +3,8 @@
 // Site-wide "something is happening" feedback, so a tap never feels dead:
 //  1. A thin top progress bar while a page navigation is in flight (link taps
 //     and router.push — detected through the RSC fetch Next.js makes).
-//  2. A small spinner over the button/link that was tapped while the work it
-//     started (any fetch begun within a moment of the tap) is still running.
+//  2. A full-screen loader (dimmed page + centred spinner) while the work a
+//     tap started (any fetch begun within a moment of the tap) is running.
 // Opt out on an element (e.g. it shows its own loader) with data-no-busy.
 
 import { useEffect, useRef } from "react";
@@ -80,37 +80,24 @@ export default function ClickFeedback() {
     const busy = new Map(); // el → { count, overlay, showT, maxT }
     let lastTap = { el: null, t: 0 };
 
-    const place = (el, ov) => {
-      const r = el.getBoundingClientRect();
-      if (!r.width || !r.height) {
-        ov.style.display = "none";
-        return;
+    // One full-screen overlay (dimmed page + centred spinner) while any tap's
+    // work is running, instead of a spinner on the tapped element.
+    const screen = document.createElement("div");
+    screen.className = "cf-screen";
+    screen.setAttribute("role", "status");
+    screen.setAttribute("aria-label", "Loading");
+    screen.innerHTML = '<span class="cf-screen-box"><span class="cf-spin"></span></span>';
+    let shown = 0;
+    const syncScreen = () => {
+      if (shown > 0) {
+        if (!screen.isConnected) document.body.appendChild(screen);
+        requestAnimationFrame(() => screen.classList.add("on"));
+      } else {
+        screen.classList.remove("on");
+        setTimeout(() => shown === 0 && screen.remove(), 200);
       }
-      ov.style.display = "flex";
-      ov.style.left = `${r.left}px`;
-      ov.style.top = `${r.top}px`;
-      ov.style.width = `${r.width}px`;
-      ov.style.height = `${r.height}px`;
-      ov.style.borderRadius = getComputedStyle(el).borderRadius;
     };
-    const reposition = () => busy.forEach((s, el) => s.overlay && place(el, s.overlay));
-    // Sheets and modals slide/resize with animations, so a spinner placed once
-    // drifts off its button. Follow the element every frame while any spinner
-    // is visible.
-    let raf = 0;
-    const follow = () => {
-      let any = false;
-      busy.forEach((st, el) => {
-        if (!st.overlay) return;
-        any = true;
-        if (!el.isConnected) st.overlay.style.display = "none";
-        else place(el, st.overlay);
-      });
-      raf = any ? requestAnimationFrame(follow) : 0;
-    };
-    const startFollow = () => {
-      if (!raf) raf = requestAnimationFrame(follow);
-    };
+    const reposition = () => {};
 
     const markBusy = (el) => {
       if (!el || !el.isConnected) return () => {};
@@ -121,13 +108,9 @@ export default function ClickFeedback() {
           if (!busy.has(el) || !el.isConnected) return;
           // The button already shows its own loader (disabled / spinner icon).
           if (el.disabled || el.querySelector(".lb-spinner, .animate-spin, [class*='spinner']")) return;
-          const ov = document.createElement("div");
-          ov.className = "cf-busy";
-          ov.innerHTML = '<span class="cf-spin"></span>';
-          document.body.appendChild(ov);
-          s.overlay = ov;
-          place(el, ov);
-          startFollow();
+          s.overlay = true;
+          shown += 1;
+          syncScreen();
           el.setAttribute("aria-busy", "true");
         }, SHOW_DELAY);
         s.maxT = setTimeout(() => clear(el), MAX_BUSY);
@@ -149,7 +132,10 @@ export default function ClickFeedback() {
       if (!s) return;
       clearTimeout(s.showT);
       clearTimeout(s.maxT);
-      s.overlay?.remove();
+      if (s.overlay) {
+        shown = Math.max(0, shown - 1);
+        syncScreen();
+      }
       el.removeAttribute("aria-busy");
       busy.delete(el);
     };
@@ -213,7 +199,7 @@ export default function ClickFeedback() {
         navRelease?.();
         navRelease = null;
         barDone();
-        // Elements from the previous page are gone; drop their spinners.
+        // Elements from the previous page are gone; drop their loaders.
         busy.forEach((_, el) => !el.isConnected && clear(el));
       },
     };
@@ -222,12 +208,12 @@ export default function ClickFeedback() {
       document.removeEventListener("click", onClick, true);
       window.removeEventListener("scroll", reposition, { capture: true });
       window.removeEventListener("resize", reposition);
-      if (raf) cancelAnimationFrame(raf);
       if (window.fetch === hooked) window.fetch = origFetch;
       clearInterval(barTimer);
       clearTimeout(barStopTimer);
       clearAll();
       bar.remove();
+      screen.remove();
       api.current = null;
     };
   }, []);

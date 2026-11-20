@@ -33,12 +33,15 @@ async function coverData(src) {
   }
 }
 
-// The built-in OG font has no ₹ glyph: pull a tiny Noto Sans subset with just
-// the ₹ sign from Google Fonts. If that fails, fall back to "Rs.".
-async function rupeeFont() {
+// The built-in OG font has no ₹ glyph, and once a custom font is passed some
+// text can render as empty boxes. So pull a Noto Sans subset covering EVERY
+// character on the card (₹ included) from Google Fonts. If that fails, fall
+// back to the built-in font and "Rs.".
+async function rupeeFont(text = "₹") {
   try {
+    const chars = [...new Set(`₹${text}0123456789.,·+%() `)].join("");
     const css = await (
-      await fetch("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@800&text=%E2%82%B9", {
+      await fetch(`https://fonts.googleapis.com/css2?family=Noto+Sans:wght@800&text=${encodeURIComponent(chars)}`, {
         headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36" },
       })
     ).text();
@@ -59,7 +62,15 @@ export default async function ComboOgImage({ params }) {
     : { price: 0, sum: 0, comboOff: 0, mrp: 0, savings: 0 };
   const [covers, rupee] = await Promise.all([
     Promise.all(items.map((b) => coverData(b.image))),
-    rupeeFont(),
+    rupeeFont(
+      [
+        combo?.title || "Book Combo",
+        "TheBookX · Book Combo",
+        "Save Rs. off",
+        "Cash on Delivery · Free delivery from",
+        ...items.map((b) => b.name),
+      ].join(" "),
+    ),
   ]);
   const R = rupee ? "₹" : "Rs.";
   const isPair = !!combo?.discountPct;

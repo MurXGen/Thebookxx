@@ -3,6 +3,7 @@
 // (the "Books" / Shopping tab) and Shopping ads:  https://thebookx.in/product-feed.xml
 import { books } from "@/utils/book";
 import { comboFeedItems } from "@/lib/comboFeed";
+import { getHiddenBookIds } from "@/lib/bookVisibility";
 
 const SITE = "https://www.thebookx.in";
 
@@ -23,7 +24,9 @@ const esc = (s = "") =>
     .replace(/'/g, "&apos;");
 
 export async function GET() {
+  const hidden = await getHiddenBookIds(); // switched off in the sheet
   const items = books
+    .filter((b) => !hidden.includes(String(b.id).toLowerCase()))
     .filter((b) => b.name && b.discountedPrice)
     .map((b) => {
       const slug = slugify(b.name);

@@ -836,6 +836,75 @@ function RouteScene({
   );
 }
 
+// "Confirming your payment" card. Instead of a spinner it shows a live timer
+// (ring + mm:ss) counting down to `deadline` (order time + 20 min); once it
+// runs out, WhatsApp help shows.
+function PayPendingCard({ title, sub, deadline, total, canPay, payAmount, onPay, onHelp }) {
+  const [now, setNow] = useState(() => Date.now());
+  const left = deadline ? Math.max(0, deadline - now) : 0;
+  const ended = deadline > 0 && left <= 0;
+  const noClock = !deadline; // order time unknown: plain icon, no timer
+  useEffect(() => {
+    if (ended || noClock) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [ended, noClock]);
+  const mm = String(Math.floor(left / 60000)).padStart(2, "0");
+  const ss = String(Math.floor((left % 60000) / 1000)).padStart(2, "0");
+  const R = 21;
+  const C = 2 * Math.PI * R;
+  const frac = total ? Math.min(1, left / total) : 0;
+  return (
+    <section className="od-pp" aria-live="polite">
+      <div className="od-pp-row">
+        {ended ? (
+          <span className="od-pp-ic od-pp-ic-wa" aria-hidden="true">
+            <FaWhatsapp size={18} />
+          </span>
+        ) : noClock ? (
+          <span className="od-pp-ic" aria-hidden="true">
+            <QrCode size={16} />
+          </span>
+        ) : (
+          <span className="od-pp-clock" role="timer" aria-label={`${mm} minutes ${ss} seconds left`}>
+            <svg viewBox="0 0 50 50" aria-hidden="true">
+              <circle cx="25" cy="25" r={R} className="od-pp-clock-bg" />
+              <circle
+                cx="25"
+                cy="25"
+                r={R}
+                className="od-pp-clock-fg"
+                strokeDasharray={C}
+                strokeDashoffset={C * (1 - frac)}
+              />
+            </svg>
+            <b>
+              {mm}:{ss}
+            </b>
+          </span>
+        )}
+        <span className="od-pp-tx">
+          <b>{ended ? "Taking longer than usual" : title}</b>
+          <small className="od-pp-long">{ended ? "Message us and we'll check your payment right away." : sub}</small>
+          <small className="od-pp-short">{ended ? "We'll check it right away" : "Updates on its own"}</small>
+        </span>
+        {canPay && (
+          <button type="button" className="od-pp-pay" onClick={onPay}>
+            <QrCode size={14} /> Pay ₹{payAmount}
+          </button>
+        )}
+      </div>
+      {ended ? (
+        <button type="button" className="od-pp-wa" onClick={onHelp}>
+          <FaWhatsapp size={14} /> Get help on WhatsApp
+        </button>
+      ) : (
+        canPay && <span className="od-pp-hint">Payment didn&apos;t go through? Pay again here.</span>
+      )}
+    </section>
+  );
+}
+
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -1607,6 +1676,12 @@ export default function OrderDetailPage() {
     parseSheetTime(order?.["Timestamp (D)"] || order?.["Timestamp"] || order?.["Timestamp(D)"]) ||
     0;
   const payPendingLong = payPending && pendingFrom > 0 && nowTs - pendingFrom >= PENDING_NUDGE_MS;
+  // Live timer on the "Confirming your payment" card: 20 min (15 + 5) from
+  // when the order was placed; WhatsApp help shows once it runs out.
+  const PAY_TIMER_MS = 20 * 60 * 1000;
+  const orderPlacedAt =
+    parseSheetTime(order?.["Timestamp (D)"] || order?.["Timestamp"] || order?.["Timestamp(D)"]) || pendingFrom;
+  const payDeadline = orderPlacedAt ? orderPlacedAt + PAY_TIMER_MS : 0;
   const notifyPendingPayment = () => {
     const link =
       typeof window !== "undefined"
@@ -2889,38 +2964,20 @@ export default function OrderDetailPage() {
       {/* Paid online, not verified yet — "still processing", and WhatsApp
           only once it's been pending for 15+ minutes. */}
       {order && payPending && (
-        <div className="od-unconf-banner od-paypend">
-          <span className="od-unconf-ic">
-            <span className="od-paypend-spin" aria-hidden="true" />
-          </span>
-          <div className="od-unconf-txt">
-            <strong>{fasterPending ? "Faster delivery in progress" : "Order is still processing"}</strong>
-            <span>
-              {fasterPending
-                ? "We're confirming your ₹99 advance. As soon as it's verified your order is upgraded to Faster delivery and ships by air — this page updates on its own."
-                : "We're confirming your payment. Your order will be processed within the next few minutes or hours — this page updates on its own."}
-            </span>
-            {payPendingLong && (
-              <>
-                <span className="od-paypend-late">
-                  It&apos;s been over 15 minutes. Send us a quick message so we can
-                  check your payment right away.
-                </span>
-                <button type="button" className="od-unconf-btn" onClick={notifyPendingPayment}>
-                  <FaWhatsapp size={15} /> Message us on WhatsApp
-                </button>
-              </>
-            )}
-            {canPayNow && (
-              <div className="od-paynow-row">
-                <span>Payment didn&apos;t go through?</span>
-                <button type="button" className="od-paynow-btn" onClick={() => setPayOpen(true)}>
-                  <QrCode size={15} /> Pay ₹{payNowAmount} now
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        <PayPendingCard
+          title={fasterPending ? "Upgrading to Faster" : "Confirming payment"}
+          sub={
+            fasterPending
+              ? "Ships by air once your ₹99 is verified"
+              : "Usually done before the timer ends"
+          }
+          deadline={payDeadline}
+          total={PAY_TIMER_MS}
+          canPay={canPayNow}
+          payAmount={payNowAmount}
+          onPay={() => setPayOpen(true)}
+          onHelp={notifyPendingPayment}
+        />
       )}
 
       {/* Unconfirmed order — payment-pending / needs attention. */}

@@ -6,6 +6,7 @@ const nextConfig = {
     return [
       // Box-set category URLs → the dedicated box sets page.
       { source: "/category/set", destination: "/book-sets", permanent: true },
+      { source: "/books/we-are-there-for-other", destination: "/books/we-are-there-for-each-other", permanent: true },
       { source: "/category/boxset", destination: "/book-sets", permanent: true },
       // Retired Art of Clarity combo pages → the matching 2-book combo (or /combos).
       { source: "/combos/the-art-of-clarity-and-blue-ocean-strategy-combo", destination: "/combos/the-hard-thing-about-hard-things-and-blue-ocean-strategy-combo", permanent: true },

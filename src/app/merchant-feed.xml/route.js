@@ -5,6 +5,7 @@
 
 import { books } from "@/utils/book";
 import { comboFeedItems } from "@/lib/comboFeed";
+import { getHiddenBookIds } from "@/lib/bookVisibility";
 
 const SITE = "https://www.thebookx.in";
 export const dynamic = "force-dynamic"; // always reflect current catalogue
@@ -35,7 +36,9 @@ function imageUrl(image) {
 }
 
 export async function GET() {
+  const hidden = await getHiddenBookIds(); // switched off in the sheet
   const items = books
+    .filter((b) => !hidden.includes(String(b.id).toLowerCase()))
     .filter((b) => b && b.name && b.image && b.discountedPrice > 0)
     .map((b) => {
       const link = `${SITE}/books/${slugify(b.name)}`;

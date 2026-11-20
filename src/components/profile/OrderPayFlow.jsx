@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { UPIPaymentModal } from "@/components/UI/AddressModal";
+import { UPIPaymentModal, isUpiDesktop } from "@/components/UI/AddressModal";
 import { fetchOrderStatusById } from "@/utils/googleFormOrder";
 import { PAYMENT_PENDING_STATUS, markPaymentPending } from "@/lib/paymentPending";
 import { showToast } from "@/context/ToastContext";
@@ -125,27 +125,37 @@ export default function OrderPayFlow({
     fetch(TELEGRAM_URL, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true, body: payload }).catch(() => {});
   };
 
+  // 30s live check with the countdown shown in the verify button.
+  const runCountdown = () => {
+    setCountdown(30);
+    setPhase("counting");
+    timers.current.tick = setInterval(() => setCountdown((p) => (p <= 1 ? 0 : p - 1)), 1000);
+    if (liveCheck) {
+      check();
+      timers.current.poll = setInterval(check, 5000);
+    }
+    timers.current.to = setTimeout(() => {
+      clearInterval(timers.current.tick);
+      clearInterval(timers.current.poll);
+      setPhase((ph) => (ph === "counting" ? "ready" : ph));
+    }, 30500);
+  };
+
   // Open → 2s "preparing QR" → QR + 30s live check → "verify status".
+  // Desktop (same as checkout): no auto countdown; the first "I've paid" tap
+  // starts it.
+  const deskTimed = useRef(false);
   const start = () => {
     clearTimers();
     done.current = false;
+    deskTimed.current = false;
     setPhase("await");
     setQrUnlocked(false);
     timers.current.start = setTimeout(() => {
       setQrUnlocked(true);
-      setCountdown(30);
-      setPhase("counting");
-      timers.current.tick = setInterval(() => setCountdown((p) => (p <= 1 ? 0 : p - 1)), 1000);
-      if (liveCheck) {
-        notifyTeam();
-        check();
-        timers.current.poll = setInterval(check, 5000);
-      }
-      timers.current.to = setTimeout(() => {
-        clearInterval(timers.current.tick);
-        clearInterval(timers.current.poll);
-        setPhase((ph) => (ph === "counting" ? "ready" : ph));
-      }, 30500);
+      if (liveCheck) notifyTeam();
+      if (isUpiDesktop()) setPhase("ready");
+      else runCountdown();
     }, 2000);
   };
 
@@ -171,6 +181,11 @@ export default function OrderPayFlow({
   // "I've paid, verify status" → same 3s checking loader as checkout.
   const verify = async () => {
     if (phase === "rechecking" || done.current) return;
+    if (isUpiDesktop() && !deskTimed.current && phase === "ready") {
+      deskTimed.current = true;
+      runCountdown();
+      return;
+    }
     clearTimers();
     setPhase("rechecking");
     setVerifyLoading(true);

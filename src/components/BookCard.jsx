@@ -16,6 +16,7 @@ import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
 import { showToast } from "@/context/ToastContext";
 import { shareContent } from "./UI/ShareSheet";
+import { useBookHidden } from "@/utils/bookVisibility";
 
 // Helper function to get full URL
 const getFullUrl = (path) => {
@@ -55,7 +56,7 @@ const addToRecentlyViewed = (bookId) => {
   }
 };
 
-function BookCard({ book: bookProp }) {
+function BookCardInner({ book: bookProp }) {
   // Prefer the shared client copy (server pages pass serialized snapshots), so
   // the device's post-offer price shows on every card.
   const book = books.find((b) => b.id === bookProp?.id) || bookProp;
@@ -483,4 +484,12 @@ function BookCard({ book: bookProp }) {
 // Memoised so appending more cards (lazy-load) or a parent re-render does not
 // re-render unchanged cards. (Cart-context changes still update cards that read
 // the cart, which is expected.)
+// Hides a book that's switched off in the "Book Visibility" sheet tab (only
+// switchable books are checked; others render straight away).
+function BookCard(props) {
+  const hidden = useBookHidden(props.book?.id);
+  if (hidden) return null;
+  return <BookCardInner {...props} />;
+}
+
 export default memo(BookCard);

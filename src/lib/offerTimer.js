@@ -88,10 +88,36 @@ function logStart(start, end, book, page) {
   });
 }
 
+// Timer switched off: still record the device's FIRST book-page landing in
+// the Timers tab (Status "Visited"), once per device, so conversions keep
+// being tracked against where the shopper first landed.
+const VISIT_KEY = "tbx_visit_logged";
+let visitSending = false;
+function logVisitOnce(book) {
+  try {
+    if (localStorage.getItem(VISIT_KEY) || localStorage.getItem(LOGGED_OK_KEY)) return;
+  } catch {
+    return;
+  }
+  if (visitSending) return;
+  visitSending = true;
+  log("visit", { startedAt: Date.now(), book: book?.name || "", page: window.location.pathname }).then((ok) => {
+    visitSending = false;
+    try {
+      if (ok) localStorage.setItem(VISIT_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+  });
+}
+
 // Called from a book page: starts the clock on first visit. Returns the state.
 export function startOffer(book) {
   const s = offerState();
-  if (!OFFER_ENABLED) return s;
+  if (!OFFER_ENABLED) {
+    logVisitOnce(book);
+    return s;
+  }
   if (s.started) return s;
   try {
     const start = Date.now();
@@ -211,4 +237,5 @@ export function applyPriceRise(list) {
   }
 }
 
-export const priceMode = () => (offerState().expired ? `+₹${PRICE_RISE}` : "Offer");
+export const priceMode = () =>
+  !OFFER_ENABLED ? "Regular" : offerState().expired ? `+₹${PRICE_RISE}` : "Offer";

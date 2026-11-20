@@ -3,6 +3,8 @@
 // GET  ?deviceId=…                                → { endsAt } from the sheet,
 //      so editing "Ends At" in the tab extends or shortens that device's offer
 // POST { action: "start", deviceId, startedAt, endsAt, book, page }
+// POST { action: "visit", deviceId, startedAt, book, page } → first book-page
+//      landing while the timer is OFF (Status = Visited, no Ends At)
 // POST { action: "expired", deviceId }            → Status = Expired
 // POST { action: "resumed", deviceId, endsAt }    → Status = Extended (admin
 //                                                   moved Ends At later)
@@ -71,24 +73,25 @@ export async function POST(request) {
   }
   const action = String(body.action || "");
   const deviceId = clip(body.deviceId, 60);
-  if (!deviceId || !["start", "expired", "resumed", "extend-request", "convert", "adds"].includes(action))
+  if (!deviceId || !["start", "visit", "expired", "resumed", "extend-request", "convert", "adds"].includes(action))
     return Response.json({ success: false, error: "bad request" }, { status: 400 });
 
   try {
     const row = await timerRowByDevice(deviceId);
     const now = fmtTs(new Date());
 
-    if (action === "start") {
+    if (action === "start" || action === "visit") {
       if (row) return Response.json({ success: true, already: true });
       if (!claimStart(deviceId)) return Response.json({ success: true, already: true });
       const start = tsOrNow(body.startedAt);
+      const visit = action === "visit";
       const res = await timerAppend({
         "Device ID": deviceId,
         "Started At": fmtTs(start),
-        "Ends At": fmtTs(new Date(start.getTime() + 2 * 3600 * 1000)),
+        "Ends At": visit ? "" : fmtTs(new Date(start.getTime() + 2 * 3600 * 1000)),
         "First Book": clip(body.book, 120),
         "First Page": clip(body.page, 160),
-        Status: "Running",
+        Status: visit ? "Visited" : "Running",
         "Expired At": "",
         Converted: "No",
         "Order ID": "",
@@ -140,7 +143,8 @@ export async function POST(request) {
       Converted: "Yes",
       "Order ID": clip(body.orderId, 40),
       "Converted At": now,
-      "Price Paid": body.priceMode === "Offer" ? "Offer price" : "After +₹20",
+      "Price Paid":
+        body.priceMode === "Regular" ? "Regular price" : body.priceMode === "Offer" ? "Offer price" : "After +₹20",
       ...(only10(body.phone) ? { Phone: only10(body.phone) } : {}),
     });
     return Response.json({ success: true });

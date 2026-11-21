@@ -109,6 +109,8 @@ import {
   Stamp,
   ListPlus,
   ListChecks,
+  Zap,
+  Sparkles,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
@@ -1608,7 +1610,8 @@ const ORDER_PHASES = [
   { key: "confirm", label: "To confirm", hint: "Unconfirmed · pending payment" },
   { key: "pack", label: "Pending orders", hint: "Needs action" },
   { key: "ship", label: "To ship", hint: "Processing · needs tracking ID" },
-  { key: "transit", label: "In transit", hint: "Shipped · out for delivery" },
+  { key: "transit", label: "In transit", hint: "Shipped · on the way" },
+  { key: "ofd", label: "Out for delivery", hint: "With the postman today" },
   { key: "delivered", label: "Delivered", hint: "Payment not marked" },
   { key: "closed", label: "Paid & closed", hint: "Money received" },
   { key: "issues", label: "Exceptions", hint: "Hold · cancelled · returned · refunds" },
@@ -1622,7 +1625,8 @@ const phaseOf = (order) => {
   if (/delivered/.test(s) && !/out for/.test(s)) return "delivered";
   if (/getting shipped/.test(s) || (/transit|shipped/.test(s) && !tracked))
     return "ship";
-  if (/shipped|transit|out for delivery/.test(s)) return "transit";
+  if (/out for delivery/.test(s)) return "ofd";
+  if (/shipped|transit/.test(s)) return "transit";
   // "Pending orders" holds only Pending (or blank) status — everything else
   // still being worked on (Processing, Confirmed…) waits on a tracking ID.
   if (!s.trim() || /pending/.test(s)) return "pack";
@@ -3873,6 +3877,8 @@ export default function ManageOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshBusy, setRefreshBusy] = useState(false); // top-bar refresh icon
+  const [mergeOpen, setMergeOpen] = useState(false); // "multiple orders" strip, closed by default
   const [ordersFetchedAt, setOrdersFetchedAt] = useState(0);
   const [liveNow, setLiveNow] = useState(() => Date.now());
   const [anLiveBusy, setAnLiveBusy] = useState(false);
@@ -4035,6 +4041,20 @@ export default function ManageOrdersPage() {
   const [dispShareOpen, setDispShareOpen] = useState(false);
   const [dispSheetOpen, setDispSheetOpen] = useState(false);
   const [dispatchQuery, setDispatchQuery] = useState("");
+  // Dispatch queue "Smart order": group + sort cards into the order to pack
+  // and post them (ready → needs tracking → to weigh; Speed & oldest first).
+  const [dispSmart, setDispSmart] = useState(false);
+  useEffect(() => {
+    try {
+      setDispSmart(localStorage.getItem("mo_dispatch_smart") === "1");
+    } catch {}
+  }, []);
+  const toggleDispSmart = (on) => {
+    setDispSmart(on);
+    try {
+      localStorage.setItem("mo_dispatch_smart", on ? "1" : "0");
+    } catch {}
+  };
   const [dispPaste, setDispPaste] = useState("");
   const [dispLinkCopied, setDispLinkCopied] = useState(false);
   useEffect(() => {
@@ -6199,6 +6219,34 @@ export default function ManageOrdersPage() {
       if (drafts) setTrackStatusDrafts(JSON.parse(drafts) || {});
     } catch {}
   }, []);
+  // Paste history — every tracking ID ever pasted on Paste & match, kept in
+  // this browser even after cards are removed or the list is cleared.
+  const [pasteHistory, setPasteHistory] = useState([]);
+  const [pasteHistOpen, setPasteHistOpen] = useState(true);
+  const [pasteHistShow, setPasteHistShow] = useState(30);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("mo_paste_history");
+      if (raw) setPasteHistory(JSON.parse(raw) || []);
+    } catch {}
+  }, []);
+  const logPasteHistory = (entries) => {
+    if (!entries.length) return;
+    setPasteHistory((prev) => {
+      const fresh = new Set(entries.map((e) => e.id));
+      const next = [...entries, ...prev.filter((e) => !fresh.has(e.id))].slice(0, 500);
+      try {
+        localStorage.setItem("mo_paste_history", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+  const clearPasteHistory = () => {
+    setPasteHistory([]);
+    try {
+      localStorage.removeItem("mo_paste_history");
+    } catch {}
+  };
   const persistTrackList = (next) => {
     try {
       localStorage.setItem("mo_track_notify", JSON.stringify(next));
@@ -6292,6 +6340,18 @@ export default function ManageOrdersPage() {
     const writes = []; // { orderId, id } — new numbers to save to the sheet
     const newRows = [];
     const have = new Set(trackList.map((r) => sidUp(r["Shipping ID"])));
+    const pastedAt = Date.now();
+    const hist = [];
+    const histOf = (id, o, result) =>
+      hist.push({
+        id,
+        at: pastedAt,
+        result,
+        name: cleanName(o?.["Customer Name"]),
+        orderId: String(o?.["Order ID"] || ""),
+        city: String(o?.["City"] || ""),
+        status: String(o?.["Order Status"] || ""),
+      });
 
     idCtx.forEach(({ id, ctx }) => {
       // 1) Already saved on an order (matched by its Shipping ID).
@@ -6327,17 +6387,20 @@ export default function ManageOrdersPage() {
       }
       if (!match) {
         failed.push(id);
+        histOf(id, null, "Not found");
         return;
       }
       if (have.has(id)) {
         dup += 1;
         dupIds.push(id);
+        histOf(id, match, "Already listed");
         return;
       }
       if (isNew && match["Order ID"]) {
         writes.push({ orderId: match["Order ID"], id });
         attached += 1;
       }
+      histOf(id, match, isNew ? "Linked" : "Matched");
       const d = getOrderDate(match);
       newRows.push({
         "Order ID": match["Order ID"] || "",
@@ -6390,6 +6453,7 @@ export default function ManageOrdersPage() {
       });
       setTimeout(fetchOrders, 1500);
     }
+    logPasteHistory(hist);
     setTrackFailed(failed);
     flashTrackCards(dupIds);
     setTrackSummary({
@@ -8401,6 +8465,27 @@ export default function ManageOrdersPage() {
         showToast(`${chosen.length} tracking ID(s) copied ✓`, "success");
       })
       .catch(() => showToast("Couldn't copy — long-press to select.", "info"));
+  };
+
+  // Orders tab → "Copy IDs": tracking IDs of the selected cards, else of every
+  // order in the current view (status tab + filters + search), newest first.
+  const orderTidPool = (list) =>
+    list
+      .map((o) => String(o["Shipping ID"] || "").trim())
+      .filter(Boolean);
+  const copyOrderTids = () => {
+    const sel = selectedIds.length
+      ? filteredOrders.filter((o) => selectedIds.includes(o["Order ID"]))
+      : filteredOrders;
+    const ids = [...new Set(orderTidPool(sel))];
+    if (!ids.length) {
+      showToast("No tracking IDs in this view.", "info");
+      return;
+    }
+    navigator.clipboard
+      .writeText(ids.join(" "))
+      .then(() => showToast(`${ids.length} tracking ID${ids.length === 1 ? "" : "s"} copied ✓`, "success"))
+      .catch(() => showToast("Couldn't copy — try again.", "info"));
   };
 
   // Common payment buckets actually present in the orders (keeps the filter
@@ -13742,6 +13827,26 @@ export default function ManageOrdersPage() {
           <div className="mo-head-actions">
             <button
               type="button"
+              className={`mo-bell mo-refresh-btn${refreshBusy ? " busy" : ""}`}
+              disabled={refreshBusy}
+              onClick={async () => {
+                setRefreshBusy(true);
+                try {
+                  await fetchOrders({ silent: true });
+                  showToast("Orders refreshed ✓", "success");
+                } catch {
+                  showToast("Couldn't refresh — try again.", "error");
+                } finally {
+                  setRefreshBusy(false);
+                }
+              }}
+              title="Refresh orders from the sheet"
+              aria-label="Refresh orders"
+            >
+              <RefreshCw size={20} />
+            </button>
+            <button
+              type="button"
               className="mo-bell"
               onClick={toggleDark}
               title={darkMode ? "Switch to light" : "Switch to dark"}
@@ -15536,6 +15641,30 @@ export default function ManageOrdersPage() {
         {activeTab === "orders" && (
           <nav className="mo-phases" aria-label="Order phases">
             {(() => {
+              // "All" — every order across the flow; tap again for Active.
+              const on =
+                Array.isArray(statusFilter) &&
+                statusFilter.length === 1 &&
+                statusFilter[0] === "all";
+              const total = ORDER_PHASES.reduce((t, p) => t + phaseCounts[p.key], 0);
+              return (
+                <button
+                  type="button"
+                  className={`mo-phase mo-phase-all${on ? " on" : ""}`}
+                  onClick={() => setStatusFilter(on ? ["active"] : ["all"])}
+                  aria-pressed={on}
+                  title="Every order"
+                >
+                  <span className="mo-phase-top">
+                    <span className="mo-phase-step">≡</span>
+                    <span className="mo-phase-n">{total.toLocaleString()}</span>
+                  </span>
+                  <span className="mo-phase-label">All</span>
+                  <span className="mo-phase-hint">Every order</span>
+                </button>
+              );
+            })()}
+            {(() => {
               // "Refunds" — refund in process (status or unpaid return request).
               const on =
                 Array.isArray(statusFilter) &&
@@ -15578,30 +15707,6 @@ export default function ManageOrdersPage() {
                   </span>
                   <span className="mo-phase-label">Active</span>
                   <span className="mo-phase-hint">Confirmed · in progress</span>
-                </button>
-              );
-            })()}
-            {(() => {
-              // "All" — every order across the flow; tap again for Active.
-              const on =
-                Array.isArray(statusFilter) &&
-                statusFilter.length === 1 &&
-                statusFilter[0] === "all";
-              const total = ORDER_PHASES.reduce((t, p) => t + phaseCounts[p.key], 0);
-              return (
-                <button
-                  type="button"
-                  className={`mo-phase mo-phase-all${on ? " on" : ""}`}
-                  onClick={() => setStatusFilter(on ? ["active"] : ["all"])}
-                  aria-pressed={on}
-                  title="Every order"
-                >
-                  <span className="mo-phase-top">
-                    <span className="mo-phase-step">≡</span>
-                    <span className="mo-phase-n">{total.toLocaleString()}</span>
-                  </span>
-                  <span className="mo-phase-label">All</span>
-                  <span className="mo-phase-hint">Every order</span>
                 </button>
               );
             })()}
@@ -15784,6 +15889,28 @@ export default function ManageOrdersPage() {
                         <CheckSquare size={16} />
                       </button>
                     )}
+                    {(() => {
+                      const pool = selectedIds.length
+                        ? filteredOrders.filter((o) => selectedIds.includes(o["Order ID"]))
+                        : filteredOrders;
+                      const n = new Set(orderTidPool(pool)).size;
+                      return (
+                        <button
+                          type="button"
+                          className="mo-tb-btn mo-tb-copyids"
+                          onClick={copyOrderTids}
+                          disabled={!n}
+                          title={
+                            selectedIds.length
+                              ? `Copy tracking IDs of the ${selectedIds.length} selected order(s)`
+                              : "Copy tracking IDs of every order in this view"
+                          }
+                        >
+                          <Copy size={16} />
+                          <span className="mo-tb-btn-label">Copy {n} ID{n === 1 ? "" : "s"}</span>
+                        </button>
+                      );
+                    })()}
                   </div>
 
                   {/* Row 2 — what is applied, removable one by one. */}
@@ -16659,6 +16786,35 @@ export default function ManageOrdersPage() {
                 (o) => classifyOrderProduct(o) === "speed",
               ).length;
               const contractN = ipPool.length - speedN;
+              // Smart order: what to hand over first. Stage by what's done on
+              // the parcel, then Speed before Contractual, oldest order first.
+              const stageOf = (o) => {
+                const st = parcelStateOf(o);
+                if (st.w && st.trk) return "ready";
+                if (st.w) return "track";
+                return "weigh";
+              };
+              const ageOf = (o) => getOrderDate(o)?.getTime() || 0;
+              const prio = (o) =>
+                (isSpeedShip(o) ? 0 : 2) + (isGiftOrder(o) ? 0 : 1);
+              const smartSort = (a, b) =>
+                prio(a) - prio(b) || (ageOf(a) || Infinity) - (ageOf(b) || Infinity);
+              const stageRows = { ready: [], track: [], weigh: [] };
+              dOrders.forEach((o) => stageRows[stageOf(o)].push(o));
+              Object.values(stageRows).forEach((r) => r.sort(smartSort));
+              const dispGroups = [
+                { k: "ready", step: 1, title: "Ready to hand over", hint: "Weighed & tracking ID added — post these first", rows: stageRows.ready },
+                { k: "track", step: 2, title: "Add tracking ID", hint: "Weighed — book at the counter, then scan the ID", rows: stageRows.track },
+                { k: "weigh", step: 3, title: "Weigh & pack", hint: "Enter weight — size is pre-filled", rows: stageRows.weigh },
+              ];
+              const dqCod = dOrders.filter((o) => /cash|cod/i.test(String(o["Payment Type"] || ""))).length;
+              const dqSpeed = dOrders.filter((o) => isSpeedShip(o)).length;
+              const dqGift = dOrders.filter(isGiftOrder).length;
+              const dqOldest = dOrders.reduce((m, o) => {
+                const t = ageOf(o);
+                return t && (!m || t < m) ? t : m;
+              }, 0);
+              const dqOldestDays = dqOldest ? Math.floor((Date.now() - dqOldest) / 86400000) : null;
               return (
                 <div className="mo-dispatch">
                   <div className="mo-dispatch-head">
@@ -16733,6 +16889,37 @@ export default function ManageOrdersPage() {
                     </div>
                   </div>
 
+                  {dOrders.length > 0 && (
+                    <div className="mo-dq-bar">
+                      <div className="mo-dq-stats" aria-label="Queue summary">
+                        <span><b>{stageRows.ready.length}</b> ready</span>
+                        <span><b>{stageRows.track.length}</b> need tracking</span>
+                        <span><b>{stageRows.weigh.length}</b> to weigh</span>
+                        <i aria-hidden="true" />
+                        <span className="speed"><Zap size={12} /> <b>{dqSpeed}</b> Speed</span>
+                        {dqGift > 0 && <span className="gift">🎁 <b>{dqGift}</b> gift</span>}
+                        <span><b>{dqCod}</b> COD</span>
+                        {dqOldestDays !== null && (
+                          <span className={dqOldestDays >= 3 ? "late" : ""}>
+                            oldest <b>{dqOldestDays === 0 ? "today" : `${dqOldestDays}d`}</b>
+                          </span>
+                        )}
+                      </div>
+                      <label className={`mo-dq-smart${dispSmart ? " on" : ""}`}>
+                        <input
+                          type="checkbox"
+                          checked={dispSmart}
+                          onChange={(e) => toggleDispSmart(e.target.checked)}
+                        />
+                        <Sparkles size={14} />
+                        <span>
+                          Smart order
+                          <small>Group &amp; sort in dispatch order</small>
+                        </span>
+                      </label>
+                    </div>
+                  )}
+
                   {dOrders.length === 0 && dQueue.length > 0 ? (
                     <p className="mo-dispatch-empty">
                       No queued order matches “{dispatchQuery.trim()}”.{" "}
@@ -16755,8 +16942,8 @@ export default function ManageOrdersPage() {
                       {/* Full order cards — identical to the Orders tab — so the
                           dispatch queue is fully manageable here. Each card has a
                           small "remove from queue" control in its top-right. */}
-                      <div className="admin-orders-grid mo-dispatch-grid">
-                        {dOrders.map((order, idx) => {
+                      {(() => {
+                        const dCard = (order, idx) => {
                           const oid = order["Order ID"];
                           const selected = dispatchSel.includes(oid);
                           return (
@@ -16788,8 +16975,32 @@ export default function ManageOrdersPage() {
                               </button>
                             </div>
                           );
-                        })}
-                      </div>
+                        };
+                        if (!dispSmart)
+                          return (
+                            <div className="admin-orders-grid mo-dispatch-grid">
+                              {dOrders.map(dCard)}
+                            </div>
+                          );
+                        let i = 0;
+                        return dispGroups.map((g) =>
+                          g.rows.length ? (
+                            <section className={`mo-dq-sec ${g.k}`} key={g.k}>
+                              <header className="mo-dq-sec-head">
+                                <span className="mo-dq-sec-step">{g.step}</span>
+                                <span className="mo-dq-sec-t">
+                                  {g.title}
+                                  <small>{g.hint}</small>
+                                </span>
+                                <b className="mo-dq-sec-n">{g.rows.length}</b>
+                              </header>
+                              <div className="admin-orders-grid mo-dispatch-grid">
+                                {g.rows.map((o) => dCard(o, i++))}
+                              </div>
+                            </section>
+                          ) : null,
+                        );
+                      })()}
                       {selN === 0 && (
                         <p className="mo-dispatch-hint">
                           Select orders (tap a card’s checkbox, or{" "}
@@ -18128,7 +18339,6 @@ export default function ManageOrdersPage() {
               {[
                 { k: "paste", label: "Paste & match" },
                 { k: "carts", label: "Abandoned carts" },
-                { k: "copy", label: "Copy IDs" },
                 { k: "live", label: "Live status" },
                 { k: "paid", label: "Mark paid" },
                 { k: "deliv", label: "Mark delivered" },
@@ -18786,247 +18996,6 @@ export default function ManageOrdersPage() {
               </div>
             )}
 
-            {trackSubTab === "copy" && (
-            <div className="mo-tid">
-              <div
-                className="mo-tid-head mo-acc-head"
-                onClick={() => toggleTrackAcc("tid")}
-              >
-                <div className="mo-tid-head-txt">
-                  <span className="mo-tid-title">
-                    <Copy size={16} /> Copy tracking IDs
-                    <ChevronDown
-                      size={16}
-                      className={`mo-acc-chev${trackAcc.tid ? " open" : ""}`}
-                    />
-                  </span>
-                  <span className="mo-tid-sub">
-                    Every order that has a tracking ID — filter by status &amp;
-                    date, select and copy.
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  className="mo-tid-copy"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    tidCopy();
-                  }}
-                  disabled={tidRows.length === 0}
-                >
-                  {tidCopied ? <Check size={15} /> : <Copy size={15} />}
-                  Copy {tidSelCount || tidRows.length} ID
-                  {(tidSelCount || tidRows.length) === 1 ? "" : "s"}
-                </button>
-              </div>
-
-              {trackAcc.tid && (
-              <>
-              <div className="mo-tid-filters">
-                <label className="mo-tid-field">
-                  <span>Status</span>
-                  <select
-                    value={tidStatus}
-                    onChange={(e) => {
-                      setTidStatus(e.target.value);
-                      setTidSel([]);
-                    }}
-                  >
-                    <option value="all">All statuses</option>
-                    {distinctStatuses.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="mo-tid-field">
-                  <span>From</span>
-                  <input
-                    type="date"
-                    value={tidFrom}
-                    onChange={(e) => {
-                      setTidFrom(e.target.value);
-                      setTidSel([]);
-                    }}
-                  />
-                </label>
-                <label className="mo-tid-field">
-                  <span>To</span>
-                  <input
-                    type="date"
-                    value={tidTo}
-                    onChange={(e) => {
-                      setTidTo(e.target.value);
-                      setTidSel([]);
-                    }}
-                  />
-                </label>
-                {(tidFrom || tidTo || tidStatus !== "all") && (
-                  <button
-                    type="button"
-                    className="mo-tid-clear"
-                    onClick={() => {
-                      setTidStatus("all");
-                      setTidFrom("");
-                      setTidTo("");
-                      setTidSel([]);
-                    }}
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
-
-              {tidRows.length > 0 ? (
-                <>
-                  <div className="mo-tid-bar">
-                    <label className="mo-tid-all">
-                      <input
-                        type="checkbox"
-                        checked={
-                          tidSelCount === tidRows.length && tidRows.length > 0
-                        }
-                        onChange={(e) =>
-                          setTidSel(
-                            e.target.checked
-                              ? tidRows.map((r) => r.orderId)
-                              : [],
-                          )
-                        }
-                      />
-                      Select all ({tidSelCount}/{tidRows.length})
-                    </label>
-                    {tidSelCount > 0 && (
-                      <div className="mo-tid-bulk">
-                        <select
-                          value={tidBulkStatus}
-                          onChange={(e) => setTidBulkStatus(e.target.value)}
-                          aria-label="New status for selected orders"
-                        >
-                          <option value="">Change status to…</option>
-                          {TRACK_STATUS_OPTIONS.map((s) => (
-                            <option key={s} value={s}>
-                              {s}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          type="button"
-                          disabled={!tidBulkStatus}
-                          onClick={() => {
-                            const ids = tidRows
-                              .filter((r) => tidSel.includes(r.orderId))
-                              .map((r) => r.orderId);
-                            queueTidStatus(ids, tidBulkStatus);
-                            showToast(
-                              `${ids.length} set to ${tidBulkStatus} · push to save`,
-                              "success",
-                            );
-                            setTidSel([]);
-                            setTidBulkStatus("");
-                          }}
-                        >
-                          Apply to {tidSelCount}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  {Object.keys(pendingStatus).length > 0 && (
-                    <div className="mo-status-pushbar">
-                      <span className="mo-status-pushbar-lbl">
-                        {Object.keys(pendingStatus).length} status change
-                        {Object.keys(pendingStatus).length === 1 ? "" : "s"}{" "}
-                        queued
-                      </span>
-                      <div className="mo-status-pushbar-actions">
-                        <button
-                          type="button"
-                          className="mo-status-discard"
-                          onClick={discardPendingStatus}
-                          disabled={pushingStatus}
-                        >
-                          Discard
-                        </button>
-                        <button
-                          type="button"
-                          className="mo-status-push"
-                          onClick={pushPendingStatus}
-                          disabled={pushingStatus}
-                        >
-                          {pushingStatus
-                            ? "Pushing…"
-                            : `Push ${Object.keys(pendingStatus).length} to sheet`}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  <div className="mo-tid-list">
-                    {tidRows.map((r) => {
-                      const on = tidSel.includes(r.orderId);
-                      return (
-                        <div
-                          key={r.orderId + r.tracking}
-                          className={`mo-tid-row${on ? " on" : ""}`}
-                          onClick={() =>
-                            setTidSel((prev) =>
-                              prev.includes(r.orderId)
-                                ? prev.filter((x) => x !== r.orderId)
-                                : [...prev, r.orderId],
-                            )
-                          }
-                        >
-                          <input type="checkbox" checked={on} readOnly />
-                          <div className="mo-tid-row-main">
-                            <span className="mo-tid-tracking">
-                              {r.tracking}
-                            </span>
-                            <span className="mo-tid-meta">
-                              {r.orderId}
-                              {r.date
-                                ? ` · ${r.date.toLocaleDateString("en-IN", {
-                                    day: "numeric",
-                                    month: "short",
-                                    year: "numeric",
-                                  })}`
-                                : ""}
-                            </span>
-                          </div>
-                          <div
-                            className={`mo-tid-stsel${pendingStatus[r.orderId] ? " dirty" : ""}`}
-                            style={{ "--st-color": moStatusColor(r.status) }}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <select
-                              value={r.status}
-                              title="Change status (queued — push to save)"
-                              onChange={(e) => queueTidStatus([r.orderId], e.target.value)}
-                            >
-                              {(TRACK_STATUS_OPTIONS.includes(r.status)
-                                ? TRACK_STATUS_OPTIONS
-                                : [r.status, ...TRACK_STATUS_OPTIONS]
-                              ).map((s) => (
-                                <option key={s} value={s}>
-                                  {s}
-                                </option>
-                              ))}
-                            </select>
-                            <ChevronDown size={13} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              ) : (
-                <p className="mo-tid-empty">
-                  No orders with a tracking ID for this filter.
-                </p>
-              )}
-              </>
-              )}
-            </div>
-            )}
 
             {/* Paid COD bill(s) — upload Articles_Bill_COD*.xlsx (multiple ok) */}
             {trackSubTab === "paid" && (
@@ -20107,50 +20076,7 @@ export default function ManageOrdersPage() {
                                         <X size={14} />
                                       </button>
                                     </div>
-                                    {Array.isArray(r.parsedBooks) &&
-                                    r.parsedBooks.length > 0 ? (
-                                      <div className="mo-track-card-covers">
-                                        {r.parsedBooks
-                                          .slice(0, 6)
-                                          .map((b, bi) => {
-                                            const img = getBookImage(b.name);
-                                            return img ? (
-                                              // eslint-disable-next-line @next/next/no-img-element
-                                              <img
-                                                key={bi}
-                                                src={img}
-                                                alt={b.name}
-                                                title={b.name}
-                                                loading="lazy"
-                                                className="mo-track-cover"
-                                                onClick={() =>
-                                                  setViewerImg({
-                                                    src: img,
-                                                    name: b.name,
-                                                  })
-                                                }
-                                              />
-                                            ) : (
-                                              <span
-                                                key={bi}
-                                                className="mo-track-cover ph"
-                                                title={b.name}
-                                              >
-                                                <Package size={12} />
-                                              </span>
-                                            );
-                                          })}
-                                        {r.parsedBooks.length > 6 && (
-                                          <span className="mo-track-cover more">
-                                            +{r.parsedBooks.length - 6}
-                                          </span>
-                                        )}
-                                      </div>
-                                    ) : r.booksList ? (
-                                      <div className="mo-track-card-books">
-                                        {r.booksList}
-                                      </div>
-                                    ) : null}
+                                    <div className="mo-track-ship">
                                     {(() => {
                                       const num = (k) => {
                                         const v = parseFloat(
@@ -20210,6 +20136,51 @@ export default function ManageOrdersPage() {
                                       {key}
                                       <ExternalLink size={12} />
                                     </button>
+                                    </div>
+                                    {Array.isArray(r.parsedBooks) &&
+                                    r.parsedBooks.length > 0 ? (
+                                      <div className="mo-track-card-covers">
+                                        {r.parsedBooks
+                                          .slice(0, 6)
+                                          .map((b, bi) => {
+                                            const img = getBookImage(b.name);
+                                            return img ? (
+                                              // eslint-disable-next-line @next/next/no-img-element
+                                              <img
+                                                key={bi}
+                                                src={img}
+                                                alt={b.name}
+                                                title={b.name}
+                                                loading="lazy"
+                                                className="mo-track-cover"
+                                                onClick={() =>
+                                                  setViewerImg({
+                                                    src: img,
+                                                    name: b.name,
+                                                  })
+                                                }
+                                              />
+                                            ) : (
+                                              <span
+                                                key={bi}
+                                                className="mo-track-cover ph"
+                                                title={b.name}
+                                              >
+                                                <Package size={12} />
+                                              </span>
+                                            );
+                                          })}
+                                        {r.parsedBooks.length > 6 && (
+                                          <span className="mo-track-cover more">
+                                            +{r.parsedBooks.length - 6}
+                                          </span>
+                                        )}
+                                      </div>
+                                    ) : r.booksList ? (
+                                      <div className="mo-track-card-books">
+                                        {r.booksList}
+                                      </div>
+                                    ) : null}
                                     <span className="mo-track-share-lbl">
                                       <Send size={12} /> Share an update
                                     </span>
@@ -20409,6 +20380,113 @@ export default function ManageOrdersPage() {
                   </div>
                 );
               })()}
+            {/* Paste history — every pasted ID, kept in this browser even
+                after cards are removed or "Clear all" is used. */}
+            {pasteHistory.length > 0 && (() => {
+              const fmtAt = (t) => {
+                const d = new Date(t);
+                const today = new Date();
+                const same = d.toDateString() === today.toDateString();
+                return same
+                  ? d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })
+                  : d.toLocaleDateString("en-IN", { day: "numeric", month: "short" }) +
+                      ", " +
+                      d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
+              };
+              const tone = (r) =>
+                r === "Not found" ? "fail" : r === "Already listed" ? "dup" : "ok";
+              const shown = pasteHistory.slice(0, pasteHistShow);
+              return (
+                <section className="mo-phist">
+                  <div className="mo-phist-head">
+                    <button
+                      type="button"
+                      className="mo-phist-toggle"
+                      onClick={() => setPasteHistOpen((v) => !v)}
+                      aria-expanded={pasteHistOpen}
+                    >
+                      <ChevronDown size={15} className={`mo-track-caret${pasteHistOpen ? " open" : ""}`} />
+                      Paste history
+                      <span className="mo-phist-n">{pasteHistory.length}</span>
+                    </button>
+                    <div className="mo-phist-acts">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const ids = pasteHistory.map((h) => h.id).join(" ");
+                          navigator.clipboard
+                            .writeText(ids)
+                            .then(() => showToast(`${pasteHistory.length} IDs copied ✓`, "success"))
+                            .catch(() => showToast("Couldn't copy — try again.", "info"));
+                        }}
+                      >
+                        <Copy size={13} /> Copy all
+                      </button>
+                      <button
+                        type="button"
+                        className="danger"
+                        onClick={() => {
+                          if (window.confirm(`Clear the paste history (${pasteHistory.length} IDs)? Orders aren't changed.`))
+                            clearPasteHistory();
+                        }}
+                      >
+                        <Trash2 size={13} /> Clear
+                      </button>
+                    </div>
+                  </div>
+                  {pasteHistOpen && (
+                    <>
+                      <div className="mo-phist-table" role="table" aria-label="Paste history">
+                        <div className="mo-phist-row mo-phist-th" role="row">
+                          <span role="columnheader">Pasted</span>
+                          <span role="columnheader">Tracking ID</span>
+                          <span role="columnheader">Customer</span>
+                          <span role="columnheader">Result</span>
+                        </div>
+                        {shown.map((h) => (
+                          <div className="mo-phist-row" role="row" key={h.id}>
+                            <span className="mo-phist-at" role="cell">{fmtAt(h.at)}</span>
+                            <button
+                              type="button"
+                              role="cell"
+                              className="mo-phist-id"
+                              title="Copy ID & open India Post tracking"
+                              onClick={() => handleTrackPackage(h.id)}
+                            >
+                              {h.id}
+                            </button>
+                            <span className="mo-phist-who" role="cell">
+                              {h.name ? (
+                                <>
+                                  <b>{h.name}</b>
+                                  <small>
+                                    {[h.orderId, h.city].filter(Boolean).join(" · ")}
+                                  </small>
+                                </>
+                              ) : (
+                                <small>—</small>
+                              )}
+                            </span>
+                            <span role="cell">
+                              <em className={`mo-phist-res ${tone(h.result)}`}>{h.result}</em>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      {pasteHistory.length > shown.length && (
+                        <button
+                          type="button"
+                          className="mo-phist-more"
+                          onClick={() => setPasteHistShow((n) => n + 50)}
+                        >
+                          Show {Math.min(50, pasteHistory.length - shown.length)} more
+                        </button>
+                      )}
+                    </>
+                  )}
+                </section>
+              );
+            })()}
               </>
             )}
           </div>
@@ -21038,16 +21116,23 @@ export default function ManageOrdersPage() {
                   )}
 
                   {mergeGroups.length > 0 && (
-                    <div className="mo-merge-strip">
-                      <div className="mo-merge-strip-head">
+                    <div className={`mo-merge-strip${mergeOpen ? " open" : ""}`}>
+                      <button
+                        type="button"
+                        className="mo-merge-strip-head mo-merge-toggle"
+                        onClick={() => setMergeOpen((v) => !v)}
+                        aria-expanded={mergeOpen}
+                      >
                         <Package size={15} />
                         <span>
                           {mergeGroups.length} customer
                           {mergeGroups.length > 1 ? "s" : ""} with multiple
-                          orders — tap to merge into one
+                          orders{mergeOpen ? " — tap a name to merge" : ""}
                         </span>
-                      </div>
-                      <div className="mo-merge-chips">
+                        <ChevronDown size={16} className={`mo-merge-caret${mergeOpen ? " open" : ""}`} />
+                      </button>
+                      {mergeOpen && (
+                      <div className="mo-merge-chips mo-merge-scroll">
                         {mergeGroups.map((g) => (
                           <button
                             key={g.phone}
@@ -21064,6 +21149,7 @@ export default function ManageOrdersPage() {
                           </button>
                         ))}
                       </div>
+                      )}
                     </div>
                   )}
 

@@ -3077,37 +3077,62 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
     .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/i, "")
     .replace(/\s*,\s*$/, "")
     .trim();
-  const lc = cleanAddress.toLowerCase();
   const city = String(data.customerCity || "").trim();
   const state = String(data.customerState || "").trim();
-  const addr = [cleanAddress];
-  if (city && !lc.includes(city.toLowerCase())) addr.push(city);
-  if (state && !lc.includes(state.toLowerCase())) addr.push(state);
-  let ay = bwWrap(ctx, addr.filter(Boolean).join(", "), L, y + 96, colW, 30, 3, `500 23px ${BW_FONT}`, "#222");
+  // Address at the same size as the City, State — PIN line below it, so the
+  // whole block reads as one. City and state go only on that line (not here
+  // too), so they aren't printed twice.
+  let ay = bwWrap(ctx, cleanAddress, L, y + 96, colW, 34, 3, `700 30px ${BW_FONT}`, "#222");
 
   // City, State — PIN on one bold line (the PIN is what sorting offices read).
-  ay += 50;
+  ay += 40;
   const pin = String(data.customerPincode || "").trim();
   const cityState = [city, state].filter(Boolean).join(", ");
   const placeLine = [cityState, pin].filter(Boolean).join(" — ");
   if (placeLine) bwFitText(ctx, placeLine, L, ay, colW, { size: 30, min: 20, weight: "800" });
 
-  // Phone(s)
+  // Phone(s) in a bordered "Call before delivery" box — some postmen skip the
+  // call and the parcel comes back undelivered.
   const fmtPh = (p) => {
     const d = String(p || "").replace(/\D/g, "").slice(-10);
     return d ? `+91 ${d.slice(0, 5)} ${d.slice(5)}` : "";
   };
   const phones = [fmtPh(data.customerPhone), fmtPh(data.customerAltPhone)].filter(Boolean).join("  /  ");
+  let infoEnd = ay;
   if (phones) {
-    const py = ay + 50;
-    bwEmoji(ctx, "📞", L, py - 2, 24);
-    bwFitText(ctx, phones, L + 38, py, colW - 38, { size: 28, min: 20, weight: "800" });
+    const boxTop = ay + 12;
+    const boxH = 112;
+    const ink = mono ? BW_INK : A;
+    ctx.save();
+    ctx.fillStyle = mono ? "#f2f2f2" : "#fff";
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 2.5;
+    bwRoundRect(ctx, L, boxTop, colW, boxH, 12);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+    // Heading at the same size as the numbers below it.
+    bwEmoji(ctx, "📞", L + 16, boxTop + 37, 26);
+    bwFitText(ctx, "Call customer for delivery", L + 54, boxTop + 38, colW - 70, {
+      size: 30,
+      min: 20,
+      weight: "800",
+      color: ink,
+    });
+    bwFitText(ctx, "Postman, please call the receiver before delivering.", L + 16, boxTop + 64, colW - 32, {
+      size: 16,
+      min: 12,
+      weight: "600",
+      color: BW_SOFT,
+    });
+    bwFitText(ctx, phones, L + 16, boxTop + 100, colW - 32, { size: 30, min: 20, weight: "800" });
+    infoEnd = boxTop + boxH;
   }
 
   const payY = 486;
   // Gift: a bunting garland in the space above the payment strip.
   if (variant === "gift") {
-    const bTop = (phones ? ay + 50 : ay) + 26;
+    const bTop = infoEnd + 26;
     if (bTop + 40 < payY) drawBunting(ctx, L, bTop, colW, P.confetti, mono);
   }
 

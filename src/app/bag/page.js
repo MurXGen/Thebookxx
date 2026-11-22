@@ -21,6 +21,7 @@ import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
 import { SavingsGlow, TopUpCard, BillCard, PolicyNote } from "@/components/BagSections";
 import BagAddons, { BAG_ADDONS_KEY, MAX_BAG_BOOKMARKS, BAG_BOOKMARK_UNIT } from "@/components/BagAddons";
+import DeliveryEtaStripe from "@/components/DeliveryEtaStripe";
 import OrderSuccessCard from "@/components/UI/OrderSuccessCard";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
@@ -1956,6 +1957,9 @@ ${itemsBlock}${qrLines}
           {hasOneRupeeItem && totalDiscounted < MIN_CHECKOUT_AMOUNT && (
             <OneRupeeUnlock source="bag" />
           )}
+
+          {/* Order-by stripe (follows the Faster add-on) */}
+          {cartBooks.length > 0 && <DeliveryEtaStripe faster={billFaster} className="bag-eta" />}
 
           {/* Add-ons: their own compact section under the books */}
           {cartBooks.length > 0 && (

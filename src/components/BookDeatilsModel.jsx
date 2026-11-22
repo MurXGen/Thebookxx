@@ -58,6 +58,7 @@ import CartConfetti from "./UI/Confetti";
 import { shareContent } from "./UI/ShareSheet";
 import { startOffer, PRICE_RISE, requestExtension } from "@/lib/offerTimer";
 import { isMaharashtraPin, openPincodeSheet } from "./DeliveryCheckBar";
+import DeliveryEtaStripe from "./DeliveryEtaStripe";
 import { BASE_FREE_BOOKMARKS } from "@/utils/orderRewards";
 import {
   FREE_DELIVERY_MIN,
@@ -746,6 +747,9 @@ export default function BookDetailsModal({ book: bookProp }) {
               </p>
             )}
             </div>
+
+            {/* Order-by stripe: right under the cover + title row */}
+            <DeliveryEtaStripe className="pdp-eta" />
 
             {/* Combos: compact strip right under the cover row */}
             <PdpCombos book={book} />

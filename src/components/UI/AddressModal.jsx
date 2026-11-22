@@ -69,6 +69,7 @@ import { sendOrderConfirmationEmail } from "@/utils/orderEmail";
 import UpiAppLaunchRow from "./UpiAppLaunchRow";
 import { UpiPayOptions } from "./UpiPayGuide";
 import UpiPayToCard from "./UpiPayToCard";
+import DeliveryEtaStripe from "@/components/DeliveryEtaStripe";
 import { saveLastOrder } from "@/components/HomeResumeStrip";
 import { trackEvent } from "@/lib/ga";
 import { copyUpiId } from "@/utils/upiApps";
@@ -679,6 +680,9 @@ export default function AddressModal({
       orderId: oid,
       phone: digits,
       name,
+      // What they gave at checkout — the success card asks for any missing.
+      email: String(email || "").trim(),
+      altPhone: String(altPhone || "").replace(/\D/g, "").slice(-10),
       address: { address, city, state, pincode },
       books: (cartBooks || []).map((b) => ({
         id: b.id,
@@ -3446,6 +3450,13 @@ export default function AddressModal({
                     </span>
                   </div>
                 )}
+
+                {/* Order-by stripe: dates for this address + delivery type */}
+                <DeliveryEtaStripe
+                  faster={fasterDelivery}
+                  address={{ pincode, state, city }}
+                  className="chk-eta"
+                />
 
                 {/* Delivery type: Standard + Faster as rows of one card */}
                 <div className="dtype" role="radiogroup" aria-label="Delivery type">

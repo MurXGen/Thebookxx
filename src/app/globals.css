@@ -71863,3 +71863,54 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .sx-dym-chip { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #fdba74; background: #fff; color: #9a3412; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .15s, border-color .15s; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sx-dym-chip:hover { background: #ffedd5; border-color: #fb923c; }
 .sx-dym-chip:focus-visible { outline: 2px solid #fb8500; outline-offset: 2px; }
+
+/* ── Delivery date stripe (DeliveryEtaStripe.jsx): slim, with a repeating sheen ── */
+.eta-stripe { position: relative; overflow: hidden; display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 7px 12px; border-radius: 12px; background: linear-gradient(90deg, #ecfdf5 0%, #f0fdf4 60%, #fefce8 100%); border: 1px solid #bbf7d0; color: #14532d; font-size: 12.5px; line-height: 1.3; isolation: isolate; }
+.eta-stripe::after { content: ""; position: absolute; top: -20%; bottom: -20%; left: -40%; width: 30%; z-index: -1; background: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.95) 50%, rgba(255,255,255,0) 100%); transform: skewX(-18deg); animation: etaSheen 4.8s ease-in-out infinite; animation-delay: 1.2s; pointer-events: none; }
+@keyframes etaSheen { 0% { left: -40%; } 28% { left: 120%; } 100% { left: 120%; } }
+.eta-ic { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 8px; background: #16a34a; color: #fff; }
+.eta-tx { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.eta-tx b { font-weight: 800; color: #052e16; }
+.eta-cd { color: #c2410c !important; font-variant-numeric: tabular-nums; }
+.eta-dot { margin: 0 6px; color: #86efac; font-weight: 800; }
+.eta-days { flex: none; padding: 2px 8px; border-radius: 999px; background: #fff; border: 1px solid #bbf7d0; color: #15803d; font-size: 11px; font-weight: 800; }
+@media (max-width: 380px) { .eta-days { display: none; } .eta-stripe { font-size: 12px; } }
+@media (prefers-reduced-motion: reduce) { .eta-stripe::after { animation: none; display: none; } }
+/* Placement spacing */
+.pdp-eta { margin: 0; } /* the page column already spaces cards 12px apart */
+.bag-eta { margin: 0 0 12px; }
+.chk-eta { margin: 0 0 10px; }
+
+/* Order map: logo hub pin, current-location dot */
+.od-pin-hub { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.28); border: 2px solid #fd6b01; overflow: hidden; }
+.od-pin-hub img { width: 22px; height: 22px; border-radius: 6px; object-fit: contain; }
+.od-cur-dot { position: relative; display: block; width: 18px; height: 18px; border-radius: 50%; background: #fd6b01; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.od-cur-pulse { position: absolute; inset: -9px; border-radius: 50%; background: rgba(253,107,1,.28); animation: odCurPulse 1.8s ease-out infinite; }
+@keyframes odCurPulse { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(1.4); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .od-cur-pulse { animation: none; } }
+.lg-home { background: #16a34a !important; }
+.lg-hub { background: #fff url(/icon-192.png) center / 80% no-repeat !important; border: 1.5px solid #fd6b01; }
+/* Status card: the date line matches the title size */
+.od-eta-standalone .od-map-eta-txt > span { font-size: 13.5px; } /* same size as the "In transit" title */
+.od-allorders-n { display: inline-grid; place-items: center; min-width: 22px; height: 20px; margin-left: 8px; padding: 0 7px; border-radius: 999px; background: #fff3e8; color: #c2410c; font-size: 12px; font-weight: 800; vertical-align: 1px; }
+
+/* After-order contact prompt (ContactDetailsPrompt.jsx) */
+.cdp-back { position: fixed; inset: 0; z-index: 2147483200; display: flex; align-items: flex-end; justify-content: center; background: rgba(17, 24, 39, .5); }
+.cdp { position: relative; width: 100%; max-width: 440px; padding: 22px 18px calc(18px + env(safe-area-inset-bottom)); border-radius: 22px 22px 0 0; background: #fff; box-shadow: 0 -10px 40px rgba(0,0,0,.18); }
+@media (min-width: 640px) { .cdp-back { align-items: center; } .cdp { border-radius: 20px; padding-bottom: 18px; } }
+.cdp-x { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 10px; background: #f3f4f6; color: #374151; cursor: pointer; }
+.cdp h3 { margin: 0 40px 6px 0; font-size: 18px; font-weight: 800; color: #111827; }
+.cdp > p { margin: 0 0 14px; font-size: 13px; line-height: 1.45; color: #6b7280; }
+.cdp-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.cdp-field > span:first-child { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: #374151; }
+.cdp-field input { width: 100%; height: 46px; padding: 0 14px; border: 1.5px solid #e5e7eb; border-radius: 12px; font: inherit; font-size: 15px; color: #111827; background: #fff; outline: none; transition: border-color .15s; }
+.cdp-field input:focus { border-color: #fd6b01; }
+.cdp-phone { display: flex; align-items: center; border: 1.5px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+.cdp-phone:focus-within { border-color: #fd6b01; }
+.cdp-phone i { padding: 0 4px 0 14px; font-style: normal; font-weight: 700; color: #374151; }
+.cdp-phone input { border: 0 !important; padding-left: 8px; }
+.cdp-err { display: block; margin-top: -2px; font-size: 12px; font-weight: 600; color: #dc2626; }
+.cdp-save { width: 100%; height: 48px; margin-top: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 14px; background: #111827; color: #fff; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+.cdp-save:disabled { opacity: .7; cursor: progress; }
+.cdp-skip { display: block; margin: 12px auto 0; padding: 4px 8px; border: 0; background: none; color: #6b7280; font: inherit; font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.cdp-spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; animation: cf-rot .7s linear infinite; }

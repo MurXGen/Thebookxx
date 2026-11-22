@@ -30,6 +30,7 @@ import { getDeliveryCharge } from "@/utils/cartOffers";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { encodeAddonsField, BOOKMARK_UNIT } from "@/utils/addonsField";
 import { showToast } from "@/context/ToastContext";
+import ContactDetailsPrompt from "@/components/UI/ContactDetailsPrompt";
 import { deliveryWindows, isFastRegion } from "@/lib/deliveryEta";
 
 const slugify = (t) =>
@@ -81,6 +82,8 @@ export default function OrderSuccessCard({
   // Payment still being verified ("I've paid, verify status"): no second
   // loader, no confetti; the copy says it'll be processed in a few minutes.
   pending = false,
+  email = "",
+  altPhone = "",
   onTrack,
   onClose,
 }) {
@@ -96,6 +99,26 @@ export default function OrderSuccessCard({
   const [savingKey, setSavingKey] = useState("");
   // "placing" → 2s loader, then "done" → the success content + tick + haptic.
   const [phase, setPhase] = useState(pending ? "done" : "placing");
+
+  // Missing email / alternate number → ask once, shortly after "Order placed".
+  const needEmail = !String(email || "").trim();
+  const needAlt = !String(altPhone || "").replace(/\D/g, "");
+  const [askContact, setAskContact] = useState(false);
+  useEffect(() => {
+    if (phase !== "done" || (!needEmail && !needAlt) || !orderId) return;
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem(`tbx_contact_ask_${orderId}`) === "1";
+    } catch {}
+    if (seen) return;
+    const t = setTimeout(() => {
+      setAskContact(true);
+      try {
+        sessionStorage.setItem(`tbx_contact_ask_${orderId}`, "1");
+      } catch {}
+    }, 1600);
+    return () => clearTimeout(t);
+  }, [phase, needEmail, needAlt, orderId]);
 
   const [noteOpen, setNoteOpen] = useState(false);
   const [note, setNote] = useState("");
@@ -415,6 +438,7 @@ export default function OrderSuccessCard({
   };
 
   return (
+    <>
     <div className={`osc-overlay osc-full osc-xmas${pending ? " osc-pending" : ""}`}>
       <div className="osc-modal">
         {/* Christmas: light snowfall over the whole page */}
@@ -938,5 +962,14 @@ export default function OrderSuccessCard({
         )}
       </div>
     </div>
+      <ContactDetailsPrompt
+        open={askContact}
+        orderId={orderId}
+        phone={digits}
+        needEmail={needEmail}
+        needAlt={needAlt}
+        onDone={() => setAskContact(false)}
+      />
+    </>
   );
 }

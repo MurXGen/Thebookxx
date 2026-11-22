@@ -78,7 +78,7 @@ import OrderPayFlow from "@/components/profile/OrderPayFlow";
 import { parseSheetTime } from "@/lib/sheetTime";
 import { isRefundInProcess, isRefundDone, REFUND_LATE_MS } from "@/lib/refundStatus";
 import { getDeliveryCharge } from "@/utils/cartOffers";
-import { deliveryWindows, isFastRegion, addrFromOrder, windowText } from "@/lib/deliveryEta";
+import { deliveryWindows, addrFromOrder, windowText } from "@/lib/deliveryEta";
 import { books as ALL_BOOKS } from "@/utils/book";
 import {
   orderEmailFromRow,
@@ -942,6 +942,7 @@ export default function OrderDetailPage() {
   // Loyalty celebration: 3+ real orders → confetti on their recent last 4.
   const [celebrate, setCelebrate] = useState(false);
   const [loyalN, setLoyalN] = useState(0);
+  const [allOrdersN, setAllOrdersN] = useState(0);
   useEffect(() => {
     const digits = String(number || "").replace(/\D/g, "").slice(-10);
     if (digits.length !== 10) return;
@@ -960,6 +961,8 @@ export default function OrderDetailPage() {
         const res = await fetch(`/api/orders?phone=${digits}`);
         const json = await res.json();
         const all = Array.isArray(json.orders) ? json.orders : [];
+        // Count for "See all your orders" (every order with an ID).
+        setAllOrdersN(new Set(all.map((o) => String(o["Order ID"] || "")).filter(Boolean)).size);
         const real = all.filter((o) => {
           const wa = /whatsapp/i.test(o["Payment Type"] || "");
           const unc =
@@ -1360,17 +1363,19 @@ export default function OrderDetailPage() {
         });
       // Faint grey "untravelled" base for the whole route, then a solid BLACK
       // "travelled" line that grows as the vehicle animates to the current point.
+      // Thin, dark dashed line for the route still to go (visible on the
+      // light map), and a thin solid black line for the part travelled.
       L.polyline(path, {
-        color: "#94a3b8",
-        weight: 4.5,
-        opacity: 0.7,
-        dashArray: "7 9",
+        color: "#334155",
+        weight: 1.6,
+        opacity: 0.85,
+        dashArray: "4 5",
         lineCap: "round",
       }).addTo(map);
       const travelledLine = L.polyline([path[0]], {
         color: "#111827",
-        weight: 5,
-        opacity: 0.92,
+        weight: 2.2,
+        opacity: 0.95,
         lineCap: "round",
         lineJoin: "round",
       }).addTo(map);
@@ -1387,49 +1392,47 @@ export default function OrderDetailPage() {
         }).addTo(map);
       }
 
-      const aM = L.marker(A, { icon: dot("#111827", ICON_BOOK) }).addTo(map);
+      // Hub: the TheBookX logo in a white badge.
+      const hubIcon = L.divIcon({
+        className: "od-pin",
+        html: '<span class="od-pin-hub"><img src="/icon-192.png" alt="" width="22" height="22" /></span>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      });
+      const aM = L.marker(A, { icon: hubIcon }).addTo(map);
       aM.bindTooltip("Dispatched from Mumbai", {
         direction: "top",
         offset: [0, -16],
         className: "od-pin-tip",
       });
-      const bM = L.marker(B, { icon: dot("#c0223b", ICON_HOME) }).addTo(map);
+      const bM = L.marker(B, { icon: dot("#16a34a", ICON_HOME) }).addTo(map);
       bM.bindTooltip("Delivery address", {
         direction: "top",
         offset: [0, -16],
         className: "od-pin-tip",
       });
-      // Vehicle travelling the route — a train for Faster/express delivery, a
-      // truck for Standard. No flight (it never followed the roads). The emoji
-      // sits in a tilted white badge for a subtle 3D feel.
-      // Parcel marker: orange badge (matches the legend) with a white
-      // train (express) or truck (standard) icon.
-      const ICON_TRUCK =
-        '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>';
-      const ICON_TRAIN =
-        '<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>';
       const ICON_PKG =
         '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 2.004 0L20.71 7"/></svg>';
-      const vehicleSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${
-        isExpressOrder(order) ? ICON_TRAIN : ICON_TRUCK
-      }</svg>`;
       const tip = (t) =>
         `<span class="od-veh-tip-in">${ICON_PKG}<span>${String(t)
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")}</span></span>`;
+      // Current position: a small orange dot with a soft pulse, and an
+      // always-on "Current location" label above it.
       const vehicle = L.marker(path[0], {
         icon: L.divIcon({
-          className: "od-vehicle od-vehicle-3d",
-          html: `<span class="od-veh-badge od-veh-parcel"><span class="od-veh-pulse"></span>${vehicleSvg}</span>`,
-          iconSize: [46, 46],
-          iconAnchor: [23, 23],
+          className: "od-vehicle",
+          html: '<span class="od-cur-dot"><span class="od-cur-pulse"></span></span>',
+          iconSize: [18, 18],
+          iconAnchor: [9, 9],
         }),
         zIndexOffset: 1000,
       }).addTo(map);
       if (!delivered && !cancelled) {
-        vehicle.bindTooltip(tip("Estimated position"), {
+        vehicle.bindTooltip(tip("Current location"), {
           direction: "top",
-          offset: [0, -30],
+          offset: [0, -10],
+          permanent: true,
           className: "od-veh-tip",
         });
       }
@@ -2580,31 +2583,25 @@ export default function OrderDetailPage() {
   // calendar dates; elsewhere (Faster 3–9 / Standard 4–12) shows only the
   // day range from the order date — no dates.
   const orderAddr = addrFromOrder(order);
-  const fastRegion = isFastRegion(orderAddr);
   const regionWin = deliveryWindows(orderAddr);
   const [etaMin, etaMax] = isFaster ? regionWin.faster : regionWin.standard;
   const fasterWinText = windowText(regionWin.faster);
+  // "Reaches you Fri 27 Nov – Thu 3 Dec": real dates for every region,
+  // counted from the order date (a date landing on a Sunday moves to Monday).
   const etaText = (() => {
-    if (!orderDate) return `Reaching you in ${etaMin}–${etaMax} days`;
-    if (!fastRegion) {
-      if (Date.now() > orderDate.getTime() + (etaMax + 1) * 86400000)
-        return "Taking a little longer than usual — it should reach you soon";
-      // Count the window down in days (no calendar dates).
-      const elapsed = Math.max(0, Math.floor((Date.now() - orderDate.getTime()) / 86400000));
-      const left = etaMax - elapsed;
-      const leftMin = Math.max(1, etaMin - elapsed);
-      if (elapsed === 0) return `Reaches you in ${etaMin}–${etaMax} days`;
-      if (etaMin - elapsed > 0) return `Arriving in the next ${leftMin}–${left} days`;
-      if (left <= 1) return "Arriving any time now";
-      return `Arriving any day now · within ${left} days`;
-    }
-    const from = new Date(orderDate.getTime() + etaMin * 86400000);
-    const by = new Date(orderDate.getTime() + etaMax * 86400000);
+    if (!orderDate) return `Reaches you in ${etaMin}–${etaMax} days`;
+    const day = (n) => {
+      const d = new Date(orderDate.getTime() + n * 86400000);
+      if (d.getDay() === 0) d.setDate(d.getDate() + 1);
+      return d;
+    };
+    const from = day(etaMin);
+    const by = day(etaMax);
     const now = Date.now();
     if (now > by.getTime() + 86400000)
       return "Taking a little longer than usual — it should reach you soon";
-    if (now >= from.getTime()) return `Arriving by ${fmtDay(by)}`;
-    return `Arriving ${fmtDay(from)} – ${fmtDay(by)}`;
+    if (now >= from.getTime()) return `Reaches you by ${fmtDay(by)}`;
+    return `Reaches you ${fmtDay(from)} – ${fmtDay(by)}`;
   })();
   // Delivered-on date, when the live India Post status recorded it.
   const deliveredOn =
@@ -3217,7 +3214,10 @@ export default function OrderDetailPage() {
             <Package size={16} />
           </span>
           <span className="od-allorders-tx">
-            <b>See all your orders</b>
+            <b>
+              See all your orders
+              {allOrdersN > 0 && <span className="od-allorders-n">{allOrdersN}</span>}
+            </b>
             <small>Track active orders and view past ones</small>
           </span>
           <ChevronRight size={16} className="od-allorders-go" />

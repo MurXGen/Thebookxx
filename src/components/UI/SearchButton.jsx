@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import RecommendationModal from "../RecommendationModal";
 import { trackEvent } from "@/lib/ga";
+import { ANDROID_APK_URL, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
 
 export default function SearchButton({ onClick }) {
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
@@ -14,6 +15,12 @@ export default function SearchButton({ onClick }) {
   const [canInstall, setCanInstall] = useState(false);
 
   useEffect(() => {
+    // Android → the install icon downloads the native app (APK).
+    if (isInAndroidApp()) return;
+    if (isAndroidUA()) {
+      const t = setTimeout(() => setCanInstall(true), 0);
+      return () => clearTimeout(t);
+    }
     const beforeInstallHandler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -57,6 +64,11 @@ export default function SearchButton({ onClick }) {
     e.preventDefault();
     e.stopPropagation();
 
+    if (isAndroidUA()) {
+      trackEvent("apk_download_clicked", { source: "search_bar" });
+      window.location.href = ANDROID_APK_URL;
+      return;
+    }
     if (!deferredPrompt) return;
 
     trackEvent("pwa_install_clicked");

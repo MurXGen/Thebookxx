@@ -798,3 +798,30 @@ export async function timerRowByDevice(deviceId) {
     return null;
   }
 }
+
+// ── Android app devices (push token + notification preferences) ────────────
+// One row per install, keyed by "Device ID". Create the tab before enabling.
+export const APP_DEVICES_SHEET_NAME =
+  process.env.APP_DEVICES_SHEET_NAME || "App Devices";
+export function appDeviceAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, { action: "append", sheet: APP_DEVICES_SHEET_NAME, data });
+}
+export function appDeviceUpdate(deviceId, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: APP_DEVICES_SHEET_NAME,
+    matchColumn: "Device ID",
+    matchValue: String(deviceId),
+    data,
+  });
+}
+export async function appDeviceRow(deviceId) {
+  const id = String(deviceId || "").trim();
+  if (!id) return null;
+  try {
+    const table = await gvizQuery({ sheet: APP_DEVICES_SHEET_NAME });
+    return tableToObjects(table).find((r) => String(r["Device ID"] ?? "").trim() === id) || null;
+  } catch {
+    return null;
+  }
+}

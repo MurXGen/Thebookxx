@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Truck, Tag, Bell } from "lucide-react";
 import { trackEvent } from "@/lib/ga";
+import { ANDROID_APK_URL, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
 
 // Compact "install our app" banner for the customer's orders list. Shown ONLY
 // when the TheBookX PWA is NOT already installed. Clicking Install fires the
@@ -57,6 +58,12 @@ export default function PwaInstallPromo({ variant = "bar" }) {
   }, []);
 
   const handleInstall = async () => {
+    // Android → download the native app (APK) instead of the PWA.
+    if (isAndroidUA()) {
+      trackEvent("apk_download_clicked", { source: `orders_${variant}` });
+      window.location.href = ANDROID_APK_URL;
+      return;
+    }
     trackEvent("pwa_install_clicked", { source: `orders_${variant}` });
     const prompt = deferred || (typeof window !== "undefined" && window.__bipEvent);
     if (prompt) {
@@ -74,7 +81,7 @@ export default function PwaInstallPromo({ variant = "bar" }) {
     setTimeout(() => setHint(false), 5000);
   };
 
-  if (installed) return null;
+  if (installed || isInAndroidApp()) return null;
 
   return (
     <>
@@ -102,8 +109,8 @@ export default function PwaInstallPromo({ variant = "bar" }) {
             </span>
           )}
         </div>
-        <button type="button" className="pwa-promo-cta" onClick={handleInstall}>
-          Install
+        <button type="button" className="pwa-promo-cta" onClick={handleInstall} suppressHydrationWarning>
+          {isAndroidUA() ? "Download" : "Install"}
         </button>
       </div>
     </>

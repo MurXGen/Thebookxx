@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Download, X, Share } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackEvent } from "@/lib/ga";
+import { ANDROID_APK_URL, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
 
 /**
  * Minimal, fixed-to-bottom "Install app" bar for the profile page.
@@ -16,13 +17,14 @@ export default function InstallAppBar({ inline = false }) {
   const [visible, setVisible] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [showIosHint, setShowIosHint] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
     // Already installed / launched from home screen → never show.
     const standalone =
       window.matchMedia?.("(display-mode: standalone)")?.matches ||
       window.navigator.standalone === true;
-    if (standalone) return;
+    if (standalone || isInAndroidApp()) return;
 
     if (sessionStorage.getItem("installBarDismissed") === "1") return;
 
@@ -44,6 +46,12 @@ export default function InstallAppBar({ inline = false }) {
     window.addEventListener("beforeinstallprompt", beforeInstallHandler);
     window.addEventListener("appinstalled", installedHandler);
 
+    // Android: offer the native app (APK) straight away.
+    if (isAndroidUA()) {
+      setIsAndroid(true);
+      setVisible(true);
+    }
+
     // iOS can't use beforeinstallprompt — show the bar so we can guide them.
     if (ios) setVisible(true);
 
@@ -54,6 +62,11 @@ export default function InstallAppBar({ inline = false }) {
   }, []);
 
   const handleInstall = async () => {
+    if (isAndroid) {
+      trackEvent?.("apk_download_clicked");
+      window.location.href = ANDROID_APK_URL;
+      return;
+    }
     trackEvent?.("pwa_install_clicked");
     if (deferredPrompt) {
       deferredPrompt.prompt();

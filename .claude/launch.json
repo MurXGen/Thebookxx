@@ -34,6 +34,27 @@
         "exports"
       ],
       "port": 8765
+    },
+    {
+      "name": "mobile-web",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "expo",
+        "start",
+        "--web",
+        "--port",
+        "8091"
+      ],
+      "cwd": "mobile",
+      "port": 8091
+    },
+    {
+      "name": "mobile-api-proxy",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "mobile/scripts/dev-cors-proxy.mjs"
+      ],
+      "port": 8092
     }
   ]
 }

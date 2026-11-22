@@ -1,40 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Download, X, Share } from "lucide-react";
+import { Download, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackEvent } from "@/lib/ga";
-import { downloadApk, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
+import { openAppSheet } from "@/components/AppInstall";
 
 /**
  * Minimal, fixed-to-bottom "Install app" bar for the profile page.
- * - Android / desktop Chrome: fires the native install prompt (beforeinstallprompt).
- * - iOS Safari (no beforeinstallprompt): reveals a short "Add to Home Screen" hint.
+ * Install opens the shared install sheet (AppInstall.jsx), which fires the
+ * browser's install prompt or shows short steps (iPhone / other browsers).
  * Hidden when the app is already installed / running standalone, or dismissed.
  */
 export default function InstallAppBar({ inline = false }) {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [showIosHint, setShowIosHint] = useState(false);
-  const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
     // Already installed / launched from home screen → never show.
     const standalone =
       window.matchMedia?.("(display-mode: standalone)")?.matches ||
       window.navigator.standalone === true;
-    if (standalone || isInAndroidApp()) return;
+    if (standalone) return;
 
     if (sessionStorage.getItem("installBarDismissed") === "1") return;
 
     const ua = window.navigator.userAgent || "";
     const ios = /iphone|ipad|ipod/i.test(ua);
-    setIsIOS(ios);
 
     const beforeInstallHandler = (e) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      window.__bipEvent = e;
       setVisible(true);
       trackEvent?.("pwa_install_prompt_shown");
     };
@@ -46,41 +41,20 @@ export default function InstallAppBar({ inline = false }) {
     window.addEventListener("beforeinstallprompt", beforeInstallHandler);
     window.addEventListener("appinstalled", installedHandler);
 
-    // Android: offer the native app (APK) straight away.
-    if (isAndroidUA()) {
-      setIsAndroid(true);
-      setVisible(true);
-    }
-
-    // iOS can't use beforeinstallprompt — show the bar so we can guide them.
-    if (ios) setVisible(true);
+    // Prompt already captured, or iOS (no prompt — the sheet shows steps).
+    const t = (window.__bipEvent || ios) ? setTimeout(() => setVisible(true), 0) : null;
 
     return () => {
+      if (t) clearTimeout(t);
       window.removeEventListener("beforeinstallprompt", beforeInstallHandler);
       window.removeEventListener("appinstalled", installedHandler);
     };
   }, []);
 
-  const handleInstall = async () => {
-    if (isAndroid) {
-      trackEvent?.("apk_download_clicked");
-      downloadApk();
-      return;
-    }
-    trackEvent?.("pwa_install_clicked");
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      trackEvent?.(
-        choice.outcome === "accepted"
-          ? "pwa_install_accepted"
-          : "pwa_install_dismissed",
-      );
-      setDeferredPrompt(null);
-      if (choice.outcome === "accepted") setVisible(false);
-      return;
-    }
-    if (isIOS) setShowIosHint((v) => !v);
+  // Opens the shared install sheet (it fires the browser prompt or shows steps).
+  const handleInstall = () => {
+    trackEvent?.("app_sheet_opened", { source: "install_bar" });
+    openAppSheet("install_bar");
   };
 
   const dismiss = () => {
@@ -117,7 +91,7 @@ export default function InstallAppBar({ inline = false }) {
             onClick={handleInstall}
           >
             <Download size={15} />
-            Download
+            Install
           </button>
           <button
             type="button"
@@ -129,19 +103,6 @@ export default function InstallAppBar({ inline = false }) {
           </button>
         </div>
 
-        <AnimatePresence>
-          {showIosHint && (
-            <motion.div
-              className="install-app-ioshint"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 6 }}
-            >
-              Tap <Share size={13} /> Share, then{" "}
-              <strong>Add to Home Screen</strong>.
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.div>
     </AnimatePresence>
   );

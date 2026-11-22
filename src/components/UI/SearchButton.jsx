@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import RecommendationModal from "../RecommendationModal";
 import { trackEvent } from "@/lib/ga";
-import { downloadApk, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
+import { openAppSheet } from "@/components/AppInstall";
 
 export default function SearchButton({ onClick }) {
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
@@ -15,12 +15,6 @@ export default function SearchButton({ onClick }) {
   const [canInstall, setCanInstall] = useState(false);
 
   useEffect(() => {
-    // Android → the install icon downloads the native app (APK).
-    if (isInAndroidApp()) return;
-    if (isAndroidUA()) {
-      const t = setTimeout(() => setCanInstall(true), 0);
-      return () => clearTimeout(t);
-    }
     const beforeInstallHandler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -60,31 +54,14 @@ export default function SearchButton({ onClick }) {
     setShowRecommendationModal(true);
   };
 
-  const handleInstallClick = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (isAndroidUA()) {
-      trackEvent("apk_download_clicked", { source: "search_bar" });
-      downloadApk();
-      return;
-    }
-    if (!deferredPrompt) return;
-
-    trackEvent("pwa_install_clicked");
-
-    deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-
-    if (choice.outcome === "accepted") {
-      trackEvent("pwa_install_accepted");
-    } else {
-      trackEvent("pwa_install_dismissed");
-    }
-
-    setDeferredPrompt(null);
-    setCanInstall(false);
+  // Opens the shared install sheet (browser prompt or short steps).
+  const handleInstallClick = (e) => {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    trackEvent("app_sheet_opened", { source: "search_bar" });
+    openAppSheet("search_bar");
   };
+
 
   return (
     <>

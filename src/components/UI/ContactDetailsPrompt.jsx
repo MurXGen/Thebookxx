@@ -47,7 +47,7 @@ export default function ContactDetailsPrompt({ open, orderId, phone = "", needEm
       return;
     }
     showToast("Saved — we'll keep you posted on this order.", "success", { title: "Contact details added" });
-    onDone?.(true);
+    onDone?.(true, fields);
   };
 
   return createPortal(

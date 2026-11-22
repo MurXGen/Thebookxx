@@ -9392,3 +9392,21 @@ body.mo-map-fs-open .my-orders-page .mo-section { will-change: auto !important; 
   white-space: nowrap;
   scroll-snap-align: start;
 }
+
+/* 80 · Shipment bar — "Email N" toggle (in-transit email on Push) */
+.mo-shipbar-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.mo-shipbar-mail input { width: 15px; height: 15px; margin: 0; accent-color: #16a34a; }
+.mo-shipbar-mail:not(.on) { opacity: 0.7; }

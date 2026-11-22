@@ -149,6 +149,7 @@ import {
   reviewBooksFor,
 } from "@/utils/orderEmail";
 import { getDeliveryCharge, getCodFee } from "@/utils/cartOffers";
+import { trackingUrl } from "@/utils/trackingLink";
 import {
   classifyOrderProduct,
   productFromTracking,
@@ -256,7 +257,6 @@ const downloadCsv = (filename, headers, rows) => {
 };
 
 const PROFILE_URL = "https://www.thebookx.in/profile";
-const INDIA_POST_URL = "https://www.indiapost.gov.in";
 
 // Speed Post or not: a booked tracking ID decides (E… Speed, C… Contractual);
 // without one, the customer's Faster/Express choice does.
@@ -420,7 +420,7 @@ const waMessages = (order) => {
     `\n🔗 *Order:* ${orderDetailUrl}` +
     `\n👤 *Profile:* ${PROFILE_URL}` +
     (tracking
-      ? `\n🚚 *Tracking ID:* ${tracking}\n📍 *Track:* ${INDIA_POST_URL}`
+      ? `\n🚚 *Tracking ID:* ${tracking}\n📍 *Track live:* ${trackingUrl(tracking)}`
       : "") +
     `\n\n— Team *TheBookX* 📚`;
 
@@ -665,7 +665,7 @@ const emailMessages = (order) => {
       body:
         `Hi ${first},\n\n` +
         `Your books are officially on the move and should reach you in ${etaWindow}${isFaster ? " (⚡ Faster delivery)" : ""}.` +
-        (tracking ? `\n\nTracking ID: ${tracking}` : "") +
+        (tracking ? `\n\nTracking ID: ${tracking}\nTrack live: ${trackingUrl(tracking)}` : "") +
         footer,
     },
     {
@@ -5818,9 +5818,83 @@ export default function ManageOrdersPage() {
   ];
   // Push all queued weight, size & tracking edits — one write per order, all
   // in parallel. The cards already show the new values, so no re-read.
+  // After a Push, email "your order is on its way" (with the Track91 link) to
+  // every pushed order that just got a tracking ID and has an email. On by
+  // default; each tracking ID is emailed once (remembered in this browser).
+  const [emailOnPush, setEmailOnPush] = useState(true);
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("mo_push_email") === "0") setEmailOnPush(false);
+    } catch {}
+  }, []);
+  const toggleEmailOnPush = (on) => {
+    setEmailOnPush(on);
+    try {
+      localStorage.setItem("mo_push_email", on ? "1" : "0");
+    } catch {}
+  };
+  const transitEmailedSet = () => {
+    try {
+      return new Set(JSON.parse(localStorage.getItem("mo_transit_emailed") || "[]"));
+    } catch {
+      return new Set();
+    }
+  };
+  // Orders in the push queue that would get the in-transit email.
+  const pushEmailTargets = (ids = pendingShipIds) => {
+    const done = transitEmailedSet();
+    return ids
+      .map((id) => {
+        const trk = String(pendingTracking[id] || "").trim().toUpperCase();
+        if (!trk || done.has(trk)) return null;
+        const o = orders.find((x) => String(x["Order ID"]) === String(id));
+        const to = String(o?.["Email"] || "").trim();
+        return o && to ? { order: { ...o, "Shipping ID": trk, shippingId: trk }, to, trk } : null;
+      })
+      .filter(Boolean);
+  };
+  const sendTransitEmails = async (targets) => {
+    let ok = 0;
+    const sent = [];
+    for (let i = 0; i < targets.length; i += 5) {
+      // eslint-disable-next-line no-await-in-loop
+      const res = await Promise.all(
+        targets.slice(i, i + 5).map(({ order, to, trk }) => {
+          const tpl = emailStatusTemplates(order).find((t) => t.key === "shipped");
+          const items = (order.parsedBooks || []).map((b) => ({
+            name: b.name,
+            qty: Number(b.quantity) || 1,
+            price: Number(b.total) || (Number(b.price) || 0) * (Number(b.quantity) || 1),
+          }));
+          return sendOrderStatusEmail({
+            to,
+            order: orderEmailFromRow(order, items),
+            status: tpl.status,
+            tracking: trk,
+            heading: tpl.heading,
+            subheading: tpl.subheading,
+          }).then((r) => (r ? trk : null));
+        }),
+      );
+      res.forEach((t) => {
+        if (t) {
+          ok += 1;
+          sent.push(t);
+        }
+      });
+    }
+    if (sent.length) {
+      try {
+        const all = [...transitEmailedSet(), ...sent].slice(-2000);
+        localStorage.setItem("mo_transit_emailed", JSON.stringify(all));
+      } catch {}
+    }
+    return ok;
+  };
   const pushPendingShipments = async () => {
     const ids = pendingShipIds;
     if (!ids.length) return;
+    const mailTargets = emailOnPush ? pushEmailTargets(ids) : [];
     setPushingTracking(true);
     try {
       await Promise.all(
@@ -5838,6 +5912,15 @@ export default function ManageOrdersPage() {
         `Pushed ${ids.length} order${ids.length === 1 ? "" : "s"} to the sheet ✓`,
         "success",
       );
+      if (mailTargets.length) {
+        const sentN = await sendTransitEmails(mailTargets);
+        showToast(
+          sentN === mailTargets.length
+            ? `“On its way” email sent to ${sentN} customer${sentN === 1 ? "" : "s"} ✓`
+            : `Emailed ${sentN} of ${mailTargets.length} — the rest failed, send them from the card.`,
+          sentN === mailTargets.length ? "success" : "error",
+        );
+      }
     } finally {
       setPushingTracking(false);
     }
@@ -7123,7 +7206,7 @@ export default function ManageOrdersPage() {
     if (!id) return;
     try {
       navigator.clipboard?.writeText(id);
-      showToast(`Tracking ID ${id} copied — paste it on India Post`, "success");
+      showToast(`Tracking ID ${id} copied`, "success");
     } catch {}
   };
 
@@ -9948,7 +10031,7 @@ export default function ManageOrdersPage() {
         status: "In Transit",
         heading: "Your order has shipped 🚚",
         subheading:
-          "Your parcel has been handed to our shipping partner and is officially on its way. Track it with the ID below. If you won't be home when it arrives, please let a neighbour or family member know so it isn't missed.",
+          `Your parcel has been handed to India Post and is officially on its way — it usually reaches you in ${eta}${byLine}. Tap "Track live" below to follow every scan on Track91, where you can also switch on delivery alerts. If you won't be home when it arrives, please let a neighbour or family member know so it isn't missed.${codNote}`,
       },
       {
         key: "transit",
@@ -11185,12 +11268,7 @@ export default function ManageOrdersPage() {
     try {
       navigator.clipboard.writeText(id);
     } catch (_) {}
-    const ok = window.confirm(
-      `Tracking ID "${id}" copied.\n\nClick OK to open India Post tracking — paste the ID there to track this parcel.`,
-    );
-    if (ok) {
-      window.open(INDIA_POST_URL, "_blank", "noopener,noreferrer");
-    }
+    window.open(trackingUrl(id), "_blank", "noopener,noreferrer");
   };
 
   const exportToCSV = () => {
@@ -19453,11 +19531,11 @@ export default function ManageOrdersPage() {
                               {m.article}
                               {m.article && (
                                 <a
-                                  href={INDIA_POST_URL}
+                                  href={trackingUrl(m.article)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="mo-deliv-track"
-                                  title="Verify on India Post (copies the tracking ID)"
+                                  title="Track live (copies the tracking ID)"
                                   onClick={(e) => copyTrackingOnVerify(e, m.article)}
                                 >
                                   <ExternalLink size={11} /> Verify
@@ -19556,11 +19634,11 @@ export default function ManageOrdersPage() {
                               {m.article} · file: {m.lastEvent}
                               {m.article && (
                                 <a
-                                  href={INDIA_POST_URL}
+                                  href={trackingUrl(m.article)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="mo-deliv-track"
-                                  title="Verify on India Post (copies the tracking ID)"
+                                  title="Track live (copies the tracking ID)"
                                   onClick={(e) => copyTrackingOnVerify(e, m.article)}
                                 >
                                   <ExternalLink size={11} /> Verify
@@ -19657,11 +19735,11 @@ export default function ManageOrdersPage() {
                               {m.article} · file: {m.fileStatus}
                               {m.article && (
                                 <a
-                                  href={INDIA_POST_URL}
+                                  href={trackingUrl(m.article)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="mo-deliv-track"
-                                  title="Verify on India Post (copies the tracking ID)"
+                                  title="Track live (copies the tracking ID)"
                                   onClick={(e) => copyTrackingOnVerify(e, m.article)}
                                 >
                                   <ExternalLink size={11} /> Verify
@@ -22984,6 +23062,23 @@ export default function ManageOrdersPage() {
                   </span>
                 </div>
                 <div className="mo-shipbar-acts">
+                  {(() => {
+                    const mailN = pushEmailTargets().length;
+                    return mailN > 0 ? (
+                      <label
+                        className={`mo-shipbar-mail${emailOnPush ? " on" : ""}`}
+                        title="After pushing, email these customers that their order is on its way, with the Track91 link"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={emailOnPush}
+                          onChange={(e) => toggleEmailOnPush(e.target.checked)}
+                          disabled={pushingTracking}
+                        />
+                        <Mail size={14} /> Email <b>{mailN}</b>
+                      </label>
+                    ) : null;
+                  })()}
                   <button
                     type="button"
                     className="mo-shipbar-ip"

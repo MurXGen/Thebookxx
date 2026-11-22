@@ -74,6 +74,8 @@ import {
   clearProfileCache,
 } from "@/utils/profileCache";
 import { books as ALL_BOOKS } from "@/utils/book";
+import { trackingUrl } from "@/utils/trackingLink";
+import { PushSettingsRow } from "@/components/UI/PushPrompt";
 import MobileBottomNav from "@/components/MobileBottomNav";
 
 // Match an order-item name to its book cover (order items come from the sheet,
@@ -427,7 +429,7 @@ export default function MyOrdersPage() {
   const toggleOrder = (key) =>
     setExpandedOrders((p) => ({ ...p, [key]: !p[key] }));
 
-  // Track button on the collapsed card — opens India Post tracking with the
+  // Track button on the collapsed card — opens live Track91 tracking with the
   // Shipping ID copied; if not dispatched yet, expands the card's timeline so
   // customers see status here instead of asking on WhatsApp.
   const handleTrackOrder = (order, key) => {
@@ -437,7 +439,7 @@ export default function MyOrdersPage() {
         navigator.clipboard.writeText(sid);
       } catch (_) {}
       window.open(
-        "https://www.indiapost.gov.in/",
+        trackingUrl(sid),
         "_blank",
         "noopener,noreferrer",
       );
@@ -1120,9 +1122,10 @@ export default function MyOrdersPage() {
 
   const handleTrackPackage = (shippingId) => {
     if (shippingId) {
-      navigator.clipboard.writeText(shippingId);
-      alert(`Tracking ID ${shippingId} copied to clipboard!`);
-      window.open("https://www.indiapost.gov.in", "_blank");
+      try {
+        navigator.clipboard.writeText(shippingId);
+      } catch (_) {}
+      window.open(trackingUrl(shippingId), "_blank", "noopener,noreferrer");
     }
   };
 
@@ -2679,6 +2682,10 @@ Please cancel this order. Thank you `;
               <span className="pm-label">List your books</span>
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
+
+            {/* ── Notifications ── */}
+            <div className="pm-section-title">Notifications</div>
+            <PushSettingsRow />
 
             {/* ── Help & policies ── */}
             <div className="pm-section-title">Help &amp; policies</div>

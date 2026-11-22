@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 import { X, Check, CalendarClock } from "lucide-react";
+import { trackingUrl } from "@/utils/trackingLink";
 import { deliveryWindows, isFastRegion, addrFromOrder } from "@/lib/deliveryEta";
 
 // ── date helpers (self-contained so the modal can be reused anywhere) ──
@@ -241,7 +242,7 @@ export default function TrackSheet({
   }, [geo]);
 
   const openIndiaPost = async () => {
-    const TRACK_URL = "https://www.indiapost.gov.in/";
+    const TRACK_URL = trackingUrl(trackOrder.shippingId);
     try {
       await navigator.clipboard.writeText(trackOrder.shippingId || "");
       setTrackCopied && setTrackCopied(true);

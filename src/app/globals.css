@@ -71914,3 +71914,52 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .cdp-save:disabled { opacity: .7; cursor: progress; }
 .cdp-skip { display: block; margin: 12px auto 0; padding: 4px 8px; border: 0; background: none; color: #6b7280; font: inherit; font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .cdp-spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; animation: cf-rot .7s linear infinite; }
+
+/* ── Shared slide-up sheet look (push + install sheets) ──────────────────
+   Plain icons (no tinted box), benefits as a tile grid, one dark CTA and a
+   quiet "Not now" link. Every sheet below uses these classes. */
+.psh { max-height: 92vh; overflow-y: auto; }
+.psh-head { display: flex; align-items: center; gap: 10px; margin: 0 40px 6px 0; }
+.psh-head h3 { margin: 0 !important; }
+.psh-head svg { flex: 0 0 auto; color: #fd6b01; }
+.psh-head img { width: 30px; height: 30px; border-radius: 8px; flex: 0 0 auto; }
+.psh-head.is-off svg { color: #6b7280; }
+.psh-grid { list-style: none; margin: 0 0 14px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.psh-grid.is-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.psh-grid li { display: flex; flex-direction: column; gap: 6px; padding: 12px 10px; border: 1px solid #eef0f3; border-radius: 14px; background: #fff; }
+.psh-grid li svg { color: #fd6b01; }
+.psh-grid b { font-size: 12.5px; font-weight: 750; line-height: 1.25; color: #111827; }
+.psh-grid small { font-size: 11.5px; line-height: 1.35; color: #6b7280; }
+.psh-preview { display: flex; gap: 10px; align-items: center; margin: 0 0 16px; padding: 10px 12px; border: 1px solid #eef0f3; border-radius: 14px; background: #fafbfc; }
+.psh-preview img { width: 28px; height: 28px; border-radius: 7px; }
+.psh-preview span { display: flex; flex-direction: column; gap: 1px; min-width: 0; font-size: 11.5px; line-height: 1.35; color: #6b7280; }
+.psh-preview b { font-size: 12px; color: #111827; }
+.psh-preview em { margin-left: auto; align-self: flex-start; font-style: normal; font-size: 10.5px; color: #9ca3af; }
+.psh-fine { margin: 10px 0 0 !important; text-align: center; font-size: 11.5px !important; color: #9ca3af !important; }
+.psh-steps { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 8px; }
+.psh-steps li { display: flex; gap: 12px; align-items: baseline; padding: 11px 12px; border: 1px solid #eef0f3; border-radius: 14px; font-size: 13px; line-height: 1.45; color: #374151; }
+.psh-steps b { color: #111827; }
+.psh-n { flex: 0 0 auto; min-width: 14px; font-size: 13px; font-weight: 800; color: #fd6b01; }
+.psh-master, .psh-topics li, .psh-card { display: flex; align-items: center; gap: 12px; }
+.psh-master { padding: 12px; margin-bottom: 8px; border: 1px solid #eef0f3; border-radius: 14px; }
+.psh-master > svg, .psh-topics li > svg, .psh-card > svg { flex: 0 0 auto; color: #fd6b01; }
+.psh-master.is-on { border-color: #fed7aa; }
+.psh-tx { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.psh-tx b { font-size: 13.5px; font-weight: 750; color: #111827; }
+.psh-tx small { font-size: 11.5px; line-height: 1.35; color: #6b7280; }
+.psh-topics { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; border: 1px solid #eef0f3; border-radius: 14px; overflow: hidden; transition: opacity .2s; }
+.psh-topics li { padding: 11px 12px; border-bottom: 1px solid #f3f4f6; }
+.psh-topics li:last-child { border-bottom: 0; }
+.psh-topics.is-dim { opacity: .5; }
+.psh-sw { flex: 0 0 auto; position: relative; width: 42px; height: 24px; padding: 0; border: 0; border-radius: 99px; background: #d1d5db; cursor: pointer; transition: background .2s; }
+.psh-sw span { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .2s cubic-bezier(.22,1,.36,1); }
+.psh-sw.is-on { background: #16a34a; }
+.psh-sw.is-on span { transform: translateX(18px); }
+.psh-sw:disabled { cursor: not-allowed; }
+.psh-row-st { margin-left: auto; margin-right: 6px; padding: 2px 8px; border-radius: 99px; background: #f3f4f6; color: #6b7280; font-size: 11px; font-weight: 700; }
+.psh-row-st.is-on { background: #dcfce7; color: #15803d; }
+.psh-card { width: 100%; margin: 12px 0 0; padding: 11px 12px; border: 1px solid #eef0f3; border-radius: 14px; background: #fff; text-align: left; font: inherit; cursor: pointer; }
+.psh-card-cta { flex: 0 0 auto; padding: 7px 12px; border-radius: 10px; background: #111827; color: #fff; font-size: 12.5px; font-weight: 800; }
+.psh-done { display: grid; place-items: center; gap: 6px; padding: 8px 0 4px; text-align: center; }
+.psh-done svg { color: #16a34a; }
+@media (max-width: 360px) { .psh-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

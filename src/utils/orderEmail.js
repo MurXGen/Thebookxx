@@ -3,6 +3,8 @@
 // email body carries the full order + bill breakdown; a PNG invoice is
 // attached when `invoiceBase64` is supplied.
 
+import { trackingUrl, isPostTrackingId } from "./trackingLink";
+
 const num = (v) => {
   const n = parseFloat(String(v ?? "").replace(/[^\d.-]/g, ""));
   return Number.isFinite(n) ? n : 0;
@@ -26,7 +28,9 @@ export function orderEmailFromRow(row, items) {
     isCOD,
     paymentType: String(row["Payment Type"] || ""),
     deliveryType: String(row["Delivery Type"] || ""),
-    trackUrl: "https://www.indiapost.gov.in/",
+    // Track91 opens straight on the parcel (India Post home if no real ID).
+    trackUrl: trackingUrl(row.shippingId || row["Shipping ID"]),
+    trackVia: isPostTrackingId(row.shippingId || row["Shipping ID"]) ? "Track91" : "India Post",
     orderUrl:
       phone.length === 10
         ? `https://www.thebookx.in/profile/${phone}/orders/${encodeURIComponent(oid)}`

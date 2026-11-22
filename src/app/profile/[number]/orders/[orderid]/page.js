@@ -81,6 +81,9 @@ import { isRefundInProcess, isRefundDone, REFUND_LATE_MS } from "@/lib/refundSta
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { deliveryWindows, addrFromOrder, windowText } from "@/lib/deliveryEta";
 import { books as ALL_BOOKS } from "@/utils/book";
+import { trackingUrl } from "@/utils/trackingLink";
+import { OrderPushPrompt } from "@/components/UI/PushPrompt";
+import ContactDetailsPrompt from "@/components/UI/ContactDetailsPrompt";
 import {
   orderEmailFromRow,
   sendOrderConfirmationEmail,
@@ -917,6 +920,18 @@ export default function OrderDetailPage() {
   useEffect(() => {
     try {
       setPayParam(!!new URLSearchParams(window.location.search).get("pay"));
+    } catch {}
+  }, []);
+
+  // ?add=contact (from the "add your email / backup number" notification)
+  // opens the add-details sheet once the order has loaded.
+  const [contactAsk, setContactAsk] = useState(false);
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get("add") === "contact") {
+        const t = setTimeout(() => setContactAsk(true), 0);
+        return () => clearTimeout(t);
+      }
     } catch {}
   }, []);
 
@@ -2301,6 +2316,11 @@ export default function OrderDetailPage() {
     .replace(/\.0+$/, "")
     .replace(/\D/g, "")
     .slice(-10);
+
+  // Same rule as the 11:00 "add your contact" notification.
+  const needContactEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(order["Email"] || "").trim());
+  const needContactAlt =
+    altPhone.length !== 10 || altPhone === String(order["Phone Number"] ?? "").replace(/\D/g, "").slice(-10);
 
   const cleanAddr = String(order["Address"] || "").replace(
     /,?\s*Pinned location:\s*https?:\/\/\S+/i,
@@ -3695,10 +3715,9 @@ export default function OrderDetailPage() {
               // Only real consignment IDs (ordinary "C…" / speed-post "E…") are
               // copiable + link to tracking. Anything else is shown plainly.
               const isPostId = /^[ce]/i.test(String(shippingId).trim());
-              // India Post has no public GET deep-link to a single consignment
-              // (that page 502s on direct load), so we open their site — which
-              // loads reliably — with the ID already on the clipboard to paste.
-              const TRACK_URL = "https://www.indiapost.gov.in/";
+              // Track91 opens straight onto this parcel's timeline (and offers
+              // email / push / Telegram alerts); the ID is copied too.
+              const TRACK_URL = trackingUrl(shippingId);
               // Copy the ID; only flag "Copied" when the write genuinely
               // succeeds (the Clipboard API resolves/rejects per permission).
               const copyId = async () => {
@@ -3746,8 +3765,26 @@ export default function OrderDetailPage() {
                 </div>
               );
             })()}
+          <OrderPushPrompt auto={!contactAsk} />
         </section>
       )}
+
+      <ContactDetailsPrompt
+        open={contactAsk && (needContactEmail || needContactAlt)}
+        orderId={order["Order ID"] || orderId}
+        phone={order["Phone Number"] || number}
+        needEmail={needContactEmail}
+        needAlt={needContactAlt}
+        onDone={(saved, fields) => {
+          setContactAsk(false);
+          if (saved && fields) setOrder((o) => (o ? { ...o, ...fields } : o));
+          try {
+            const u = new URL(window.location.href);
+            u.searchParams.delete("add");
+            window.history.replaceState(null, "", u.toString());
+          } catch {}
+        }}
+      />
 
       {/* Get the app — tracking alerts for this order (hidden once installed). */}
       {order && !cancelled && (

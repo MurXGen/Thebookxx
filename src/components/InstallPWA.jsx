@@ -3,20 +3,14 @@
 import { Download, DownloadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/ga";
+import { openAppSheet } from "@/components/AppInstall";
 import { motion } from "framer-motion";
-import { downloadApk, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
 
 export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
 
   useEffect(() => {
-    // Android → offer the native app (APK) instead of the PWA.
-    if (isInAndroidApp()) return;
-    if (isAndroidUA()) {
-      const t = setTimeout(() => setShowInstall(true), 0);
-      return () => clearTimeout(t);
-    }
     const beforeInstallHandler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -41,28 +35,14 @@ export default function InstallPWA() {
     };
   }, []);
 
-  const handleInstall = async () => {
-    if (isAndroidUA()) {
-      trackEvent("apk_download_clicked", { source: "install_strip" });
-      downloadApk();
-      return;
-    }
-    if (!deferredPrompt) return;
-
-    // Button clicked
-    trackEvent("pwa_install_clicked");
-
-    deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-
-    if (choice.outcome === "accepted") {
-      trackEvent("pwa_install_accepted");
-    } else {
-      trackEvent("pwa_install_dismissed");
-    }
-
-    setDeferredPrompt(null);
+  // Opens the shared install sheet (browser prompt or short steps).
+  const handleInstall = (e) => {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    trackEvent("app_sheet_opened", { source: "install_strip" });
+    openAppSheet("install_strip");
   };
+
 
   if (!showInstall) return null;
 

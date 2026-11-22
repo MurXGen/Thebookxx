@@ -8,6 +8,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { trackingUrl } from "@/utils/trackingLink";
 import { ChevronRight, MapPin, Loader2, GripHorizontal, Maximize2, Minimize2 } from "lucide-react";
 
 const STATE_CENTRES = {
@@ -460,7 +461,7 @@ export default function OrdersMap({ orders, dateOf, onOpenOrder }) {
             setTimeout(() => {
               t.textContent = "Track ↗";
             }, 1800);
-            window.open("https://www.indiapost.gov.in", "_blank", "noopener,noreferrer");
+            window.open(trackingUrl(id), "_blank", "noopener,noreferrer");
             return;
           }
           if (e.target.closest("a")) return;
@@ -615,7 +616,7 @@ export default function OrdersMap({ orders, dateOf, onOpenOrder }) {
           ].join("");
           const phone = x.phone ? `<a href="tel:+91${x.phone}">+91 ${x.phone.slice(0, 5)} ${x.phone.slice(5)}</a>` : "";
           const trk = x.trk
-            ? `<div class="mp-trk"><span class="mp-trk-id" title="Tracking ID">${esc(x.trk)}</span><button type="button" class="mp-trk-btn" data-track="${esc(x.trk)}" aria-label="Track ${esc(x.trk)} on India Post — copies the ID and opens India Post">Track ↗</button></div>`
+            ? `<div class="mp-trk"><span class="mp-trk-id" title="Tracking ID">${esc(x.trk)}</span><button type="button" class="mp-trk-btn" data-track="${esc(x.trk)}" aria-label="Track ${esc(x.trk)} — copies the ID and opens live tracking">Track ↗</button></div>`
             : `<div class="mp-trk none">No tracking ID yet</div>`;
           return `<li class="mp-o" data-oid="${esc(x.id)}" tabindex="0" role="button" aria-label="Open order of ${esc(x.name)}">
             <div class="mp-top"><b class="mp-name">${esc(x.name)}</b><b class="mp-amt">${inr(x.rev)}</b></div>

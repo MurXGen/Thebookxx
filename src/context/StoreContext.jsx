@@ -18,6 +18,7 @@ import {
   getRemainingOfferTime,
 } from "@/utils/book";
 import { hydrateCustomBooks } from "@/utils/customBooks";
+import { syncPushSnapshot } from "@/utils/webPush";
 
 const StoreContext = createContext(null);
 
@@ -202,6 +203,7 @@ export function StoreProvider({ children }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("cart", JSON.stringify(cart));
+      syncPushSnapshot();
     }
   }, [cart]);
 
@@ -431,6 +433,7 @@ export function StoreProvider({ children }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      syncPushSnapshot();
     }
   }, [wishlist]);
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Truck, Tag, Bell } from "lucide-react";
 import { trackEvent } from "@/lib/ga";
-import { downloadApk, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
+import { openAppSheet } from "@/components/AppInstall";
 
 // Compact "install our app" banner for the customer's orders list. Shown ONLY
 // when the TheBookX PWA is NOT already installed. Clicking Install fires the
@@ -25,7 +25,6 @@ export default function PwaInstallPromo({ variant = "bar" }) {
       window.matchMedia("(display-mode: standalone)").matches;
     return !!sa || (typeof navigator !== "undefined" && navigator.standalone === true);
   });
-  const [hint, setHint] = useState(false);
 
   useEffect(() => {
     const onReady = () => setDeferred(window.__bipEvent || null);
@@ -57,31 +56,13 @@ export default function PwaInstallPromo({ variant = "bar" }) {
     };
   }, []);
 
-  const handleInstall = async () => {
-    // Android → download the native app (APK) instead of the PWA.
-    if (isAndroidUA()) {
-      trackEvent("apk_download_clicked", { source: `orders_${variant}` });
-      downloadApk();
-      return;
-    }
-    trackEvent("pwa_install_clicked", { source: `orders_${variant}` });
-    const prompt = deferred || (typeof window !== "undefined" && window.__bipEvent);
-    if (prompt) {
-      prompt.prompt();
-      try {
-        const choice = await prompt.userChoice;
-        if (choice?.outcome === "accepted") setInstalled(true);
-      } catch (_) {}
-      window.__bipEvent = null;
-      setDeferred(null);
-      return;
-    }
-    // No native prompt available (iOS / unsupported) → short hint.
-    setHint(true);
-    setTimeout(() => setHint(false), 5000);
+  // Opens the shared install sheet (browser prompt or short steps).
+  const handleInstall = () => {
+    trackEvent("app_sheet_opened", { source: `orders_${variant}` });
+    openAppSheet(`orders_${variant}`);
   };
 
-  if (installed || isInAndroidApp()) return null;
+  if (installed) return null;
 
   return (
     <>
@@ -103,14 +84,9 @@ export default function PwaInstallPromo({ variant = "bar" }) {
               <Bell size={11} /> Order updates
             </span>
           </div>
-          {hint && (
-            <span className="pwa-promo-hint">
-              Tap your browser menu → <b>Add to Home screen</b>.
-            </span>
-          )}
         </div>
-        <button type="button" className="pwa-promo-cta" onClick={handleInstall} suppressHydrationWarning>
-          {isAndroidUA() ? "Download" : "Install"}
+        <button type="button" className="pwa-promo-cta" onClick={handleInstall}>
+          Install
         </button>
       </div>
     </>

@@ -1,10 +1,11 @@
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import { useEffect, useMemo, useRef } from "react";
-import { Platform } from "react-native";
+import { AppState, Platform } from "react-native";
 import { isOneRupee } from "@/lib/catalog";
 import { loadPrefs, onPrefsChange, planNotifications, type EngagementInput, type NotifPrefs } from "@/lib/notifications";
 import { useStore } from "@/lib/store";
+import { checkTracking, openTracking, registerTrackingTask } from "@/lib/tracking";
 
 // Keeps the scheduled reminders in step with the bag, wishlist and prefs:
 // bag → every 4 h, wishlist → every 6 h, neither → trending picks.
@@ -44,14 +45,29 @@ export function useNotificationPlanner() {
   useEffect(() => {
     if (Platform.OS === "web") return;
     const off = onPrefsChange((p: NotifPrefs) => planNotifications(p, latest.current));
-    // Tapping a notification opens the screen it is about.
-    const sub = Notifications.addNotificationResponseReceivedListener((r) => {
-      const url = r.notification.request.content.data?.url;
+    // Tapping a notification opens the screen it is about; a tracking
+    // notification copies the ID and opens India Post instead.
+    const handle = (r: Notifications.NotificationResponse | null) => {
+      const data = r?.notification.request.content.data || {};
+      if (typeof data.track === "string" && data.track) return void openTracking(data.track);
+      const url = data.url;
       if (typeof url === "string" && url.startsWith("/")) router.push(url as never);
+    };
+    const sub = Notifications.addNotificationResponseReceivedListener(handle);
+    // Opened from a notification while the app was closed.
+    Notifications.getLastNotificationResponseAsync().then((r) => {
+      if (r && Date.now() - r.notification.date < 60_000) handle(r);
+    }).catch(() => {});
+    // New tracking IDs: check now, on every return to the app, and in the background.
+    checkTracking().catch(() => {});
+    registerTrackingTask();
+    const app = AppState.addEventListener("change", (st) => {
+      if (st === "active") checkTracking().catch(() => {});
     });
     return () => {
       off();
       sub.remove();
+      app.remove();
     };
   }, []);
 }

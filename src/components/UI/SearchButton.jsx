@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import RecommendationModal from "../RecommendationModal";
 import { trackEvent } from "@/lib/ga";
-import { ANDROID_APK_URL, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
+import { downloadApk, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
 
 export default function SearchButton({ onClick }) {
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
@@ -66,7 +66,7 @@ export default function SearchButton({ onClick }) {
 
     if (isAndroidUA()) {
       trackEvent("apk_download_clicked", { source: "search_bar" });
-      window.location.href = ANDROID_APK_URL;
+      downloadApk();
       return;
     }
     if (!deferredPrompt) return;

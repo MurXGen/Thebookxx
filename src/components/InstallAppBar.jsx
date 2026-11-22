@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Download, X, Share } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackEvent } from "@/lib/ga";
-import { ANDROID_APK_URL, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
+import { downloadApk, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
 
 /**
  * Minimal, fixed-to-bottom "Install app" bar for the profile page.
@@ -64,7 +64,7 @@ export default function InstallAppBar({ inline = false }) {
   const handleInstall = async () => {
     if (isAndroid) {
       trackEvent?.("apk_download_clicked");
-      window.location.href = ANDROID_APK_URL;
+      downloadApk();
       return;
     }
     trackEvent?.("pwa_install_clicked");

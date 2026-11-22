@@ -10,6 +10,7 @@ import Animated, { FadeInDown, FadeOutUp, useAnimatedStyle, useSharedValue } fro
 import { navHidden, useHideNavOnScroll } from "@/lib/navScroll";
 import { Garland, isXmas, Snow, XmasPromo, XmasTree } from "@/components/Xmas";
 import CartBar from "@/components/CartBar";
+import UpdateBanner from "@/components/UpdateBanner";
 import { ComboCard } from "@/components/ComboCard";
 import { useEta } from "@/components/EtaStripe";
 import { fmtCountdown } from "@/lib/eta";
@@ -51,7 +52,7 @@ function Header({ onPin }: { onPin: () => void }) {
           <XmasPromo />
         </View>
       ) : null}
-      {isXmas() ? <Snow count={14} ink /> : null}
+      {isXmas() ? <Snow count={8} ink /> : null}
       <Collapse>
       <View style={[s.topRow, { paddingBottom: 12 }]}>
         <Image alt="" source={LOGO} style={s.logo} />
@@ -228,6 +229,7 @@ export default function Home() {
 
   const header = (
     <View>
+      <UpdateBanner />
       {isXmas() ? <Garland style={{ marginBottom: -34 }} /> : null}
       {recentBooks.length ? <Rail title="Pick up where you left off" books={recentBooks} width={112} /> : null}
       <CategoryCircles books={books} />

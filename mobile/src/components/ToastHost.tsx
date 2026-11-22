@@ -3,7 +3,7 @@ import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
-import Animated, { FadeOutUp, SlideInUp } from "react-native-reanimated";
+import Animated, { FadeInUp, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui-text";
 import { onToast, type ToastMsg } from "@/lib/toast";
@@ -26,7 +26,6 @@ export default function ToastHost() {
         if (Platform.OS !== "web") {
           if (m.kind === "success") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
           else if (m.kind === "error") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
-          else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         }
         setT({ ...m, key: Date.now() });
         if (timer.current) clearTimeout(timer.current);
@@ -38,7 +37,7 @@ export default function ToastHost() {
   const k = KIND[t.kind];
   return (
     <View pointerEvents="none" style={[s.host, { top: insets.top + 8 }]}>
-      <Animated.View key={t.key} entering={SlideInUp.springify().damping(16)} exiting={FadeOutUp.duration(180)} style={s.card}>
+      <Animated.View key={t.key} entering={FadeInUp.duration(180)} exiting={FadeOut.duration(150)} style={s.card}>
         {t.image ? (
           <Image alt="" source={t.image} style={s.img} contentFit="cover" />
         ) : (

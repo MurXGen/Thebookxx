@@ -13,6 +13,7 @@ import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { useStore } from "@/context/StoreContext";
 import { XmasSnow, XmasTree } from "./XmasDecor";
 import { trackEvent } from "@/lib/ga";
+import { GetAppButton } from "./AppInstall";
 import { getSavedPhone } from "@/utils/userPhone";
 import { fetchWalletLedger } from "@/utils/walletLedger";
 import { isMaharashtraPin, openPincodeSheet } from "./DeliveryCheckBar";
@@ -167,6 +168,7 @@ export default function HomeNavbar({ onSearch }) {
           )}
         </button>
         <div className="hnd-acts">
+          <GetAppButton source="home_nav_desktop" />
           {walletKnown && (
             <Link href="/wallet" className="hn-wallet" aria-label="Wallet">
               <Wallet size={16} />
@@ -212,6 +214,7 @@ export default function HomeNavbar({ onSearch }) {
         </button>
 
         <div className="hn-acts">
+          <GetAppButton source="home_nav" compact />
           <Link href="/wallet" className="hn-wallet" aria-label="Wallet">
             <Wallet size={16} />
             {walletKnown && wallet === null ? <span className="hn-skel hn-skel-wal" /> : <span>₹{wallet ?? 0}</span>}

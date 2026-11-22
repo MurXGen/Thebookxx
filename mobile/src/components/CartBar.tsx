@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import Animated, { FadeInUp, interpolate, SlideInDown, SlideOutDown, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from "react-native-reanimated";
+import Animated, { FadeIn, FadeInUp, FadeOut, interpolate, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OfferStrip from "@/components/OfferStrip";
 import { Text } from "@/components/ui-text";
@@ -45,7 +45,7 @@ export default function CartBar({ safeBottom = false }: { safeBottom?: boolean }
 
   if (!cartCount) return null;
   return (
-    <Animated.View entering={SlideInDown.springify().damping(18)} exiting={SlideOutDown.duration(200)} style={[s.dock, dockStyle]}>
+    <Animated.View entering={FadeIn.duration(160)} exiting={FadeOut.duration(140)} style={[s.dock, dockStyle]}>
       <OfferStrip docked />
       <Animated.View style={bumpStyle}>
         <Pressable onPress={() => router.navigate("/bag")} style={({ pressed }) => [s.bar, { paddingBottom: safeBottom ? insets.bottom + 12 : 12, opacity: pressed ? 0.94 : 1 }]}>

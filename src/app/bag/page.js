@@ -23,6 +23,7 @@ import { SavingsGlow, TopUpCard, BillCard, PolicyNote } from "@/components/BagSe
 import BagAddons, { BAG_ADDONS_KEY, MAX_BAG_BOOKMARKS, BAG_BOOKMARK_UNIT } from "@/components/BagAddons";
 import DeliveryEtaStripe from "@/components/DeliveryEtaStripe";
 import OrderSuccessCard from "@/components/UI/OrderSuccessCard";
+import { AppPromoCard } from "@/components/AppInstall";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import FreeShippingNudgeModal from "@/components/UI/FreeShippingNudgeModal";
@@ -2118,6 +2119,7 @@ ${itemsBlock}${qrLines}
             />
           )}
           {cartBooks.length > 0 && <PolicyNote />}
+          {cartBooks.length > 0 && <AppPromoCard source="bag" title="Order faster next time with the app" compact />}
 
           {recommendedBooks.length > 0 && (
             <div className="cart-sep">

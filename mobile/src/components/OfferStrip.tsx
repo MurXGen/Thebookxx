@@ -1,9 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Fill, Sheet } from "@/components/motion";
 import { Text } from "@/components/ui-text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -45,19 +44,20 @@ function Ladder({ offers, amount }: { offers: Offer[]; amount: number }) {
   );
 }
 
-function useMilestoneCelebration(amount: number, hasOneRupee: boolean) {
+function useMilestoneCelebration(amount: number, hasOneRupee: boolean, ready: boolean) {
   const reached = getCartOffers(hasOneRupee).filter((o) => amount >= o.target);
   const count = reached.length;
   const last = reached[reached.length - 1];
   const prev = useRef<number | null>(null);
   useEffect(() => {
+    // Until the saved bag has loaded, the count jumps from 0 — that's not a new unlock.
+    if (!ready) return;
     if (prev.current !== null && count > prev.current && last) {
       toast(`You unlocked ${last.reward} on this order`, { title: "🎉 Reward unlocked", kind: "success" });
       confetti(last.type === "flat");
-      if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     }
     prev.current = count;
-  }, [count, last]);
+  }, [count, last, ready]);
 }
 
 export function OfferSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -142,9 +142,9 @@ export function OfferSheet({ open, onClose }: { open: boolean; onClose: () => vo
 
 // The stripe: next reward message, milestone ladder, bag thumbnails, Avail CTA.
 export default function OfferStrip({ docked = false }: { docked?: boolean }) {
-  const { subtotal, hasOneRupee, appliedOffer, applyOffer, cart, byId } = useStore();
+  const { subtotal, hasOneRupee, appliedOffer, applyOffer, cart, byId, ready } = useStore();
   const [open, setOpen] = useState(false);
-  useMilestoneCelebration(subtotal, hasOneRupee);
+  useMilestoneCelebration(subtotal, hasOneRupee, ready);
   const offers = getCartOffers(hasOneRupee);
   const next = nextOffer(subtotal, hasOneRupee);
   const best = bestUnlockedFlat(subtotal, hasOneRupee);

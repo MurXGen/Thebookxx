@@ -60,6 +60,7 @@ import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import CodPayOnline from "@/components/profile/CodPayOnline";
 import CommunityJoin from "@/components/CommunityJoin";
 import PwaInstallPromo from "@/components/PwaInstallPromo";
+import { AppPromoCard } from "@/components/AppInstall";
 import AddBeforePacking from "@/components/profile/AddBeforePacking";
 import BookCard from "@/components/BookCard";
 import { XmasSnow, XmasTree } from "@/components/XmasDecor";
@@ -3746,6 +3747,13 @@ export default function OrderDetailPage() {
               );
             })()}
         </section>
+      )}
+
+      {/* Get the app — tracking alerts for this order (hidden once installed). */}
+      {order && !cancelled && (
+        <div style={{ padding: "0 16px" }}>
+          <AppPromoCard source="order_page" compact />
+        </div>
       )}
 
       {/* Quick actions — minimal buttons that open slide-up sheets. */}

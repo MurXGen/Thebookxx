@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Truck, Tag, Bell } from "lucide-react";
 import { trackEvent } from "@/lib/ga";
-import { ANDROID_APK_URL, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
+import { downloadApk, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
 
 // Compact "install our app" banner for the customer's orders list. Shown ONLY
 // when the TheBookX PWA is NOT already installed. Clicking Install fires the
@@ -61,7 +61,7 @@ export default function PwaInstallPromo({ variant = "bar" }) {
     // Android → download the native app (APK) instead of the PWA.
     if (isAndroidUA()) {
       trackEvent("apk_download_clicked", { source: `orders_${variant}` });
-      window.location.href = ANDROID_APK_URL;
+      downloadApk();
       return;
     }
     trackEvent("pwa_install_clicked", { source: `orders_${variant}` });

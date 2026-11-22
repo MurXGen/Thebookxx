@@ -4,7 +4,7 @@ import { Download, DownloadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/ga";
 import { motion } from "framer-motion";
-import { ANDROID_APK_URL, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
+import { downloadApk, isAndroidUA, isInAndroidApp } from "@/lib/appDownload";
 
 export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -44,7 +44,7 @@ export default function InstallPWA() {
   const handleInstall = async () => {
     if (isAndroidUA()) {
       trackEvent("apk_download_clicked", { source: "install_strip" });
-      window.location.href = ANDROID_APK_URL;
+      downloadApk();
       return;
     }
     if (!deferredPrompt) return;

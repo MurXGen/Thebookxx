@@ -32,6 +32,7 @@ import { encodeAddonsField, BOOKMARK_UNIT } from "@/utils/addonsField";
 import { showToast } from "@/context/ToastContext";
 import ContactDetailsPrompt from "@/components/UI/ContactDetailsPrompt";
 import { deliveryWindows, isFastRegion } from "@/lib/deliveryEta";
+import { AppPromoCard } from "@/components/AppInstall";
 
 const slugify = (t) =>
   String(t || "")
@@ -835,6 +836,7 @@ export default function OrderSuccessCard({
               )}
             </div>
           )}
+          <AppPromoCard source="order_success" compact />
           </>)}
         </div>
 

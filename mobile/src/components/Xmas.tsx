@@ -174,7 +174,7 @@ export function XmasPromo() {
   }, [items.length]);
   return (
     <LinearGradient colors={["#B91C1C", "#DC2626", "#B91C1C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.promo}>
-      <Snow count={10} />
+      <Snow count={6} />
       <Animated.View key={i} entering={FadeInDown.duration(300)}>
         <Text style={s.promoTxt}>{items[i]}</Text>
       </Animated.View>

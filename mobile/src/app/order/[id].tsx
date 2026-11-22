@@ -10,6 +10,7 @@ import { confetti } from "@/lib/confetti";
 import { Garland, isXmas, Snow, XmasTree } from "@/components/Xmas";
 
 import { fetchOrder, fmtOrderDate, parseBooks, statusInfo, STEPS, type OrderRow } from "@/lib/orders";
+import { openTracking } from "@/lib/tracking";
 import { useStore } from "@/lib/store";
 import { C, rupee, WHATSAPP } from "@/theme";
 
@@ -112,9 +113,10 @@ export default function OrderDetail() {
               </View>
             ) : null}
             {order?.["Shipping ID"] ? (
-              <Pressable onPress={() => Linking.openURL("https://www.indiapost.gov.in/")} style={s.track}>
+              <Pressable onPress={() => openTracking(order["Shipping ID"])} style={s.track}>
                 <Ionicons name="navigate-outline" size={16} color={C.ink} />
-                <Text style={s.trackTxt}>Tracking ID: <Text selectable style={{ fontWeight: "700" }}>{order["Shipping ID"]}</Text></Text>
+                <Text style={[s.trackTxt, { flex: 1 }]}>Tracking ID: <Text selectable style={{ fontWeight: "700" }}>{order["Shipping ID"]}</Text></Text>
+                <Text style={s.trackCta}>Copy & track</Text>
               </Pressable>
             ) : null}
           </>
@@ -208,6 +210,7 @@ const s = StyleSheet.create({
   vline: { width: 2, height: 18, backgroundColor: "#E6E6EC" },
   stepTxt: { fontSize: 13.5, color: C.muted, marginTop: 1 },
   track: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 12, padding: 12, borderRadius: 10, backgroundColor: C.bg },
+  trackCta: { fontSize: 12.5, fontWeight: "600", color: C.green },
   trackTxt: { fontSize: 13, color: C.ink2 },
   h: { fontSize: 15, fontWeight: "700", color: C.ink, marginBottom: 4 },
   item: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 10 },

@@ -9,6 +9,8 @@ import RegisterSW from "@/components/RegisterSW";
 import GlobalHaptics from "@/components/UI/GlobalHaptics";
 import ClickFeedback from "@/components/UI/ClickFeedback";
 import ShareSheetHost from "@/components/UI/ShareSheet";
+import ApkSafetyNotice from "@/components/ApkSafetyNotice";
+import AppInstallSheet from "@/components/AppInstall";
 import OfferPricing from "@/components/OfferPricing";
 import GiftOfferPrompt from "@/components/GiftOfferPrompt";
 import { Suspense } from "react";
@@ -256,6 +258,8 @@ export default function RootLayout({ children }) {
                 <ClickFeedback />
               </Suspense>
               <ShareSheetHost />
+              <ApkSafetyNotice />
+              <AppInstallSheet />
               {/* First visit (home / book page): free delivery + bookmarks gift */}
               <GiftOfferPrompt />
               <AnalyticsTracker />

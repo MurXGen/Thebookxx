@@ -22,7 +22,7 @@ import DeliveryCheckBar from "./DeliveryCheckBar";
 import HomeNavbar from "./HomeNavbar";
 import { AnimatePresence, motion } from "framer-motion";
 import { CART_OFFERS } from "@/utils/cartOffers";
-import InstallPWA from "./InstallPWA";
+import { GetAppButton } from "./AppInstall";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/context/StoreContext";
@@ -292,6 +292,7 @@ export default function Navbar() {
                 <Search size={23} />
               </button>
             )}
+            <GetAppButton source="navbar" compact />
             <a
               href="https://wa.me/917710892108"
               target="_blank"

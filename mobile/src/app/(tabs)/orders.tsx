@@ -4,10 +4,11 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, View } from "react-native";
 import { Text } from "@/components/ui-text";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PressScale } from "@/components/motion";
 import PhoneGate from "@/components/PhoneGate";
+import { latestTrackable, openTracking } from "@/lib/tracking";
 import { fetchOrders, fmtOrderDate, parseBooks, statusInfo, type OrderRow } from "@/lib/orders";
 import { useStore } from "@/lib/store";
 import { C, rupee } from "@/theme";
@@ -54,6 +55,26 @@ export default function Orders() {
           data={orders || []}
           keyExtractor={(o) => String(o["Order ID"])}
           contentContainerStyle={{ padding: 12, paddingBottom: 120 }}
+          ListHeaderComponent={(() => {
+            const t = latestTrackable(orders || []);
+            if (!t) return undefined;
+            const out = /out\s*for\s*delivery/i.test(`${t["Order Status"] || ""} ${t["Tracking detail"] || ""}`);
+            return (
+              <Pressable onPress={() => openTracking(String(t["Shipping ID"]))} style={s.trk}>
+                <View style={s.trkIc}>
+                  <Ionicons name={out ? "bicycle" : "cube"} size={18} color="#fff" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.trkH}>{out ? "Out for delivery" : "Your parcel is on the way"}</Text>
+                  <Text style={s.trkS} numberOfLines={1}>India Post · {String(t["Shipping ID"])}</Text>
+                </View>
+                <View style={s.trkBtn}>
+                  <Ionicons name="copy-outline" size={13} color="#fff" />
+                  <Text style={s.trkBtnTxt}>Track</Text>
+                </View>
+              </Pressable>
+            );
+          })()}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }} />}
           ListEmptyComponent={
             <View style={s.empty}>
@@ -72,7 +93,7 @@ export default function Orders() {
             const books = parseBooks(item["Books List"]);
             const id = String(item["Order ID"]);
             return (
-              <Animated.View entering={FadeInDown.delay(Math.min(index, 6) * 60).springify().damping(18)}>
+              <Animated.View entering={FadeIn.duration(200).delay(Math.min(index, 5) * 40)}>
                 <PressScale scaleTo={0.98} onPress={() => router.push({ pathname: "/order/[id]", params: { id } })} style={s.card}>
                   <View style={s.top}>
                     <View style={[s.pill, { backgroundColor: TONE[st.tone] + "18" }]}>
@@ -105,6 +126,12 @@ export default function Orders() {
 }
 
 const s = StyleSheet.create({
+  trk: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, marginBottom: 12, borderRadius: 16, backgroundColor: "#fff", borderWidth: 1, borderColor: "#CDEFE0" },
+  trkIc: { width: 38, height: 38, borderRadius: 19, backgroundColor: C.green, alignItems: "center", justifyContent: "center" },
+  trkH: { fontSize: 14.5, fontWeight: "600", color: C.ink },
+  trkS: { fontSize: 12.5, color: C.muted, marginTop: 1 },
+  trkBtn: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.green, borderRadius: 10, paddingHorizontal: 12, height: 34 },
+  trkBtnTxt: { color: "#fff", fontSize: 13, fontWeight: "600" },
   head: { backgroundColor: "#fff", paddingHorizontal: 16, paddingBottom: 12 },
   h1: { fontSize: 24, fontWeight: "700", color: C.ink },
   sub: { color: C.muted, marginTop: 2 },

@@ -1,11 +1,11 @@
 import { useEffect, type ReactNode } from "react";
 import { Modal, Pressable, StyleSheet, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
-import Animated, { FadeIn, FadeInDown, SlideInDown, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import Animated, { Easing, FadeIn, SlideInDown, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 // Fades + lifts content in when it first mounts (sections, rows, cards).
 export function Appear({ children, delay = 0, style }: { children: ReactNode; delay?: number; style?: StyleProp<ViewStyle> }) {
   return (
-    <Animated.View entering={FadeInDown.duration(420).delay(delay).springify().damping(18)} style={style}>
+    <Animated.View entering={FadeIn.duration(220).delay(Math.min(delay, 120))} style={style}>
       {children}
     </Animated.View>
   );
@@ -41,7 +41,7 @@ export function Sheet({ open, onClose, children, style }: { open: boolean; onClo
           <Animated.View entering={FadeIn.duration(220)} style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(0,0,0,0.45)" }]}>
             <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel="Close" />
           </Animated.View>
-          <Animated.View entering={SlideInDown.springify().damping(20).stiffness(180)} style={style}>
+          <Animated.View entering={SlideInDown.duration(240).easing(Easing.out(Easing.cubic))} style={style}>
             {children}
           </Animated.View>
         </View>

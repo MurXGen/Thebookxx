@@ -172,3 +172,59 @@ export function contactPush(order, name, now = Date.now()) {
     tag: `contact-${oid}`,
   };
 }
+
+// Instant push when manage-orders changes an order (status or tracking ID).
+// `o` = { orderId, phone, name, status, shippingId }. null = nothing worth sending.
+export function statusPush(o) {
+  const oid = String(o?.orderId || "").trim();
+  const phone = String(o?.phone || "").replace(/\D/g, "").slice(-10);
+  if (!oid || phone.length !== 10) return null;
+  const status = String(o.status || "").trim();
+  const sid = String(o.shippingId || "").trim().toUpperCase();
+  const hi = first(o.name);
+  const orderUrl = `${SITE}/profile/${phone}/orders/${encodeURIComponent(oid)}`;
+  const live = sid && isPostTrackingId(sid) ? trackingUrl(sid) : "";
+  const actions = live
+    ? [
+        { action: "track", title: "Track live", url: live },
+        { action: "order", title: "Order details", url: orderUrl },
+      ]
+    : [];
+  const tag = `order-${oid}`;
+  if (/out\s*for\s*delivery/i.test(status)) {
+    return {
+      title: `🛵 Out for delivery today · ${oid}`,
+      body: `${hi ? `${hi}, your` : "Your"} books are with the postman. Keep your phone handy — they may call before delivering.`,
+      url: live || orderUrl,
+      tag,
+      actions,
+    };
+  }
+  if (/deliver/i.test(status)) {
+    return {
+      title: `✅ Delivered · ${oid}`,
+      body: `${hi ? `${hi}, your` : "Your"} books have arrived. Happy reading! Tap to rate them.`,
+      url: orderUrl,
+      tag,
+    };
+  }
+  if (/cancel|return|refund|rto|lost|hold/i.test(status)) return null;
+  if (live || /ship|transit|dispatch/i.test(status)) {
+    if (!live) {
+      return {
+        title: `📦 Shipped · ${oid}`,
+        body: `${hi ? `${hi}, your` : "Your"} books are packed and handed to India Post. Tracking link coming shortly.`,
+        url: orderUrl,
+        tag,
+      };
+    }
+    return {
+      title: `📦 On its way · ${oid}`,
+      body: `${hi ? `${hi}, your` : "Your"} parcel is with India Post (${sid}). Tap to see every scan live.`,
+      url: live,
+      tag,
+      actions,
+    };
+  }
+  return null;
+}

@@ -3,7 +3,7 @@
 // Browser push notifications (order tracking with a live link, new arrivals,
 // offers, bag + wishlist reminders). The subscription and the reader's choices
 // are saved per device in the "Web Push" sheet tab via /api/push/subscribe;
-// the daily 12 PM job and broadcasts send from there.
+// the timed jobs, broadcasts and manage-orders status changes send from there.
 
 const VAPID = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
 const PREFS_KEY = "tbx_push_prefs";
@@ -175,11 +175,17 @@ export async function enablePush(prefs = getPushPrefs()) {
       sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8(VAPID) });
     }
     const next = { ...DEFAULT_PREFS, ...prefs };
+    const wasOn = localStorage.getItem(ON_KEY) === "1";
     localStorage.setItem(PREFS_KEY, JSON.stringify(next));
     localStorage.setItem(ON_KEY, "1");
-    const snap = snapshot();
-    if (await post({ action: "subscribe", ...who(), subscription: sub.toJSON(), prefs: next, ...snap })) rememberSnapshot(snap);
     changed();
+    // Save in the background — the sheet write takes a few seconds and the
+    // switch shouldn't wait for it. The server sends a "you're all set" push
+    // straight away on a fresh turn-on, so the reader sees it working.
+    const snap = snapshot();
+    post({ action: "subscribe", ...who(), subscription: sub.toJSON(), prefs: next, welcome: !wasOn, ...snap }).then(
+      (ok) => ok && rememberSnapshot(snap),
+    );
     return "granted";
   } catch {
     changed();
@@ -192,7 +198,7 @@ export async function disablePush() {
     localStorage.setItem(ON_KEY, "0");
   } catch {}
   changed();
-  await post({ action: "prefs", ...who(), enabled: false });
+  post({ action: "prefs", ...who(), enabled: false });
 }
 
 export async function savePushPrefs(prefs) {
@@ -201,7 +207,7 @@ export async function savePushPrefs(prefs) {
     localStorage.setItem(PREFS_KEY, JSON.stringify(next));
   } catch {}
   changed();
-  if (isPushOn()) await post({ action: "prefs", ...who(), enabled: true, prefs: next });
+  if (isPushOn()) post({ action: "prefs", ...who(), enabled: true, prefs: next });
   return next;
 }
 

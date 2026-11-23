@@ -9,7 +9,7 @@
 // Add &dry=1 to see what would be sent without sending anything.
 
 import { gvizQuery, tableToObjects } from "@/lib/serverSheets";
-import { pushAllRows, pushRowUpdate, sendPush, pool, prefOn, rowActive, checkCronSecret } from "@/lib/webPushServer";
+import { pushAllRows, pushRowUpdate, sendPush, pool, prefOn, rowActive, checkCronSecret, pushConfigured } from "@/lib/webPushServer";
 import { latestOrderByPhone, orderPush, contactPush, cartPush, wishlistPush, bagDue, wishlistDue } from "@/lib/pushMessages";
 
 export const dynamic = "force-dynamic";
@@ -53,11 +53,16 @@ async function run(request) {
       ok: true,
       dry: true,
       slot,
+      vapid: pushConfigured(), // false → VAPID keys missing on the server, real sends would fail
       devices: rows.length,
       plan: plan.filter((p) => p.msgs.length).map((p) => ({ device: p.row["Device ID"], msgs: p.msgs })),
     });
   }
 
+  if (!pushConfigured()) {
+    console.error("push daily: VAPID keys missing — nothing sent");
+    return Response.json({ ok: false, error: "VAPID keys missing on the server" }, { status: 500 });
+  }
   const stats = { slot, devices: rows.length, sent: 0, failed: 0, gone: 0 };
   await pool(plan.filter((p) => p.msgs.length), 15, async ({ row, msgs }) => {
     let gone = false;

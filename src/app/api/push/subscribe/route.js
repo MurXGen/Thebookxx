@@ -3,7 +3,7 @@
 // POST { action: "subscribe" | "prefs" | "snapshot", deviceId, phone, name,
 //        subscription?, prefs?, enabled?, cart?, wishlist?, known? }
 
-import { pushRowAppend, pushRowUpdate, pushRowExists, PUSH_TOPIC_KEYS } from "@/lib/webPushServer";
+import { pushRowAppend, pushRowUpdate, pushRowExists, sendPush, PUSH_TOPIC_KEYS } from "@/lib/webPushServer";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
@@ -36,6 +36,7 @@ export async function POST(request) {
     return Response.json({ ok: false, error: "bad device" }, { status: 400 });
   }
   const action = String(b?.action || "");
+  let welcome = null;
   const data = { "Device ID": deviceId, "Updated At": now() };
   const phone = String(b?.phone || "").replace(/\D/g, "").slice(-10);
   if (phone.length === 10) data.Phone = phone;
@@ -49,6 +50,18 @@ export async function POST(request) {
     }
     data.Subscription = JSON.stringify({ endpoint, keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth } });
     data.Status = "active";
+    // Confirm on the device right away (doesn't wait for the sheet write).
+    if (b?.welcome) {
+      welcome = sendPush(
+        { Subscription: data.Subscription },
+        {
+          title: "🔔 Notifications are on",
+          body: "You'll get order and tracking updates here, the moment your parcel moves.",
+          url: "https://www.thebookx.in/profile",
+          tag: "welcome",
+        },
+      ).catch(() => "failed");
+    }
   } else if (action === "prefs") {
     data.Status = b?.enabled === false ? "off" : "active";
   } else if (action !== "snapshot") {
@@ -78,5 +91,6 @@ export async function POST(request) {
   keyChain.set(deviceId, tail);
   const res = await job.catch((e) => ({ success: false, error: String(e) }));
   if (keyChain.get(deviceId) === tail) keyChain.delete(deviceId);
-  return Response.json({ ok: !!res?.success });
+  const pushed = welcome ? await welcome : undefined;
+  return Response.json({ ok: !!res?.success, ...(pushed ? { pushed } : {}) });
 }

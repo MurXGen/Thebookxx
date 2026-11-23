@@ -9182,7 +9182,7 @@ body.mo-map-fs-open .my-orders-page .mo-section { will-change: auto !important; 
 .mo-phist-table { border-top: 1px solid var(--g-hairline, #e5e7eb); }
 .mo-phist-row {
   display: grid;
-  grid-template-columns: 92px 150px minmax(0, 1fr) 112px;
+  grid-template-columns: 22px 92px 150px minmax(0, 1fr) 112px;
   align-items: center;
   gap: 10px;
   padding: 7px 12px;
@@ -9234,8 +9234,8 @@ body.mo-map-fs-open .my-orders-page .mo-section { will-change: auto !important; 
 .mo-phist-more { margin: 8px 12px 10px; }
 @media (max-width: 560px) {
   .mo-phist-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "id res" "who at";
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    grid-template-areas: "chk id res" "chk who at";
     row-gap: 2px;
   }
   .mo-phist-th { display: none; }
@@ -9243,7 +9243,19 @@ body.mo-map-fs-open .my-orders-page .mo-section { will-change: auto !important; 
   .mo-phist-row > span:last-child { grid-area: res; justify-self: end; }
   .mo-phist-who { grid-area: who; }
   .mo-phist-at { grid-area: at; justify-self: end; }
+  .mo-phist-chk { grid-area: chk; }
 }
+.mo-phist-head { flex-wrap: wrap; row-gap: 8px; }
+.mo-phist-acts button { white-space: nowrap; }
+@media (max-width: 560px) {
+  .mo-phist-acts { width: 100%; }
+  .mo-phist-acts button:nth-child(2) { margin-left: auto; }
+}
+.mo-phist-chk { display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.mo-phist-chk input { width: 15px; height: 15px; accent-color: var(--g-ink, #111); cursor: pointer; }
+.mo-phist-row.is-sel { background: rgba(37, 99, 235, 0.06); }
+.mo-phist-acts button.is-primary { background: var(--g-ink, #111); color: #fff; border-color: var(--g-ink, #111); }
+.mo-dark .mo-phist-acts button.is-primary { background: #fafafa; color: #111; }
 
 /* 77 · Top-bar refresh icon (re-reads the sheet without a page reload) */
 @keyframes mo-refresh-spin { to { transform: rotate(360deg); } }

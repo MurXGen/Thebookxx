@@ -136,6 +136,7 @@ import {
 import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
+import { ADMIN_CODE_KEY } from "@/lib/adminCode";
 import {
   REFUND_IN_PROCESS,
   REFUND_DONE,
@@ -5056,31 +5057,50 @@ export default function ManageOrdersPage() {
     const sz = String(o["Sizes(Lxbxh)"] ?? o["Sizes (Lxbxh)"] ?? "").trim();
     return Number.isFinite(w) && w > 0 && sz.length > 0;
   };
+  // Tracking ID decides the India Post file: E… → Speed, C… → Contractual.
+  // A typed-but-not-pushed ID (pendingTracking) counts too. No ID yet →
+  // weight / customer choice (classifyOrderProduct).
+  const trkOf = (o) =>
+    String(pendingTracking[String(o?.["Order ID"])] || o?.shippingId || o?.["Shipping ID"] || "").trim().toUpperCase();
+  const trkProduct = (o) => productFromTracking(trkOf(o));
+  const withTrk = (o) => {
+    const t = trkOf(o);
+    return t ? { ...o, "Shipping ID": t, shippingId: t } : o;
+  };
+  const ipProduct = (o) => trkProduct(o) || classifyOrderProduct(o);
   const ipCounts = () => {
     if (selectedIds.length > 0) {
       const set = new Set(selectedIds);
       const sel = visibleOrders.filter(
         (o) => set.has(o["Order ID"]) && ipHasWeightSizes(o),
       );
-      return { speed: sel.length, contract: sel.length, scoped: true };
+      return {
+        speed: sel.filter((o) => trkProduct(o) !== "contractual").length,
+        contract: sel.filter((o) => trkProduct(o) !== "speed").length,
+        scoped: true,
+      };
     }
     const pool = visibleOrders.filter(ipHasWeightSizes);
-    const speed = pool.filter((o) => classifyOrderProduct(o) === "speed").length;
+    const speed = pool.filter((o) => ipProduct(o) === "speed").length;
     return { speed, contract: pool.length - speed, scoped: false };
   };
   const openIpBulkPreview = (product) => {
     let pool;
     if (selectedIds.length > 0) {
-      // Manual selection: push ALL selected into the chosen product file — but
-      // still only those with weight & sizes entered.
+      // Manual selection: orders with a tracking ID go by its prefix (E… Speed,
+      // C… Contractual); the rest follow the button you clicked. Weight &
+      // sizes still required.
       const set = new Set(selectedIds);
       pool = visibleOrders.filter(
-        (o) => set.has(o["Order ID"]) && ipHasWeightSizes(o),
+        (o) =>
+          set.has(o["Order ID"]) &&
+          ipHasWeightSizes(o) &&
+          (trkProduct(o) || product) === product,
       );
     } else {
       // No selection: auto-classified bucket (weighted orders only).
       pool = visibleOrders.filter(
-        (o) => ipHasWeightSizes(o) && classifyOrderProduct(o) === product,
+        (o) => ipHasWeightSizes(o) && ipProduct(o) === product,
       );
     }
     if (pool.length === 0) {
@@ -5090,7 +5110,7 @@ export default function ManageOrdersPage() {
       );
       return;
     }
-    const rows = pool.map((o, i) => buildPreviewRow(o, i + 1));
+    const rows = pool.map((o, i) => buildPreviewRow(withTrk(o), i + 1));
     setIpPushResult(null);
     setIpBulk({ product, rows });
   };
@@ -5101,7 +5121,7 @@ export default function ManageOrdersPage() {
     // Only the orders that classify into THIS product (Speed vs Contractual)
     // and have weight & sizes — matches the counts shown on each button.
     const pool = (pool0 || []).filter(
-      (o) => ipHasWeightSizes(o) && classifyOrderProduct(o) === product,
+      (o) => ipHasWeightSizes(o) && ipProduct(o) === product,
     );
     if (pool.length === 0) {
       showToast(
@@ -5110,7 +5130,7 @@ export default function ManageOrdersPage() {
       );
       return;
     }
-    const rows = pool.map((o, i) => buildPreviewRow(o, i + 1));
+    const rows = pool.map((o, i) => buildPreviewRow(withTrk(o), i + 1));
     setIpPushResult(null);
     setIpBulk({ product, rows });
   };
@@ -5967,6 +5987,7 @@ export default function ManageOrdersPage() {
         mode: "no-cors",
         body,
       });
+      enriched.forEach((r) => queueOrderPush(r.orderId, { "Shipping ID": r.trackingId }));
 
       // Optionally also change each order's status (per-row override, else bulk).
       let statusChanged = 0;
@@ -6307,6 +6328,7 @@ export default function ManageOrdersPage() {
   const [pasteHistory, setPasteHistory] = useState([]);
   const [pasteHistOpen, setPasteHistOpen] = useState(true);
   const [pasteHistShow, setPasteHistShow] = useState(30);
+  const [phistSel, setPhistSel] = useState(() => new Set());
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_paste_history");
@@ -9865,6 +9887,67 @@ export default function ManageOrdersPage() {
     }, 3500);
   };
 
+  // Instant browser push to the customer's devices when a status / tracking
+  // write is worth telling them about. Batched (1.5 s) so a bulk Push sends
+  // one request; each order+message goes out once per browser.
+  const orderPushQueue = useRef(new Map());
+  const orderPushTimer = useRef(null);
+  const flushOrderPushes = async () => {
+    const items = [...orderPushQueue.current.values()];
+    orderPushQueue.current = new Map();
+    if (!items.length) return;
+    let code = "";
+    try {
+      code = localStorage.getItem(ADMIN_CODE_KEY) || "";
+    } catch {}
+    try {
+      const r = await fetch("/api/push/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-code": code },
+        body: JSON.stringify({ items }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (j?.ok && j.sent > 0) {
+        try {
+          const done = new Set(JSON.parse(localStorage.getItem("mo_push_sent") || "[]"));
+          items.forEach((it) => j.orders?.includes(it.orderId) && done.add(it.key));
+          localStorage.setItem("mo_push_sent", JSON.stringify([...done].slice(-2000)));
+        } catch {}
+        const n = j.orders?.length || 0;
+        showToast(`Push notification sent to ${n} customer${n === 1 ? "" : "s"} 🔔`, "success");
+      } else if (!j?.ok && j?.error) {
+        console.warn("Order push:", j.error);
+      }
+    } catch (e) {
+      console.warn("Order push failed", e);
+    }
+  };
+  const queueOrderPush = (orderId, fields) => {
+    const st = String(fields?.["Order Status"] || "").trim();
+    const sid = String(fields?.["Shipping ID"] || "").trim();
+    if (!st && !sid) return;
+    if (st && !sid && !/ship|transit|out\s*for|deliver|dispatch/i.test(st)) return;
+    const o = orders.find((x) => String(x["Order ID"]) === String(orderId));
+    if (!o) return;
+    const curStatus = String(o["Order Status"] || "");
+    if (!st && /deliver|cancel|return|refund|rto/i.test(curStatus)) return;
+    const prev = orderPushQueue.current.get(String(orderId)) || {};
+    const item = {
+      orderId: String(orderId),
+      phone: String(o["Phone Number"] || o["Phone"] || ""),
+      name: String(o["Customer Name"] || ""),
+      status: st || prev.status || curStatus,
+      shippingId: sid || prev.shippingId || String(o["Shipping ID"] || ""),
+    };
+    item.key = `${item.orderId}|${item.status.toLowerCase()}|${item.shippingId.toUpperCase()}`;
+    try {
+      if (JSON.parse(localStorage.getItem("mo_push_sent") || "[]").includes(item.key)) return;
+    } catch {}
+    orderPushQueue.current.set(item.orderId, item);
+    clearTimeout(orderPushTimer.current);
+    orderPushTimer.current = setTimeout(flushOrderPushes, 1500);
+  };
+
   const updateOrderRow = async (orderId, fields) => {
     const body = new URLSearchParams({
       action: "update",
@@ -9876,6 +9959,7 @@ export default function ManageOrdersPage() {
       mode: "no-cors",
       body,
     });
+    queueOrderPush(orderId, fields);
     // Trigger a referral payout check when this write marks the order Delivered.
     if (/deliver/i.test(String(fields?.["Order Status"] || ""))) {
       const ord = orders.find(
@@ -16861,7 +16945,7 @@ export default function ManageOrdersPage() {
               // India Post split for the current selection.
               const ipPool = scope.filter(ipHasWeightSizes);
               const speedN = ipPool.filter(
-                (o) => classifyOrderProduct(o) === "speed",
+                (o) => ipProduct(o) === "speed",
               ).length;
               const contractN = ipPool.length - speedN;
               // Smart order: what to hand over first. Stage by what's done on
@@ -17289,7 +17373,7 @@ export default function ManageOrdersPage() {
                                     <section className="mo-sheet-sec">
                                       <h4>India Post booking · {selN} selected</h4>
                                       <p className="mo-sheet-note">
-                                        Split by weight and the customer’s choice.
+                                        Tracking ID decides first (E… Speed, C… Contractual), then weight and the customer’s choice.
                                         {ipMissing > 0 &&
                                           ` ${ipMissing} without weight & size will be skipped.`}
                                       </p>
@@ -17305,7 +17389,7 @@ export default function ManageOrdersPage() {
                                           <Truck size={17} />
                                           <span>
                                             Speed Post
-                                            <em>Under {SPEED_MAX_GRAMS} g, or the customer chose Speed</em>
+                                            <em>E… tracking IDs, else under {SPEED_MAX_GRAMS} g or customer chose Speed</em>
                                           </span>
                                           <b>{speedN}</b>
                                         </button>
@@ -17320,7 +17404,7 @@ export default function ManageOrdersPage() {
                                           <Package size={17} />
                                           <span>
                                             Contractual · normal parcel
-                                            <em>{SPEED_MAX_GRAMS} g and over, Speed not chosen</em>
+                                            <em>C… tracking IDs, else {SPEED_MAX_GRAMS} g and over</em>
                                           </span>
                                           <b>{contractN}</b>
                                         </button>
@@ -20474,6 +20558,15 @@ export default function ManageOrdersPage() {
               const tone = (r) =>
                 r === "Not found" ? "fail" : r === "Already listed" ? "dup" : "ok";
               const shown = pasteHistory.slice(0, pasteHistShow);
+              const selN = pasteHistory.filter((h) => phistSel.has(h.id)).length;
+              const allSel = selN > 0 && selN === pasteHistory.length;
+              const toggleSel = (id) =>
+                setPhistSel((prev) => {
+                  const next = new Set(prev);
+                  if (next.has(id)) next.delete(id);
+                  else next.add(id);
+                  return next;
+                });
               return (
                 <section className="mo-phist">
                   <div className="mo-phist-head">
@@ -20490,22 +20583,34 @@ export default function ManageOrdersPage() {
                     <div className="mo-phist-acts">
                       <button
                         type="button"
+                        aria-pressed={allSel}
+                        onClick={() => setPhistSel(allSel ? new Set() : new Set(pasteHistory.map((h) => h.id)))}
+                      >
+                        {allSel ? <X size={13} /> : <CheckSquare size={13} />} {allSel ? "Unselect all" : "Select all"}
+                      </button>
+                      <button
+                        type="button"
+                        className={selN > 0 ? "is-primary" : ""}
+                        title={selN > 0 ? "Copy the ticked IDs" : "Copy every ID in the history"}
                         onClick={() => {
-                          const ids = pasteHistory.map((h) => h.id).join(" ");
+                          const list = selN > 0 ? pasteHistory.filter((h) => phistSel.has(h.id)) : pasteHistory;
                           navigator.clipboard
-                            .writeText(ids)
-                            .then(() => showToast(`${pasteHistory.length} IDs copied ✓`, "success"))
+                            .writeText(list.map((h) => h.id).join(" "))
+                            .then(() => showToast(`${list.length} ID${list.length === 1 ? "" : "s"} copied ✓`, "success"))
                             .catch(() => showToast("Couldn't copy — try again.", "info"));
                         }}
                       >
-                        <Copy size={13} /> Copy all
+                        <Copy size={13} /> {selN > 0 ? `Copy ${selN} selected` : `Copy all ${pasteHistory.length}`}
                       </button>
                       <button
                         type="button"
                         className="danger"
                         onClick={() => {
                           if (window.confirm(`Clear the paste history (${pasteHistory.length} IDs)? Orders aren't changed.`))
+                          {
                             clearPasteHistory();
+                            setPhistSel(new Set());
+                          }
                         }}
                       >
                         <Trash2 size={13} /> Clear
@@ -20516,13 +20621,32 @@ export default function ManageOrdersPage() {
                     <>
                       <div className="mo-phist-table" role="table" aria-label="Paste history">
                         <div className="mo-phist-row mo-phist-th" role="row">
+                          <label className="mo-phist-chk" role="columnheader" title={allSel ? "Untick all" : "Tick all"}>
+                            <input
+                              type="checkbox"
+                              checked={allSel}
+                              ref={(el) => el && (el.indeterminate = selN > 0 && !allSel)}
+                              onChange={() =>
+                                setPhistSel(allSel ? new Set() : new Set(pasteHistory.map((h) => h.id)))
+                              }
+                              aria-label="Select all IDs"
+                            />
+                          </label>
                           <span role="columnheader">Pasted</span>
                           <span role="columnheader">Tracking ID</span>
                           <span role="columnheader">Customer</span>
                           <span role="columnheader">Result</span>
                         </div>
                         {shown.map((h) => (
-                          <div className="mo-phist-row" role="row" key={h.id}>
+                          <div className={`mo-phist-row${phistSel.has(h.id) ? " is-sel" : ""}`} role="row" key={h.id}>
+                            <label className="mo-phist-chk" role="cell">
+                              <input
+                                type="checkbox"
+                                checked={phistSel.has(h.id)}
+                                onChange={() => toggleSel(h.id)}
+                                aria-label={`Select ${h.id}`}
+                              />
+                            </label>
                             <span className="mo-phist-at" role="cell">{fmtAt(h.at)}</span>
                             <button
                               type="button"
@@ -20699,8 +20823,11 @@ export default function ManageOrdersPage() {
                             const ipReady = ipPool.filter(ipHasWeightSizes);
                             const ipMissing = ipPool.length - ipReady.length;
                             const autoSpeed = ipReady.filter(
-                              (o) => classifyOrderProduct(o) === "speed",
+                              (o) => ipProduct(o) === "speed",
                             );
+                            const selSpeedN = ipReady.filter((o) => trkProduct(o) !== "contractual").length;
+                            const selContractN = ipReady.filter((o) => trkProduct(o) !== "speed").length;
+                            const selTrkN = ipReady.filter((o) => trkProduct(o)).length;
                             const autoOpted = autoSpeed.filter((o) =>
                               /faster|express/i.test(String(o["Delivery Type"] || "")),
                             ).length;
@@ -20868,8 +20995,9 @@ export default function ManageOrdersPage() {
                                       </h4>
                                       {n ? (
                                         <p className="mo-sheet-note">
-                                          Export the selected orders as one file — you
-                                          choose the service.
+                                          Orders with a tracking ID go by it — E… Speed,
+                                          C… Contractual{selTrkN ? ` (${selTrkN} of these)` : ""}. The rest go
+                                          into whichever service you pick.
                                           {ipMissing > 0 &&
                                             ` ${ipMissing} without weight & size will be skipped.`}
                                         </p>
@@ -20885,7 +21013,7 @@ export default function ManageOrdersPage() {
                                       <div className="mo-sheet-list">
                                         <button
                                           type="button"
-                                          disabled={!(n ? ipReady.length : autoSpeed.length)}
+                                          disabled={!(n ? selSpeedN : autoSpeed.length)}
                                           onClick={() => {
                                             openIpBulkPreview("speed");
                                             close();
@@ -20893,18 +21021,18 @@ export default function ManageOrdersPage() {
                                         >
                                           <Truck size={17} />
                                           <span>
-                                            {n ? "Export all as Speed Post" : "Speed Post"}
+                                            {n ? "Export as Speed Post" : "Speed Post"}
                                             <em>
                                               {n
-                                                ? "Every selected order goes Speed"
+                                                ? "E… tracking IDs + orders without an ID"
                                                 : `Under ${SPEED_MAX_GRAMS} g${autoOpted ? ` · incl. ${autoOpted} customer-opted` : ""}`}
                                             </em>
                                           </span>
-                                          <b>{n ? ipReady.length : autoSpeed.length}</b>
+                                          <b>{n ? selSpeedN : autoSpeed.length}</b>
                                         </button>
                                         <button
                                           type="button"
-                                          disabled={!(n ? ipReady.length : autoContract)}
+                                          disabled={!(n ? selContractN : autoContract)}
                                           onClick={() => {
                                             openIpBulkPreview("contractual");
                                             close();
@@ -20912,14 +21040,14 @@ export default function ManageOrdersPage() {
                                         >
                                           <Package size={17} />
                                           <span>
-                                            {n ? "Export all as Contractual" : "Contractual · normal parcel"}
+                                            {n ? "Export as Contractual" : "Contractual · normal parcel"}
                                             <em>
                                               {n
-                                                ? "Every selected order goes Contractual"
+                                                ? "C… tracking IDs + orders without an ID"
                                                 : `${SPEED_MAX_GRAMS} g and over, Speed not chosen`}
                                             </em>
                                           </span>
-                                          <b>{n ? ipReady.length : autoContract}</b>
+                                          <b>{n ? selContractN : autoContract}</b>
                                         </button>
                                         <button
                                           type="button"
@@ -23042,7 +23170,7 @@ export default function ManageOrdersPage() {
               pendingShipIds.includes(String(o["Order ID"])),
             );
             const ready = pend.filter(ipHasWeightSizes);
-            const speedN = ready.filter((o) => classifyOrderProduct(o) === "speed").length;
+            const speedN = ready.filter((o) => ipProduct(o) === "speed").length;
             const contractN = ready.length - speedN;
             const selbarUp =
               (activeTab === "orders" && cardSelectMode) ||

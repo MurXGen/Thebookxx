@@ -71962,4 +71962,132 @@ body:has(.rvx) .bag-fabs-tip, body:has(.rvx-bar) .wa-float { bottom: 140px; }
 .psh-card-cta { flex: 0 0 auto; padding: 7px 12px; border-radius: 10px; background: #111827; color: #fff; font-size: 12.5px; font-weight: 800; }
 .psh-done { display: grid; place-items: center; gap: 6px; padding: 8px 0 4px; text-align: center; }
 .psh-done svg { color: #16a34a; }
+/* Thunder delivery (India Post 24/48 Speed Post, metro pincodes):
+   an electric "rope" that runs round the card + a lightning flicker. */
+@property --thd-a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes thdSpin { to { --thd-a: 360deg; } }
+@keyframes thdFlash {
+  0%, 62%, 71%, 100% { opacity: 0; }
+  64% { opacity: 1; }
+  67% { opacity: .35; }
+  69% { opacity: .9; }
+}
+@keyframes thdShine { 0%, 55% { transform: translateX(-140%) skewX(-20deg); } 75%, 100% { transform: translateX(160%) skewX(-20deg); } }
+@keyframes thdGlint { 0%, 100% { filter: drop-shadow(0 0 1px rgba(250, 204, 21, .6)); } 50% { filter: drop-shadow(0 0 5px rgba(250, 204, 21, 1)); } }
+.bga-fast.bga-thd, .fdx.thd {
+  position: relative; isolation: isolate; margin-top: 8px;
+  border-color: transparent; background: linear-gradient(90deg, #fffdf5, #fff 70%);
+}
+/* electric rope running round the border */
+.bga-fast.bga-thd::before, .fdx.thd::before {
+  content: ""; position: absolute; inset: -1.5px; z-index: 0; border-radius: inherit; padding: 2px; pointer-events: none;
+  background: conic-gradient(from var(--thd-a),
+    #fde68a 0deg, #fb8500 40deg, #fff7c2 62deg, #facc15 70deg, #fb8500 84deg, #fde68a 140deg,
+    #fde68a 180deg, #fb8500 220deg, #fff7c2 242deg, #facc15 250deg, #fb8500 264deg, #fde68a 320deg, #fde68a 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: thdSpin 2.4s linear infinite;
+}
+/* lightning flicker (its own layer, so other card styles can't block it) */
+.bga-fast.bga-thd::after, .fdx.thd::after {
+  content: ""; position: absolute; inset: -2px; z-index: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, .35), 0 0 24px 3px rgba(251, 133, 0, .45);
+  animation: thdFlash 3.2s ease-in-out infinite;
+}
+.bga-fast.bga-thd > *, .fdx.thd > :not(.fdx-tip) { position: relative; z-index: 1; }
+.fdx.thd > .fdx-tip { z-index: 6; }
+.bga-fast.bga-thd.on::before, .fdx.thd.on::before { padding: 2.5px; animation-duration: 1.4s; }
+.bga-fast.bga-thd.on .bga-check { background: #fb8500; border-color: #fb8500; }
+.bag-page > .bga .bga-fast.bga-thd,
+.pay-sel-modal .pay-sel .dtype .fdx.thd,
+.fdx.thd.thd { border-color: transparent !important; background: linear-gradient(90deg, #fffdf5, #fff 70%) !important; box-shadow: none !important; }
+.bag-page > .bga .bga-fast.bga-thd.on,
+.pay-sel-modal .pay-sel .dtype .fdx.thd.on,
+.fdx.thd.thd.on { border-color: transparent !important; background: linear-gradient(90deg, #fff4d6, #fffdf5 60%, #fff) !important; box-shadow: 0 8px 22px -14px rgba(202, 138, 4, .55) !important; }
+.fdx.thd.thd.on .dstripe-radio { background: #fb8500 !important; border-color: #fb8500 !important; }
+.fdx.thd.thd.off { opacity: .6 !important; }
+.fdx.thd.off::before, .fdx.thd.off::after { animation: none; }
+/* Gold "crown" badge round the thunder bolt, with a shine sweeping across */
+.thd-badge {
+  position: relative; flex: none; overflow: hidden; display: inline-grid; place-items: center;
+  width: 24px; height: 24px; border-radius: 50%; vertical-align: middle;
+  background: #1c1814;
+  border: 2px solid transparent;
+  background-image: radial-gradient(circle at 35% 30%, #3a2a12, #1c1814 70%), linear-gradient(135deg, #fff7c2, #facc15 30%, #b45309 55%, #fde68a 75%, #ca8a04);
+  background-origin: border-box; background-clip: padding-box, border-box;
+  box-shadow: 0 0 0 1px rgba(202, 138, 4, .35), 0 3px 10px -3px rgba(202, 138, 4, .8);
+  color: #facc15;
+}
+.thd-badge svg { fill: #facc15; stroke: #fde68a; animation: thdGlint 2.2s ease-in-out infinite; }
+.thd-badge::after {
+  content: ""; position: absolute; top: -20%; bottom: -20%; left: 0; width: 45%; pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.85), rgba(255,255,255,0));
+  animation: thdShine 2.8s ease-in-out infinite;
+}
+.thd-badge.is-lg { width: 38px; height: 38px; border-width: 2.5px; }
+@media (prefers-reduced-motion: reduce) {
+  .bga-fast.bga-thd::before, .fdx.thd::before, .bga-fast.bga-thd::after, .fdx.thd::after,
+  .thd-badge svg, .thd-badge::after { animation: none; }
+}
+.pay-sel-modal .pay-sel .dtype .fdx.thd { margin-top: 8px !important; border-radius: 14px !important; }
+.fdx.thd .fdx-title { color: #1c1814; }
+.fdx.thd.on .fdx-sub, .fdx.thd.on .fdx-price { color: #b45309; }
+.fdx.thd .fdx-info[aria-expanded="true"] { color: #fb8500; }
+.fdx-tip.thd-tip { max-width: 270px; }
+/* Selected Thunder card: the whole card goes gold */
+.bag-page > .bga .bga-fast.bga-thd.on,
+.pay-sel-modal .pay-sel .dtype .fdx.thd.on,
+.fdx.thd.thd.on {
+  background: linear-gradient(120deg, #fff8e1 0%, #ffefc2 35%, #fff8e6 55%, #ffe6a8 100%) !important;
+  box-shadow: 0 10px 26px -14px rgba(202, 138, 4, .75), inset 0 1px 0 rgba(255, 255, 255, .8) !important;
+}
+.fdx.thd.on .fdx-sub, .fdx.thd.on .fdx-price, .bga-fast.bga-thd.on .bga-fast-txt small { color: #92400e !important; }
+.fdx.thd.on .fdx-title, .bga-fast.bga-thd.on .bga-fast-txt b { color: #1c1814; }
+.bga-fast.bga-thd.on .bga-check, .fdx.thd.thd.on .dstripe-radio { background: linear-gradient(135deg, #facc15, #fb8500) !important; border-color: #ca8a04 !important; }
+/* Delivery card titles: icon sits to the right of the text */
+.fdx-title svg, .bga-fast-txt b svg { order: 2; }
+.bga-fast-txt b { gap: 6px; }
+.bga-fast-txt b svg { color: #fb8500; }
+.eta-stripe.is-thunder { background: linear-gradient(90deg, #fff8e1 0%, #ffefc2 60%, #fffbeb 100%); border-color: #fcd34d; color: #78350f; }
+/* Full-width slide-up (edge to edge on every screen, content kept readable) */
+.cdp-back.cdp-back-full { align-items: flex-end; }
+.cdp.psh-full { max-width: none; border-radius: 22px 22px 0 0; padding-left: max(18px, calc((100% - 560px) / 2)); padding-right: max(18px, calc((100% - 560px) / 2)); }
+.cdp.psh-full .cdp-x { right: max(12px, calc((100% - 560px) / 2)); }
+.bg-paybar-btn-in { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.bg-paybar-btn-in svg { transition: transform .2s ease; }
+.bg-paybar-btn:hover .bg-paybar-btn-in svg { transform: translateX(3px); }
+/* Buy now sheet (book page) */
+.bnw { max-height: 92vh; overflow-y: auto; }
+.bnw-book { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid #eef0f3; border-radius: 14px; }
+.bnw-cover { flex: none; width: 52px; height: 76px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px -4px rgba(0,0,0,.35); }
+.bnw-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.bnw-info b { font-size: 14px; font-weight: 800; color: #1c1814; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.bnw-info small { font-size: 12px; color: #6b7280; }
+.bnw-price { font-size: 15px; font-weight: 800; color: #1c1814; }
+.bnw-price s { margin-left: 6px; font-size: 12px; font-weight: 500; color: #9ca3af; }
+.bnw-qty { flex: none; display: inline-flex; align-items: center; gap: 2px; padding: 3px; border: 1.5px solid #fb8500; border-radius: 12px; background: #fff; }
+.bnw-qty button { width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 9px; background: none; color: #fb8500; cursor: pointer; }
+.bnw-qty button:disabled { color: #d1d5db; cursor: default; }
+.bnw-qty .bga-step-n { min-width: 22px; text-align: center; font-size: 15px; font-weight: 800; color: #1c1814; }
+.bnw-addons { margin: 12px 0; }
+.bnw-addons .bga { margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; box-shadow: none !important; }
+.bnw-gift { margin-top: 8px; }
+.bnw-gift.on { background: #fff7ed; border-color: rgba(251, 133, 0, .5); }
+.bnw-gift.on .bga-check { background: #fb8500; border-color: #fb8500; }
+.bnw-gift .bga-fast-txt b svg { color: #fb8500; }
+.bnw-bill { margin-bottom: 12px; }
+.bnw-note { margin: 8px 2px 0; font-size: 12.5px; color: #6b7280; }
+.bnw-note.is-warn { margin: 0 0 10px; padding: 8px 10px; border-radius: 10px; background: #fff7ed; color: #9a3412; font-weight: 600; }
+.bnw .cdp-save:disabled { opacity: .45; cursor: not-allowed; }
+.bnw-fine { text-align: center; }
+.psh-bill { list-style: none; margin: 0 0 16px; padding: 4px 0; display: grid; border: 1px solid #eef0f3; border-radius: 14px; }
+.psh-bill li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; font-size: 13.5px; color: #374151; }
+.psh-bill li + li { border-top: 1px dashed #eef0f3; }
+.psh-bill li span { display: inline-flex; align-items: center; gap: 8px; }
+.psh-bill li svg { color: #6b7280; flex: none; }
+.psh-bill li b { font-weight: 800; color: #111827; white-space: nowrap; }
+.psh-bill li.is-off b { color: #16a34a; }
+.psh-bill li.is-off span { color: #6b7280; text-decoration: line-through; }
+.psh-bill li.is-total { font-weight: 800; color: #111827; }
+.psh-bill li.is-total b { font-size: 16px; }
 @media (max-width: 360px) { .psh-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

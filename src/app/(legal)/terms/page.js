@@ -213,6 +213,15 @@ export default function TermsAndConditions() {
           <Link href="/shipping">Shipping &amp; Delivery Policy</Link>. Delivery times
           are estimates. We&apos;ll keep you updated if there&apos;s a delay.
         </p>
+        <p>
+          In select metro cities we offer <strong>Thunder delivery</strong> (1 or
+          2 days, by India Post Speed Post), paid online only. If a Thunder order
+          arrives after the date shown at checkout, we refund the delivery
+          charges for that order, unless the delay was caused on the
+          customer&apos;s side (for example, nobody available to receive it, an
+          unreachable phone, or a wrong address). See the{" "}
+          <Link href="/shipping#delays">Shipping &amp; Delivery Policy</Link>.
+        </p>
       </section>
 
       <section id="returns-terms">

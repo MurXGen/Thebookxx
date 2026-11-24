@@ -38,6 +38,7 @@ import Image from "next/image";
 import BookCoverImg, { coverFallbackVars } from "@/components/BookCoverImg";
 import { useRouter } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
+import BuyNowSheet from "./BuyNowSheet";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -512,13 +513,15 @@ export default function BookDetailsModal({ book: bookProp }) {
     showToast(book.name, "success", { title: "Added to your bag", icon: "cart" });
   };
 
+  // Buy now → ask quantity + add-ons, then check out ONLY this book (the rest
+  // of the bag stays untouched). See BuyNowSheet.
+  const [buyNowOpen, setBuyNowOpen] = useState(false);
   const handleBuyNow = () => {
-    if (qtyInCart === 0) {
-      if (!guardAdd()) return;
-      addToCart(book.id, "detail");
+    if (isOutOfStock) {
+      showToast("This book is currently out of stock", "warning");
+      return;
     }
-    // Straight to checkout: the bag opens the address step on ?checkout=1.
-    router.push("/bag?checkout=1");
+    setBuyNowOpen(true);
   };
 
   const handleShare = async (e) => {
@@ -1291,6 +1294,8 @@ export default function BookDetailsModal({ book: bookProp }) {
           />
         )}
       </AnimatePresence>
+
+      <BuyNowSheet open={buyNowOpen} book={book} onClose={() => setBuyNowOpen(false)} />
     </>
   );
 }

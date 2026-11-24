@@ -8,6 +8,7 @@ import {
   useState,
   useRef,
 } from "react";
+import { usePathname } from "next/navigation";
 import { books } from "@/utils/book";
 import { trackAddSource } from "@/lib/addSource";
 import { priceMode } from "@/lib/offerTimer";
@@ -21,6 +22,7 @@ import { hydrateCustomBooks } from "@/utils/customBooks";
 import { syncPushSnapshot } from "@/utils/webPush";
 
 const StoreContext = createContext(null);
+const BUYNOW_KEY = "tbx_buynow_stash";
 
 export function StoreProvider({ children }) {
   const [cart, setCart] = useState(() => {
@@ -403,6 +405,9 @@ export function StoreProvider({ children }) {
     // Only track once there's something in the bag; after that, keep syncing
     // (including emptying) so the sheet reflects the live cart.
     if (cart.length === 0 && !cartSyncedOnce.current) return;
+    // A Buy-now checkout holds a temporary one-book bag: don't record it as
+    // the shopper's cart.
+    if (buyNowActive) return;
     cartSyncedOnce.current = true;
     if (cartSyncTimer.current) clearTimeout(cartSyncTimer.current);
     cartSyncTimer.current = setTimeout(sendCartSnapshot, 2500);
@@ -471,6 +476,61 @@ export function StoreProvider({ children }) {
     setCart([]);
   };
 
+  // ── Buy now ────────────────────────────────────────────────────────────────
+  // "Buy now" on a book page checks out ONLY that book: the bag is swapped to
+  // just { id, qty } and the shopper's real cart is stashed, then restored when
+  // checkout ends — exactly as it was after an order, or with the book added
+  // (like Add to bag) if they leave without ordering.
+  const [buyNowActive, setBuyNowActive] = useState(false);
+  const startBuyNow = (id, qty = 1) => {
+    try {
+      const prev = localStorage.getItem(BUYNOW_KEY)
+        ? JSON.parse(localStorage.getItem(BUYNOW_KEY)).cart
+        : cart;
+      localStorage.setItem(BUYNOW_KEY, JSON.stringify({ cart: prev || [], item: { id, qty }, at: Date.now() }));
+    } catch {}
+    setBuyNowActive(true);
+    setCart([{ id, qty: Math.max(1, Number(qty) || 1) }]);
+  };
+  const endBuyNow = (ordered = false) => {
+    let stash = null;
+    try {
+      stash = JSON.parse(localStorage.getItem(BUYNOW_KEY) || "null");
+      localStorage.removeItem(BUYNOW_KEY);
+    } catch {}
+    setBuyNowActive(false);
+    if (!stash) return false;
+    let next = Array.isArray(stash.cart) ? stash.cart : [];
+    const it = stash.item;
+    if (!ordered && it?.id) {
+      next = next.some((i) => i.id === it.id)
+        ? next.map((i) => (i.id === it.id ? { ...i, qty: Math.max(i.qty || 1, it.qty || 1) } : i))
+        : [...next, { id: it.id, qty: it.qty || 1 }];
+    }
+    setCart(next);
+    return true;
+  };
+  // A Buy-now checkout left open when the tab closed / reloaded → put the
+  // real cart back (with the book kept, as if added to the bag).
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(BUYNOW_KEY)) endBuyNow(false);
+    } catch {}
+  }, []);
+  // Leaving the bag mid Buy-now checkout (any route change away from /bag)
+  // → restore the real cart too.
+  const pathname = usePathname();
+  const prevPathRef = useRef(pathname);
+  useEffect(() => {
+    const prev = prevPathRef.current;
+    prevPathRef.current = pathname;
+    if (prev === "/bag" && pathname !== "/bag") {
+      try {
+        if (localStorage.getItem(BUYNOW_KEY)) endBuyNow(false);
+      } catch {}
+    }
+  }, [pathname]);
+
   // -------- WISHLIST --------
 
   const toggleWishlist = (id) => {
@@ -535,6 +595,9 @@ export function StoreProvider({ children }) {
         decreaseQty,
         removeFromCart,
         clearCart,
+        buyNowActive,
+        startBuyNow,
+        endBuyNow,
         toggleWishlist,
         oneRupeeOffer,
         isOneRupeeEnabled,

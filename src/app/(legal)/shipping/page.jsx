@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Truck, Zap, Wallet, MapPin, PackageCheck, Clock } from "lucide-react";
+import { Truck, Zap, Wallet, MapPin, PackageCheck, Clock, CloudLightning } from "lucide-react";
 import {
   POLICY_EFFECTIVE_DATE,
   SUPPORT,
   DELIVERY,
+  THUNDER,
   COD,
   RETURNS,
   mailto,
@@ -12,7 +13,7 @@ import { LegalGlance, LegalToc, legalLinks } from "@/components/legal/LegalBits"
 
 export const metadata = {
   title: "Shipping & Delivery Policy",
-  description: `Free delivery on orders from ₹${DELIVERY.freeMin} up to ₹1,000. Standard delivery in ${DELIVERY.standardDays}, Faster in ${DELIVERY.fasterDays}, Cash on Delivery across India.`,
+  description: `Free delivery on orders from ₹${DELIVERY.freeMin} up to ₹1,000. Thunder 1–2 day delivery in ${THUNDER.citiesText} with a delivery-charge refund if we're late. Standard delivery in ${DELIVERY.standardDays}, Faster in ${DELIVERY.fasterDays}, Cash on Delivery across India.`,
   alternates: { canonical: "https://www.thebookx.in/shipping" },
 };
 
@@ -31,6 +32,11 @@ const GLANCE = [
     icon: Zap,
     title: `Faster: ${DELIVERY.fasterDays}`,
     text: `Priority dispatch for ₹${DELIVERY.fasterPriority[0].fee}–₹${DELIVERY.fasterPriority[DELIVERY.fasterPriority.length - 1].fee} extra on eligible pincodes.`,
+  },
+  {
+    icon: CloudLightning,
+    title: "Thunder: 1–2 days",
+    text: `Exclusive in ${THUNDER.citiesText}. Late? We refund your delivery charges.`,
   },
   {
     icon: Wallet,
@@ -57,7 +63,7 @@ const SECTIONS = [
   { id: "tracking", label: "5. Tracking" },
   { id: "address-policy", label: "6. Address & delivery attempts" },
   { id: "packaging", label: "7. Packaging & checking your parcel" },
-  { id: "delays", label: "8. Delays" },
+  { id: "delays", label: "8. Delays & the Thunder on-time promise" },
   { id: "problems", label: "9. Lost, damaged or undelivered parcels" },
   { id: "changes-shipping", label: "10. Changes to this policy" },
 ];
@@ -120,8 +126,27 @@ export default function ShippingDeliveryPolicy() {
               <td>Priority, usually same or next business day</td>
               <td>{DELIVERY.fasterDays}</td>
             </tr>
+            <tr>
+              <td>
+                <strong>Thunder</strong> ({THUNDER.citiesText} only)
+              </td>
+              <td>Packed and booked the same day</td>
+              <td>
+                {THUNDER.oneDay} if you order before {THUNDER.cutoff};{" "}
+                {THUNDER.twoDay} after {THUNDER.cutoff}
+              </td>
+            </tr>
           </tbody>
         </table>
+        <p>
+          <strong>Thunder delivery</strong> is our exclusive 1-day and 2-day
+          service, sent by India Post 24 / 48 Speed Post. It&apos;s offered only
+          when your delivery pincode is in {THUNDER.citiesText}, and checkout
+          shows the exact date it will reach you. Order before {THUNDER.cutoff}{" "}
+          and it arrives the next day; order after {THUNDER.cutoff} and it
+          arrives the day after. If it&apos;s late, we refund your delivery
+          charges (see <a href="#delays">Section 8</a>).
+        </p>
         <p>
           Business days are Monday to Saturday, excluding Maharashtra public
           holidays. Orders placed after 5:00 PM IST, on Sundays or on holidays
@@ -201,7 +226,14 @@ export default function ShippingDeliveryPolicy() {
           </tbody>
         </table>
 
-        <h3>3.3 Optional extras</h3>
+        <h3>3.3 Thunder delivery</h3>
+        <p>
+          Thunder costs the standard charge above plus a Speed Post fee based on
+          the weight of your parcel ({THUNDER.feeExample}). The exact amount is
+          shown on the Thunder option and in your bill before you pay.
+        </p>
+
+        <h3>3.4 Optional extras</h3>
         <p>
           Gift wrap and other add-ons are optional and priced at checkout. All
           prices include applicable taxes. The charges that apply to your order
@@ -212,8 +244,12 @@ export default function ShippingDeliveryPolicy() {
       <section id="cod-shipping">
         <h2>4. Cash on Delivery (COD)</h2>
         <p>
-          COD is available with standard delivery on most pincodes. You can pick
-          either option at checkout:
+          COD is available with standard delivery on most pincodes. Faster and
+          Thunder delivery are for online payments only: pay in full, or pay ₹
+          {COD.advance} now and the rest at delivery. If you switch to full Cash
+          on Delivery, your order moves to standard delivery and checkout shows
+          the new dates and COD fee before you confirm. You can pick either COD
+          option at checkout:
         </p>
         <table className="legal-table">
           <thead>
@@ -298,13 +334,49 @@ export default function ShippingDeliveryPolicy() {
       </section>
 
       <section id="delays">
-        <h2>8. Delays</h2>
+        <h2>8. Delays &amp; the Thunder on-time promise</h2>
         <p>
           Delivery times are estimates. Weather, festive-season volumes,
           strikes, local restrictions or courier issues can sometimes slow
           things down. If your order is running late we&apos;ll keep you
           updated on WhatsApp and push the courier. If it&apos;s badly delayed
           and hasn&apos;t been delivered yet, you can ask us about cancelling.
+        </p>
+        <h3>8.1 Thunder on-time promise</h3>
+        <p>
+          If your Thunder order isn&apos;t delivered by the date shown at
+          checkout, we refund the <strong>delivery charges</strong> you paid for
+          that order (the Thunder fee and any standard delivery charge). Message
+          us with your order ID and we&apos;ll credit it to your original
+          payment method, or to your TheBookX wallet if you prefer, once we
+          check the tracking. Your books are still delivered.
+        </p>
+        <p>
+          The promise doesn&apos;t apply when the delay is on the customer&apos;s
+          side, for example when:
+        </p>
+        <ul>
+          <li>
+            you, or someone at the address, aren&apos;t available or
+            don&apos;t answer the call when the courier arrives;
+          </li>
+          <li>
+            the premises are locked or entry isn&apos;t allowed (gated society,
+            office closed);
+          </li>
+          <li>
+            the address, pincode or phone number is incomplete or wrong, or you
+            change it after the order is placed;
+          </li>
+          <li>
+            you ask the courier to deliver on another day, or don&apos;t share
+            the delivery OTP;
+          </li>
+          <li>you refuse the parcel without a valid reason.</li>
+        </ul>
+        <p>
+          In these cases the delivery charges aren&apos;t refunded, and the
+          courier&apos;s tracking record is used to confirm what happened.
         </p>
       </section>
 

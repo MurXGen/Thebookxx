@@ -2,6 +2,7 @@
 
 import BookCard from "@/components/BookCard";
 import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
+import { isThunderPincode, thunderCharge, thunderEta } from "@/lib/thunderDelivery";
 import { comboPairDiscount } from "@/utils/combos";
 import CartItemRow from "@/components/CartItemRow";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
@@ -39,7 +40,7 @@ import {
   notifyQuickReadTelegram,
 } from "@/lib/quickreads";
 import { QUICKREAD_PRICE, quickReadFrameCount } from "@/data/quickreadsMeta";
-import { Zap, BookOpen, Trash2, Minus, Plus, Check } from "lucide-react";
+import { Zap, BookOpen, Trash2, Minus, Plus, Check, ArrowRight } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
@@ -113,6 +114,8 @@ function BagContent() {
     cart,
     addToCart,
     clearCart,
+    buyNowActive,
+    endBuyNow,
     qrCart,
     addQuickRead,
     isInQrCart,
@@ -149,6 +152,23 @@ function BagContent() {
   }, []);
   // Delivery windows for the Standard / Faster add-on (by saved pincode).
   const [etaWin, setEtaWin] = useState({ std: "4–9 days", fast: "1–6 days" });
+  // Saved delivery pincode → is Thunder (24/48 Speed Post) available here?
+  const [bagPin, setBagPin] = useState("");
+  useEffect(() => {
+    const read = () => {
+      try {
+        setBagPin(String(localStorage.getItem("delivery_pincode") || "").replace(/\D/g, ""));
+      } catch {
+        /* ignore */
+      }
+    };
+    const t = setTimeout(read, 0);
+    window.addEventListener("tbx:pincode-set", read);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("tbx:pincode-set", read);
+    };
+  }, []);
   useEffect(() => {
     const t = setTimeout(() => {
       try {
@@ -191,6 +211,12 @@ function BagContent() {
   // Mirror the add-on choices made inside the Address modal so the shared
   // Bill modal shows the same delivery + gift-wrap charges.
   const [billFaster, setBillFaster] = useState(false);
+  // Thunder delivery picked (only counts with billFaster on + a metro pincode).
+  const [billThunder, setBillThunder] = useState(false);
+  const onCheckoutDelivery = useCallback((faster, thunder) => {
+    setBillFaster(!!faster);
+    setBillThunder(!!thunder);
+  }, []);
   // Add-ons picked right in the bag (bookmarks + delivery speed); the checkout
   // opens with the same choices. Remembered per device.
   const [bagBookmarks, setBagBookmarks] = useState(0);
@@ -202,6 +228,7 @@ function BagContent() {
         if (v) {
           setBagBookmarks(Math.max(0, Math.min(MAX_BAG_BOOKMARKS, Number(v.bookmarks) || 0)));
           setBillFaster(!!v.faster);
+          setBillThunder(!!v.thunder);
         }
       } catch {
         /* ignore */
@@ -213,11 +240,14 @@ function BagContent() {
   useEffect(() => {
     if (!addonsLoaded.current) return;
     try {
-      localStorage.setItem(BAG_ADDONS_KEY, JSON.stringify({ bookmarks: bagBookmarks, faster: billFaster }));
+      localStorage.setItem(
+        BAG_ADDONS_KEY,
+        JSON.stringify({ bookmarks: bagBookmarks, faster: billFaster, thunder: billFaster && billThunder }),
+      );
     } catch {
       /* ignore */
     }
-  }, [bagBookmarks, billFaster]);
+  }, [bagBookmarks, billFaster, billThunder]);
   // Checkout's exact bill when View bill is opened from inside checkout.
   const [billSnap, setBillSnap] = useState(null);
   const [successCtx, setSuccessCtx] = useState(null); // interactive success modal
@@ -794,11 +824,18 @@ function BagContent() {
   const fasterUnavailable = false;
   // Gift wrap add-on price by order value: +₹15 up to ₹500, +₹35 above.
   const giftWrapChargeEff = totalDiscounted > 500 ? 35 : 15;
-  const fasterDeliveryCharge = getDeliveryCharge(
+  const regularFasterCharge = getDeliveryCharge(
     totalDiscounted + walletTopUp,
     true,
     hasOneRupeeItem,
   );
+  // Thunder: metro pincodes only; priced Standard + weight-based Speed Post fee.
+  const thunderOkBag = isThunderPincode(bagPin);
+  const thunderActive = billFaster && billThunder && thunderOkBag;
+  const thunderChargeBag = thunderCharge(standardDeliveryCharge, cartBooks);
+  const bagThunderEta = thunderEta();
+  // The faster-speed charge actually picked (Thunder or Faster).
+  const fasterDeliveryCharge = thunderActive ? thunderChargeBag : regularFasterCharge;
   const standardDeliveryLabel = getDeliveryLabel(
     totalDiscounted,
     false,
@@ -811,6 +848,7 @@ function BagContent() {
   );
 
   const getDeliveryChargeByChoice = (isFasterDelivery) => {
+    if (isFasterDelivery && thunderActive) return thunderChargeBag;
     return getDeliveryCharge(
       totalDiscounted,
       isFasterDelivery,
@@ -826,7 +864,8 @@ function BagContent() {
   const bagBookmarkCharge = Math.max(0, bagBookmarks - bagFreeBookmarks) * BAG_BOOKMARK_UNIT;
 
   // QuickReads ride on the same physical-book bill (one combined checkout).
-  const hasBundledQr = cartBooks.length > 0 && qrItems.length > 0;
+  // A Buy-now checkout is for that one book only — no QuickReads riding along.
+  const hasBundledQr = !buyNowActive && cartBooks.length > 0 && qrItems.length > 0;
   const bundledQrTotal = hasBundledQr ? qrTotal : 0;
 
   // ── WELCOME10 (bag coupon) ─────────────────────────────────────────────
@@ -1044,12 +1083,12 @@ function BagContent() {
       out.push(`Coupon${b.coupon ? ` (${b.coupon})` : ""}: -₹${b.couponDiscount}`);
     if (b.wallet > 0) out.push(`Wallet used: -₹${b.wallet}`);
     out.push(
-      `Delivery (${b.faster ? `Faster ${windowText(w.faster)}` : `Standard ${windowText(w.standard)}`}): ${
+      `Delivery (${b.thunder ? b.thunderName || "Thunder" : b.faster ? `Faster ${windowText(w.faster)}` : `Standard ${windowText(w.standard)}`}): ${
         b.deliveryStd > 0 ? `+₹${b.deliveryStd}` : "FREE"
       }`,
     );
     if (b.handling > 0) out.push(`Handling & Care: +₹${b.handling}`);
-    if (b.priority > 0) out.push(`Faster priority: +₹${b.priority}`);
+    if (b.priority > 0) out.push(`${b.thunder ? "Thunder Speed Post" : "Faster priority"}: +₹${b.priority}`);
     if (b.gift > 0) out.push(`Gift wrap: +₹${b.gift}`);
     if (b.bookmarkQty > 0)
       out.push(
@@ -1257,7 +1296,7 @@ ${billLinesFromSnapshot(snap, addressData)
 💳 ${snapshotPayLine(snap, paymentType)}${
           snap.codCollect > 0 ? `\n💵 *Collect at door: ₹${snap.codCollect}*` : ""
         }
-🚚 ${snap.faster ? `Faster · ${windowText(deliveryWindows(addressData || {}).faster)}` : `Standard · ${windowText(deliveryWindows(addressData || {}).standard)}`}${
+🚚 ${snap.thunder ? `⚡ ${snap.thunderName || "Thunder"}` : snap.faster ? `Faster · ${windowText(deliveryWindows(addressData || {}).faster)}` : `Standard · ${windowText(deliveryWindows(addressData || {}).standard)}`}${
           snap.note ? `\n📝 ${snap.note}` : ""
         }${orderId ? `\n\n🆔 ${orderId}` : ""}`
       : `🛒 *New order · TheBookX*
@@ -1524,7 +1563,9 @@ ${itemsBlock}${qrLines}
       return;
     }
     setAutoPayStep(true);
-    setShowAddressModal(true);
+    // Open after the saved add-ons (bookmarks, Faster / Thunder, gift) and the
+    // pincode have loaded, so checkout starts with the same choices.
+    setTimeout(() => setShowAddressModal(true), 80);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, cartBooks.length, canCheckout]);
 
@@ -1960,7 +2001,7 @@ ${itemsBlock}${qrLines}
           )}
 
           {/* Order-by stripe (follows the Faster add-on) */}
-          {cartBooks.length > 0 && <DeliveryEtaStripe faster={billFaster} className="bag-eta" />}
+          {cartBooks.length > 0 && <DeliveryEtaStripe faster={billFaster} thunder={thunderActive} className="bag-eta" />}
 
           {/* Add-ons: their own compact section under the books */}
           {cartBooks.length > 0 && (
@@ -1968,10 +2009,22 @@ ${itemsBlock}${qrLines}
               bookmarks={bagBookmarks}
               onBookmarks={setBagBookmarks}
               freeBookmarks={bagFreeBookmarks}
-              faster={billFaster}
-              onFaster={setBillFaster}
+              faster={billFaster && !thunderActive}
+              onFaster={(on) => {
+                setBillFaster(on);
+                setBillThunder(false);
+              }}
+              thunderAvailable={thunderOkBag}
+              thunder={thunderActive}
+              onThunder={(on) => {
+                setBillFaster(on);
+                setBillThunder(on);
+              }}
+              thunderFee={Math.max(0, thunderChargeBag - standardDeliveryCharge)}
+              thunderName={bagThunderEta.name}
+              thunderDate={bagThunderEta.days === 1 ? `tomorrow, ${bagThunderEta.dateText}` : bagThunderEta.dateText}
               standardFee={standardDeliveryCharge}
-              fasterFee={fasterDeliveryCharge}
+              fasterFee={regularFasterCharge}
               standardEta={etaWin.std}
               fasterEta={etaWin.fast}
             />
@@ -2204,7 +2257,13 @@ ${itemsBlock}${qrLines}
                 onClick={handleConfirmOrderClick}
                 aria-disabled={isShortening}
               >
-                {isShortening ? "Preparing…" : "Proceed"}
+                {isShortening ? (
+                  "Preparing…"
+                ) : (
+                  <span className="bg-paybar-btn-in">
+                    Proceed <ArrowRight size={18} strokeWidth={2.5} aria-hidden="true" />
+                  </span>
+                )}
               </button>
             </div>
           ) : (
@@ -2386,6 +2445,8 @@ ${itemsBlock}${qrLines}
         autoPayStep={autoPayStep}
         onClose={() => {
           setShowAddressModal(false);
+          // Buy-now checkout closed → bring the shopper's real bag back.
+          if (buyNowActive) endBuyNow(false);
           // Keep the pending entry, refreshed with whatever was typed.
           if (pendingIdRef.current) {
             let details = null;
@@ -2399,6 +2460,8 @@ ${itemsBlock}${qrLines}
           }
         }}
         onOrderPlaced={(ctx) => {
+          // Buy-now order placed → restore the real bag exactly as it was.
+          if (buyNowActive) endBuyNow(true);
           // Order placed → clear its pending entry.
           if (pendingIdRef.current) {
             removePending(pendingIdRef.current);
@@ -2419,7 +2482,7 @@ ${itemsBlock}${qrLines}
         couponDeliveryFee={couponDelFee}
         standardDeliveryCharge={standardDeliveryCharge}
         standardDeliveryLabel={standardDeliveryLabel}
-        fasterDeliveryCharge={fasterDeliveryCharge}
+        fasterDeliveryCharge={regularFasterCharge}
         fasterDeliveryLabel={fasterDeliveryLabel}
         fasterUnavailable={fasterUnavailable}
         totalWithStandardDelivery={totalWithStandardDelivery}
@@ -2445,9 +2508,10 @@ ${itemsBlock}${qrLines}
           setBillSnap(snap || null);
           setShowBill(true);
         }}
-        onDeliveryChoiceChange={setBillFaster}
+        onDeliveryChoiceChange={onCheckoutDelivery}
         onGiftWrapChange={setGiftWrap}
         initialFaster={billFaster}
+        initialThunder={thunderActive}
         initialBookmarks={bagBookmarks}
         onBookmarksChange={setBagBookmarks}
       />
@@ -2553,17 +2617,10 @@ function FreebieBadge() {
   );
 }
 
-// Share + WhatsApp pill above the pay bar; a "Need help?" tip shows briefly.
+// Share + WhatsApp pill above the pay bar; the "Need help?" tip shows only
+// while the WhatsApp icon is hovered / focused / tapped (never on its own).
 function BagFabs({ onShare }) {
   const [tip, setTip] = useState(false);
-  useEffect(() => {
-    const a = setTimeout(() => setTip(true), 1500);
-    const b = setTimeout(() => setTip(false), 5500);
-    return () => {
-      clearTimeout(a);
-      clearTimeout(b);
-    };
-  }, []);
   return (
     <div className="bag-fabs">
       <span className={`wa-tip bag-fabs-tip${tip ? " show" : ""}`} role="tooltip">
@@ -2583,6 +2640,14 @@ function BagFabs({ onShare }) {
           rel="noopener noreferrer"
           className="pdp-dock-btn wa"
           aria-label="Need help? Chat on WhatsApp"
+          onMouseEnter={() => setTip(true)}
+          onMouseLeave={() => setTip(false)}
+          onFocus={() => setTip(true)}
+          onBlur={() => setTip(false)}
+          onClick={() => {
+            setTip(true);
+            setTimeout(() => setTip(false), 2500);
+          }}
         >
           <FaWhatsapp size={20} />
         </a>

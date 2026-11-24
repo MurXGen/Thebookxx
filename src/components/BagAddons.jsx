@@ -64,6 +64,13 @@ export default function BagAddons({
   fasterFee = 0,
   standardEta = "4–9 days",
   fasterEta = "1–6 days",
+  // Thunder (India Post 24/48 Speed Post) — metro pincodes only.
+  thunderAvailable = false,
+  thunder = false,
+  onThunder,
+  thunderFee = 0,
+  thunderName = "Thunder 1-day delivery",
+  thunderDate = "",
 }) {
   const fasterExtra = Math.max(0, fasterFee - standardFee);
   const inc = () => {
@@ -140,17 +147,44 @@ export default function BagAddons({
           onFaster(!faster);
         }}
       >
-        <span className="bga-fast-ic" aria-hidden="true">
-          <Zap size={18} />
-        </span>
         <span className="bga-fast-txt">
-          <b>Faster delivery</b>
+          <b>
+            Faster delivery <Zap size={15} aria-hidden="true" />
+          </b>
           <small>Arrives in {fasterEta} · +₹{fasterExtra}</small>
         </span>
         <span className="bga-check" aria-hidden="true">
           {faster && <Check size={13} strokeWidth={3.5} />}
         </span>
       </button>
+
+      {thunderAvailable && onThunder && (
+        <button
+          type="button"
+          role="checkbox"
+          aria-checked={thunder}
+          className={`bga-fast bga-thd${thunder ? " on" : ""}`}
+          onClick={() => {
+            buzz(10);
+            onThunder(!thunder);
+          }}
+        >
+          <span className="bga-fast-txt">
+            <b>
+              {thunderName}{" "}
+              <span className="thd-badge" aria-hidden="true">
+                <Zap size={13} strokeWidth={2.4} />
+              </span>
+            </b>
+            <small>
+              Arrives {thunderDate} · +₹{thunderFee} · pay online
+            </small>
+          </span>
+          <span className="bga-check" aria-hidden="true">
+            {thunder && <Check size={13} strokeWidth={3.5} />}
+          </span>
+        </button>
+      )}
     </div>
   );
 }

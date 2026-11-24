@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   XCircle,
   PackageX,
@@ -334,6 +335,17 @@ export default function RefundCancellationPolicy() {
           that&apos;s a valid reason. Tell us the same day and you&apos;ll get a
           full refund or a fresh shipment.
         </p>
+        <h3>8.1 Late Thunder deliveries</h3>
+        <p>
+          Thunder delivery (1–2 days, in select metro cities) comes with an
+          on-time promise: if it isn&apos;t delivered by the date shown at
+          checkout, we refund the delivery charges you paid for that order. This
+          doesn&apos;t apply when the delay is on the customer&apos;s side, such
+          as no one being available to receive it, an unreachable phone, a wrong
+          or incomplete address, a request to deliver another day, or a refused
+          parcel. Full terms are in our{" "}
+          <Link href="/shipping#delays">Shipping &amp; Delivery Policy, Section 8</Link>.
+        </p>
       </section>
 
       <section id="lost">
@@ -394,6 +406,10 @@ export default function RefundCancellationPolicy() {
             <tr>
               <td>We cancelled your order, or couldn&apos;t deliver to your pincode</td>
               <td>Original payment method, automatically</td>
+            </tr>
+            <tr>
+              <td>Thunder order delivered late (not on the customer&apos;s side)</td>
+              <td>Delivery charges back to your original payment method, or wallet if you prefer</td>
             </tr>
             <tr>
               <td>Parcel confirmed lost in transit</td>

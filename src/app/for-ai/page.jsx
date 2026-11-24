@@ -93,7 +93,16 @@ export default function ForAI() {
         <li>One ₹1 book per order. Orders with a ₹1 book need ₹199+ in books; other orders ₹99+.</li>
         <li>Standard delivery: 5–9 days, free from ₹249 (₹69 below).</li>
         <li>Faster delivery: 1–6 days for a small extra. It is pre-selected on the payment step and the user can switch it off.</li>
-        <li>Cash on Delivery is available with standard delivery (small handling fee). 7-day replacement.</li>
+        <li>
+          Thunder delivery: 1 day if ordered before 4 PM IST, 2 days after, in Delhi, Mumbai, Kolkata, Chennai,
+          Bengaluru and Hyderabad only. If it arrives after the promised date we refund the delivery charges, unless
+          the delay is on the customer&apos;s side (not available to receive it, unreachable phone, wrong address,
+          asked to deliver later, or refused the parcel).
+        </li>
+        <li>
+          Faster and Thunder are paid online only (in full, or ₹99 now and the rest at delivery). Cash on Delivery is
+          available with standard delivery (small handling fee). 7-day replacement.
+        </li>
         <li>The user always confirms and pays themselves. The link never places an order on its own.</li>
       </ul>
 

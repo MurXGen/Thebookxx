@@ -10,7 +10,7 @@
 
 import { WALLET_TTL_DAYS } from "@/utils/walletLedger";
 
-export const POLICY_EFFECTIVE_DATE = "9 November 2026";
+export const POLICY_EFFECTIVE_DATE = "24 November 2026";
 
 export const BUSINESS = {
   tradeName: "TheBookX",
@@ -67,6 +67,20 @@ export const DELIVERY = {
   processingDays: "1–2 business days",
   standardDays: "5–9 days",
   fasterDays: "1–6 days",
+};
+
+// ── Thunder delivery (mirrors lib/thunderDelivery.js) ───────────────────────
+// India Post 24 / 48 Speed Post, only in the metros it covers.
+export const THUNDER = {
+  name: "Thunder delivery",
+  cities: ["Delhi", "Mumbai", "Kolkata", "Chennai", "Bengaluru", "Hyderabad"],
+  citiesText: "Delhi, Mumbai, Kolkata, Chennai, Bengaluru and Hyderabad",
+  cutoff: "4:00 PM IST",
+  oneDay: "1 day (next day)",
+  twoDay: "2 days",
+  // Fee on top of Standard: parcel weight × ₹224 per 2.9 kg, rounded up to the
+  // next rupee amount ending in 9 (e.g. one 400 g book → ₹39).
+  feeExample: "₹29–₹79 for most 1–3 book orders",
 };
 
 // ── Cash on Delivery (mirrors AddressModal) ─────────────────────────────────

@@ -4,6 +4,7 @@ import PlacingOrder from "@/components/UI/PlacingOrder";
 import { XmasSnow } from "@/components/XmasDecor";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef, Fragment } from "react";
+import { createPortal } from "react-dom";
 import { readBagCoupon, saveBagCoupon } from "@/utils/bagCoupon";
 import { useStore } from "@/context/StoreContext";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -46,6 +47,7 @@ import {
   TrendingDown,
   Banknote,
   Receipt,
+  CloudLightning,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -60,6 +62,7 @@ import {
   fetchOrderStatusById,
   fetchWalletBalance,
   updateOrderRow,
+  deliveryTypeValue,
 } from "@/utils/googleFormOrder";
 import { lookupPincode, cachedPincode, stripePincode } from "@/lib/pincodeLookup";
 import ScratchRewardSheet from "./ScratchRewardSheet";
@@ -75,7 +78,8 @@ import { trackEvent } from "@/lib/ga";
 import { copyUpiId } from "@/utils/upiApps";
 import { rewardNote } from "@/utils/orderRewards";
 import { PAYMENT_PENDING_STATUS, markPaymentPending } from "@/lib/paymentPending";
-import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
+import { deliveryWindows, isFastRegion, windowText, etaRangeFor, getDeliveryEta, fmtEtaRange } from "@/lib/deliveryEta";
+import { isThunderPincode, thunderCharge, thunderEta, thunderDeliveryType } from "@/lib/thunderDelivery";
 
 // WhatsApp buttons on the UPI QR screen are hidden for now; the order page
 // offers WhatsApp once a pending payment is 15+ minutes old.
@@ -85,8 +89,9 @@ import { encodeAddonsField } from "@/utils/addonsField";
 const PINCODE_DATA_KEY = "user_pincode";
 // Orders at or above this value can't be placed as full Cash on Delivery.
 const COD_MAX_ORDER = 1000;
-// Faster delivery can be combined with Cash on Delivery up to this many books.
-const COD_FASTER_MAX_BOOKS = 2;
+// Faster / Thunder delivery are online-only (pay in full, or ₹99 now + rest at
+// delivery): full Cash on Delivery always ships Standard.
+const COD_FASTER_MAX_BOOKS = 0;
 // UPI apps on the Payment options sheet.
 const UPI_APPS = [
   { k: "Google Pay", c: "#1a73e8" },
@@ -233,6 +238,7 @@ export default function AddressModal({
   onGiftWrapChange,
   // Add-ons already picked in the bag — the modal opens with them.
   initialFaster = false,
+  initialThunder = false,
   initialBookmarks = 0,
   onBookmarksChange,
 }) {
@@ -277,7 +283,11 @@ export default function AddressModal({
   // the lookup can't determine it, this stays false so the shopper can type it.
   const [stateAutoFilled, setStateAutoFilled] = useState(false);
   const [fasterDelivery, setFasterDelivery] = useState(false);
+  // Thunder (24/48 Speed Post, metro pincodes only) is the faster speed with
+  // its own price: on only while fasterDelivery is on too.
+  const [thunderPick, setThunderPick] = useState(false);
   const [fasterTip, setFasterTip] = useState(false); // "What's Faster delivery?"
+  const [thunderTip, setThunderTip] = useState(false); // "What's Thunder delivery?"
   const [billItemsOpen, setBillItemsOpen] = useState(false); // book summary accordion
   const [isValidPincode, setIsValidPincode] = useState(true);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
@@ -286,6 +296,12 @@ export default function AddressModal({
   // Delivery windows depend on the region (fast lane vs rest of India).
   const dWin = deliveryWindows({ state, city, district, pincode });
   const fasterDays = windowText(dWin.faster);
+  // Thunder: only for metro pincodes covered by India Post 24/48 Speed Post.
+  const thunderOk = isThunderPincode(pincode);
+  const thunderOn = fasterDelivery && thunderPick && thunderOk;
+  const tEta = thunderEta();
+  const thunderDeliveryCharge = thunderCharge(standardDeliveryCharge, cartBooks);
+  const activeFasterCharge = thunderOn ? thunderDeliveryCharge : fasterDeliveryCharge;
   const standardDays = windowText(dWin.standard);
   const [showContactFields, setShowContactFields] = useState(false);
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
@@ -294,22 +310,12 @@ export default function AddressModal({
   const [showSpeedModal, setShowSpeedModal] = useState(false);
   // Full-page payment selection sheet (UPI / COD / WhatsApp + coins toggle).
   const [showPaySelect, setShowPaySelect] = useState(false);
-  // "Order on WhatsApp" nudge on the payment step: if the shopper hasn't
-  // tapped Pay within 5s, show a tip by the WhatsApp icon for 2s.
+  // "Order on WhatsApp" tip on the payment step — only while the WhatsApp
+  // icon is hovered / focused (never pops up on its own).
   const [payWaHint, setPayWaHint] = useState(false);
   const payTappedRef = useRef(false);
   useEffect(() => {
-    if (!showPaySelect) return;
-    payTappedRef.current = false;
-    const show = setTimeout(() => {
-      if (!payTappedRef.current) setPayWaHint(true);
-    }, 5000);
-    const hide = setTimeout(() => setPayWaHint(false), 7000);
-    return () => {
-      clearTimeout(show);
-      clearTimeout(hide);
-      setPayWaHint(false);
-    };
+    if (!showPaySelect) setPayWaHint(false);
   }, [showPaySelect]);
   // Which UPI app the shopper picked (Paytm / PhonePe / Google Pay / Other) —
   // used to show an "Open <app> app" button on the QR screen.
@@ -430,6 +436,10 @@ export default function AddressModal({
   // COD review+confirm sheet — the order is written as "(unconfirmed)" when it
   // opens, then flipped to Processing only when the shopper confirms here.
   const [showCodConfirm, setShowCodConfirm] = useState(false);
+  // "Cash on Delivery ships Standard" sheet when COD is picked with Faster /
+  // Thunder on: "select" (payment card) or "place" (from the UPI QR screen).
+  const [codSwitch, setCodSwitch] = useState(null);
+  const codPlaceRef = useRef(false);
   const codConfirmRef = useRef({ oid: "", isFaster: false });
   const [qrUnlocked, setQrUnlocked] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
@@ -522,8 +532,8 @@ export default function AddressModal({
   // Only while open: the modal is always mounted, and its defaults must not
   // overwrite what the shopper picked in the bag.
   useEffect(() => {
-    if (open && onDeliveryChoiceChange) onDeliveryChoiceChange(fasterDelivery);
-  }, [open, fasterDelivery, onDeliveryChoiceChange]);
+    if (open && onDeliveryChoiceChange) onDeliveryChoiceChange(fasterDelivery, thunderOn);
+  }, [open, fasterDelivery, thunderOn, onDeliveryChoiceChange]);
   useEffect(() => {
     if (onGiftWrapChange) onGiftWrapChange(giftWrap);
   }, [giftWrap, onGiftWrapChange]);
@@ -537,6 +547,7 @@ export default function AddressModal({
     if (!open) return;
     setBookmarkQty(Math.max(0, Math.min(10, Number(initialBookmarks) || 0)));
     setFasterDelivery(!!initialFaster);
+    setThunderPick(!!initialThunder);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
   useEffect(() => {
@@ -1036,7 +1047,7 @@ export default function AddressModal({
   const getDeliveryCharge = (isFaster) =>
     proFreeDelivery
       ? 0
-      : (isFaster ? fasterDeliveryCharge : standardDeliveryCharge) + (freeDelOfferLost ? couponDeliveryFee : 0);
+      : (isFaster ? activeFasterCharge : standardDeliveryCharge) + (freeDelOfferLost ? couponDeliveryFee : 0);
 
   // Payment-step micro-interactions: light haptics + a bookmark that pops out
   // of (or tucks back into) the Bookmarks card on each +/−.
@@ -1114,8 +1125,11 @@ export default function AddressModal({
   // What Faster costs on top of Standard (the priority fee).
   const fasterExtra = Math.max(
     0,
-    (fasterDeliveryCharge || 0) - (standardDeliveryCharge || 0),
+    (activeFasterCharge || 0) - (standardDeliveryCharge || 0),
   );
+  // Thunder's extra over Standard (shown on its row even while not picked).
+  const thunderExtra = Math.max(0, thunderDeliveryCharge - (standardDeliveryCharge || 0));
+  const regularFasterExtra = Math.max(0, (fasterDeliveryCharge || 0) - (standardDeliveryCharge || 0));
 
   const getTotalWithDelivery = (isFaster) =>
     netPayable + getDeliveryCharge(isFaster);
@@ -1190,13 +1204,31 @@ export default function AddressModal({
   // parcels get refused / marked "door locked" and come back). Those shoppers
   // pay ₹99 now + rest at delivery, or pay in full online.
   const codBlocked = codStdRaw >= COD_MAX_ORDER;
-  // Chose Cash on Delivery while Faster delivery was on → back to Standard.
-  const codStandardToast = () =>
-    showToast(
-      `Cash on Delivery with ${COD_FASTER_MAX_BOOKS + 1}+ books ships by Standard delivery (4–9 days). Want it faster? Pay online, or pay ₹${codAdvanceAmount} now and the rest at delivery.`,
-      "info",
-      { title: "Switched to Standard delivery" },
-    );
+  // Pick Faster (thunder=false) or Thunder. Both are online-only, so a COD
+  // selection moves to Pay in two parts (₹99 now) / Pay online.
+  const pickFastSpeed = (thunder) => {
+    const label = thunder ? tEta.name : "Faster delivery";
+    if (paySel === "COD") {
+      const next = defaultPaySel();
+      setPaySel(next);
+      showToast(
+        next === "ADV"
+          ? `Switched to Pay in two parts: ₹${codAdvanceAmount} now, the rest at delivery. ${label} needs an online payment.`
+          : `Switched to Pay Online. ${label} needs an online payment.`,
+        "info",
+        { title: `${label} on` },
+      );
+    }
+    setFasterDelivery(true);
+    setThunderPick(!!thunder);
+    buzz(8);
+  };
+  // Standard window shown on the "COD ships Standard" sheet.
+  const stdEtaText = (() => {
+    const e = getDeliveryEta({ range: etaRangeFor({ pincode, state, city, faster: false }) });
+    return fmtEtaRange(e.from, e.to);
+  })();
+
   useEffect(() => {
     if (codBlocked && paySel === "COD") setPaySel(defaultPaySel());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1384,6 +1416,7 @@ export default function AddressModal({
       setState(saved.state || "");
       // Delivery speed comes from the bag's add-on choice (Standard by default).
       setFasterDelivery(!!initialFaster);
+    setThunderPick(!!initialThunder);
       try {
         const em = localStorage.getItem("checkoutEmail");
         if (em && !email) setEmail(em);
@@ -1400,6 +1433,7 @@ export default function AddressModal({
       if (ok) {
         setPaySel(defaultPaySel());
         setFasterDelivery(!!initialFaster);
+    setThunderPick(!!initialThunder);
         setTimeout(() => setShowPaySelect(true), 250);
       }
     }
@@ -1528,6 +1562,8 @@ export default function AddressModal({
       handling: n0(handling),
       priority: n0(priority),
       faster: !!isFaster,
+      thunder: !!isFaster && thunderOn,
+      thunderName: isFaster && thunderOn ? `${tEta.name} · by ${tEta.dateText}` : "",
       gift: n0(gift),
       bookmarkQty: n0(bookmarkQty),
       bookmarkCharge: n0(bookmarkCharge),
@@ -1654,6 +1690,13 @@ export default function AddressModal({
         ),
         "Advance Amount": String(n0(advanceAmt)),
         "COD Collectible": String(n0(codCollectForOrder)),
+        // Speed can change between writes (e.g. UPI draft → COD ships Standard).
+        "Delivery Type": deliveryTypeValue(
+          totalDiscounted,
+          isFaster,
+          isFaster && thunderOn ? thunderDeliveryType(tEta) : "",
+        ),
+        "Delivery Charge": String(n0(deliveryChargeForOrder)),
         // Gift-wrap note → appended into the encoded Gift Wrap column (keeps the
         // gift/bookmark code intact; the note rides as a decoder-safe suffix).
         ...((giftWrap || giftWrapSelected) && giftMessage.trim()
@@ -1763,6 +1806,7 @@ export default function AddressModal({
         walletPhone: walletApplied > 0 ? walletCheckedPhone : "",
         deliveryCharge: deliveryChargeForOrder,
         deliveryType: isFaster ? "Faster" : "Standard",
+        thunderType: isFaster && thunderOn ? thunderDeliveryType(tEta) : "",
         giftWrapCharge: giftWrapAmountForOrder,
         codHandlingFee: feeForThisOrder,
         advancePaid: advance,
@@ -2587,8 +2631,13 @@ export default function AddressModal({
   // From the UPI page: shopper has no online-payment option switch to COD
   // and place the order directly (skips the fee-disclosure step).
   // "Can't pay online? Continue with Cash on Delivery" on the UPI screen.
-  const switchToCODFromUPI = () => {
+  const switchToCODFromUPI = (confirmed = false) => {
     if (codBlocked) return;
+    // Faster / Thunder are online-only: confirm the switch to Standard first.
+    if (fasterDelivery && confirmed !== true) {
+      setCodSwitch("place");
+      return;
+    }
     setShowUPIPayment(false);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "COD_from_UPI",
@@ -2606,7 +2655,15 @@ export default function AddressModal({
     submitToGoogleForm("COD", codFaster, true, oid);
     triggerCODSuccess(codFaster, oid);
     notifyCODToTelegram(codFaster);
-  };
+  };  // COD confirmed on the "ships by Standard" sheet from the UPI screen →
+  // place it now that Faster / Thunder is off.
+  useEffect(() => {
+    if (!codPlaceRef.current || fasterDelivery) return;
+    codPlaceRef.current = false;
+    switchToCODFromUPI(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fasterDelivery]);
+
 
   // Combine the structured parts into one deliverable address string.
   const fullAddress = [flatNo, building, landmark, address]
@@ -3148,6 +3205,7 @@ export default function AddressModal({
                     // Delivery speed as picked in the bag (Standard unless the
                     // shopper chose Faster there); changeable on that sheet.
                     setFasterDelivery(!!initialFaster);
+                    setThunderPick(!!initialThunder);
                     setShowPaySelect(true);
                   }}
                 >
@@ -3454,6 +3512,7 @@ export default function AddressModal({
                 {/* Order-by stripe: dates for this address + delivery type */}
                 <DeliveryEtaStripe
                   faster={fasterDelivery}
+                  thunder={thunderOn}
                   address={{ pincode, state, city }}
                   className="chk-eta"
                 />
@@ -3482,7 +3541,7 @@ export default function AddressModal({
                     </span>
                     <span className="fdx-txt">
                       <span className="fdx-title">
-                        <Truck size={15} className="fdx-zap std" /> Standard delivery
+                        Standard delivery <Truck size={15} className="fdx-zap std" />
                       </span>
                       <span className="fdx-sub">Arrives in 4–9 days</span>
                     </span>
@@ -3490,53 +3549,33 @@ export default function AddressModal({
                   </button>
 
                   {/* Faster delivery — opt-in (Standard by default); ticking it
-                      adds the priority fee to the bill live. Not with COD. */}
-                  <div
-                    className={`fdx${fasterDelivery ? " on" : ""}${paySel === "COD" && !codFasterOk ? " off" : ""}`}
-                  >
+                      adds the priority fee to the bill live. Online only. */}
+                  <div className={`fdx${fasterDelivery && !thunderOn ? " on" : ""}${paySel === "COD" ? " off" : ""}`}>
                     <button
                       type="button"
                       className="fdx-main"
                       role="radio"
-                      aria-checked={fasterDelivery}
-                      aria-disabled={paySel === "COD" && !codFasterOk}
+                      aria-checked={fasterDelivery && !thunderOn}
                       onClick={() => {
-                        if (fasterDelivery) return;
-                        if (paySel === "COD" && !codFasterOk) {
-                          // Faster is online-only: move them to Pay in two
-                          // parts (₹99 now) so they still get it faster.
-                          const next = defaultPaySel();
-                          setPaySel(next);
-                          setFasterDelivery(true);
-                          buzz(8);
-                          showToast(
-                            next === "ADV"
-                              ? `Switched to Pay in two parts: ₹${codAdvanceAmount} now, the rest at delivery. Faster delivery needs an online payment.`
-                              : "Switched to Pay Online. Faster delivery needs an online payment.",
-                            "info",
-                            { title: `Faster delivery on · arrives in ${fasterDays}` },
-                          );
-                          return;
-                        }
-                        setFasterDelivery(true);
-                        buzz(8);
+                        if (fasterDelivery && !thunderOn) return;
+                        pickFastSpeed(false);
                       }}
                     >
-                      <span className={`dstripe-radio fdx-radio${fasterDelivery ? " on" : ""}`} aria-hidden="true">
-                        {fasterDelivery && <Check size={12} strokeWidth={3.5} />}
+                      <span className={`dstripe-radio fdx-radio${fasterDelivery && !thunderOn ? " on" : ""}`} aria-hidden="true">
+                        {fasterDelivery && !thunderOn && <Check size={12} strokeWidth={3.5} />}
                       </span>
                       <span className="fdx-txt">
                         <span className="fdx-title">
-                          <Zap size={15} className="fdx-zap" /> Faster delivery
+                          Faster delivery <Zap size={15} className="fdx-zap" />
                         </span>
                         <span className="fdx-sub">
-                          {paySel === "COD" && !codFasterOk
-                            ? `Not with Cash on Delivery on 3+ books · pay ₹${codAdvanceAmount} now to get it in ${fasterDays}`
+                          {paySel === "COD"
+                            ? `Pay online or ₹${codAdvanceAmount} now · not with Cash on Delivery`
                             : `Arrives in ${fasterDays}`}
                         </span>
                       </span>
                       <span className="fdx-price">
-                        {fasterExtra > 0 ? `+₹${fasterExtra}` : "Free"}
+                        {regularFasterExtra > 0 ? `+₹${regularFasterExtra}` : "Free"}
                       </span>
                     </button>
                     <button
@@ -3563,6 +3602,66 @@ export default function AddressModal({
                       )}
                     </AnimatePresence>
                   </div>
+
+                  {/* Thunder — India Post 24/48 Speed Post, metro pincodes only */}
+                  {thunderOk && (
+                    <div className={`fdx thd${thunderOn ? " on" : ""}${paySel === "COD" ? " off" : ""}`}>
+                      <button
+                        type="button"
+                        className="fdx-main"
+                        role="radio"
+                        aria-checked={thunderOn}
+                        onClick={() => {
+                          if (thunderOn) return;
+                          pickFastSpeed(true);
+                        }}
+                        data-no-busy
+                      >
+                        <span className={`dstripe-radio fdx-radio${thunderOn ? " on" : ""}`} aria-hidden="true">
+                          {thunderOn && <Check size={12} strokeWidth={3.5} />}
+                        </span>
+                        <span className="fdx-txt">
+                          <span className="fdx-title">
+                            {tEta.name}{" "}
+                            <span className="thd-badge" aria-hidden="true">
+                              <Zap size={13} strokeWidth={2.4} />
+                            </span>
+                          </span>
+                          <span className="fdx-sub">
+                            {paySel === "COD"
+                              ? `Pay online or ₹${codAdvanceAmount} now · not with Cash on Delivery`
+                              : `Arrives ${tEta.days === 1 ? "tomorrow, " : ""}${tEta.dateText}`}
+                          </span>
+                        </span>
+                        <span className="fdx-price">+₹{thunderExtra}</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="fdx-info"
+                        aria-label="What is Thunder delivery?"
+                        aria-expanded={thunderTip}
+                        onClick={() => setThunderTip((v) => !v)}
+                        onBlur={() => setThunderTip(false)}
+                      >
+                        <Info size={16} />
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {thunderTip && (
+                          <motion.p
+                            className="fdx-tip thd-tip"
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -4 }}
+                            transition={{ duration: 0.18 }}
+                          >
+                            Packed first and sent by India Post Speed Post. Arrives {tEta.dateText}
+                            {tEta.days === 1 ? " (ordered before 4 PM)" : ""}. If it&apos;s late, we refund your
+                            delivery charges back to your account (not if nobody&apos;s available to receive it).
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
                 </div>
 
                 {/* Payment methods — full-width selectable cards. */}
@@ -3685,9 +3784,9 @@ export default function AddressModal({
                         );
                         return;
                       }
-                      if (fasterDelivery && !codFasterOk) {
-                        setFasterDelivery(false);
-                        codStandardToast();
+                      if (fasterDelivery) {
+                        setCodSwitch("select");
+                        return;
                       }
                       setPaySel("COD");
                     }}
@@ -3718,9 +3817,9 @@ export default function AddressModal({
                           <span className="pay-perk pay-perk-ic pay-perk-red">
                             Not available on orders of ₹{COD_MAX_ORDER}+ · Pay ₹{codAdvanceAmount} now instead
                           </span>
-                        ) : fasterDelivery && !codFasterOk ? (
+                        ) : fasterDelivery ? (
                           <span className="pay-perk pay-perk-ic pay-perk-red">
-                            Standard delivery only on 3+ books
+                            Ships by Standard delivery · +₹{codFeeStd} COD fees
                           </span>
                         ) : proActive ? (
                           <span className="pay-perk">No COD fee · Member</span>
@@ -4135,6 +4234,10 @@ export default function AddressModal({
                     <button
                       type="button"
                       className="pay-sel-wa-ic"
+                      onMouseEnter={() => setPayWaHint(true)}
+                      onMouseLeave={() => setPayWaHint(false)}
+                      onFocus={() => setPayWaHint(true)}
+                      onBlur={() => setPayWaHint(false)}
                       onClick={() => {
                         setPayWaHint(false);
                         setSupportOpen(true);
@@ -4316,6 +4419,98 @@ export default function AddressModal({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ========== COD ships Standard (Faster / Thunder are online-only) ==========
+          Keyed Fragment: the outer AnimatePresence drops un-keyed portals. */}
+      <Fragment key="cod-switch-sheet">
+      {codSwitch &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            <motion.div
+              key="cod-switch"
+              className="cdp-back cdp-back-full"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setCodSwitch(null)}
+            >
+              <motion.div
+                className="cdp psh psh-full"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="cod-sw-h"
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button type="button" className="cdp-x" onClick={() => setCodSwitch(null)} aria-label="Close">
+                  <X size={18} />
+                </button>
+                <div className="psh-head">
+                  <Banknote size={22} aria-hidden="true" />
+                  <h3 id="cod-sw-h">Cash on Delivery ships by Standard</h3>
+                </div>
+                <p>
+                  {thunderOn ? tEta.name : "Faster delivery"} is for online payments. With Cash on Delivery
+                  your order switches to Standard delivery.
+                </p>
+                <ul className="psh-bill">
+                  <li>
+                    <span>
+                      <Truck size={16} aria-hidden="true" /> Standard delivery
+                    </span>
+                    <b>{stdEtaText}</b>
+                  </li>
+                  <li className="is-off">
+                    <span>
+                      {thunderOn ? <CloudLightning size={16} aria-hidden="true" /> : <Zap size={16} aria-hidden="true" />}
+                      {thunderOn ? `${tEta.name} removed` : "Faster delivery removed"}
+                    </span>
+                    <b>−₹{fasterExtra}</b>
+                  </li>
+                  {codFeeStd > 0 && (
+                    <li>
+                      <span>
+                        <Banknote size={16} aria-hidden="true" /> Cash on Delivery fee
+                      </span>
+                      <b>+₹{codFeeStd}</b>
+                    </li>
+                  )}
+                  <li className="is-total">
+                    <span>Pay at your door</span>
+                    <b>₹{codStdTotal}</b>
+                  </li>
+                </ul>
+                <button
+                  type="button"
+                  className="cdp-save"
+                  data-no-busy
+                  onClick={() => {
+                    const mode = codSwitch;
+                    setCodSwitch(null);
+                    setFasterDelivery(false);
+                    setThunderPick(false);
+                    buzz(8);
+                    // Place once Standard is applied (next render), so the
+                    // COD fee and total are worked out on the Standard bill.
+                    if (mode === "place") codPlaceRef.current = true;
+                    else setPaySel("COD");
+                  }}
+                >
+                  <Banknote size={16} strokeWidth={2.4} />
+                  Switch to Cash on Delivery · ₹{codStdTotal}
+                </button>
+                <button type="button" className="cdp-skip" onClick={() => setCodSwitch(null)}>
+                  Keep {thunderOn ? tEta.name : "Faster delivery"} · pay online
+                </button>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>,
+          document.body,
+        )}
+      </Fragment>
 
       {/* ========== Faster Delivery Modal ========== */}
       <AnimatePresence>
@@ -4888,9 +5083,9 @@ export default function AddressModal({
                         className="po-more"
                         onClick={() => {
                           setShowPayMethod(false);
-                          if (fasterDelivery && !codFasterOk) {
-                            setFasterDelivery(false);
-                            codStandardToast();
+                          if (fasterDelivery) {
+                            setCodSwitch("select");
+                            return;
                           }
                           setPaySel("COD");
                         }}

@@ -50,7 +50,7 @@ _Last updated: ${today} · auto-generated from the live catalogue on each deploy
 - **Name:** TheBookX (formerly Uskillbook)
 - **Website:** https://thebookx.in
 - **What we do:** Online bookstore delivering authentic, affordable books across India.
-- **Why shoppers choose us:** Lowest prices online (books from ₹1), 100% genuine copies, free delivery from ₹249, Cash on Delivery, delivery in 5–9 days (Faster: 1–6 days) via Delhivery and India Post, 7-day replacement on damaged or wrong books, and a free collectible bookmark with every order.
+- **Why shoppers choose us:** Lowest prices online (books from ₹1), 100% genuine copies, free delivery from ₹249, Cash on Delivery, delivery in 5–9 days (Faster: 1–6 days; Thunder 1–2 day delivery in Delhi, Mumbai, Kolkata, Chennai, Bengaluru and Hyderabad with a delivery-charge refund if late) via Delhivery and India Post, 7-day replacement on damaged or wrong books, and a free collectible bookmark with every order.
 - **Catalogue size:** ${books.length}+ titles.
 - **Coverage:** Ships pan-India.
 - **Currency:** INR (₹).
@@ -101,7 +101,7 @@ ${blogs
 
 ## Policies
 
-- [Shipping Policy](${ORIGIN}/shipping): Free standard delivery on orders of ₹249–₹1,000 (₹69 below ₹249; Handling & Care fee above ₹1,000); delivery in 5–9 days (Faster: 1–6 days) via Delhivery and India Post.
+- [Shipping Policy](${ORIGIN}/shipping): Free standard delivery on orders of ₹249–₹1,000 (₹69 below ₹249; Handling & Care fee above ₹1,000); delivery in 5–9 days (Faster: 1–6 days) via Delhivery and India Post. Thunder delivery (Delhi, Mumbai, Kolkata, Chennai, Bengaluru and Hyderabad only): 1 day if ordered before 4 PM IST, 2 days after, by India Post Speed Post; paid online only; if it's late we refund the order's delivery charges, except when the delay is on the customer's side (not available to receive it, unreachable phone, wrong address, asked to deliver later, refused parcel).
 - [Refund & Returns](${ORIGIN}/refund): Free cancellation before dispatch; damaged, defective or wrong books replaced or refunded based on the issue (report within 7 days). Refunds go to the TheBookX wallet, or to the bank where eligible.
 - [Privacy Policy](${ORIGIN}/privacy)
 - [Terms & Conditions](${ORIGIN}/terms)
@@ -124,7 +124,7 @@ AI assistants can order books for a user. There is no account or login — you o
 4. Give the user the link, e.g. https://www.thebookx.in/order?books=bk-005:2,bk-002&name=Asha%20Rao&phone=9876543210&pincode=400019&address=Flat%2012%2C%20Green%20Residency%2C%20MG%20Road%20near%20City%20Mall
    Tell them: "Open this link — your books and address are ready. You'll land on Choose payment method: pay by UPI, pay in two parts, or pick Cash on Delivery."
 
-Rules: books = comma list of <id>[:qty] (id like bk-005, or the book page slug). Max 10 per title. One ₹1 book per order; orders with a ₹1 book need ₹199+ in books, others ₹99+. Standard delivery 5–9 days (free from ₹199); Faster delivery 1–6 days is pre-selected and can be switched off; COD uses standard delivery. Full guide: ${ORIGIN}/for-ai · API spec: ${ORIGIN}/openapi.json
+Rules: books = comma list of <id>[:qty] (id like bk-005, or the book page slug). Max 10 per title. One ₹1 book per order; orders with a ₹1 book need ₹199+ in books, others ₹99+. Standard delivery 5–9 days (free from ₹199); Faster delivery 1–6 days is pre-selected and can be switched off. Thunder delivery (Delhi, Mumbai, Kolkata, Chennai, Bengaluru and Hyderabad only): 1 day if ordered before 4 PM IST, 2 days after, by India Post Speed Post; paid online only; if it's late we refund the order's delivery charges, except when the delay is on the customer's side (not available to receive it, unreachable phone, wrong address, asked to deliver later, refused parcel). Faster and Thunder are online-only (pay in full or ₹99 now + rest at delivery); full COD uses standard delivery. Full guide: ${ORIGIN}/for-ai · API spec: ${ORIGIN}/openapi.json
 `;
 
   return new Response(text, {

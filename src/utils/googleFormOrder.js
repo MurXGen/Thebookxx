@@ -95,6 +95,14 @@ const getDeliveryChargeValue = (totalDiscounted, isFasterDelivery) => {
 };
 
 // Helper function to get delivery label
+// "Delivery Type" column text. A Thunder order (India Post 24/48 Speed Post)
+// passes its own label, which still contains "Faster" for every faster check.
+export const deliveryTypeValue = (totalDiscounted, isFaster, thunderType = "") => {
+  if (isFaster && thunderType) return thunderType;
+  const label = getDeliveryLabelValue(totalDiscounted, isFaster);
+  return isFaster ? `Faster Delivery (${label})` : `Standard Delivery (${label})`;
+};
+
 const getDeliveryLabelValue = (totalDiscounted, isFasterDelivery) => {
   if (isFasterDelivery) {
     if (totalDiscounted >= 799) return "Priority Express";
@@ -412,6 +420,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     // When true the order is a completed checkout (→ "Processing"); when false
     // it is a draft / payment-pending write (→ "Unconfirmed", admin verifies).
     confirmed = false,
+    // Thunder delivery label (only set on Thunder orders).
+    thunderType = "",
   } = orderDetails;
 
   // Use the real charge the customer was shown; only fall back to the
@@ -519,9 +529,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       }
       return pt;
     })(),
-    deliveryType: fasterDeliveryChoice
-      ? `Faster Delivery (${deliveryLabel})`
-      : `Standard Delivery (${deliveryLabel})`,
+    deliveryType: deliveryTypeValue(totalDiscounted, fasterDeliveryChoice, thunderType),
     deliveryCharge: deliveryCharge || 0,
     // Gift-wrap column records gift wrap + the bookmark split, e.g.
     // "No", "No-Bookmark 4-2" (4 charged, 2 free), "Yes-Bookmark 0-1".

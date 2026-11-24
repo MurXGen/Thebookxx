@@ -139,7 +139,7 @@ export function faqsOf(book) {
     },
     {
       q: `How fast is delivery for ${book.name}?`,
-      a: `Orders ship within a day. Most of India receives them in 4–9 days, Maharashtra in 1–5 days, and Faster delivery brings it to 1–6 days. ${freeLine}.`,
+      a: `Orders ship within a day. Most of India receives them in 4–9 days, Maharashtra in 1–5 days, and Faster delivery brings it to 1–6 days. In Delhi, Mumbai, Kolkata, Chennai, Bengaluru and Hyderabad, Thunder delivery gets it to you in 1–2 days, with your delivery charges refunded if it's late. ${freeLine}.`,
     },
     {
       q: `Can I buy ${book.name} with Cash on Delivery?`,

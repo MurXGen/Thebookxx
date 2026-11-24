@@ -6,8 +6,9 @@
 // sheen sweeps across it every few seconds.
 
 import { useEffect, useState } from "react";
-import { Truck, Zap } from "lucide-react";
+import { Truck, Zap, CloudLightning } from "lucide-react";
 import { etaRangeFor, getDeliveryEta, fmtEtaRange, fmtCountdown } from "@/lib/deliveryEta";
+import { thunderEta } from "@/lib/thunderDelivery";
 
 function readPin() {
   try {
@@ -21,7 +22,7 @@ function readPin() {
   }
 }
 
-export default function DeliveryEtaStripe({ faster = false, address = null, className = "" }) {
+export default function DeliveryEtaStripe({ faster = false, thunder = false, address = null, className = "" }) {
   const [now, setNow] = useState(0); // 0 until mounted (no server/client mismatch)
   const [pin, setPin] = useState({ pincode: "", city: "", state: "" });
 
@@ -42,6 +43,33 @@ export default function DeliveryEtaStripe({ faster = false, address = null, clas
   }, []);
 
   if (!now) return null;
+
+  // Thunder (24/48 Speed Post): one date — tomorrow before 4 PM, else the day after.
+  if (thunder) {
+    const t = thunderEta(now);
+    return (
+      <div className={`eta-stripe is-thunder${t.msToCutoff ? " is-live" : ""}${className ? ` ${className}` : ""}`} role="status">
+        <span className="eta-ic" aria-hidden="true">
+          <CloudLightning size={14} />
+        </span>
+        <span className="eta-tx">
+          {t.msToCutoff ? (
+            <>
+              Order within <b className="eta-cd">{fmtCountdown(t.msToCutoff)}</b>
+              <span className="eta-dot" aria-hidden="true">·</span>
+              Get it <b>tomorrow, {t.dateText}</b>
+            </>
+          ) : (
+            <>
+              Thunder<span className="eta-dot" aria-hidden="true">·</span>
+              Get it <b>{t.dateText}</b>
+            </>
+          )}
+        </span>
+        <span className="eta-days">{t.days}-day</span>
+      </div>
+    );
+  }
 
   // Checkout passes the typed address; elsewhere use the saved pincode.
   const where = address?.pincode || address?.state ? address : pin;

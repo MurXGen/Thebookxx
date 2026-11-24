@@ -6989,22 +6989,22 @@ export const books = [
     weight: 6000,
   },
 
-  {
-    id: "bk-026",
-    name: "We Are There For Each Other",
-    image: bookImages["we-are-there-for-each-other"],
-    description:
-      "Sagar Chudesara's national bestselling debut 'We Are There For Each Other' — an intense love story of four friends on a road trip of a lifetime, a heartfelt journey of romance, friendship and fighting for love. One of India's fastest-selling debut novels, now at TheBookX.in. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
-    author: "Sagar Chudesara",
-    pages: "280",
-    language: "English",
-    size: "Paperback",
-    stock: 20,
-    catalogue: ["fiction", "romance", "bestseller"],
-    originalPrice: calculateOriginalPrice(199),
-    discountedPrice: 199,
-    weight: 250,
-  },
+  // {
+  //   id: "bk-026",
+  //   name: "We Are There For Each Other",
+  //   image: bookImages["we-are-there-for-each-other"],
+  //   description:
+  //     "Sagar Chudesara's national bestselling debut 'We Are There For Each Other' — an intense love story of four friends on a road trip of a lifetime, a heartfelt journey of romance, friendship and fighting for love. One of India's fastest-selling debut novels, now at TheBookX.in. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
+  //   author: "Sagar Chudesara",
+  //   pages: "280",
+  //   language: "English",
+  //   size: "Paperback",
+  //   stock: 20,
+  //   catalogue: ["fiction", "romance", "bestseller"],
+  //   originalPrice: calculateOriginalPrice(199),
+  //   discountedPrice: 199,
+  //   weight: 250,
+  // },
   {
     id: "bk-450",
     name: "The Bane Chronicles",

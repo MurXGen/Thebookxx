@@ -460,7 +460,7 @@ export const listicleBlogs = {
         items: [
           `${L("twisted-love", "Twisted Love")}, Ana Huang · the viral grumpy-meets-sunshine series opener. <strong>₹159</strong>`,
           `${L("red-flags-and-rishtas", "Red Flags and Rishtas")}, Rashmi Sharma · a desi rom-com you'll devour. <strong>₹159</strong>`,
-          `${L("we-are-there-for-each-other", "We Are There for Each Other")}, Anshul Sharma · a heartwarming Indian love story. <strong>₹149</strong>`,
+          // `${L("we-are-there-for-each-other", "We Are There for Each Other")}, Anshul Sharma · a heartwarming Indian love story. <strong>₹149</strong>`,
           `${L("too-good-to-be-true", "Too Good to Be True")}, Carola Lovering · a twisty romance with secrets. <strong>₹159</strong>`,
           `${L("can-we-be-strangers-again", "Can We Be Strangers Again")}, Rithvik Singh · poetry for the heartbroken. <strong>₹139</strong>`,
           `${L("i-don-t-love-you-anymore", "I Don't Love You Anymore")}, Rithvik Singh · moving on, beautifully written. <strong>₹109</strong>`,

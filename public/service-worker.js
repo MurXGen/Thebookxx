@@ -2,7 +2,7 @@
 // (Chrome needs a registered SW with a fetch handler). It does a plain
 // network pass-through with a cache-fallback for offline navigations, so it
 // never interferes with fresh content.
-const CACHE = "tbx-shell-v2";
+const CACHE = "tbx-shell-v3";
 const SHELL = ["/", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
@@ -36,7 +36,11 @@ self.addEventListener("fetch", (event) => {
         }
         return res;
       })
-      .catch(() => caches.match(req).then((r) => r || caches.match("/"))),
+      // Offline: a cached copy; only page loads fall back to the home shell —
+      // never hand HTML to a script / style / image request (blank page).
+      .catch(() =>
+        caches.match(req).then((r) => r || (req.mode === "navigate" ? caches.match("/") : Response.error())),
+      ),
   );
 });
 

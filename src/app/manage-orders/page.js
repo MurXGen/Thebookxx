@@ -111,6 +111,8 @@ import {
   ListChecks,
   Zap,
   Sparkles,
+  BookOpen,
+  Info,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
@@ -137,6 +139,8 @@ import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
 import { ADMIN_CODE_KEY } from "@/lib/adminCode";
+import { isThunderPincode, thunderCity, thunderFee, thunderEta, thunderDeliveryType } from "@/lib/thunderDelivery";
+import { cachedText, cacheMinutes, setCacheMinutes, invalidateCache, CACHE_OPTIONS } from "@/utils/moCache";
 import {
   REFUND_IN_PROCESS,
   REFUND_DONE,
@@ -149,7 +153,7 @@ import {
   sendOrderStatusEmail,
   reviewBooksFor,
 } from "@/utils/orderEmail";
-import { getDeliveryCharge, getCodFee } from "@/utils/cartOffers";
+import { getDeliveryCharge } from "@/utils/cartOffers";
 import { trackingUrl } from "@/utils/trackingLink";
 import {
   classifyOrderProduct,
@@ -227,7 +231,18 @@ const cleanDeliveryType = (raw) => {
   }
   // "Standard Delivery Delivery" → "Standard Delivery"
   s = s.replace(/\b(\w+)\s+\1\b/gi, "$1");
+  if (/thunder/i.test(s)) return thunderLabel(s);
   return s || "—";
+};
+
+// Thunder (India Post 24/48 Speed Post, metros only). Saved in "Delivery
+// Type" as "Thunder 1-day · Faster Delivery (Speed Post · by Tue 25 Nov)".
+const isThunderOrder = (o) => /thunder/i.test(String(o?.["Delivery Type"] ?? o ?? ""));
+const thunderLabel = (raw) => {
+  const s = String(raw || "");
+  const d = (s.match(/thunder\s*(\d)-?day/i) || [])[1];
+  const by = (s.match(/by\s+([A-Za-z]{3}\s+\d{1,2}\s+[A-Za-z]{3})/i) || [])[1];
+  return `Thunder${d ? ` ${d}-day` : ""}${by ? ` · by ${by}` : ""}`;
 };
 
 // Prefilled, nicely-formatted WhatsApp messages for each order stage.
@@ -2812,7 +2827,17 @@ function OrderCardSkeleton() {
   );
 }
 
+// One "showing saved data" toast per load (dev double-mounts run it twice).
+let lastCacheToastAt = 0;
+
 function OrdersLoader() {
+  // Saved (IndexedDB) data loads in a blink — only show the spinner when a
+  // real sheet fetch takes longer than ~0.35 s.
+  const [showSpin, setShowSpin] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setShowSpin(true), 350);
+    return () => clearTimeout(t);
+  }, []);
   // Renders before the page mounts its theme state, so read the saved theme
   // here — otherwise the skeleton flashes the light theme in dark mode.
   // (AdminLock only renders on the client, so localStorage is available.)
@@ -2825,17 +2850,12 @@ function OrdersLoader() {
   });
   return (
     <div className={`my-orders-page mo-glass mo-loader${dark ? " mo-dark" : ""}`}>
-      <div className="section-1200 p-40">
-        <div className="mo-skel-wrap">
-          <div className="mo-skel-toprow">
-            <span className="an2-skel-line w-40" />
-            <span className="an2-skel-line w-20" />
-          </div>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <OrderCardSkeleton key={i} />
-          ))}
+      {showSpin && (
+        <div className="mo-spin-wrap" role="status" aria-live="polite">
+          <span className="mo-loadspin" aria-hidden="true" />
+          <span className="mo-spin-l">Loading orders…</span>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -3878,7 +3898,51 @@ export default function ManageOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshBusy, setRefreshBusy] = useState(false); // top-bar refresh icon
+  const [refreshBusy, setRefreshBusy] = useState(false);
+  // Email sheet: which template is expanded (null = the first suggestion).
+  const [emailTplOpen, setEmailTplOpen] = useState(null);
+  // Top bar hides while scrolling down and comes back on scroll up.
+  const [topHidden, setTopHidden] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const y = window.scrollY;
+        if (y < 60) setTopHidden(false);
+        else if (y > last + 6) setTopHidden(true);
+        else if (y < last - 6) setTopHidden(false);
+        last = y;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+  // Orders-tab Overview accordion (closed by default, remembered).
+  const [ovOpen, setOvOpen] = useState(false);
+  useEffect(() => {
+    try {
+      setOvOpen(localStorage.getItem("mo_overview_open") === "1");
+    } catch {}
+  }, []);
+  const toggleOvOpen = () =>
+    setOvOpen((v) => {
+      try {
+        localStorage.setItem("mo_overview_open", v ? "0" : "1");
+      } catch {}
+      return !v;
+    });
+  // IndexedDB read cache: minutes to reuse data (dropdown in the top bar).
+  const [cacheMin, setCacheMin] = useState(5);
+  const [ordersFromCache, setOrdersFromCache] = useState(false);
+  useEffect(() => {
+    setCacheMin(cacheMinutes());
+  }, []); // top-bar refresh icon
   const [mergeOpen, setMergeOpen] = useState(false); // "multiple orders" strip, closed by default
   const [ordersFetchedAt, setOrdersFetchedAt] = useState(0);
   const [liveNow, setLiveNow] = useState(() => Date.now());
@@ -3904,8 +3968,7 @@ export default function ManageOrdersPage() {
     let alive = true;
     (async () => {
       try {
-        const res = await fetch(LEADS_CSV_URL, { cache: "no-store" });
-        const text = await res.text();
+        const { text } = await cachedText("leads", LEADS_CSV_URL, { init: { cache: "no-store" } });
         const m = parseLeadsCSV(text);
         const header = m[0] || [];
         const idx = (name) =>
@@ -4044,16 +4107,20 @@ export default function ManageOrdersPage() {
   const [dispatchQuery, setDispatchQuery] = useState("");
   // Dispatch queue "Smart order": group + sort cards into the order to pack
   // and post them (ready → needs tracking → to weigh; Speed & oldest first).
-  const [dispSmart, setDispSmart] = useState(false);
+  // Grouping: "off" (as queued) | "stage" (ready → tracking → weigh) |
+  // "book" (orders sharing a title together — pack all Atomic Habits at once).
+  const [dispGroup, setDispGroup] = useState("off");
   useEffect(() => {
     try {
-      setDispSmart(localStorage.getItem("mo_dispatch_smart") === "1");
+      const g = localStorage.getItem("mo_dispatch_group");
+      if (g === "off" || g === "stage" || g === "book") setDispGroup(g);
+      else if (localStorage.getItem("mo_dispatch_smart") === "1") setDispGroup("stage");
     } catch {}
   }, []);
-  const toggleDispSmart = (on) => {
-    setDispSmart(on);
+  const pickDispGroup = (g) => {
+    setDispGroup(g);
     try {
-      localStorage.setItem("mo_dispatch_smart", on ? "1" : "0");
+      localStorage.setItem("mo_dispatch_group", g);
     } catch {}
   };
   const [dispPaste, setDispPaste] = useState("");
@@ -4148,9 +4215,29 @@ export default function ManageOrdersPage() {
   const [billOrderId, setBillOrderId] = useState(null); // order whose bill modal is open
   const longPressRef = useRef(false); // true right after a long-press selects a card
   const lpTimer = useRef(null); // long-press timer handle
-  const [trackDrafts, setTrackDrafts] = useState({}); // { orderId: "CX..." }
+  // Unsaved card drafts survive a refresh: typed / scanned tracking IDs and
+  // dispatch-card weight & size are mirrored to localStorage until saved.
+  const readDraft = (k) => {
+    if (typeof window === "undefined") return {};
+    try {
+      const v = JSON.parse(localStorage.getItem(k) || "{}");
+      return v && typeof v === "object" ? v : {};
+    } catch {
+      return {};
+    }
+  };
+  const [trackDrafts, setTrackDrafts] = useState(() => readDraft("mo_track_drafts")); // { orderId: "CX..." }
   // Dispatch-card parcel drafts: { orderId: { w, l, b, h } } until Save.
-  const [parcelDrafts, setParcelDrafts] = useState({});
+  const [parcelDrafts, setParcelDrafts] = useState(() => readDraft("mo_parcel_drafts"));
+  useEffect(() => {
+    try {
+      const t = Object.fromEntries(Object.entries(trackDrafts).filter(([, v]) => String(v || "").trim()));
+      if (Object.keys(t).length) localStorage.setItem("mo_track_drafts", JSON.stringify(t));
+      else localStorage.removeItem("mo_track_drafts");
+      if (Object.keys(parcelDrafts).length) localStorage.setItem("mo_parcel_drafts", JSON.stringify(parcelDrafts));
+      else localStorage.removeItem("mo_parcel_drafts");
+    } catch {}
+  }, [trackDrafts, parcelDrafts]);
   const [trackScanFor, setTrackScanFor] = useState(null); // orderId being scanned
   const [addrEdit, setAddrEdit] = useState({}); // { orderId: {address,city,state,pincode} }
   const [rowSaving, setRowSaving] = useState({}); // { orderId: "tracking"|"address"|"status" }
@@ -4674,7 +4761,7 @@ export default function ManageOrdersPage() {
   const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
   // Card view renders only this many at a time (perf — "Load more" reveals the
   // rest). Reset to the first page whenever the filter/search changes.
-  const ORDERS_PAGE = 6;
+  const ORDERS_PAGE = 100;
   const [visibleCount, setVisibleCount] = useState(ORDERS_PAGE);
   // Collapse all order cards to a tiny summary (name, status, price, books).
   const [compactCards, setCompactCards] = useState(false);
@@ -4851,8 +4938,9 @@ export default function ManageOrdersPage() {
   const loadCarts = async () => {
     setCartsLoading(true);
     try {
-      const res = await fetch("/api/abandoned-cart", { cache: "no-store" });
-      const json = await res.json();
+      const json = JSON.parse(
+        (await cachedText("carts", "/api/abandoned-cart", { init: { cache: "no-store" } })).text,
+      );
       setCartsList(Array.isArray(json.carts) ? json.carts : []);
     } catch {
       setCartsList([]);
@@ -5644,6 +5732,7 @@ export default function ManageOrdersPage() {
         action: "trackingBulk",
         data: JSON.stringify(enriched),
       });
+      invalidateCache("orders", "wallet");
       await fetch(SHEET_EDIT_API_URL, { method: "POST", mode: "no-cors", body });
       enriched.forEach((r) =>
         patchLocalOrder(r.orderId, {
@@ -5815,7 +5904,7 @@ export default function ManageOrdersPage() {
   // Discard queued status edits and reload the true sheet values.
   const discardPendingStatus = () => {
     setPendingStatus({});
-    fetchOrders();
+    fetchOrders({ force: true });
   };
 
   // Queue a tracking ID (local only) — pushed to the sheet with the others.
@@ -5928,6 +6017,14 @@ export default function ManageOrdersPage() {
       );
       setPendingShip({});
       setPendingTracking({});
+      // Pushed — drop the local drafts for these cards.
+      const drop = (p) => {
+        const n = { ...p };
+        ids.forEach((id) => delete n[id]);
+        return n;
+      };
+      setTrackDrafts(drop);
+      setParcelDrafts(drop);
       showToast(
         `Pushed ${ids.length} order${ids.length === 1 ? "" : "s"} to the sheet ✓`,
         "success",
@@ -5948,7 +6045,7 @@ export default function ManageOrdersPage() {
   const discardPendingShipments = () => {
     setPendingShip({});
     setPendingTracking({});
-    fetchOrders();
+    fetchOrders({ force: true });
   };
 
   const pushTrackingRows = async () => {
@@ -5982,6 +6079,7 @@ export default function ManageOrdersPage() {
         action: "trackingBulk",
         data: JSON.stringify(enriched),
       });
+      invalidateCache("orders", "wallet");
       await fetch(SHEET_EDIT_API_URL, {
         method: "POST",
         mode: "no-cors",
@@ -6034,8 +6132,7 @@ export default function ManageOrdersPage() {
   const loadReviewSubs = async () => {
     setReviewLoading(true);
     try {
-      const res = await fetch("/api/reviews?all=1");
-      const j = await res.json();
+      const j = JSON.parse((await cachedText("reviews", "/api/reviews?all=1")).text);
       const list = Array.isArray(j.submissions) ? j.submissions : [];
       setReviewSubs(list);
       setReviewDrafts(
@@ -6062,6 +6159,7 @@ export default function ManageOrdersPage() {
     const d = reviewDrafts[sub.subId] || {};
     setReviewSaving(sub.subId);
     try {
+      invalidateCache("reviews");
       const res = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -7375,8 +7473,23 @@ export default function ManageOrdersPage() {
     const silent = opts?.silent === true;
     if (!silent) setLoading(true);
     try {
-      const response = await fetch(SHEET_API_URL);
-      const text = await response.text();
+      const { text, at: fetchedAt, cached } = await cachedText("orders", SHEET_API_URL, {
+        force: opts?.force === true,
+      });
+      setOrdersFromCache(cached);
+      if (cached && !opts?.silent && Date.now() - lastCacheToastAt > 4000) {
+        lastCacheToastAt = Date.now();
+        const ttl = cacheMinutes() * 60000;
+        const left = Math.max(0, ttl - (Date.now() - fetchedAt));
+        const fmt = (ms) => {
+          const sec = Math.ceil(ms / 1000);
+          return sec >= 60 ? `${Math.floor(sec / 60)}m ${String(sec % 60).padStart(2, "0")}s` : `${sec}s`;
+        };
+        showToast(
+          `Saved data · refreshes in ${fmt(left)}`,
+          "info",
+        );
+      }
       const jsonString = text.substring(47, text.length - 2);
       const data = JSON.parse(jsonString);
 
@@ -7431,7 +7544,7 @@ export default function ManageOrdersPage() {
       const sorted = sortByDateDesc(named);
 
       setOrders(sorted);
-      setOrdersFetchedAt(Date.now());
+      setOrdersFetchedAt(fetchedAt);
       fetchedRef.current = true;
       // Note: we intentionally DON'T seed filteredOrders with the full list —
       // the filter effect below runs immediately and populates it per the
@@ -7477,10 +7590,11 @@ export default function ManageOrdersPage() {
   }, [fetchOrders]);
 
   // Return/refund requests — map by Order ID so each card can show its status.
-  const fetchReturns = useCallback(async () => {
+  const fetchReturns = useCallback(async (opts) => {
     try {
-      const res = await fetch("/api/returns?all=1", { cache: "no-store" });
-      const json = await res.json();
+      const json = JSON.parse(
+        (await cachedText("returns", "/api/returns?all=1", { force: opts?.force === true, init: { cache: "no-store" } })).text,
+      );
       const reqs = Array.isArray(json.requests) ? json.requests : [];
       const map = {};
       reqs.forEach((r) => {
@@ -7505,7 +7619,7 @@ export default function ManageOrdersPage() {
   const liveRefresh = useCallback(async () => {
     setAnLiveBusy(true);
     try {
-      await fetchOrders({ silent: true });
+      await fetchOrders({ silent: true, force: true });
     } finally {
       setAnLiveBusy(false);
     }
@@ -7563,6 +7677,7 @@ export default function ManageOrdersPage() {
     }
     setRxBusy(true);
     try {
+      invalidateCache("returns");
       const res = await fetch("/api/returns", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -7581,8 +7696,8 @@ export default function ManageOrdersPage() {
           "success",
         );
         closeReceiveReturn();
-        fetchReturns();
-        fetchWalletSheet?.();
+        fetchReturns({ force: true });
+        fetchWalletSheet?.({ force: true });
       } else {
         showToast(json.error || "Couldn't complete the refund.", "error");
       }
@@ -7596,10 +7711,9 @@ export default function ManageOrdersPage() {
   // Wallet balances now live in the dedicated Wallet tab. Read it and aggregate
   // a signed balance per phone (+ earliest credit time for holding-days).
   const [walletMap, setWalletMap] = useState({}); // phone -> { balance, firstCreditT }
-  const fetchWalletSheet = useCallback(async () => {
+  const fetchWalletSheet = useCallback(async (opts) => {
     try {
-      const res = await fetch(WALLET_SHEET_API_URL);
-      const text = await res.text();
+      const { text } = await cachedText("wallet", WALLET_SHEET_API_URL, { force: opts?.force === true });
       const data = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
       const headers = (data.table.cols || []).map((c) => c.label);
       const idx = (label) => headers.indexOf(label);
@@ -9783,7 +9897,7 @@ export default function ManageOrdersPage() {
         };
       });
       setWalletModal(null);
-      setTimeout(() => fetchWalletSheet(), 1800);
+      setTimeout(() => fetchWalletSheet({ force: true }), 1800);
     } catch (e) {
       console.error("Wallet update failed:", e);
       alert("Could not update wallet. Please try again.");
@@ -9954,7 +10068,8 @@ export default function ManageOrdersPage() {
       orderId,
       data: JSON.stringify(fields),
     });
-    await fetch(SHEET_EDIT_API_URL, {
+    invalidateCache("orders", "wallet");
+      await fetch(SHEET_EDIT_API_URL, {
       method: "POST",
       mode: "no-cors",
       body,
@@ -10196,7 +10311,18 @@ export default function ManageOrdersPage() {
         ok ? `“${tpl.label}” email sent to ${to} ✓` : "Couldn't send — try again.",
         ok ? "success" : "error",
       );
-      if (ok) setEmailTplOrder(null);
+      if (ok) {
+        // Remember what went to this order (shown as "Sent …" in the sheet).
+        try {
+          const all = JSON.parse(localStorage.getItem("mo_email_sent") || "{}");
+          const oid = String(order["Order ID"] || "");
+          all[oid] = { ...(all[oid] || {}), [tpl.key]: Date.now() };
+          const ids = Object.keys(all);
+          if (ids.length > 1500) ids.slice(0, ids.length - 1500).forEach((k) => delete all[k]);
+          localStorage.setItem("mo_email_sent", JSON.stringify(all));
+        } catch {}
+        setEmailTplOrder(null);
+      }
     } finally {
       setEmailingOrder("");
     }
@@ -10942,7 +11068,8 @@ export default function ManageOrdersPage() {
       action: "append",
       data: JSON.stringify(fields),
     });
-    await fetch(SHEET_EDIT_API_URL, {
+    invalidateCache("orders", "wallet");
+      await fetch(SHEET_EDIT_API_URL, {
       method: "POST",
       mode: "no-cors",
       body,
@@ -11030,6 +11157,7 @@ export default function ManageOrdersPage() {
     if (!orderId || !SHEET_EDIT_API_URL) return false;
     try {
       const body = new URLSearchParams({ action: "delete", orderId });
+      invalidateCache("orders", "wallet");
       await fetch(SHEET_EDIT_API_URL, {
         method: "POST",
         mode: "no-cors",
@@ -11146,7 +11274,12 @@ export default function ManageOrdersPage() {
       v === "" || v == null || !Number.isFinite(Number(v))
         ? null
         : Math.max(0, Math.round(Number(v)));
-    const deliveryAuto = getDeliveryCharge(subtotal, isFaster, hasOneRupee);
+    // Thunder = Standard delivery + the weight-based Speed Post fee.
+    const isThunder = isFaster && /thunder/i.test(fd.deliveryType || "");
+    const thunderGrams = isThunder ? orderEconomics(lines).weight || lines.reduce((g, b) => g + 250 * (Number(b.quantity) || 1), 0) : 0;
+    const deliveryAuto = isThunder
+      ? getDeliveryCharge(subtotal, false, hasOneRupee) + thunderFee(thunderGrams)
+      : getDeliveryCharge(subtotal, isFaster, hasOneRupee);
     const deliveryOverridden = ovr(fd.deliveryOverride) != null;
     const delivery = deliveryOverridden ? ovr(fd.deliveryOverride) : deliveryAuto;
     // Above ₹1000 the delivery line is the "Handling & Care" fee.
@@ -11175,7 +11308,8 @@ export default function ManageOrdersPage() {
       offerDiscount -
       couponDiscount -
       walletApplied;
-    const codFeeAuto = mode === "cod" ? getCodFee(Math.max(0, preCod)) : 0;
+    // Same fee as checkout: ₹29 minimum, or 5.9% of the bill when higher.
+    const codFeeAuto = mode === "cod" ? Math.max(29, Math.round(Math.max(0, preCod) * 0.059)) : 0;
     const codFeeOverridden = mode === "cod" && ovr(fd.codFeeOverride) != null;
     const codFee = codFeeOverridden ? ovr(fd.codFeeOverride) : codFeeAuto;
     const total = Math.max(0, Math.round(preCod + codFee));
@@ -11187,6 +11321,9 @@ export default function ManageOrdersPage() {
       lines,
       subtotal,
       isFaster,
+      isThunder,
+      preCod,
+      codBlocked: preCod >= 1000,
       delivery,
       deliveryAuto,
       deliveryOverridden,
@@ -11928,7 +12065,8 @@ export default function ManageOrdersPage() {
       offerDiscount -
       couponDiscount -
       walletApplied;
-    const codFee = isCOD ? getCodFee(Math.max(0, preCod)) : 0;
+    // Checkout's COD fee: ₹29 minimum, or 5.9% of the bill when higher.
+    const codFee = isCOD ? Math.max(29, Math.round(Math.max(0, preCod) * 0.059)) : 0;
     const total = Math.max(0, Math.round(preCod + codFee));
     const codCollectible = isCOD ? total : 0;
     // Most-recent order supplies the address / name for the merged order.
@@ -12311,7 +12449,7 @@ export default function ManageOrdersPage() {
                               /faster|express/i.test(String(order["Delivery Type"] || ""))
                                 ? " mo-card-speed"
                                 : ""
-                            }`}
+                            }${isThunderOrder(order) ? " mo-card-thunder" : ""}`}
                             style={{
                               "--card-accent": isUrgentNoTrack
                                 ? "#dc2626"
@@ -12441,7 +12579,24 @@ export default function ManageOrdersPage() {
                                 </button>
                               )}
                               <div className="mo2-head-l">
-                                <span className="mo2-name" title={order["Customer Name"] || ""}>{order["Customer Name"] || "—"}</span>
+                                <span className="mo2-namerow">
+                                  <span className="mo2-name" title={order["Customer Name"] || ""}>{order["Customer Name"] || "—"}</span>
+                                  {orderId && (
+                                    <a
+                                      className="mo2-name-link"
+                                      href={`/profile/${String(order["Phone Number"] || "")
+                                        .replace(/\D/g, "")
+                                        .slice(-10)}/orders/${encodeURIComponent(orderId)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      title="Open the customer's order page"
+                                      aria-label="Open the customer's order page"
+                                    >
+                                      <ExternalLink size={14} />
+                                    </a>
+                                  )}
+                                </span>
                                 <span className="mo2-sub">
                                   <button
                                     type="button"
@@ -12512,10 +12667,10 @@ export default function ManageOrdersPage() {
                                             : "new";
                                       return (
                                         <span
-                                          className={`mo2-age${days >= 3 ? " warn" : ""}`}
+                                          className={`mo2-age mo2-age-text${days >= 3 ? " warn" : ""}`}
                                           title="Time since the order was placed"
                                         >
-                                          <Clock size={11} /> {label}
+                                          {label}
                                         </span>
                                       );
                                     })()}
@@ -12586,7 +12741,7 @@ export default function ManageOrdersPage() {
                                             : "Click to mark picked"
                                         }
                                       >
-                                        <BookCoverImg
+                                        <BookCoverImg thumb
                                           src={img}
                                           name={b.name}
                                           author={b.author}
@@ -12637,11 +12792,15 @@ export default function ManageOrdersPage() {
                                       📍 {liveTrack}
                                     </span>
                                   )}
-                                  {fasterD && (
+                                  {fasterD && (isThunderOrder(order) ? (
+                                    <span className="mo2-badge mo2-badge-deliv mo2-badge-thunder" title="India Post 24/48 Speed Post — book today">
+                                      ⛈️ {thunderLabel(deliv)}
+                                    </span>
+                                  ) : (
                                     <span className="mo2-badge mo2-badge-deliv">
                                       ⚡ Express delivery
                                     </span>
-                                  )}
+                                  ))}
                                   {giftOn && (
                                     <span className="mo2-badge mo2-badge-gift">
                                       🎁 Gift wrap
@@ -12744,21 +12903,27 @@ export default function ManageOrdersPage() {
                                       >
                                         {payLabel}
                                       </span>
-                                      <span className="mo2-money-sub">
-                                        {bookCount} book{bookCount === 1 ? "" : "s"}
-                                        {isCOD
-                                          ? ` · collect ₹${codCollect.toLocaleString("en-IN")}`
-                                          : ""}
-                                      </span>
                                     </div>
                                     <button
                                       type="button"
-                                      className="mo2-money-v"
+                                      className="mo2-money-r"
                                       onClick={() => setBillOrderId(orderId)}
                                       title="View bill"
                                     >
-                                      ₹{Number(order.revenue || 0).toLocaleString("en-IN")}
-                                      <ChevronRight size={15} />
+                                      <span className="mo2-money-v">
+                                        ₹{Number(order.revenue || 0).toLocaleString("en-IN")}
+                                        <ChevronRight size={15} />
+                                      </span>
+                                      <span className="mo2-money-meta">
+                                        <span className="qty">
+                                          {bookCount} book{bookCount === 1 ? "" : "s"}
+                                        </span>
+                                        {isCOD && (
+                                          <span className="collect">
+                                            collect ₹{codCollect.toLocaleString("en-IN")}
+                                          </span>
+                                        )}
+                                      </span>
                                     </button>
                                   </div>
                                   {selCtx && giftNoteOf(order) && (
@@ -12959,44 +13124,13 @@ export default function ManageOrdersPage() {
                                   <button
                                     type="button"
                                     className="mo-frame-ic mo-frame-email"
-                                    onClick={() => {
-                                      pendingPickerChannel.current = "email";
-                                      setWaCustomText("");
-                                      setWaPickerOrder(order);
-                                    }}
-                                    title="Email the customer"
+                                    onClick={() => { setEmailTplOpen(null); setEmailTplOrder(order); }}
+                                    title="Email the customer — templates suggested for this order"
                                     aria-label="Email the customer"
                                   >
                                     <Mail size={17} className="mo-act-ic" />
                                     <small className="mo-act-l">Email</small>
                                   </button>
-                                )}
-                                {String(order["Email"] || "").trim() && (
-                                  <button
-                                    type="button"
-                                    className="mo-frame-ic mo-frame-emailsend"
-                                    onClick={() => setEmailTplOrder(order)}
-                                    title="Send a status email (pick a template)"
-                                    aria-label="Send status email"
-                                  >
-                                    <MailCheck size={17} className="mo-act-ic" />
-                                    <small className="mo-act-l">Status</small>
-                                  </button>
-                                )}
-                                {orderId && (
-                                  <a
-                                    className="mo-frame-ic"
-                                    href={`/profile/${String(order["Phone Number"] || "")
-                                      .replace(/\D/g, "")
-                                      .slice(-10)}/orders/${encodeURIComponent(orderId)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    title="Open customer order page"
-                                    aria-label="Open customer order page"
-                                  >
-                                    <ExternalLink size={17} className="mo-act-ic" />
-                                    <small className="mo-act-l">View</small>
-                                  </a>
                                 )}
                                 <span className="mo2-act-sep" aria-hidden="true" />
                                 <button
@@ -13013,28 +13147,11 @@ export default function ManageOrdersPage() {
                                   {bookedOrders[orderId] ? (
                                     <CheckCircle size={17} className="mo-act-ic" />
                                   ) : (
-                                    <Stamp size={17} className="mo-act-ic" />
+                                    <Info size={17} className="mo-act-ic" />
                                   )}
-                                  <small className="mo-act-l">{bookedOrders[orderId] ? "Booked" : "Book"}</small>
+                                  <small className="mo-act-l">{bookedOrders[orderId] ? "Booked" : "Booking"}</small>
                                 </button>
-                                <button
-                                  type="button"
-                                  className={`mo-frame-ic mo-frame-dispatch${dispatchIds.includes(orderId) ? " on" : ""}`}
-                                  onClick={() => toggleDispatch(orderId)}
-                                  title={
-                                    dispatchIds.includes(orderId)
-                                      ? "In dispatch queue — tap to remove"
-                                      : "Move to Dispatch for label printing"
-                                  }
-                                  aria-label="Move to Dispatch"
-                                >
-                                  {dispatchIds.includes(orderId) ? (
-                                    <ListChecks size={17} className="mo-act-ic" />
-                                  ) : (
-                                    <ListPlus size={17} className="mo-act-ic" />
-                                  )}
-                                  <small className="mo-act-l">{dispatchIds.includes(orderId) ? "Queued" : "Queue"}</small>
-                                </button>
+
                                 {!selCtx && (() => {
                                   // One button for weight, size & tracking (the
                                   // same editor); the dot shows what's missing.
@@ -13062,6 +13179,25 @@ export default function ManageOrdersPage() {
                                   );
                                 })()}
                               </div>
+                              <button
+                                type="button"
+                                className={`mo-frame-ic mo-frame-dispatch mo-frame-dispatch-r${dispatchIds.includes(orderId) ? " on" : ""}`}
+                                onClick={() => toggleDispatch(orderId)}
+                                title={
+                                  dispatchIds.includes(orderId)
+                                    ? "In the dispatch queue — tap to remove"
+                                    : "Add to the dispatch queue"
+                                }
+                                aria-label={dispatchIds.includes(orderId) ? "Remove from dispatch queue" : "Add to dispatch queue"}
+                                aria-pressed={dispatchIds.includes(orderId)}
+                              >
+                                {dispatchIds.includes(orderId) ? (
+                                  <Check size={18} strokeWidth={2.6} className="mo-act-ic" />
+                                ) : (
+                                  <Plus size={18} strokeWidth={2.4} className="mo-act-ic" />
+                                )}
+                                <small className="mo-act-l">{dispatchIds.includes(orderId) ? "In dispatch" : "Dispatch"}</small>
+                              </button>
                               <div className="mo-kebab-wrap">
                                 <button
                                   type="button"
@@ -13899,7 +14035,7 @@ export default function ManageOrdersPage() {
   };
 
   return (
-    <div className={`my-orders-page mo-glass${darkMode ? " mo-dark" : ""}${bottomSearch ? " has-bsearch" : ""}${pendingShipIds.length ? " has-shipbar" : ""}`}>
+    <div className={`my-orders-page mo-glass${darkMode ? " mo-dark" : ""}${bottomSearch ? " has-bsearch" : ""}${pendingShipIds.length ? " has-shipbar" : ""}${activeTab === "book" && bookSubTab === "queue" ? " mo-in-dispatch" : ""}${topHidden ? " mo-top-hidden" : ""}`}>
       {/* New-order chime (drop the audio file at /public/sounds/new-order.mp3) */}
       <audio
         ref={newOrderAudioRef}
@@ -13975,6 +14111,17 @@ export default function ManageOrdersPage() {
         <div className="mo-main">
           {/* Sticky glass topbar */}
           <header className="mo-topbar">
+            {activeTab === "book" && bookSubTab === "queue" && (
+              <button
+                type="button"
+                className="mo-topbar-back"
+                onClick={() => goToTab("orders")}
+                aria-label="Back to orders"
+                title="Back to orders"
+              >
+                <ArrowLeft size={18} />
+              </button>
+            )}
             <div className="mo-topbar-heading">
               <h1>
                 {SECTION_TABS.find((t) => t.key === activeTab)?.label ||
@@ -13994,7 +14141,12 @@ export default function ManageOrdersPage() {
               onClick={async () => {
                 setRefreshBusy(true);
                 try {
-                  await fetchOrders({ silent: true });
+                  await invalidateCache();
+                  await Promise.all([
+                    fetchOrders({ silent: true, force: true }),
+                    fetchReturns({ force: true }),
+                    fetchWalletSheet({ force: true }),
+                  ]);
                   showToast("Orders refreshed ✓", "success");
                 } catch {
                   showToast("Couldn't refresh — try again.", "error");
@@ -14007,6 +14159,30 @@ export default function ManageOrdersPage() {
             >
               <RefreshCw size={20} />
             </button>
+            <label
+              className={`mo-cache-pick${ordersFromCache ? " cached" : ""}`}
+              title={`Reuse loaded data for this long before calling the sheet again${
+                ordersFetchedAt ? ` · data from ${new Date(ordersFetchedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}${ordersFromCache ? " (cached)" : ""}` : ""
+              }`}
+            >
+              <Clock size={13} aria-hidden="true" />
+              <select
+                value={cacheMin}
+                onChange={(e) => {
+                  const n = Number(e.target.value);
+                  setCacheMin(n);
+                  setCacheMinutes(n);
+                  showToast(n ? `Data reused for ${n} min before reloading` : "Cache off — every load reads the sheet", "info");
+                }}
+                aria-label="Cache time"
+              >
+                {CACHE_OPTIONS.map((m) => (
+                  <option key={m} value={m}>
+                    {m ? `${m} min` : "Off"}
+                  </option>
+                ))}
+              </select>
+            </label>
             <button
               type="button"
               className="mo-bell"
@@ -16102,6 +16278,28 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
+                  {/* Overview accordion — headline numbers, last-14-days chart and
+                      the order map in one group. Closed by default; the head
+                      line is the short version. */}
+                  <button
+                    type="button"
+                    className={`mo-ovacc-head${ovOpen ? " open" : ""}`}
+                    aria-expanded={ovOpen}
+                    onClick={toggleOvOpen}
+                  >
+                    <ChevronDown size={15} className="mo-ovacc-chev" aria-hidden="true" />
+                    <b>Overview</b>
+                    <span className="mo-ovacc-sum">
+                      <span>{realOrders.length.toLocaleString()} orders</span>
+                      <span>₹{fRevenue.toLocaleString()}</span>
+                      <span>{fBooks.toLocaleString()} books</span>
+                      {unconfirmedOrders.length > 0 && (
+                        <span className="att">{unconfirmedOrders.length} to review</span>
+                      )}
+                    </span>
+                  </button>
+                  {ovOpen && (
+                  <div className="mo-ovacc-body">
                   {/* Row 3 — the current view: three headline numbers, the
                       payment split as one bar, and anything needing attention.
                       On phones (search lives in the bottom bar) the Filters
@@ -16123,18 +16321,6 @@ export default function ManageOrdersPage() {
                         >
                           <AlertCircle size={14} />
                           <b>{unconfirmedOrders.length}</b> to review
-                          <ChevronRight size={14} className="mo-vs2-go" />
-                        </button>
-                      ),
-                      unavailCandidates.length > 0 && (
-                        <button
-                          key="unav"
-                          type="button"
-                          className="mo-vs2-alert warn"
-                          onClick={() => setUnavailOpen(true)}
-                        >
-                          <AlertTriangle size={14} />
-                          <b>{unavailCandidates.length}</b> books unavailable
                           <ChevronRight size={14} className="mo-vs2-go" />
                         </button>
                       ),
@@ -16610,6 +16796,9 @@ export default function ManageOrdersPage() {
                       </div>
                     );
                   })()}
+                  <OrdersMap orders={filteredOrders} dateOf={getOrderDate} onOpenOrder={setBillOrderId} />
+                  </div>
+                  )}
 
                   {/* Filters & view — slide-over sheet: from the right on
                       desktop, up from the bottom on phones. Changes apply
@@ -16957,8 +17146,9 @@ export default function ManageOrdersPage() {
                 return "weigh";
               };
               const ageOf = (o) => getOrderDate(o)?.getTime() || 0;
+              // Thunder (next-day Speed Post) first, then Speed, gifts before plain.
               const prio = (o) =>
-                (isSpeedShip(o) ? 0 : 2) + (isGiftOrder(o) ? 0 : 1);
+                (isThunderOrder(o) ? -4 : 0) + (isSpeedShip(o) ? 0 : 2) + (isGiftOrder(o) ? 0 : 1);
               const smartSort = (a, b) =>
                 prio(a) - prio(b) || (ageOf(a) || Infinity) - (ageOf(b) || Infinity);
               const stageRows = { ready: [], track: [], weigh: [] };
@@ -16969,6 +17159,58 @@ export default function ManageOrdersPage() {
                 { k: "track", step: 2, title: "Add tracking ID", hint: "Weighed — book at the counter, then scan the ID", rows: stageRows.track },
                 { k: "weigh", step: 3, title: "Weigh & pack", hint: "Enter weight — size is pre-filled", rows: stageRows.weigh },
               ];
+              // By book: the title shared by the most queued orders becomes a
+              // group, then the next, … ; orders with no shared title go last.
+              const titlesOf = (o) => [
+                ...new Set(
+                  (o.parsedBooks || [])
+                    .map((b) => String(b.name || "").replace(/\s+/g, " ").trim())
+                    .filter(Boolean),
+                ),
+              ];
+              const bookGroups = (() => {
+                const left = new Set(dOrders.map((o) => o["Order ID"]));
+                const byId = new Map(dOrders.map((o) => [o["Order ID"], o]));
+                const out = [];
+                for (;;) {
+                  const cnt = new Map();
+                  left.forEach((id) =>
+                    titlesOf(byId.get(id)).forEach((t) => {
+                      const k = t.toLowerCase();
+                      const c = cnt.get(k) || { t, n: 0 };
+                      c.n += 1;
+                      cnt.set(k, c);
+                    }),
+                  );
+                  const top = [...cnt.values()].sort((a, b) => b.n - a.n || a.t.localeCompare(b.t))[0];
+                  if (!top || top.n < 2) break;
+                  const rows = [...left]
+                    .map((id) => byId.get(id))
+                    .filter((o) => titlesOf(o).some((t) => t.toLowerCase() === top.t.toLowerCase()))
+                    .sort(smartSort);
+                  rows.forEach((o) => left.delete(o["Order ID"]));
+                  const copies = rows.reduce(
+                    (n, o) =>
+                      n +
+                      (o.parsedBooks || [])
+                        .filter((b) => String(b.name || "").replace(/\s+/g, " ").trim().toLowerCase() === top.t.toLowerCase())
+                        .reduce((m, b) => m + (Number(b.quantity) || 1), 0),
+                    0,
+                  );
+                  out.push({
+                    k: `book-${out.length}`,
+                    cls: "book",
+                    step: out.length + 1,
+                    title: top.t,
+                    hint: `${copies} cop${copies === 1 ? "y" : "ies"} · pick these together`,
+                    rows,
+                  });
+                }
+                const rest = [...left].map((id) => byId.get(id)).sort(smartSort);
+                if (rest.length)
+                  out.push({ k: "book-rest", cls: "rest", step: "·", title: out.length ? "Other orders" : "No shared titles", hint: "Each has different books", rows: rest });
+                return out;
+              })();
               const dqCod = dOrders.filter((o) => /cash|cod/i.test(String(o["Payment Type"] || ""))).length;
               const dqSpeed = dOrders.filter((o) => isSpeedShip(o)).length;
               const dqGift = dOrders.filter(isGiftOrder).length;
@@ -17067,18 +17309,25 @@ export default function ManageOrdersPage() {
                           </span>
                         )}
                       </div>
-                      <label className={`mo-dq-smart${dispSmart ? " on" : ""}`}>
-                        <input
-                          type="checkbox"
-                          checked={dispSmart}
-                          onChange={(e) => toggleDispSmart(e.target.checked)}
-                        />
-                        <Sparkles size={14} />
-                        <span>
-                          Smart order
-                          <small>Group &amp; sort in dispatch order</small>
-                        </span>
-                      </label>
+                      <div className="mo-dq-group" role="radiogroup" aria-label="Group cards">
+                        {[
+                          { k: "off", label: "As queued" },
+                          { k: "stage", label: "Smart order", icon: <Sparkles size={13} /> },
+                          { k: "book", label: "By book", icon: <BookOpen size={13} /> },
+                        ].map((g) => (
+                          <button
+                            key={g.k}
+                            type="button"
+                            role="radio"
+                            aria-checked={dispGroup === g.k}
+                            className={dispGroup === g.k ? "on" : ""}
+                            onClick={() => pickDispGroup(g.k)}
+                          >
+                            {g.icon}
+                            {g.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
 
@@ -17138,16 +17387,16 @@ export default function ManageOrdersPage() {
                             </div>
                           );
                         };
-                        if (!dispSmart)
+                        if (dispGroup === "off")
                           return (
                             <div className="admin-orders-grid mo-dispatch-grid">
                               {dOrders.map(dCard)}
                             </div>
                           );
                         let i = 0;
-                        return dispGroups.map((g) =>
+                        return (dispGroup === "book" ? bookGroups : dispGroups).map((g) =>
                           g.rows.length ? (
-                            <section className={`mo-dq-sec ${g.k}`} key={g.k}>
+                            <section className={`mo-dq-sec ${g.cls || g.k}`} key={g.k}>
                               <header className="mo-dq-sec-head">
                                 <span className="mo-dq-sec-step">{g.step}</span>
                                 <span className="mo-dq-sec-t">
@@ -17767,7 +18016,7 @@ export default function ManageOrdersPage() {
                       {cpImgSlug ? (
                         <img src={bookImages[cpImgSlug]} alt="" />
                       ) : (
-                        <BookCoverImg
+                        <BookCoverImg thumb
                           name={cpName.trim() || "Product name"}
                           image=""
                           className="mo-cp-pcover-fallback"
@@ -21359,9 +21608,43 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
-                  {/* Where the orders in view come from — follows every
-                      filter and search above. Collapsible; map loads on open. */}
-                  <OrdersMap orders={filteredOrders} dateOf={getOrderDate} onOpenOrder={setBillOrderId} />
+
+                  {/* Picking progress (sticky): tap covers on the cards to mark
+                      books picked — all picked = ready to dispatch. */}
+                  {(() => {
+                    let ready = 0;
+                    let partial = 0;
+                    let none = 0;
+                    let booksDone = 0;
+                    let booksAll = 0;
+                    filteredOrders.forEach((o) => {
+                      const bk = o.parsedBooks || [];
+                      if (!bk.length) return;
+                      const got = bk.filter((_, i) => pickChecked[bookKey(o["Order ID"], i)]).length;
+                      booksDone += got;
+                      booksAll += bk.length;
+                      if (got === bk.length) ready += 1;
+                      else if (got > 0) partial += 1;
+                      else none += 1;
+                    });
+                    const total = ready + partial + none;
+                    if (!total) return null;
+                    const pct = (n) => `${(n / total) * 100}%`;
+                    return (
+                      <div className="mo-pickbar" role="status" aria-label="Picking progress">
+                        <div className="mo-pickbar-row">
+                          <span className="ready"><i /> <b>{ready}</b> ready to dispatch</span>
+                          <span className="partial"><i /> <b>{partial}</b> partly picked</span>
+                          <span className="none"><i /> <b>{none}</b> not picked</span>
+                          <em>{booksDone}/{booksAll} books</em>
+                        </div>
+                        <div className="mo-pickbar-track" aria-hidden="true">
+                          <span className="ready" style={{ width: pct(ready) }} />
+                          <span className="partial" style={{ width: pct(partial) }} />
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {orderView === "cards" ? (
                     <>
@@ -21378,7 +21661,7 @@ export default function ManageOrdersPage() {
                         <button
                           type="button"
                           className="mo-loadmore"
-                          onClick={() => setVisibleCount((c) => c + 10)}
+                          onClick={() => setVisibleCount((c) => c + ORDERS_PAGE)}
                         >
                           Load more · {remainingCount} more order
                           {remainingCount === 1 ? "" : "s"}
@@ -23682,63 +23965,139 @@ export default function ManageOrdersPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <span className="mo-emailtpl-grip" aria-hidden="true" />
-              <div className="support-sheet-head">
-                <div>
-                  <div className="support-sheet-title">
-                    <MailCheck size={16} /> Email the customer
-                  </div>
-                  <div className="mo-emailtpl-to">
-                    <span className="mo-emailtpl-to-k">To</span>
-                    <span className="mo-emailtpl-to-v">
-                      {String(emailTplOrder["Customer Name"] || "").trim() || "Customer"}
-                      <em>
-                        {String(emailTplOrder["Email"] || "").trim() || "No email on file"}
-                      </em>
-                    </span>
-                  </div>
-                  <div className="support-sheet-sub">
-                    Tap a template to send it now — tracking &amp; bill are attached.
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="support-sheet-x"
-                  onClick={() => setEmailTplOrder(null)}
-                  aria-label="Close"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-              <div className="mo-emailtpl-list">
-                {emailStatusTemplates(emailTplOrder).map((tpl) => (
-                  <button
-                    key={tpl.key}
-                    type="button"
-                    className="mo-emailtpl-row"
-                    disabled={emailingOrder !== ""}
-                    onClick={() => sendStatusEmailTemplate(emailTplOrder, tpl)}
-                  >
-                    <span className="mo-emailtpl-emo" aria-hidden="true">
-                      {splitLeadEmoji(tpl.label)[0]}
-                    </span>
-                    <span className="mo-emailtpl-l">
-                      <span className="mo-emailtpl-label">{splitLeadEmoji(tpl.label)[1]}</span>
-                      <span className="mo-emailtpl-sub">{tpl.subheading}</span>
-                    </span>
-                    <span className={`mo-emailtpl-go${emailingOrder === tpl.key ? " busy" : ""}`}>
-                      {emailingOrder === tpl.key ? (
-                        <>
-                          <Loader2 size={14} className="mo-spin" /> Sending
-                        </>
-                      ) : (
-                        <>
-                          <Send size={13} /> Send
-                        </>
+              {(() => {
+                const o = emailTplOrder;
+                const oid = String(o["Order ID"] || "");
+                const ph = phaseOf(o);
+                const tracked = !!String(o["Shipping ID"] || "").trim();
+                const st = String(o["Order Status"] || "").toLowerCase();
+                // Scenario picks: what to send for where this order is now.
+                const suggestKeys =
+                  ph === "confirm"
+                    ? ["confirm", "about"]
+                    : ph === "ofd"
+                      ? ["ofd"]
+                      : ph === "delivered" || ph === "closed"
+                        ? ["delivered", "review"]
+                        : ph === "transit"
+                          ? ["transit", "transit_eta", "early"]
+                          : tracked
+                            ? ["shipped", "transit_eta"]
+                            : /pack/.test(st)
+                              ? ["packed", "about"]
+                              : ["confirm", "packed", "about"];
+                const all = emailStatusTemplates(o);
+                const picks = suggestKeys.map((k) => all.find((t) => t.key === k)).filter(Boolean);
+                const rest = all.filter((t) => !suggestKeys.includes(t.key));
+                let sent = {};
+                try {
+                  sent = JSON.parse(localStorage.getItem("mo_email_sent") || "{}")[oid] || {};
+                } catch {}
+                const ago = (ts) => {
+                  const m = Math.round((Date.now() - ts) / 60000);
+                  return m < 60 ? `${Math.max(1, m)}m ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : `${Math.round(m / 1440)}d ago`;
+                };
+                const openKey = emailTplOpen ?? picks[0]?.key ?? null;
+                const busy = emailingOrder !== "";
+                const row = (tpl) => {
+                  const [emo, label] = splitLeadEmoji(tpl.label);
+                  const open = openKey === tpl.key;
+                  return (
+                    <div key={tpl.key} className={`mo-et-row${open ? " open" : ""}`}>
+                      <button
+                        type="button"
+                        className="mo-et-row-h"
+                        aria-expanded={open}
+                        onClick={() => setEmailTplOpen(open ? "" : tpl.key)}
+                      >
+                        <span className="mo-et-emo" aria-hidden="true">{emo}</span>
+                        <span className="mo-et-t">
+                          <b>{label}</b>
+                          {!open && <small>{tpl.subheading}</small>}
+                        </span>
+                        {sent[tpl.key] && <span className="mo-et-sent">Sent {ago(sent[tpl.key])}</span>}
+                        <ChevronDown size={16} className="mo-et-chev" />
+                      </button>
+                      {open && (
+                        <div className="mo-et-body">
+                          <div className="mo-et-preview">
+                            <span className="mo-et-pv-h">{tpl.heading}</span>
+                            <p>{tpl.subheading}</p>
+                            <span className="mo-et-pv-f">
+                              Order summary{tracked ? " · tracking link" : ""} · bill included
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            className="mo-et-send"
+                            disabled={busy}
+                            onClick={() => sendStatusEmailTemplate(o, tpl)}
+                          >
+                            {emailingOrder === tpl.key ? (
+                              <>
+                                <Loader2 size={15} className="mo-spin" /> Sending…
+                              </>
+                            ) : (
+                              <>
+                                <Send size={15} /> {sent[tpl.key] ? "Send again" : "Send email"}
+                              </>
+                            )}
+                          </button>
+                        </div>
                       )}
-                    </span>
-                  </button>
-                ))}
-              </div>
+                    </div>
+                  );
+                };
+                return (
+                  <>
+                    <div className="mo-et-head">
+                      <div className="mo-et-head-t">
+                        <span className="mo-et-ic" aria-hidden="true">
+                          <Mail size={17} />
+                        </span>
+                        <span>
+                          <b>Email {String(o["Customer Name"] || "").trim().split(/\s+/)[0] || "customer"}</b>
+                          <small>
+                            {String(o["Email"] || "").trim() || "No email on file"} · #{oid.slice(-6)} · {o["Order Status"] || "Processing"}
+                          </small>
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="support-sheet-x"
+                        onClick={() => setEmailTplOrder(null)}
+                        aria-label="Close"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                    <div className="mo-et-list">
+                      {picks.length > 0 && (
+                        <div className="mo-et-group">
+                          <Sparkles size={12} /> Suggested now
+                        </div>
+                      )}
+                      {picks.map(row)}
+                      <div className="mo-et-group">All templates</div>
+                      {rest.map(row)}
+                      <button
+                        type="button"
+                        className="mo-et-custom"
+                        onClick={() => {
+                          const ord = emailTplOrder;
+                          setEmailTplOrder(null);
+                          pendingPickerChannel.current = "email";
+                          setWaCustomText("");
+                          setWaPickerOrder(ord);
+                        }}
+                      >
+                        <Pencil size={15} /> Write your own email
+                        <ChevronRight size={15} className="mo-et-chev" />
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
             </motion.div>
           </motion.div>
         )}
@@ -26304,14 +26663,34 @@ export default function ManageOrdersPage() {
                             <button
                               key={m.k}
                               type="button"
-                              className={eb.mode === m.k ? "on" : ""}
-                              onClick={() =>
+                              className={`${eb.mode === m.k ? "on" : ""}${m.k === "cod" && eb.codBlocked ? " is-blocked" : ""}`}
+                              title={
+                                m.k === "cod" && eb.codBlocked
+                                  ? "Full COD isn't offered on ₹1,000+ orders (same as checkout)"
+                                  : m.k === "cod" && eb.isFaster
+                                    ? "Full COD ships Standard — Speed / Thunder need an online payment"
+                                    : undefined
+                              }
+                              onClick={() => {
+                                // Checkout rules: no full COD at ₹1,000+, and full
+                                // COD always ships Standard.
+                                if (m.k === "cod" && eb.codBlocked) {
+                                  showToast("Full COD isn't allowed on orders of ₹1,000 or more — use COD + ₹99 or prepaid.", "error");
+                                  return;
+                                }
+                                const toStd = m.k === "cod" && eb.isFaster;
                                 setFormData((p) => ({
                                   ...p,
                                   payMode: m.k,
                                   paymentType: m.sheet,
-                                }))
-                              }
+                                  ...(toStd ? { deliveryType: "Standard Delivery" } : {}),
+                                }));
+                                if (toStd)
+                                  showToast(
+                                    `Delivery set to Standard — ${eb.isThunder ? "Thunder" : "Speed"} needs an online payment (like checkout).`,
+                                    "info",
+                                  );
+                              }}
                             >
                               {m.label}
                             </button>
@@ -26329,20 +26708,55 @@ export default function ManageOrdersPage() {
                         <div className="mo-ef-field">
                           <span>Delivery</span>
                           <div className="mo-seg">
-                            {[
-                              { v: "Standard Delivery", label: "Standard" },
-                              { v: "Faster Delivery", label: "Speed" },
-                            ].map((c) => (
-                              <button
-                                key={c.v}
-                                type="button"
-                                className={eb.isFaster === /faster/i.test(c.v) ? "on" : ""}
-                                onClick={() => setField("deliveryType", c.v)}
-                              >
-                                {c.label}
-                              </button>
-                            ))}
+                            {(() => {
+                              const pin = formData.pincode || selectedOrder?.["Pincode"] || "";
+                              const metro = isThunderPincode(pin);
+                              const cur = eb.isThunder ? "thunder" : eb.isFaster ? "speed" : "standard";
+                              return [
+                                { k: "standard", v: "Standard Delivery", label: "Standard" },
+                                { k: "speed", v: "Faster Delivery", label: "Speed" },
+                                {
+                                  k: "thunder",
+                                  // Keep the saved Thunder text (its date) when re-picked.
+                                  v: eb.isThunder ? formData.deliveryType : thunderDeliveryType(thunderEta()),
+                                  label: "⛈️ Thunder",
+                                  off: !metro && !eb.isThunder,
+                                  tip: metro
+                                    ? `${thunderCity(pin)} · ${thunderEta().name} · Standard + ₹${thunderFee(orderEconomics(eb.lines).weight || 250)} fee`
+                                    : "Thunder runs only in Delhi, Mumbai, Kolkata, Chennai, Bengaluru & Hyderabad pincodes",
+                                },
+                              ].map((c) => (
+                                <button
+                                  key={c.k}
+                                  type="button"
+                                  className={cur === c.k ? "on" : ""}
+                                  disabled={c.off}
+                                  title={c.tip}
+                                  onClick={() => {
+                                    // Speed / Thunder are online-only at checkout:
+                                    // full COD moves to COD + ₹99 (or prepaid at ₹1,000+).
+                                    if (c.k !== "standard" && eb.mode === "cod") {
+                                      const adv = PAY_MODES.find((m) => m.k === "advance");
+                                      setFormData((p) => ({ ...p, deliveryType: c.v, payMode: adv.k, paymentType: adv.sheet }));
+                                      showToast(
+                                        `Payment switched to COD + ₹99 — ${c.k === "thunder" ? "Thunder" : "Speed"} needs an online payment (like checkout).`,
+                                        "info",
+                                      );
+                                      return;
+                                    }
+                                    setField("deliveryType", c.v);
+                                  }}
+                                >
+                                  {c.label}
+                                </button>
+                              ));
+                            })()}
                           </div>
+                          {eb.isThunder && (
+                            <em className="mo-ef-hint">
+                              {thunderLabel(formData.deliveryType)} · Speed Post 24/48 — book it today
+                            </em>
+                          )}
                         </div>
                         <div className="mo-ef-field">
                           <span>Gift wrap</span>

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "thumbs": "node scripts/make-book-thumbs.mjs"
   },
   "dependencies": {
     "@fullhuman/postcss-purgecss": "^8.0.0",

@@ -32,19 +32,28 @@ export default function BookCoverImg({
   author = "",
   className = "",
   loading = "lazy",
+  // thumb: try the small WebP from public/books/thumbs first (npm run thumbs),
+  // then the full cover, then the designed fallback.
+  thumb = false,
 }) {
-  const [err, setErr] = useState(false);
+  const thumbSrc =
+    thumb && typeof src === "string" && /^\/books\/[^/]+\.(jpe?g|png|webp)$/i.test(src)
+      ? src.replace(/^\/books\//, "/books/thumbs/").replace(/\.[^.]+$/, ".webp")
+      : "";
+  // 0 = thumb (when there is one), 1 = full image, 2 = fallback
+  const [stage, setStage] = useState(thumbSrc ? 0 : 1);
 
   const fallbackStyle = coverFallbackVars(name);
 
-  if (src && !err) {
+  if (src && stage < 2) {
     return (
       <img
-        src={src}
+        src={stage === 0 ? thumbSrc : src}
         alt={name}
         loading={loading}
+        decoding="async"
         className={className}
-        onError={() => setErr(true)}
+        onError={() => setStage((s) => s + 1)}
       />
     );
   }

@@ -1,4 +1,5 @@
 "use client";
+import "./UnlockModal.styles.css";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, lazy, Suspense, useRef } from "react";

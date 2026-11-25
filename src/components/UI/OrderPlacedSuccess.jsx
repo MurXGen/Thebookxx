@@ -1,4 +1,5 @@
 "use client";
+import "./OrderPlacedSuccess.styles.css";
 
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";

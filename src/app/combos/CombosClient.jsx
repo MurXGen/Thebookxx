@@ -1,6 +1,7 @@
 "use client";
+import "./CombosClient.styles.css";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, PackagePlus } from "lucide-react";
 import { combos, clarityCombos, bookPairCombos, COMBO_CATEGORIES } from "@/utils/combos";
@@ -14,6 +15,11 @@ export default function CombosClient({
   children = null,
 }) {
   const [active, setActive] = useState("All");
+  // Cards render in batches as you scroll (every combo URL is also in the
+  // page's ItemList JSON-LD and the sitemap, so crawlers see them all).
+  const BATCH = 12;
+  const [shown, setShown] = useState(BATCH);
+  const moreRef = useRef(null);
 
   const filtered = useMemo(
     () =>
@@ -22,6 +28,17 @@ export default function CombosClient({
         : items.filter((c) => c.category === active),
     [active, items],
   );
+
+  useEffect(() => {
+    const el = moreRef.current;
+    if (!el || shown >= filtered.length) return;
+    const io = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setShown((n) => n + BATCH),
+      { rootMargin: "800px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [shown, filtered.length]);
 
   const chips = ["All", ...(items === combos ? COMBO_CATEGORIES : [...new Set(items.map((c) => c.category))])];
 
@@ -60,7 +77,10 @@ export default function CombosClient({
             role="tab"
             aria-selected={active === chip}
             className={`combos-chip ${active === chip ? "active" : ""}`}
-            onClick={() => setActive(chip)}
+            onClick={() => {
+              setActive(chip);
+              setShown(BATCH);
+            }}
           >
             {chip}
           </button>
@@ -68,10 +88,11 @@ export default function CombosClient({
       </div>
 
       <div className="combos-grid">
-        {filtered.map((combo) => (
+        {filtered.slice(0, shown).map((combo) => (
           <ComboCard key={combo.id} combo={combo} />
         ))}
       </div>
+      {shown < filtered.length && <div ref={moreRef} className="combos-more" aria-hidden="true" style={{ height: 1 }} />}
       {children}
     </main>
   );

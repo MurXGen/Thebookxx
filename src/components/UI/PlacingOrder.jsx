@@ -1,4 +1,5 @@
 "use client";
+import "./PlacingOrder.styles.css";
 
 import { useEffect } from "react";
 import { Home } from "lucide-react";

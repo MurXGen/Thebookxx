@@ -1,4 +1,5 @@
 "use client";
+import "./CartBar.styles.css";
 
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";

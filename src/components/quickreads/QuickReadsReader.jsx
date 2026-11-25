@@ -1,4 +1,5 @@
 "use client";
+import "./QuickReadsReader.styles.css";
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";

@@ -1,4 +1,5 @@
 "use client";
+import "./BagQuickAdd.styles.css";
 
 // One-tap "add one more" rows under the bag, built from what's already in it:
 //   1. books that close the gap to the next order reward
@@ -6,6 +7,7 @@
 // Each row scrolls sideways; every card has its own Add button.
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Check, Plus } from "lucide-react";
 import { books } from "@/utils/book";
@@ -24,11 +26,21 @@ const popularity = (b) =>
   (b.catalogue?.includes("trending") ? 1 : 0) +
   (Number(b.rating) || 0) / 5;
 
-function QuickCard({ book, inCart, onAdd }) {
+function QuickCard({ book, inCart, onAdd, eager = false }) {
   return (
     <div className="bqa-card">
       <Link href={`/books/${slugify(book.name)}`} className="bqa-cover">
-        {img(book) ? <img src={img(book)} alt={book.name} loading="lazy" /> : null}
+        {img(book) ? (
+          <Image
+            src={img(book)}
+            alt={book.name}
+            width={120}
+            height={160}
+            sizes="120px"
+            priority={eager}
+            loading={eager ? undefined : "lazy"}
+          />
+        ) : null}
       </Link>
       <span className="bqa-name">{book.name}</span>
       <span className="bqa-price">
@@ -181,15 +193,15 @@ export default function BagQuickAdd({ cartBooks = [], amount = 0, empty = false 
 
   return (
     <div className="bqa">
-      {rows.map((r) => (
+      {rows.map((r, ri) => (
         <section key={r.key} className={`bqa-row${r.key === "reward" ? " bqa-row--reward" : ""}`}>
           <div className="bqa-head">
             <b>{r.title}</b>
             <small>{r.sub}</small>
           </div>
           <div className="bqa-scroll">
-            {r.items.map((b) => (
-              <QuickCard key={b.id} book={b} inCart={inCart(b.id)} onAdd={add} />
+            {r.items.map((b, bi) => (
+              <QuickCard key={b.id} book={b} inCart={inCart(b.id)} onAdd={add} eager={ri === 0 && bi < 3} />
             ))}
           </div>
         </section>

@@ -1,4 +1,5 @@
 "use client";
+import "./QuickReadsTeaser.styles.css";
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";

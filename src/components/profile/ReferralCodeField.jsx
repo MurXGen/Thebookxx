@@ -1,4 +1,5 @@
 "use client";
+import "./ReferralCodeField.styles.css";
 
 import { useEffect, useState } from "react";
 import { Gift, ChevronDown } from "lucide-react";

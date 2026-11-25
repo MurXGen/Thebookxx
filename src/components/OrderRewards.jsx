@@ -1,4 +1,5 @@
 "use client";
+import "./OrderRewards.styles.css";
 
 // Bookmark achievements: 2 free bookmarks on every order → 3 at ₹500 → 4 at
 // ₹1000 → the Mystery Box at ₹3000.

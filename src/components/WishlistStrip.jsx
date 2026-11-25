@@ -1,4 +1,5 @@
 "use client";
+import "./WishlistStrip.styles.css";
 
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";

@@ -1,4 +1,5 @@
 "use client";
+import "./InstallAppBar.styles.css";
 
 import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";

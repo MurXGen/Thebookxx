@@ -1,0 +1,111 @@
+/* Styles used only by LegalBits.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.legal-toc {
+  border-radius: var(--px-10);
+  margin-bottom: var(--px-32);
+}
+
+.legal-toc-title {
+  font-size: 12px;
+  font-weight: var(--weight-700);
+  color: var(--dark-50);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--px-12) 0;
+}
+
+.legal-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px var(--px-16);
+}
+
+.legal-toc-list a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: var(--weight-500);
+  display: block;
+  padding: 4px 0;
+  transition: color 0.15s ease;
+}
+
+.legal-toc-list a:hover {
+  color: var(--tertiary);
+}
+
+.legal-card {
+  background: var(--dark-4);
+  border: 1px solid var(--dark-10);
+  border-radius: var(--px-10);
+  padding: var(--px-16) var(--px-20);
+  margin: var(--px-16) 0;
+}
+
+.legal-card-title {
+  font-size: 12px;
+  font-weight: var(--weight-700);
+  color: var(--dark-50);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--px-12) 0;
+}
+
+.legal-card dl {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: var(--px-8) var(--px-16);
+  margin: 0;
+}
+
+.legal-card dt {
+  font-size: 13px;
+  color: var(--dark-50);
+  font-weight: var(--weight-500);
+}
+
+.legal-card dd {
+  font-size: 13px;
+  color: var(--foreground);
+  font-weight: var(--weight-500);
+  margin: 0;
+}
+
+.legal-card a {
+  color: var(--tertiary);
+  text-decoration: none;
+}
+
+.legal-card a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+.legal-toc-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+.legal-card dl {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 640px) {
+.legal-card dt {
+    color: var(--dark-50);
+    margin-top: var(--px-8);
+  }
+}
+
+@media (max-width: 640px) {
+.legal-card dt:first-child {
+    margin-top: 0;
+  }
+}

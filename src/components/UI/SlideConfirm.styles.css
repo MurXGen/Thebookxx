@@ -1,0 +1,41 @@
+/* Styles used only by SlideConfirm.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.slide-confirm {
+  position: relative;
+  width: 200px;
+  height: 44px;
+  border-radius: 999px;
+  background: #111;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.slide-confirm.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.slide-text {
+  font-size: var(--px-12);
+  opacity: 0.85;
+}
+
+.slide-knob {
+  position: absolute;
+  left: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: white;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  font-size: var(--px-14);
+  font-weight: var(--weight-700);
+}

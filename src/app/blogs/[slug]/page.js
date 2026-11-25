@@ -1,3 +1,4 @@
+import "./page.styles.css";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogBySlug, getAllBlogSlugs, getAllBlogs } from "@/utils/blogs";

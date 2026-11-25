@@ -1,4 +1,5 @@
 "use client";
+import "./HorizontalScroll.styles.css";
 
 import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";

@@ -1,4 +1,5 @@
 "use client";
+import "./AllBooks.styles.css";
 
 import BookCard from "@/components/BookCard";
 import { books } from "@/utils/book";

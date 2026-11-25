@@ -1,3 +1,4 @@
+import "./page.styles.css";
 // app/book-sets/page.jsx — box sets & series sets (server-rendered for SEO).
 import Link from "next/link";
 import CategoryListing from "@/components/CategoryListing";

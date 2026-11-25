@@ -1,4 +1,5 @@
 "use client";
+import "./ContactDetailsPrompt.styles.css";
 
 // After an order is placed: if the shopper didn't give an email and/or an
 // alternate number, ask for them once (only the missing ones). Save writes

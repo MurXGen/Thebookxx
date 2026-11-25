@@ -1,4 +1,5 @@
 "use client";
+import "./ReviewsShowcase.styles.css";
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";

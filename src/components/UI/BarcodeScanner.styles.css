@@ -1,0 +1,360 @@
+/* Styles used only by BarcodeScanner.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.bscan-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100050;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+.bscan-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px calc(14px + env(safe-area-inset-top, 0px));
+}
+
+.bscan-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.bscan-x {
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.bscan-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.bscan-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bscan-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(78vw, 420px);
+  height: 160px;
+  border-radius: 14px;
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.45);
+}
+
+.bscan-corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 3px solid #fb8500;
+}
+
+.bscan-corner.tl {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 12px 0 0 0;
+}
+
+.bscan-corner.tr {
+  top: -2px;
+  right: -2px;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 0 12px 0 0;
+}
+
+.bscan-corner.bl {
+  bottom: -2px;
+  left: -2px;
+  border-right: none;
+  border-top: none;
+  border-radius: 0 0 0 12px;
+}
+
+.bscan-corner.br {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+  border-radius: 0 0 12px 0;
+}
+
+.bscan-laser {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  height: 2px;
+  background: #fb8500;
+  box-shadow: 0 0 8px 1px rgba(251, 133, 0, 0.9);
+  animation: bscan-scan 1.8s ease-in-out infinite;
+}
+
+.bscan-frame.hit {
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.45);
+}
+
+.bscan-frame.hit .bscan-corner {
+  border-color: #22c55e;
+}
+
+.bscan-hitmark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: #22c55e;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: bscan-pop 0.25s ease;
+}
+
+.bscan-status,
+.bscan-error {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.6);
+  color: #f3f4f6;
+  backdrop-filter: blur(4px);
+}
+
+.bscan-status.ok {
+  background: #16a34a;
+  color: #fff;
+}
+
+.bscan-error {
+  color: #fca5a5;
+  white-space: normal;
+  max-width: 88vw;
+  text-align: center;
+}
+
+.bscan-spin {
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  animation: tbx-spin 0.7s linear infinite;
+}
+
+.bscan-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.bscan-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #fb8500;
+  animation: bscan-blink 1s infinite ease-in-out;
+}
+
+.bscan-dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.bscan-dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.bscan-torch {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.bscan-torch.on {
+  background: #fb8500;
+}
+
+.bscan-resizer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  background: #101010;
+  color: #6b7280;
+  cursor: ns-resize;
+  touch-action: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bscan-resizer:active {
+  color: #fb8500;
+}
+
+.bscan-foot {
+  flex: 0 0 auto;
+  padding: 4px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: #101010;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bscan-foot-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bscan-caught {
+  font-size: 12.5px;
+  color: #cbd5e1;
+}
+
+.bscan-count {
+  font-weight: 800;
+  color: #fb8500;
+  font-size: 15px;
+}
+
+.bscan-panel {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 2px;
+}
+
+.bscan-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 60px;
+  text-align: center;
+  font-size: 12.5px;
+  color: #6b7280;
+  padding: 8px;
+}
+
+.bscan-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 7px 8px 7px 10px;
+}
+
+.bscan-row-idx {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  min-width: 16px;
+}
+
+.bscan-row-code {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #f3f4f6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: text;
+}
+
+.bscan-row-input {
+  flex: 1;
+  min-width: 0;
+  background: #000;
+  border: 1px solid #fb8500;
+  border-radius: 7px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  padding: 5px 8px;
+  text-transform: uppercase;
+}
+
+.bscan-row-btn {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.bscan-row-btn.edit {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+}
+
+.bscan-done {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fb8500;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}

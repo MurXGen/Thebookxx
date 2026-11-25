@@ -1,0 +1,173 @@
+/* Styles used only by BookCard.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.bc-title-icons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bc-mini-icon {
+  background: none;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.12s ease;
+}
+
+.bc-mini-icon:hover {
+  color: var(--tertiary, #fb8500);
+  transform: scale(1.08);
+}
+
+.bc-mini-icon.on {
+  color: #e11d48;
+}
+
+.image-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, #f1f1f1 8%, #f8f8f8 18%, #f1f1f1 33%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+  filter: blur(2px);
+}
+
+.image-skeleton-link {
+  display: inline-flex;
+  position: relative;
+  width: 160px;
+  max-width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.image-skeleton-link .image-skeleton {
+  border-radius: 8px;
+}
+
+.plus-cart {
+  padding: var(--px-8);
+  border-radius: var(--px-32);
+  text-align: center;
+  background: var(--success);
+  color: #fff;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.plus-cart svg {
+  color: #fff;
+  stroke: #fff;
+}
+
+.minus-cart {
+  padding: var(--px-8);
+  border-radius: var(--px-32);
+  text-align: center;
+  background: #0a0a0a;
+  color: #fff;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.minus-cart svg {
+  color: #fff;
+  stroke: #fff;
+}
+
+.price-drop-badge {
+  background: linear-gradient(135deg, var(--tertiary-light), #ff8c00);
+  color: white;
+  padding: 8px;
+  border-radius: var(--px-8);
+  font-weight: var(--weight-600);
+  font-size: var(--px-8);
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.plus-cart:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 14px rgba(0, 143, 12, 0.28);
+}
+
+.minus-cart:hover {
+  filter: brightness(1.15);
+}
+
+.bookcard-notify-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 46px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1.5px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+  color: var(--foreground);
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.bookcard-notify-btn:hover {
+  border-color: #25d366;
+  background: rgba(37, 211, 102, 0.06);
+}
+
+.bookcard-notify-btn svg {
+  color: var(--tertiary, #fb8500);
+  flex: 0 0 auto;
+}
+
+.bookcard-qty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  height: 44px;
+  padding: 0 6px;
+  border-radius: 12px;
+  border: 1px solid var(--dark-20, rgba(0, 0, 0, 0.12));
+}
+
+.bookcard-qty .qty {
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.image-skeleton-link {
+  width: auto;
+  height: 150px;
+  aspect-ratio: 2 / 3;
+}
+
+@media (max-width: 450px) {
+.image-skeleton-link { height: 138px; }
+}

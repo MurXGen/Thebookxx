@@ -1,4 +1,5 @@
 "use client";
+import "./CartItemRow.styles.css";
 
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";

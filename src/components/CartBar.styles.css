@@ -1,0 +1,64 @@
+/* Styles used only by CartBar.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.cart-bar-full {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+.cart-bar-full .cos-fab-row {
+  margin-right: 2px;
+}
+
+.cart-bar.cart-bar-hidden {
+  transform: translateY(135%);
+}
+
+.cbx-suggest-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin: 0 auto 10px;
+  padding: 7px 14px;
+  background: #fff;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--foreground, #0a0a0a);
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cbx-suggest-strip svg {
+  color: var(--tertiary, #fb8500);
+  flex-shrink: 0;
+}
+
+.cbx-suggest-strip b {
+  color: var(--tertiary, #fb8500);
+  font-weight: 800;
+}
+
+.cbx-suggest-strip:hover {
+  border-color: var(--tertiary, #fb8500);
+}
+
+.cos-fab-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 16px;
+  margin: 0 14px 12px;
+}
+
+.cos-fab-row {
+  justify-content: flex-end;
+}

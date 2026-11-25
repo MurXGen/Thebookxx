@@ -1,4 +1,5 @@
 "use client";
+import "./page.styles.css";
 
 import { XmasSnow } from "@/components/XmasDecor";
 import { useState, useEffect, useRef } from "react";

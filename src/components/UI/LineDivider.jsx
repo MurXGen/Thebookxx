@@ -1,5 +1,6 @@
 // src/components/ui/LabelDivider.jsx
 "use client";
+import "./LineDivider.styles.css";
 
 export default function LabelDivider({ label, color }) {
   return (

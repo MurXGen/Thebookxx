@@ -1,4 +1,5 @@
 "use client";
+import "./BookCardSkeleton.styles.css";
 
 // A single book-card shaped skeleton (cover + title lines + price + button).
 export default function BookCardSkeleton() {

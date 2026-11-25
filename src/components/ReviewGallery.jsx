@@ -1,4 +1,5 @@
 "use client";
+import "./ReviewGallery.styles.css";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";

@@ -1,0 +1,77 @@
+/* Styles used only by UpiAppLaunchRow.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.upiopen-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 12px;
+  background: #111827;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 6px 16px -9px rgba(17, 24, 39, 0.5);
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.upiopen-arrow {
+  margin-left: 4px;
+}
+
+.upiopen-btn:hover {
+  filter: brightness(1.04);
+}
+
+.upiopen-btn:active {
+  transform: scale(0.99);
+}
+
+.upiopen-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.upiopen-chip {
+  flex: 1 1 0;
+  min-width: 92px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 11px;
+  background: #fff;
+  color: #1f2937;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.upiopen-chip:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.upiopen-more-toggle {
+  display: flex; width: fit-content; align-items: center; gap: 4px; margin: 8px auto 0; padding: 4px 8px;
+  border: none; background: none; cursor: pointer; font-size: 12.5px; font-weight: 700; color: #4b5563;
+}
+
+.upiopen-more-toggle svg { transition: transform 0.2s ease; }
+
+.upiopen-more-toggle.open svg { transform: rotate(180deg); }
+
+.upiopen-more { margin-top: 6px; }
+
+.upiopen-chip.other { flex-basis: 100%; color: #374151; }

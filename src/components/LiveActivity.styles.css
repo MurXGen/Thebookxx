@@ -1,0 +1,133 @@
+/* Styles used only by LiveActivity.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.la-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+
+.la-title { margin: 0; font-size: 15px; font-weight: 700; color: #fff; }
+
+.la-live { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 0 rgba(34,197,94,.6); animation: la-ping 1.8s ease-out infinite; }
+
+.la-ic { flex-shrink: 0; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; }
+
+.la-ic-order { color: #fb923c; background: rgba(251,146,60,.14); }
+
+.la-ic-fast { color: #fde047; background: rgba(253,224,71,.14); }
+
+.la-ic-cart { color: #a5b4fc; background: rgba(165,180,252,.14); }
+
+.la-ic-review { color: #fbbf24; background: rgba(251,191,36,.14); }
+
+.la-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+
+.la-line { font-size: 12.5px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.la-city { color: #a8a29e; font-weight: 400; }
+
+.la-stars { color: #fbbf24; font-size: 10px; letter-spacing: 1px; }
+
+.la-what { font-size: 12px; color: #d6d3d1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.la-time { flex-shrink: 0; align-self: flex-start; font-size: 10.5px; color: #78716c; max-width: 84px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@media (prefers-reduced-motion: reduce) {
+.la-live { animation: none; }
+}
+
+.la-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fcd34d;
+}
+
+.la-label { color: #fff; }
+
+.la-label b {
+  background: linear-gradient(90deg, #fdba74, #fb8500 55%, #f97316);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+}
+
+.la.la-marquee { padding: 14px 0 12px !important; overflow: hidden; }
+
+.la-marquee .la-label { padding: 0 16px; margin-bottom: 10px; display: flex; }
+
+.la-row {
+  overflow: hidden; padding: 3px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+
+.la-row + .la-row { margin-top: 8px; }
+
+.la-track { display: flex; width: max-content; animation: laLoop 30s linear infinite; will-change: transform; }
+
+.la-row.rev .la-track { animation-direction: reverse; }
+
+.la-row:hover .la-track, .la-row:active .la-track { animation-play-state: paused; }
+
+.la-group { display: flex; gap: 10px; padding-right: 10px; }
+
+.la-card {
+  flex: none; width: 250px; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+  border-radius: 14px; background: #fff; border: 1px solid #f0eceb; box-shadow: 0 4px 12px -10px rgba(28, 28, 40, 0.35);
+}
+
+.la-card .la-txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+
+.la-card .la-line { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.la-card .la-what { font-size: 12.5px; color: #57534e; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.la-card .la-time { font-size: 11px; color: #a8a29e; }
+
+@media (prefers-reduced-motion: reduce) {
+.la-track { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+.la-row { overflow-x: auto; }
+}
+
+.la-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 16px; }
+
+.la-marquee .la-head .la-label { padding: 0; margin: 0; }
+
+.la-score { display: inline-flex; align-items: center; gap: 3px; height: 24px; padding: 0 8px; border-radius: 999px; background: #fff8eb; border: 1px solid #fde3b0; font-size: 12px; font-weight: 800; color: #92400e; }
+
+.la-sub { display: flex; align-items: center; gap: 5px; margin: 4px 16px 10px; font-size: 12px; color: #78716c; }
+
+.la-photo { position: relative; flex: none; width: 118px; height: 148px; margin: 0; border-radius: 14px; overflow: hidden; background: #f4f4f5; box-shadow: 0 8px 18px -12px rgba(28, 28, 40, 0.55); }
+
+.la-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.la-photo-cap { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 1px; padding: 22px 8px 7px; color: #fff; background: linear-gradient(to top, rgba(0, 0, 0, .78), transparent); }
+
+.la-photo-stars { font-size: 10.5px; color: #fbbf24; letter-spacing: 1px; }
+
+.la-photo-tag { align-self: flex-start; padding: 1px 6px; border-radius: 999px; background: #dc2626; font-size: 8.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+
+.la-photo-who { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.la-share { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 10px 16px 0; height: 38px; border-radius: 12px; background: #f3fdf6; border: 1px solid rgba(37, 211, 102, 0.35); color: #15803d !important; font-size: 13px; font-weight: 800; text-decoration: none; }
+
+.la-share svg { color: #25d366; }
+
+.la-photo.is-loading { background: linear-gradient(100deg, #f1eded 30%, #faf7f7 50%, #f1eded 70%) 0 0 / 300% 100%; animation: laShimmer 1.3s linear infinite; }
+
+.la-photo.is-loading img { opacity: 0; }
+
+.la-photo.is-loading .la-photo-cap { visibility: hidden; }
+
+.la-photo img { transition: opacity .25s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+.la-photo.is-loading { animation: none; }
+}

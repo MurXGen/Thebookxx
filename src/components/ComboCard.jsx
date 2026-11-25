@@ -1,4 +1,6 @@
 "use client";
+import { optImg } from "@/lib/optImg";
+import "./ComboCard.styles.css";
 
 import Link from "next/link";
 import { useStore } from "@/context/StoreContext";
@@ -34,7 +36,7 @@ export function ComboCoverArt({ items, burst, className = "" }) {
     <div className={`combo-covers${pair ? " pair" : ""} ${className}`} aria-hidden="true">
       {items.slice(0, 4).map((b, i) => (
         <span className="combo-cover" key={b.id} style={{ zIndex: items.length - i }}>
-          {b.image && <img src={b.image} alt="" loading="lazy" />}
+          {b.image && <img src={optImg(b.image, 84)} alt="" loading="lazy" />}
         </span>
       ))}
       {pair && (

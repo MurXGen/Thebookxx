@@ -1,0 +1,13 @@
+/* Styles used only by layout.js (split out of globals.css so other pages
+   don't download them). */
+
+.app-shell {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  /* Keep full-bleed rails/bars from ever creating a horizontal page scroll,
+     which would otherwise steal the swipe so the inner rails can't scroll. */
+  overflow-x: clip;
+}
+
+.app-shell:has(.hero-xmas) { overflow-x: visible; }

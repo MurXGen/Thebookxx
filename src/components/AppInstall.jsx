@@ -1,4 +1,5 @@
 "use client";
+import "./AppInstall.styles.css";
 
 // "Install TheBookX" — the website installed as an app (PWA), everywhere:
 //   Chrome / Edge (Android + desktop) → the browser's own install prompt

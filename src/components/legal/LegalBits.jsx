@@ -1,3 +1,4 @@
+import "./LegalBits.styles.css";
 import Link from "next/link";
 // Shared building blocks for the policy pages. Server components (no hooks),
 // so the pages can export `metadata` and render as static HTML.

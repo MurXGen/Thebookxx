@@ -1,5 +1,6 @@
 // components/BookDetailsModal.jsx — the book (product) page.
 "use client";
+import "./BookDeatilsModel.styles.css";
 
 import { useStore } from "@/context/StoreContext";
 import OneRupeeUnlock from "@/components/OneRupeeUnlock";
@@ -46,7 +47,19 @@ import {
   QUICKREAD_PRICE,
   quickReadFrameCount,
 } from "@/data/quickreadsMeta";
-import QuickReadsReader from "./quickreads/QuickReadsReader";
+// The QuickReads reader (and the payment screen it can open) is large, so it
+// downloads only when a reader actually opens it.
+function QuickReadsReader(props) {
+  const [Reader, setReader] = useState(null);
+  useEffect(() => {
+    let live = true;
+    import("./quickreads/QuickReadsReader").then((m) => live && setReader(() => m.default));
+    return () => {
+      live = false;
+    };
+  }, []);
+  return Reader ? <Reader {...props} /> : null;
+}
 import BookCard from "./BookCard";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -114,7 +127,9 @@ function Cover({ book, alt }) {
       alt={alt}
       width={360}
       height={540}
-      priority
+      preload
+      loading="eager"
+      fetchPriority="high"
       sizes="(max-width: 767px) 62vw, 360px"
       className="pdp-cover"
       onError={() => setErr(true)}
@@ -335,7 +350,13 @@ function useDeliveryPin() {
 export default function BookDetailsModal({ book: bookProp }) {
   // Use the shared client copy of this book (the server prop is a serialized
   // snapshot), so the device's post-offer price applies here too.
-  const book = books.find((b) => b.id === bookProp.id) || bookProp;
+  const shared = books.find((b) => b.id === bookProp.id);
+  // The browser catalogue ships without long descriptions (server-only, see
+  // utils/book.js), so take it from the server-rendered prop.
+  if (shared && shared.description === undefined && bookProp.description) {
+    shared.description = bookProp.description;
+  }
+  const book = shared || bookProp;
   const {
     cart,
     addToCart,

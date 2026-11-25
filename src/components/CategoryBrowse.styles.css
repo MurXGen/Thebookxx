@@ -1,0 +1,20 @@
+/* Styles used only by CategoryBrowse.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.cb-search {
+  flex-shrink: 0;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--dark-20, #82828230);
+  background: #fff;
+  color: var(--foreground, #0a0a0a);
+  cursor: pointer;
+}
+
+.cb-search:hover {
+  background: var(--dark-4, #f3f4f6);
+}

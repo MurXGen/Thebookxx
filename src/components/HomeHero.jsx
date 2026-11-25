@@ -1,4 +1,6 @@
 "use client";
+import { optImg } from "@/lib/optImg";
+import "./HomeHero.styles.css";
 
 import LiveActivity from "@/components/LiveActivity";
 import CommunityJoin from "@/components/CommunityJoin";
@@ -242,7 +244,7 @@ export default function HomeHero() {
           <div className="hx-visual" aria-hidden="true">
             <span className="hx-visual-glow" />
             {HERO_COVERS.map((src, i) => (
-              <img key={src} src={src} alt="" className={`hx-vcover v${i}`} loading="eager" decoding="async" />
+              <img key={src} src={optImg(src, 168)} alt="" className={`hx-vcover v${i}`} loading="eager" decoding="async" />
             ))}
             <span className="hx-visual-tag">
               <Star size={13} fill="#f59e0b" stroke="#f59e0b" /> Bestsellers from ₹1

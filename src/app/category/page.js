@@ -1,5 +1,6 @@
 // app/categories/page.js
 "use client";
+import "./page.styles.css";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";

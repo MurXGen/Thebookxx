@@ -1,0 +1,54 @@
+/* Styles used only by TableOfContents.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.blog-toc {
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 14px;
+  padding: 16px 18px;
+  background: #fff;
+}
+
+.blog-toc-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dark-50, #6b7280);
+  margin-bottom: 10px;
+}
+
+.blog-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.blog-toc a {
+  display: block;
+  font-size: 13.5px;
+  color: var(--dark-50, #6b7280);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-left: 2px solid transparent;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.4;
+  transition: all 0.15s ease;
+}
+
+.blog-toc a:hover {
+  color: var(--foreground, #111827);
+  background: #f9fafb;
+}
+
+.blog-toc a.active {
+  color: var(--tertiary, #fb8500);
+  border-left-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.07);
+  font-weight: 600;
+}

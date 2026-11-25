@@ -1,4 +1,5 @@
 "use client";
+import "./PincodeModal.styles.css";
 
 import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";
 import { motion, AnimatePresence } from "framer-motion";

@@ -1,4 +1,5 @@
 "use client";
+import "./PushPrompt.styles.css";
 
 // Push notifications UI (same slide-up sheet as the rest of the site):
 //  • PushSheet "why" — what they'll get (live tracking link in the alert, new

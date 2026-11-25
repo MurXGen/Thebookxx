@@ -1,4 +1,5 @@
 "use client";
+import "./BooksBrowser.styles.css";
 
 // /books — find a category fast: filter box, Popular / A–Z sort, the biggest
 // shelves featured on top, then every category as a crawlable link card.

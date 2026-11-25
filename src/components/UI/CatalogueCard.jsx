@@ -1,5 +1,6 @@
 // src/components/UI/CatalogueCard.jsx
 "use client";
+import "./CatalogueCard.styles.css";
 
 import { BookOpen } from "lucide-react";
 

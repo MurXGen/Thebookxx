@@ -1,4 +1,5 @@
 "use client";
+import "./OrderSuccessCard.styles.css";
 
 import PlacingOrder from "@/components/UI/PlacingOrder";
 import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";

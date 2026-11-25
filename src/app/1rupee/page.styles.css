@@ -1,0 +1,36 @@
+/* Styles used only by page.js (split out of globals.css so other pages
+   don't download them). */
+
+.or-page {
+  padding-bottom: 60px;
+}
+
+.or-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--px-12) var(--px-16) 0;
+}
+
+.or-breadcrumb {
+  padding: 0;
+}
+
+.or-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-16);
+}
+
+.or-faq-q {
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 4px;
+}
+
+.or-faq-a {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--dark-50);
+  margin: 0;
+}

@@ -1,4 +1,5 @@
 "use client";
+import "./page.styles.css";
 
 import { useState, useEffect } from "react";
 import { books } from "@/utils/book";

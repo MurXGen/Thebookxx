@@ -1,0 +1,36 @@
+/* Styles used only by loading.js (split out of globals.css so other pages
+   don't download them). */
+
+.skel-title {
+  height: 34px;
+  width: 260px;
+  max-width: 70%;
+  margin: 0 auto;
+}
+
+.skel-sub {
+  height: 15px;
+  width: 420px;
+  max-width: 80%;
+  margin: 12px auto 0;
+}
+
+.skel-hero {
+  pointer-events: none;
+}
+
+.skel-hero-media {
+  height: 300px;
+  border-radius: 0;
+}
+
+.skel-card-media {
+  height: 180px;
+  border-radius: 0;
+}
+
+.w30 { width: 30%; }
+
+.w80 { width: 80%; }
+
+.w90 { width: 90%; }

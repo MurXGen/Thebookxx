@@ -1,0 +1,70 @@
+/* Styles used only by HorizontalScroll.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.h-scroll-wrapper {
+  width: 100%;
+}
+
+.h-scroll-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.h-scroll-header h3 {
+  font-size: var(--px-16);
+  font-weight: var(--weight-600);
+}
+
+.scroll-hint {
+  font-size: var(--px-12);
+  color: #777;
+}
+
+.h-scroll-container {
+  position: relative;
+}
+
+.h-scroll-track::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 50%;
+  border: none;
+  background: white;
+  color: var(--tertiary);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 5;
+}
+
+.scroll-btn.left {
+  left: -6px;
+}
+
+.scroll-btn.right {
+  right: -6px;
+}
+
+.scroll-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.scroll-btn:hover:not(:disabled) {
+  transform: translateY(-50%) scale(1.05);
+}

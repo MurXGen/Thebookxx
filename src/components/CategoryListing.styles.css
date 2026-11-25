@@ -1,0 +1,131 @@
+/* Styles used only by CategoryListing.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.tertiary-btn:hover {
+  text-decoration: none;
+}
+
+.category-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  /* padding: 24px; */
+}
+
+.cat-hero-back {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  border: 1px solid var(--hairline);
+  background: #fff;
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-hero-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--foreground);
+  margin: 0;
+  line-height: 1.15;
+}
+
+@media (max-width: 560px) {
+.cat-hero-title {
+    font-size: 20px;
+  }
+}
+
+.cat-themed .sec-mid-btn.active {
+  background: var(--cat-accent, #fb8500);
+  border-color: var(--cat-accent, #fb8500);
+  color: #1a1a1a;
+}
+
+.cat-themed {
+  position: relative;
+  min-height: 100vh;
+}
+
+.cat-root {
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  width: 130px;
+  color: var(--cat-accent, #fb8500);
+  opacity: 0.24;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cat-root-left {
+  left: 0;
+}
+
+.cat-root-right {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+@media (max-width: 700px) {
+.cat-root {
+    width: 104px;
+    opacity: 0.3;
+  }
+}
+
+.cat-themed .breadcrumbs-pro,
+.cat-themed .section-1200,
+.cat-themed .books-grid,
+.cat-themed .lazy-book-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.category-page.cat-sw { position: relative; isolation: isolate; background: var(--sw-bg) !important; }
+
+.cat-sw > .pdp-fx { background: var(--sw-bg) !important; }
+
+.cat-sw .cat-root { display: none !important; }
+
+.cat-sw .breadcrumbs, .cat-sw nav[aria-label="Breadcrumb"] { padding-top: 10px !important; padding-bottom: 6px !important; font-size: 12.5px; }
+
+.cat-head-card { position: relative; margin: 6px 0 14px; padding: 14px 14px 12px; background: #fff; border-radius: 20px; box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04); }
+
+.cat-head-row { display: flex; align-items: center; gap: 10px; }
+
+.cat-sw .cat-hero-back { flex: none; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #ececf1; background: #fff; color: #1c1c28; }
+
+.cat-head-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+
+.cat-sw .cat-hero-title { margin: 0 !important; font-size: 19px !important; font-weight: 800 !important; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cat-sw .cat-count { margin-top: 2px; font-size: 12.5px; color: var(--sw-mute); }
+
+.cat-filter-btn { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 1px solid #e3e3ea; border-radius: 999px; background: #fff; color: #1c1c28; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+.cat-filter-btn.active { border-color: #1c1c28; background: #1c1c28; color: #fff; }
+
+.cat-chips { display: flex; gap: 8px; margin-top: 12px; overflow-x: auto; scrollbar-width: none; }
+
+.cat-chips::-webkit-scrollbar { display: none; }
+
+.cat-chip { flex: none; height: 32px; padding: 0 12px; border: 1px solid #e3e3ea; border-radius: 999px; background: #fafafb; color: #3f3f4a; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s, color .15s, border-color .15s; }
+
+.cat-chip.on { background: #fff1f0; border-color: #dc2626; color: #b91c1c; }
+
+.cat-head-card::before, .cat-grid-card::before {
+  content: ""; position: absolute; z-index: 3; pointer-events: none; left: 14px; right: 14px; top: -8px; height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C4 3 14 1 24 4 C34 0 48 1 58 4 C70 0 86 2 98 4 C110 0 128 1 140 4 C152 0 170 1 180 4 C190 2 197 4 196 9 C196 12 192 13 188 12 C186 17 180 18 178 13 C150 14 130 12 118 13 C117 19 108 19 107 13 C90 14 70 12 52 13 C50 17 44 18 42 13 C30 14 12 13 8 12 C5 12 4 11 4 9 Z' fill='%23ffffff' stroke='%23c7d6ea' stroke-width='1'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+  filter: drop-shadow(0 2px 2px rgba(110, 140, 180, 0.3));
+}
+
+.cat-grid-card { position: relative; margin: 0 0 20px; padding: 16px 12px 12px; background: #fff; border-radius: 20px; box-shadow: 0 1px 2px rgba(28, 28, 40, 0.04); }
+
+.cat-cap { display: block; margin: 0 4px 12px; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #8a8a99; }
+
+@media (max-width: 640px) {
+.cat-sw .section-1200 { padding-left: 12px !important; padding-right: 12px !important; }
+}

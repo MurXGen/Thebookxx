@@ -1,3 +1,4 @@
+import "./loading.styles.css";
 // Shown while the blogs index loads / during navigation — a shimmering
 // skeleton that mirrors the real layout (hero + card grid).
 export default function BlogsLoading() {

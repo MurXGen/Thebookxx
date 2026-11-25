@@ -1,4 +1,5 @@
 "use client";
+import "./ScratchCard.styles.css";
 
 import { useEffect, useRef, useState } from "react";
 

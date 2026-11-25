@@ -1,4 +1,5 @@
 "use client";
+import "./CartOfferStrip.styles.css";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import CartConfetti from "@/components/UI/Confetti";

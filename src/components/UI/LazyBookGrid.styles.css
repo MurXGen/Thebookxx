@@ -1,0 +1,23 @@
+/* Styles used only by LazyBookGrid.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.lazy-sentinel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 0 8px;
+  width: 100%;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+
+.lazy-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--hairline, #e5e7eb);
+  border-top-color: var(--tertiary, #fb8500);
+  animation: lazy-spin 0.7s linear infinite;
+}

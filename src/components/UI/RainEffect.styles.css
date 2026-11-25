@@ -1,0 +1,17 @@
+/* Styles used only by RainEffect.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.rain-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 60;
+}
+
+@media (prefers-reduced-motion: reduce) {
+.rain-canvas {
+    display: none;
+  }
+}

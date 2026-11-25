@@ -1,4 +1,5 @@
 "use client";
+import "./UpiPayToCard.styles.css";
 
 // Compact "Pay to TheBookX" card: a small QR (tap → large QR with the amount,
 // Download and Copy UPI ID), the amount, who the app will show as the payee,

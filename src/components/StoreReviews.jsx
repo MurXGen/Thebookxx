@@ -1,5 +1,6 @@
 // components/StoreReviews.jsx
 "use client";
+import "./StoreReviews.styles.css";
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";

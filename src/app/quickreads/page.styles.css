@@ -1,0 +1,49 @@
+/* Styles used only by page.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.qr-seo-links {
+  margin: 8px auto 40px;
+  padding: 0 20px;
+}
+
+.qr-seo-links-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--foreground, #111);
+}
+
+.qr-seo-links-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.qr-seo-link {
+  display: inline-flex;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: var(--surface-2, #faf9f7);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--foreground, #111);
+  text-decoration: none;
+}
+
+.qr-seo-link:hover {
+  border-color: var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
+}

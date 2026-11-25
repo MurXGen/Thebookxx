@@ -1,0 +1,98 @@
+/* Styles used only by OfferTierList.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.offer-sheet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.offer-tier {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+}
+
+.offer-tier.unlocked {
+  border-color: rgba(0, 143, 12, 0.3);
+  background: rgba(0, 143, 12, 0.05);
+}
+
+.offer-tier.unlocked .offer-tier-ic {
+  background: var(--success, #008f0c);
+  color: #fff;
+}
+
+.offer-tier-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.offer-tier-reward {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.offer-tier-note {
+  font-size: 11.5px;
+  color: var(--dark-50);
+}
+
+.otl { list-style: none; padding: 0; margin: 0 0 14px; }
+
+.otl .offer-tier-main { flex: 1; min-width: 0; }
+
+.otl-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--primary, #fd6b01);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.otl-btn:active:not(:disabled) { transform: scale(0.95); }
+
+.otl-btn:disabled {
+  background: var(--dark-4, #f3f4f6);
+  color: var(--dark-50, #9ca3af);
+  border: 1px dashed var(--dark-10, #e5e7eb);
+  cursor: not-allowed;
+}
+
+.otl-btn-on {
+  background: #fff;
+  color: var(--success, #008f0c);
+  border: 1px solid rgba(0, 143, 12, 0.35);
+}
+
+.otl-lock-tag {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dark-50);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--dark-4, #f3f4f6);
+}
+
+.offer-tier.unlocked .offer-tier-ic {
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--success, #008f0c) !important;
+}

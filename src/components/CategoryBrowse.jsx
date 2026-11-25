@@ -1,4 +1,5 @@
 "use client";
+import "./CategoryBrowse.styles.css";
 
 import { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";

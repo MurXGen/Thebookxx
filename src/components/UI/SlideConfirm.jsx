@@ -1,4 +1,5 @@
 "use client";
+import "./SlideConfirm.styles.css";
 
 import { motion, useMotionValue, animate } from "framer-motion";
 import { ChevronRight } from "lucide-react";

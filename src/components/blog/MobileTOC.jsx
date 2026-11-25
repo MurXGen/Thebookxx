@@ -1,4 +1,5 @@
 "use client";
+import "./MobileTOC.styles.css";
 
 import { useEffect, useState } from "react";
 import { List, ChevronUp, X } from "lucide-react";

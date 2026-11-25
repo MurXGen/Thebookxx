@@ -1,4 +1,5 @@
 "use client";
+import "./WelcomeCouponPopup.styles.css";
 
 // Swiggy-style "Congratulations!" coupon popup for the bag. One clear rupee
 // saving, one button, and a 5-second bar draining underneath. When the bar

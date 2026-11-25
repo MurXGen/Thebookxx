@@ -1,4 +1,5 @@
 "use client";
+import "./QuickReadsPromo.styles.css";
 
 import Link from "next/link";
 import { Zap, Clock, BookOpen, CheckCircle2, ArrowRight } from "lucide-react";

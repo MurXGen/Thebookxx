@@ -1,4 +1,5 @@
 "use client";
+import "./RechargeModal.styles.css";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";

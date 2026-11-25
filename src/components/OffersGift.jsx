@@ -1,4 +1,5 @@
 "use client";
+import "./OffersGift.styles.css";
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";

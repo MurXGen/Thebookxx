@@ -1,4 +1,5 @@
 "use client";
+import "./LazyBookGrid.styles.css";
 
 import { useState, useRef, useEffect } from "react";
 import BookCard from "@/components/BookCard";

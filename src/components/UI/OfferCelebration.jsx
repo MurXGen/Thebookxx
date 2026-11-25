@@ -1,4 +1,5 @@
 "use client";
+import "./OfferCelebration.styles.css";
 
 import { useEffect, useState } from "react";
 

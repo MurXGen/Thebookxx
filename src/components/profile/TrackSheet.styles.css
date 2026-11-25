@@ -1,0 +1,213 @@
+/* Styles used only by TrackSheet.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.track-sheet {
+  border-radius: 22px 22px 0 0;
+}
+
+.track-body {
+  padding: 18px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+}
+
+.track-timeline {
+  position: relative;
+}
+
+.track-steps {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+.track-step {
+  display: flex;
+  gap: 14px;
+  min-height: 78px;
+}
+
+.track-step-rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 30px;
+  flex-shrink: 0;
+}
+
+.track-step-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.track-step.done .track-step-dot {
+  background: #16a34a;
+  box-shadow:
+    0 2px 6px rgba(22, 163, 74, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.track-step.active .track-step-dot {
+  background: #fff;
+  border: 3px solid var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 5px rgba(251, 133, 0, 0.14);
+}
+
+.track-vline {
+  position: absolute;
+  width: 6px;
+  transform: translateX(-50%);
+  border-radius: 6px;
+  z-index: 0;
+  background:
+    linear-gradient(#e9edf2, #e9edf2) center/2px 100% no-repeat,
+    repeating-linear-gradient(
+      to bottom,
+      #d7dde4 0 3px,
+      transparent 3px 9px
+    );
+  background-blend-mode: normal;
+}
+
+.track-vline-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #16a34a, #22c55e);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+.track-train-wrap {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.track-train {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  will-change: transform;
+}
+
+.track-train-emoji {
+  font-size: 26px;
+  line-height: 1;
+  display: inline-block;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.28));
+}
+
+.track-train-glow {
+  display: none;
+}
+
+.track-train-tail {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 7px;
+  height: 26px;
+  transform: translateX(-50%);
+  border-radius: 7px;
+  background: linear-gradient(
+    to top,
+    rgba(251, 133, 0, 0.55),
+    rgba(251, 133, 0, 0)
+  );
+  filter: blur(1.5px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.track-train-tail.on {
+  opacity: 1;
+}
+
+.track-step-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 14px;
+}
+
+.track-step-txt strong {
+  font-size: var(--px-15);
+  font-weight: 700;
+  color: var(--foreground, #1a1a1a);
+}
+
+.track-step.todo .track-step-txt strong {
+  color: var(--gray-500, #6b7280);
+  font-weight: 600;
+}
+
+.track-step-txt span {
+  font-size: var(--px-12);
+  color: var(--gray-500, #6b7280);
+}
+
+.track-check-link {
+  align-self: flex-start;
+  margin-top: 6px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--px-13);
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  text-decoration: underline;
+}
+
+.track-eta-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 2px 2px;
+  font-size: var(--px-12);
+  line-height: 1.5;
+  color: var(--gray-500, #6b7280);
+}
+
+.track-eta-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--tertiary, #fb8500);
+}
+
+.track-eta-note strong {
+  color: var(--foreground, #1a1a1a);
+  font-weight: 700;
+}
+
+.track-delivered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 11px;
+  border-radius: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-weight: 700;
+  font-size: var(--px-14);
+}

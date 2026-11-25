@@ -1,4 +1,6 @@
 "use client";
+import { optImg } from "@/lib/optImg";
+import "./CommunityJoin.styles.css";
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
@@ -60,7 +62,7 @@ export default function CommunityJoin({ className = "", variant = "icon" }) {
           {avatars.slice(0, 3).map((src) => (
             <img
               key={src}
-              src={src}
+              src={optImg(src, 40)}
               alt=""
               loading="lazy"
               onError={() => setBroken((p) => ({ ...p, [src]: true }))}
@@ -78,7 +80,7 @@ export default function CommunityJoin({ className = "", variant = "icon" }) {
       >
         <span className="cj-hero-faces" aria-hidden="true">
           {avatars.slice(0, 3).map((src) => (
-            <img key={src} src={src} alt="" loading="lazy" onError={() => setBroken((p) => ({ ...p, [src]: true }))} />
+            <img key={src} src={optImg(src, 40)} alt="" loading="lazy" onError={() => setBroken((p) => ({ ...p, [src]: true }))} />
           ))}
         </span>
         <span className="cj-hero-txt">
@@ -149,7 +151,7 @@ export default function CommunityJoin({ className = "", variant = "icon" }) {
               {avatars.length > 0 && (
                 <div className="cj-faces">
                   {avatars.map((src) => (
-                    <img key={src} src={src} alt="" loading="lazy" onError={() => setBroken((p) => ({ ...p, [src]: true }))} />
+                    <img key={src} src={optImg(src, 40)} alt="" loading="lazy" onError={() => setBroken((p) => ({ ...p, [src]: true }))} />
                   ))}
                   <span className="cj-faces-more">5k+</span>
                 </div>

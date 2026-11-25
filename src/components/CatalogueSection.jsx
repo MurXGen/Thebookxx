@@ -1,5 +1,7 @@
 // src/components/CatalogueSection.jsx
 "use client";
+import { optImg } from "@/lib/optImg";
+import "./CatalogueSection.styles.css";
 
 import { useMemo } from "react";
 import Link from "next/link";
@@ -63,7 +65,7 @@ export default function CatalogueSection() {
                 cat.covers.map((src, i) => (
                   <img
                     key={src}
-                    src={src}
+                    src={optImg(src, 40)}
                     alt=""
                     loading="lazy"
                     className={`catrow-cover catrow-cover-${i}`}

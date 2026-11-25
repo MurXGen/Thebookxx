@@ -1,4 +1,5 @@
 "use client";
+import "./CodSwitchBtn.styles.css";
 
 import { Banknote, ChevronRight } from "lucide-react";
 

@@ -1,0 +1,113 @@
+/* Styles used only by QuickReadsPromo.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.qr-promo {
+  margin: 28px auto 8px;
+  max-width: 680px;
+  padding: 0 16px;
+}
+
+.qr-promo-seo-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.qr-promo-inner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 28px 22px;
+  text-align: center;
+  color: #fff;
+  background:
+    radial-gradient(
+      120% 120% at 0% 0%,
+      rgba(255, 183, 3, 0.35),
+      transparent 55%
+    ),
+    linear-gradient(135deg, #12100e 0%, #23180a 60%, #2a1c08 100%);
+  border: 1px solid rgba(251, 133, 0, 0.35);
+  box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.6);
+}
+
+.qr-promo-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffb703, #fb8500);
+  color: #1a1205;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.qr-promo-title {
+  margin: 14px 0 8px;
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 800;
+  color: #fff;
+}
+
+.qr-promo-sub {
+  margin: 0 auto;
+  max-width: 520px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.qr-promo-points {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 18px;
+  margin: 18px 0 20px;
+}
+
+.qr-promo-point {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ffd9a3;
+}
+
+.qr-promo-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffb703, #fb8500);
+  color: #1a1205;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 22px -6px rgba(251, 133, 0, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.qr-promo-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -6px rgba(251, 133, 0, 0.7);
+}
+
+.qr-promo-trust {
+  display: block;
+  margin-top: 14px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}

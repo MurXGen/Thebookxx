@@ -1,0 +1,56 @@
+/* Styles used only by HomeTabs.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.home-tabs-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 14px 16px 4px;
+}
+
+.home-tabs {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  gap: 4px;
+  padding: 5px;
+  border-radius: 999px;
+  background: #f4f4f5;
+  border: 1px solid #111;
+}
+
+.home-tab {
+  position: relative;
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, filter 0.3s ease;
+}
+
+.home-tab.active {
+  background: #111;
+  color: #fff;
+}
+
+.home-tab:not(.active):hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.home-tab-inner {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}

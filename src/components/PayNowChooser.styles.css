@@ -1,0 +1,322 @@
+/* Styles used only by PayNowChooser.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.paymeth {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 4px 2px 8px;
+}
+
+.paymeth-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paymeth-group-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dark-50, #6b7280);
+}
+
+.paymeth-apps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.paymeth-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 6px;
+  border-radius: 14px;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--background, #fff);
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+.paymeth-app:hover {
+  border-color: var(--tertiary, #fb8500);
+}
+
+.paymeth-app:active {
+  transform: scale(0.97);
+}
+
+.paymeth-app-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.paymeth-app-ic.light {
+  background: #fff;
+  border: 1px solid var(--hairline, #ececec);
+}
+
+.upi-word {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.upi-phonepe {
+  color: #fff;
+  font-size: 17px;
+}
+
+.upi-paytm {
+  font-size: 13px;
+}
+
+.paymeth-app-nm {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--foreground);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.paymeth-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.paymeth-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--background, #fff);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.paymeth-row:hover {
+  border-color: var(--tertiary, #fb8500);
+}
+
+.paymeth-row-ic {
+  color: var(--tertiary, #fb8500);
+  flex: 0 0 auto;
+}
+
+.paymeth-row-nm {
+  flex: 1;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.paymeth-row-chev {
+  color: var(--dark-50, #6b7280);
+  flex: 0 0 auto;
+}
+
+.paymeth-amazon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 153, 0, 0.4);
+  background: rgba(255, 153, 0, 0.07);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.paymeth-amazon:hover {
+  background: rgba(255, 153, 0, 0.12);
+}
+
+.paymeth-amazon-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: #ff9900;
+  color: #fff;
+  flex: 0 0 auto;
+}
+
+.paymeth-amazon-txt {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: left;
+}
+
+.paymeth-amazon-txt strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.paymeth-amazon-txt small {
+  font-size: 11.5px;
+  color: var(--dark-50, #6b7280);
+}
+
+@media (max-width: 480px) {
+.paymeth-apps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.paynow-upi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 2px 8px;
+  text-align: center;
+}
+
+.paynow-upi-amt {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.paynow-qr {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  border-radius: 14px;
+  border: 1px solid var(--hairline, #ececec);
+  padding: 8px;
+  background: #fff;
+}
+
+.paynow-upi-id-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.paynow-upi-id {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.paynow-upi-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.paynow-upi-btns {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.paynow-upi-btns .sec-big-btn,
+.paynow-upi-btns .pri-big-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.upiv3-open {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 13px;
+  border: 1px solid #e6e8ec;
+  border-radius: 14px;
+  background: #fafbfc;
+}
+
+.upiv3-open-lbl {
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.upiv3-open-apps {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.upiv3-open-app {
+  flex: 1 1 0;
+  padding: 11px 6px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e5ea;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.1s ease, border-color 0.15s ease;
+}
+
+.upiv3-open-app:active {
+  transform: scale(0.96);
+}
+
+.upiv3-open-app.gpay {
+  color: #1a73e8;
+  border-color: #cfe0fb;
+}
+
+.upiv3-open-app.phonepe {
+  color: #5f259f;
+  border-color: #e0d2f1;
+}
+
+.upiv3-open-app.paytm {
+  color: #00b9f1;
+  border-color: #c7edfb;
+}
+
+.upiv3-open-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  text-align: center;
+  line-height: 1.35;
+}
+
+.upiv3-open-hint svg {
+  flex: 0 0 auto;
+}

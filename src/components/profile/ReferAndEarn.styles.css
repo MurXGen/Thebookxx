@@ -1,0 +1,327 @@
+/* Styles used only by ReferAndEarn.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.refearn-card {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #ffe3c2;
+  background: linear-gradient(160deg, #fff7ed 0%, #ffffff 70%);
+}
+
+.refearn-card--compact {
+  margin-top: 12px;
+  padding: 13px 14px;
+}
+
+.refearn-card--compact .refearn-enable {
+  margin-top: 11px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+}
+
+.refearn-enable--tap {
+  animation: refearnTap 0.45s ease;
+}
+
+.refearn-coin {
+  position: absolute;
+  left: 50%;
+  bottom: 54px;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 10px 24px -8px rgba(251, 133, 0, 0.65);
+}
+
+.refearn-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.refearn-ic {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+}
+
+.refearn-title {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+
+.refearn-sub {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.refearn-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.refearn-deco {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 120px;
+  height: 120px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+}
+
+.refearn-card > .refearn-head,
+.refearn-card > .refearn-proof,
+.refearn-card > .refearn-meter,
+.refearn-card .refearn-enable,
+.refearn-card .refearn-linkrow,
+.refearn-card .refearn-share,
+.refearn-card .refearn-locked,
+.refearn-card .refearn-foot {
+  position: relative;
+  z-index: 1;
+}
+
+.refearn-deco-c1 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: refFloatA 3.6s ease-in-out infinite;
+}
+
+.refearn-deco-c2 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: refFloatB 4.2s ease-in-out infinite;
+}
+
+.refearn-deco-c3 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: refFloatA 3s ease-in-out infinite reverse;
+}
+
+.refearn-proof {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 11px;
+}
+
+.refearn-proof-faces {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.refearn-proof-faces img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  margin-left: -8px;
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+.refearn-proof-faces img:first-child {
+  margin-left: 0;
+}
+
+.refearn-proof-txt {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #6b7280;
+}
+
+.refearn-proof-txt b {
+  color: #b45309;
+  font-weight: 800;
+}
+
+.refearn-meter {
+  margin-top: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.refearn-meter svg {
+  display: block;
+  width: 100%;
+  height: 8px;
+}
+
+.refearn-meter-fill {
+  transform-box: fill-box;
+  transform-origin: left center;
+  /* Static fill — no looping animation. */
+  transform: scaleX(0.72);
+}
+
+.refearn-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--dark-20, #d1d5db);
+}
+
+.refearn-mini-linkrow {
+  margin: 0;
+}
+
+.refearn-mini-locked {
+  margin: 0;
+}
+
+.refearn-meter-lbl {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #c2803c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+.refearn-deco-c1, .refearn-deco-c2, .refearn-deco-c3, .refearn-meter-fill {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+.refearn-meter-fill { transform: scaleX(0.7); }
+}
+
+.refearn-enable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #0a0a0a;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.refearn-enable:disabled {
+  opacity: 0.7;
+}
+
+.refearn-spin {
+  animation: refSpin 0.8s linear infinite;
+}
+
+.refearn-linkrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px dashed #fbbf24;
+}
+
+.refearn-link {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.refearn-copy {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: none;
+  background: #fff3e0;
+  color: #fb8500;
+  cursor: pointer;
+}
+
+.refearn-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #25d366;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.refearn-foot {
+  margin: 10px 2px 0;
+  font-size: 11.5px;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+.refearn-locked {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff8ee;
+  border: 1px dashed #fcd9a6;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+.refearn-locked svg {
+  flex-shrink: 0;
+  color: #fb8500;
+}
+
+.refearn-ic {
+  background: none !important;
+  box-shadow: none !important;
+  color: #fb8500 !important;
+}
+
+.pe-row-wrap.refearn-mini { margin-top: 14px !important; padding-top: 14px !important; border-top: 1px dashed #ececf1 !important; display: flex; flex-direction: column; gap: 10px; }
+
+.refearn-mini .refearn-mini-linkrow { margin: 0 !important; }
+
+.pe-wa { color: #25d366 !important; }

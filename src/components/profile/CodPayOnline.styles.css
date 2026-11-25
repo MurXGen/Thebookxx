@@ -1,0 +1,316 @@
+/* Styles used only by CodPayOnline.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.upiv3-footer .upiv3-link-sep {
+  color: var(--dark-20, #d4d4d4);
+  font-weight: 400;
+}
+
+.pa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pa-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.pa-row.on {
+  border-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.06);
+}
+
+.pa-row-emoji {
+  flex: 0 0 auto;
+  font-size: 19px;
+  line-height: 1;
+}
+
+.pa-row-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pa-row-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.2;
+}
+
+.pa-row-sub {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--dark-60, #4b5563);
+  line-height: 1.2;
+}
+
+.pa-row-sub.free {
+  color: var(--success, #0a8f0c);
+}
+
+.pa-row-price {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+
+.pa-row-price.free {
+  color: var(--success, #0a8f0c);
+}
+
+.cpo-card {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #fed7aa;
+  background: linear-gradient(160deg, #fff7ed 0%, #ffffff 72%);
+}
+
+.cpo-card-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.cpo-badge-ic {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(135deg, #fb8500, #f97316);
+}
+
+.cpo-title {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+
+.cpo-sub {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: #6b7280;
+}
+
+.cpo-perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.cpo-perk {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #b45309;
+  background: #fff2e0;
+}
+
+.cpo-perk.save {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.cpo-cta {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #fff;
+  background: #0a0a0a;
+  cursor: pointer;
+}
+
+.cpo-cta:active {
+  transform: scale(0.99);
+}
+
+.cpo-verifying {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  font-size: 13px;
+  font-weight: 600;
+  color: #92610a;
+}
+
+.cpo-modal {
+  padding-bottom: 18px;
+}
+
+.cpo-choose {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+}
+
+.cpo-bill {
+  border: 1px solid #eef0f2;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fafafa;
+}
+
+.cpo-free {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.cpo-addons {
+  margin: 2px 0;
+}
+
+.cpo-choose-head {
+  margin-top: 2px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.cpo-opt {
+  width: 100%;
+  text-align: left;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+.cpo-opt:hover {
+  border-color: #fb8500;
+  box-shadow: 0 10px 24px -16px rgba(251, 133, 0, 0.6);
+}
+
+.cpo-opt:active {
+  transform: scale(0.995);
+}
+
+.cpo-opt-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cpo-opt-t {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cpo-opt-t strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+
+.cpo-opt-t small {
+  font-size: 12.5px;
+  color: #6b7280;
+}
+
+.cpo-opt-amt {
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+
+.cpo-opt-perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.cpo-opt-perks span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #15803d;
+  background: #ecfdf3;
+}
+
+.cpo-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 28px 22px 8px;
+}
+
+.cpo-waiting-close {
+  margin-top: 10px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.cpo-done h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.cpo-done p {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.cpo-badge-ic {
+  background: none !important;
+  box-shadow: none !important;
+  color: #fb8500 !important;
+}

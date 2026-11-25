@@ -1,4 +1,5 @@
 "use client";
+import "./HeroBundlePromo.styles.css";
 
 import { useMemo } from "react";
 import { Zap, Check } from "lucide-react";

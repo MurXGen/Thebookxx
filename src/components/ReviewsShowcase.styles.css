@@ -1,0 +1,207 @@
+/* Styles used only by ReviewsShowcase.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.rvs-section {
+  margin-top: 40px;
+}
+
+.rvs-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.rvs-title {
+  font-size: clamp(19px, 5vw, 26px);
+  font-weight: 800;
+  color: var(--foreground, #111);
+  line-height: 1.2;
+}
+
+.rvs-sub {
+  font-size: 12.5px;
+  color: var(--dark-50, #6b7280);
+  margin-top: 4px;
+  line-height: 1.5;
+  max-width: 420px;
+}
+
+.rvs-rating-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(251,133,0,0.12), rgba(255,183,3,0.12));
+  border: 1px solid rgba(251, 133, 0, 0.3);
+}
+
+.rvs-rating-num {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--tertiary, #fb8500);
+  line-height: 1;
+}
+
+.rvs-rating-count {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+}
+
+.rvs-stars {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.rvs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+}
+
+.rvs-card {
+  background: #fff;
+  border: 1px solid var(--hairline, #eee);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 20px -14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rvs-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.3);
+}
+
+.rvs-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rvs-avatar {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rvs-avatar-lg {
+  width: 48px;
+  height: 48px;
+  font-size: 17px;
+}
+
+.rvs-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rvs-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--foreground, #111);
+}
+
+.rvs-verified {
+  color: #2563eb;
+  flex: 0 0 auto;
+}
+
+.rvs-quote {
+  margin-left: auto;
+  color: rgba(251, 133, 0, 0.35);
+  flex: 0 0 auto;
+}
+
+.rvs-book {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--tertiary, #fb8500);
+}
+
+.rvs-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #374151;
+  margin: 0;
+}
+
+.rvs-readmore {
+  border: none;
+  background: none;
+  color: var(--tertiary, #fb8500);
+  font-weight: 800;
+  font-size: 12.5px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.rvs-readmore:hover {
+  text-decoration: underline;
+}
+
+.rvs-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 12, 16, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.rvs-modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.rvs-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+}
+
+.rvs-modal-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.rvs-modal-text {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #374151;
+  margin: 0;
+}

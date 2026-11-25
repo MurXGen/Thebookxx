@@ -1,3 +1,4 @@
+import "./Breadcrumbs.styles.css";
 import Link from "next/link";
 
 /**

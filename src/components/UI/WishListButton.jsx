@@ -1,4 +1,5 @@
 "use client";
+import "./WishListButton.styles.css";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart } from "lucide-react";

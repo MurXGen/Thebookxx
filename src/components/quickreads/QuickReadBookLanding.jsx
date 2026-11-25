@@ -1,4 +1,5 @@
 "use client";
+import "./QuickReadBookLanding.styles.css";
 
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";

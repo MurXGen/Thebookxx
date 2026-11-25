@@ -1,0 +1,120 @@
+/* Styles used only by ComboDetailClient.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.cd-page { max-width: 1080px; margin: 0 auto; padding: 14px 16px 110px; }
+
+.cd-crumbs { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: 12.5px; color: var(--dark-50, #6b7280); margin-bottom: 14px; }
+
+.cd-crumbs a { color: inherit; text-decoration: none; }
+
+.cd-crumbs span[aria-current] { color: var(--foreground); font-weight: 600; }
+
+.cd-hero { display: grid; gap: 22px; }
+
+@media (min-width: 860px) {
+.cd-hero { grid-template-columns: 1fr 1fr; align-items: start; gap: 36px; }
+}
+
+.cd-art { position: relative; }
+
+.cd-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #c2410c; background: #fff7ed; border: 1px solid #fed7aa; padding: 4px 10px; border-radius: 999px; }
+
+.cd-title { margin: 10px 0 6px; font-size: 26px; line-height: 1.2; font-weight: 900; color: var(--foreground); }
+
+.cd-tagline { margin: 0 0 14px; color: var(--dark-60, #4b5563); font-size: 14.5px; }
+
+.cd-price { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+
+.cd-price-now { font-size: 32px; font-weight: 900; color: var(--foreground); }
+
+.cd-price-was { font-size: 17px; color: var(--dark-50, #6b7280); }
+
+.cd-price-off { font-size: 13px; font-weight: 800; color: #16a34a; background: #f0fdf4; border-radius: 999px; padding: 3px 10px; }
+
+.cd-savings { margin: 14px 0; padding: 12px 14px; border: 1px dashed #fdba74; background: #fffbf5; border-radius: 14px; display: grid; gap: 6px; }
+
+.cd-sav-row { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--dark-70, #374151); }
+
+.cd-sav-row span:first-child { display: inline-flex; align-items: center; gap: 5px; }
+
+.cd-sav-row.green { color: #16a34a; font-weight: 700; }
+
+.cd-sav-row.total { border-top: 1px solid #fde2c4; padding-top: 6px; font-weight: 900; color: var(--foreground); font-size: 15px; }
+
+.cd-sav-note { margin: 2px 0 0; font-size: 12px; color: var(--dark-50, #6b7280); }
+
+.cd-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.cd-add, .cd-buy { height: 50px; border-radius: 14px; font-weight: 800; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+
+.cd-add { background: #fff; border: 1.5px solid var(--foreground, #111); color: var(--foreground, #111); }
+
+.cd-add.added { border-color: #16a34a; color: #16a34a; }
+
+.cd-buy { background: #111; color: #fff; border: 0; }
+
+.cd-trust { list-style: none; padding: 0; margin: 14px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.cd-trust li { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--dark-70, #374151); }
+
+.cd-trust svg { color: #16a34a; }
+
+.cd-sec { margin-top: 30px; }
+
+.cd-sec h2 { font-size: 19px; font-weight: 900; margin: 0 0 12px; color: var(--foreground); }
+
+.cd-books { display: grid; gap: 10px; }
+
+@media (min-width: 720px) {
+.cd-books { grid-template-columns: 1fr 1fr; }
+}
+
+.cd-book { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid var(--hairline, #e8e8e8); border-radius: 14px; background: #fff; text-decoration: none; color: inherit; }
+
+.cd-book-cover { position: relative; flex: 0 0 64px; height: 92px; border-radius: 8px; overflow: hidden; background: var(--dark-4); }
+
+.cd-book-cover img { width: 100%; height: 100%; object-fit: cover; }
+
+.cd-book-star { position: absolute; left: 3px; top: 3px; display: inline-flex; align-items: center; gap: 2px; font-size: 9px; font-weight: 900; color: #fff; background: #e11d48; border-radius: 6px; padding: 2px 5px; }
+
+.cd-book-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+
+.cd-book-txt strong { font-size: 14.5px; }
+
+.cd-book-txt span { font-size: 12.5px; color: var(--dark-50, #6b7280); }
+
+.cd-book-price { font-weight: 800; color: var(--foreground) !important; display: flex; gap: 6px; }
+
+.cd-book-price s { color: var(--dark-40, #9ca3af); font-weight: 500; }
+
+.cd-book-go { color: var(--dark-40, #9ca3af); }
+
+.cd-about p { font-size: 14px; line-height: 1.6; color: var(--dark-70, #374151); margin: 0 0 10px; }
+
+.cd-related { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+
+.cd-all { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-weight: 700; color: var(--foreground); text-decoration: none; font-size: 14px; }
+
+.cd-sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--hairline, #e8e8e8); }
+
+.cd-sticky-price { display: flex; align-items: baseline; gap: 8px; }
+
+.cd-sticky-price b { font-size: 20px; font-weight: 900; }
+
+.cd-sticky-price s { color: var(--dark-50, #6b7280); font-size: 13px; }
+
+.cd-sticky .cd-buy { padding: 0 26px; height: 46px; }
+
+@media (min-width: 860px) {
+.cd-sticky { display: none; }
+}
+
+@media (min-width: 860px) {
+.cd-page { padding-bottom: 40px; }
+}
+
+.cd-art { position: relative; }
+
+@media (min-width: 860px) {
+.cd-art { position: sticky; top: 170px; }
+}

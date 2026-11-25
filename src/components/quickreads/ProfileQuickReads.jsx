@@ -1,4 +1,5 @@
 "use client";
+import "./ProfileQuickReads.styles.css";
 
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";

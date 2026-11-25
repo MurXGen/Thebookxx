@@ -1,4 +1,5 @@
 "use client";
+import "./InstallPWA.styles.css";
 
 import { Download, DownloadIcon } from "lucide-react";
 import { useEffect, useState } from "react";

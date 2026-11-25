@@ -1,4 +1,5 @@
 "use client";
+import "./OfferTierList.styles.css";
 
 import { Check, Lock, Sparkles, Truck } from "lucide-react";
 import { useStore } from "@/context/StoreContext";

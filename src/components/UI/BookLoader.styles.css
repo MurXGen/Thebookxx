@@ -1,0 +1,47 @@
+/* Styles used only by BookLoader.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.book-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 28px 0;
+}
+
+.bl-spin {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background:
+    conic-gradient(from 90deg, rgba(251,133,0,0) 0%, var(--tertiary, #fb8500) 92%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 0);
+  animation: blSpin 0.8s linear infinite;
+}
+
+.bl-label {
+  font-size: 13px;
+  font-weight: 600;
+  background: linear-gradient(90deg, #b8bcc2 25%, #1f2937 50%, #b8bcc2 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: blShimmer 1.8s linear infinite;
+}
+
+.book-loader--compact { flex-direction: row; gap: 10px; padding: 14px 0; }
+
+.book-loader--compact .bl-spin { width: 26px; height: 26px; }
+
+.book-loader--compact .bl-label { font-size: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+.bl-spin { animation-duration: 1.6s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+.bl-label { animation: none; -webkit-text-fill-color: var(--dark-50, #6b7280); }
+}

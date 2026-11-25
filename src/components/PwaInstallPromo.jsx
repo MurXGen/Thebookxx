@@ -1,4 +1,5 @@
 "use client";
+import "./PwaInstallPromo.styles.css";
 
 import { useEffect, useState } from "react";
 import { Download, Truck, Tag, Bell } from "lucide-react";

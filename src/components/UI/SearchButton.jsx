@@ -1,4 +1,5 @@
 "use client";
+import "./SearchButton.styles.css";
 
 import { Download, Search, StarsIcon } from "lucide-react";
 import { useEffect, useState } from "react";

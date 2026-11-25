@@ -1,5 +1,6 @@
 // app/c-responses/page.js
 "use client";
+import "./page.styles.css";
 
 import { useEffect, useMemo, useState } from "react";
 import AdminLock from "@/components/AdminLock";

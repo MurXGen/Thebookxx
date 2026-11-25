@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { CODSuccessModal } from "@/components/UI/AddressModal";
+import dynamic from "next/dynamic";
+// The receipt lives in the (large) checkout module — load it only when a
+// ?orderID= link is actually opened.
+const CODSuccessModal = dynamic(
+  () => import("@/components/UI/AddressModal").then((m) => m.CODSuccessModal),
+  { ssr: false },
+);
 import PayNowChooser from "@/components/PayNowChooser";
 import { fetchOrderById } from "@/utils/googleFormOrder";
 

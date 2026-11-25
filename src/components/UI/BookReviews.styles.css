@@ -1,0 +1,61 @@
+/* Styles used only by BookReviews.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.reviews-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.brv-row { display: flex; gap: 12px; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; padding-bottom: 4px; scrollbar-width: none; }
+
+.brv-row::-webkit-scrollbar { display: none; }
+
+.brv-card { flex: 0 0 300px; min-height: 190px; padding: 12px; border: 1px solid var(--dark-20); border-radius: 12px; scroll-snap-align: start; background: #fff; }
+
+.brv-avatar { width: 48px; height: 48px; border-radius: 50%; background: #f1f1f1; object-fit: cover; }
+
+.brv-skel { display: flex; flex-direction: column; gap: 12px; border-style: dashed; }
+
+.brv-skel span { display: block; border-radius: 6px; background: linear-gradient(90deg, #f0f0f0 25%, #e6e6e6 50%, #f0f0f0 75%); background-size: 200% 100%; animation: brv-shimmer 1.2s linear infinite; }
+
+.brv-skel-head { height: 48px; width: 60%; }
+
+.brv-skel-line { height: 12px; }
+
+.brv-skel-line.short { width: 55%; }
+
+@media (prefers-reduced-motion: reduce) {
+.brv-skel span { animation: none; }
+}
+
+.brv-card { display: flex; flex-direction: column; gap: 12px; flex: 0 0 290px; min-height: 210px; padding: 16px; border: 1px solid var(--dark-20); border-radius: 14px; background: #fff; transition: border-color .15s, box-shadow .15s; }
+
+.brv-card:hover { border-color: var(--dark-50); box-shadow: 0 6px 18px -10px rgba(0,0,0,.25); }
+
+.brv-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+.brv-stars { display: inline-flex; gap: 2px; color: #f59e0b; }
+
+.brv-verified { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; color: var(--success); }
+
+.brv-text { flex: 1; margin: 0; font-size: 14.5px; line-height: 1.6; color: #2a2a2a; }
+
+.brv-more { display: inline; padding: 0; border: 0; background: none; font: inherit; font-weight: 600; color: var(--tertiary); cursor: pointer; }
+
+.brv-who { display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--dark-10); }
+
+.brv-avatar { width: 40px; height: 40px; flex: none; border-radius: 50%; object-fit: cover; background: #f1f1f1; }
+
+.brv-initial { display: inline-flex; align-items: center; justify-content: center; font-weight: 700; color: var(--foreground); background: #fff3e3; }
+
+.brv-who-txt { display: flex; flex-direction: column; min-width: 0; }
+
+.brv-who-txt b { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.brv-who-txt small { font-size: 12px; color: var(--dark-50); }
+
+.brv-skel { border-style: dashed; }

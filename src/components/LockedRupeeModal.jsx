@@ -1,5 +1,6 @@
 // components/LockedRupeeModal.jsx
 "use client";
+import "./LockedRupeeModal.styles.css";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingBag, MessageCircle } from "lucide-react";

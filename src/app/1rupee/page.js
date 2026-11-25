@@ -1,3 +1,4 @@
+import "./page.styles.css";
 // app/1rupee/page.js — "Books at just ₹1" promotional landing page.
 // Short, memorable route: /1rupee
 import { books } from "@/utils/book";

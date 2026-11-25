@@ -1,0 +1,141 @@
+/* Styles used only by InstallAppBar.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.install-app-wrap {
+  position: fixed;
+  /* Center via auto margins (not translateX) so framer-motion's animated
+     transform doesn't wipe out the horizontal centering. */
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: min(560px, calc(100% - 24px));
+  z-index: 9998;
+  pointer-events: none;
+}
+
+.install-app-bar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px 10px 14px;
+  border-radius: 16px;
+  background: rgba(10, 10, 10, 0.96);
+  color: #fff;
+  box-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.55);
+  backdrop-filter: saturate(140%) blur(6px);
+}
+
+.install-app-wrap.inline {
+  position: static;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  margin: 0;
+  width: 100%;
+  z-index: auto;
+  pointer-events: auto;
+}
+
+.install-app-wrap.inline .install-app-bar {
+  background: #fff;
+  color: var(--foreground, #111);
+  border: 1px solid var(--hairline, #f0f0f0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  backdrop-filter: none;
+}
+
+.install-app-wrap.inline .install-app-sub {
+  color: #6b7280;
+}
+
+.install-app-wrap.inline .install-app-close {
+  color: #9ca3af;
+}
+
+.install-app-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+}
+
+.install-app-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.install-app-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.install-app-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.66);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.install-app-cta {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.15s ease;
+}
+
+.install-app-cta:hover {
+  filter: brightness(1.06);
+}
+
+.install-app-cta:active {
+  transform: scale(0.96);
+}
+
+.install-app-close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+
+.install-app-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 420px) {
+.install-app-sub {
+    display: none;
+  }
+}

@@ -1,0 +1,39 @@
+/* Styles used only by UrgencyOffer.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.urgency-card {
+  background: var(--background);
+  backdrop-filter: blur(12px);
+  border-radius: var(--px-12);
+  border: 1px solid var(--tertiary-light);
+  padding: var(--px-24);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  box-shadow: 0 0 12px var(--tertiary-light-20);
+  align-items: center;
+  gap: var(--px-12);
+}
+
+.urgency-title {
+  font-size: var(--px-16);
+  font-weight: var(--weight-600);
+  color: var(--dark);
+}
+
+.urgency-desc {
+  font-size: var(--px-12);
+  color: var(--dark);
+}
+
+.urgency-timer {
+  color: var(--dark);
+  font-size: var(--px-12);
+  border-radius: var(--px-8);
+  background: var(--tertiary-light);
+  border: 1px solid var(--tertiary-light);
+  min-width: fit-content;
+
+  position: relative;
+  animation: timer-pulse 1.8s ease-out infinite;
+}

@@ -1,4 +1,5 @@
 "use client";
+import "./BagSections.styles.css";
 
 // Bag page sections (Instamart-style): saved banner, small-gap wallet top-up,
 // bill details and the policy note.

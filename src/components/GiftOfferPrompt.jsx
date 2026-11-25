@@ -7,20 +7,23 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import WelcomeCouponPopup from "@/components/WelcomeCouponPopup";
+// The popup's code downloads only when it's about to show.
+let popupP = null;
+const loadPopup = () => (popupP ||= import("@/components/WelcomeCouponPopup").then((m) => m.default));
 import { claimGiftOffer, freeDeliveryOfferOn, FREE_DELIVERY_OFFER_AT } from "@/utils/cartOffers";
 import { trackOfferClaim } from "@/utils/cartEvents";
 import { showToast } from "@/context/ToastContext";
 import { trackEvent } from "@/lib/ga";
 
 const SEEN_KEY = "tbx_gift_prompt_seen";
-const DELAY_MS = 3500;
+const DELAY_MS = 2500; // after the first scroll / tap
 
 const onPromptPage = (p = "") => p === "/" || p.startsWith("/books/");
 
 export default function GiftOfferPrompt() {
   const pathname = usePathname() || "";
   const [open, setOpen] = useState(false);
+  const [Popup, setPopup] = useState(null);
 
   useEffect(() => {
     if (!onPromptPage(pathname)) return;
@@ -31,14 +34,26 @@ export default function GiftOfferPrompt() {
       return;
     }
     if (seen || freeDeliveryOfferOn()) return;
-    const t = setTimeout(() => {
-      try {
-        localStorage.setItem(SEEN_KEY, "1");
-      } catch {}
-      setOpen(true);
-      trackEvent("gift_prompt_shown", { page: pathname });
-    }, DELAY_MS);
-    return () => clearTimeout(t);
+    // Wait until the visitor starts browsing (first scroll / tap / key), then
+    // show it a moment later — it no longer covers the page while it loads.
+    let t;
+    const EVENTS = ["scroll", "pointerdown", "keydown", "touchstart"];
+    const arm = () => {
+      EVENTS.forEach((e) => window.removeEventListener(e, arm, true));
+      loadPopup().then((C) => setPopup(() => C));
+      t = setTimeout(() => {
+        try {
+          localStorage.setItem(SEEN_KEY, "1");
+        } catch {}
+        setOpen(true);
+        trackEvent("gift_prompt_shown", { page: pathname });
+      }, DELAY_MS);
+    };
+    EVENTS.forEach((e) => window.addEventListener(e, arm, { capture: true, passive: true }));
+    return () => {
+      EVENTS.forEach((e) => window.removeEventListener(e, arm, true));
+      clearTimeout(t);
+    };
   }, [pathname]);
 
   const claim = () => {
@@ -53,7 +68,8 @@ export default function GiftOfferPrompt() {
     );
   };
 
-  if (!onPromptPage(pathname)) return null;
+  if (!onPromptPage(pathname) || !Popup) return null;
+  const WelcomeCouponPopup = Popup;
   return (
     <WelcomeCouponPopup
       variant="bookmark"

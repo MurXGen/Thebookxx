@@ -1,4 +1,5 @@
 "use client";
+import "./OneRupeeExperience.styles.css";
 
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";

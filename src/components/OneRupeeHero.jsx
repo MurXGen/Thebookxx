@@ -1,4 +1,5 @@
 "use client";
+import "./OneRupeeHero.styles.css";
 
 import { useStore } from "@/context/StoreContext";
 import {

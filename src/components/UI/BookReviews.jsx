@@ -1,5 +1,6 @@
 // components/BookReviews.jsx
 "use client";
+import "./BookReviews.styles.css";
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";

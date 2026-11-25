@@ -1,4 +1,5 @@
 "use client";
+import "./BookLoader.styles.css";
 
 /**
  * Simple, enhanced loader for TheBookX — a smooth brand-orange ring spinner

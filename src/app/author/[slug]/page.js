@@ -1,3 +1,4 @@
+import "./page.styles.css";
 // app/author/[slug]/page.js
 import { getAuthorProfile, getAllAuthorSlugs } from "@/utils/author";
 import Image from "next/image";

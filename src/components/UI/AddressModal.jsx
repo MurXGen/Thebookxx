@@ -1,4 +1,5 @@
 "use client";
+import "./AddressModal.styles.css";
 
 import PlacingOrder from "@/components/UI/PlacingOrder";
 import { XmasSnow } from "@/components/XmasDecor";
@@ -1513,6 +1514,10 @@ export default function AddressModal({
     if (open) {
       checkoutOidRef.current = "";
       draftedOidsRef.current = new Set();
+      // Each checkout gets its own success screen. Without this, a second
+      // order in the same visit (the bag keeps this modal mounted) was placed
+      // but its success summary never showed.
+      successHandedRef.current = false;
     }
   }, [open]);
 

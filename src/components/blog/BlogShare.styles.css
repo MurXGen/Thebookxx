@@ -1,0 +1,68 @@
+/* Styles used only by BlogShare.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.blog-share {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline, #ececec);
+  flex-wrap: wrap;
+}
+
+.blog-share-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground, #111827);
+  cursor: pointer;
+  padding: 0;
+}
+
+.blog-share-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.blog-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.blog-share-btn:hover {
+  transform: translateY(-2px);
+}
+
+.blog-share-btn.wa:hover {
+  color: #25d366;
+  border-color: #25d366;
+}
+
+.blog-share-btn.tw:hover {
+  color: #1da1f2;
+  border-color: #1da1f2;
+}
+
+.blog-share-btn.fb:hover {
+  color: #1877f2;
+  border-color: #1877f2;
+}
+
+.blog-share-btn.copy:hover {
+  color: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+}

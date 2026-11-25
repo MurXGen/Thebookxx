@@ -1,4 +1,5 @@
 "use client";
+import "./BagAddons.styles.css";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Zap, Check } from "lucide-react";

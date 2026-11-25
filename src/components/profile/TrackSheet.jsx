@@ -1,4 +1,5 @@
 "use client";
+import "./TrackSheet.styles.css";
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useAnimationControls } from "framer-motion";

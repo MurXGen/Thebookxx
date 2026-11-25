@@ -1,0 +1,331 @@
+/* Styles used only by ComboCard.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.combo-card {
+  flex: 0 0 auto;
+  width: 278px;
+  max-width: 100%;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  background: var(--background, #fff);
+  border: 1px solid var(--hairline, #e8e8e8);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 26px rgba(0, 0, 0, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.combo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07), 0 16px 34px rgba(0, 0, 0, 0.11);
+}
+
+.combo-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.combo-cat {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.1);
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+
+.combo-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-muted, #6b7280);
+}
+
+.combo-covers {
+  display: flex;
+  height: 130px;
+  align-items: flex-end;
+  justify-content: center;
+  padding-left: 18px;
+  margin-bottom: 12px;
+}
+
+.combo-cover {
+  position: relative;
+  width: 84px;
+  height: 118px;
+  margin-left: -22px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--dark-4);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  border: 2px solid #fff;
+  transition: transform 0.18s ease;
+}
+
+.combo-card:hover .combo-cover {
+  transform: translateY(-3px);
+}
+
+.combo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.combo-title {
+  margin: 0 0 3px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--foreground);
+}
+
+.combo-tagline {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--text-muted, #6b7280);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 32px;
+}
+
+.combo-books {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.combo-books li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 11.5px;
+  line-height: 1.3;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.combo-books li::before {
+  content: "•";
+  position: absolute;
+  left: 2px;
+  color: var(--tertiary, #fb8500);
+}
+
+.combo-price-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  margin-bottom: 12px;
+}
+
+.combo-price {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.combo-mrp {
+  font-size: 13px;
+  color: var(--text-muted, #9ca3af);
+  text-decoration: line-through;
+}
+
+.combo-save {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0a8f0c;
+  background: rgba(10, 143, 12, 0.1);
+  padding: 3px 7px;
+  border-radius: 999px;
+}
+
+.combo-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 12px;
+  background: var(--foreground, #0a0a0a);
+  color: var(--background, #fff);
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.14s ease, background 0.2s ease;
+}
+
+.combo-add:active {
+  transform: scale(0.97);
+}
+
+.combo-add.added {
+  background: #0a8f0c;
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+.combo-card {
+    padding: 12px;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+.combo-covers {
+    height: 118px;
+    padding-left: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+.combo-cover {
+    width: 72px;
+    height: 104px;
+    margin-left: -20px;
+  }
+}
+
+@media (max-width: 640px) {
+.combo-title {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 640px) {
+.combo-price {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 640px) {
+.combo-books li {
+    font-size: 12px;
+  }
+}
+
+.combo-cover-link { display: block; text-decoration: none; }
+
+.combo-title a { color: inherit; text-decoration: none; }
+
+.combo-covers { position: relative; }
+
+.combo-covers.pair .combo-cover:first-child { transform: rotate(-4deg); }
+
+.combo-covers.pair .combo-cover:nth-child(2) { transform: rotate(4deg); }
+
+.combo-plus {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fb8500;
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 10px rgba(251, 133, 0, 0.35);
+}
+
+.combo-card-deal { border-color: #fed7aa; }
+
+.combo-burst {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  z-index: 6;
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  background: #e11d48;
+  color: #fff;
+  clip-path: polygon(50% 0%, 59% 13%, 74% 6%, 75% 22%, 91% 23%, 85% 38%, 100% 46%, 88% 56%, 96% 71%, 80% 74%, 79% 90%, 64% 85%, 54% 100%, 45% 87%, 30% 95%, 27% 79%, 11% 79%, 15% 64%, 0% 56%, 12% 46%, 3% 31%, 19% 27%, 20% 11%, 35% 15%);
+  animation: comboBurstSpin 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  filter: drop-shadow(0 4px 8px rgba(225, 29, 72, 0.35));
+}
+
+.combo-burst-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  transform: rotate(-8deg);
+  text-align: center;
+}
+
+.combo-burst small { font-size: 8px; font-weight: 800; letter-spacing: 0.06em; }
+
+.combo-burst b { font-size: 15px; font-weight: 900; margin: 1px 0; }
+
+.combo-burst em { font-style: normal; font-size: 7.5px; font-weight: 800; letter-spacing: 0.04em; }
+
+@media (prefers-reduced-motion: reduce) {
+.combo-burst { animation: none; }
+}
+
+.combo-card { height: auto; }
+
+.combo-badge-row { min-height: 24px; }
+
+.combo-cat { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
+
+.combo-covers,
+.combo-covers.pair {
+  height: 148px;
+  align-items: center;
+  background: linear-gradient(160deg, #fff7ed 0%, #fef3c7 100%);
+  border-radius: 14px;
+}
+
+.combo-covers:not(.pair) { padding-left: 22px; }
+
+.combo-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(2 * 1.2em);
+}
+
+.combo-books { min-height: calc(4 * 1.3 * 11.5px + 3 * 3px); margin-bottom: 10px; }
+
+.combo-books li.combo-books-more { color: var(--text-muted, #6b7280); font-weight: 700; }
+
+.combo-books li.combo-books-more::before { content: "+"; opacity: 0; }
+
+.combo-price-row { min-height: 28px; flex-wrap: nowrap; white-space: nowrap; }
+
+@media (max-width: 640px) {
+.combo-covers,
+  .combo-covers.pair { height: 132px; }
+}
+
+@media (max-width: 640px) {
+.combo-books { min-height: calc(4 * 1.3 * 12px + 3 * 3px); }
+}

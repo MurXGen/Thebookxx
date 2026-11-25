@@ -1,3 +1,4 @@
+import "./page.styles.css";
 import Link from "next/link";
 import { ArrowRight, Clock, TrendingUp } from "lucide-react";
 import { getAllBlogs } from "@/utils/blogs";

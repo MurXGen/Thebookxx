@@ -1,0 +1,47 @@
+/* Styles used only by LiveOrdersStrip.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.lo-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* Stretch to the section edges (cancel the hero's horizontal padding). */
+  margin: 2px calc(-1 * var(--px-24)) 2px;
+  padding: 11px var(--px-24);
+  background: linear-gradient(90deg, #fdf0e0, #fbe7d1);
+}
+
+.lo-bar-ic {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--tertiary, #fb8500);
+}
+
+.lo-bar-track {
+  position: relative;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.lo-bar-row {
+  display: block;
+  max-width: 100%;
+  font-size: 13.5px;
+  color: var(--dark-60, #4b5563);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lo-bar-row strong {
+  color: var(--foreground, #0a0a0a);
+  font-weight: 700;
+}
+
+.lo-bar-time {
+  color: var(--tertiary, #fb8500);
+  font-weight: 700;
+}

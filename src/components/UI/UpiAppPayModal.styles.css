@@ -1,0 +1,317 @@
+/* Styles used only by UpiAppPayModal.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.upm-overlay {
+  z-index: 2147483100 !important;
+}
+
+.upm-sheet {
+  width: 100%;
+}
+
+.upm-body {
+  padding: 14px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  text-align: center;
+}
+
+.upm-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.upm-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #4b5563;
+  margin: 0;
+}
+
+.upm-text b {
+  color: #111827;
+}
+
+.upm-saving {
+  padding-top: 26px;
+  padding-bottom: 30px;
+}
+
+.upm-save-scene {
+  position: relative;
+  width: 150px;
+  height: 120px;
+  margin-bottom: 4px;
+}
+
+.upm-fly-qr {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 54px;
+  height: 54px;
+  margin-left: -27px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fb8500, #ff9e2c);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px -6px rgba(251, 133, 0, 0.6);
+  animation: upmFly 1.7s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+
+.upm-device {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 72px;
+  height: 72px;
+  margin-left: -36px;
+  border-radius: 18px;
+  background: #0e1013;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.5);
+}
+
+.upm-device-check {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0);
+  animation: upmCheckPop 0.4s 1.3s both;
+}
+
+.upm-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.upm-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #dcfce7;
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.upm-steps-lbl {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+}
+
+.upm-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  width: 100%;
+}
+
+.upm-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 10px;
+  border: 1px solid #e8e9ee;
+  border-radius: 14px;
+  background: #fafafb;
+  text-align: center;
+}
+
+.upm-step-n {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #111827;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upm-step-icon {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+}
+
+.upm-step-tx {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1.35;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.upm-scan {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: inline-block;
+}
+
+.upm-scan-line {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+  background: #111827;
+  border-radius: 2px;
+  top: 5px;
+  box-shadow: 0 0 6px rgba(17, 24, 39, 0.4);
+  animation: upmScan 1.5s ease-in-out infinite;
+}
+
+.upm-cta {
+  width: 100%;
+  font-size: 15px !important;
+  padding: 14px 16px !important;
+  border-radius: 13px !important;
+  margin-top: 2px;
+}
+
+.upm-cancel {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.upm-wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 13px;
+  background: #25d366;
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -8px rgba(37, 211, 102, 0.6);
+}
+
+.upm-check { position: relative; }
+
+.upm-check-txt { flex: 1; min-width: 0; }
+
+.upm-check-icbtn { flex: none; margin-left: auto; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(21,128,61,.3); border-radius: 9px; background: #fff; color: #15803d; cursor: pointer; }
+
+.upm-check.fail { background: #fef2f2 !important; border-color: #fecaca !important; color: #b91c1c !important; }
+
+.upm-check.fail .upm-check-ic { background: #fee2e2 !important; color: #b91c1c !important; }
+
+.upm-check-btn { flex: none; margin-left: auto; display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 12px; border: 0; border-radius: 9px; background: #b91c1c; color: #fff; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+
+.upv { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px 16px 16px !important; text-align: center; }
+
+.upv-ring { position: relative; width: 112px; height: 112px; }
+
+.upv-ring > svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+.upv-track { fill: none; stroke: #f0f0f5; stroke-width: 7; }
+
+.upv-prog { fill: none; stroke: #1ba672; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 326.7; transition: stroke-dashoffset 1s linear; }
+
+.upv-ring::after { content: ""; position: absolute; inset: 12px; border-radius: 50%; background: radial-gradient(circle, rgba(27, 166, 114, 0.14), transparent 70%); animation: upvPulse 1.8s ease-in-out infinite; }
+
+.upv-ring-in { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; z-index: 1; }
+
+.upv-ring-in b { font-size: 22px; font-weight: 900; letter-spacing: -.02em; color: #1c1c28; font-variant-numeric: tabular-nums; }
+
+.upv-shield { color: #1ba672; animation: upvBob 1.8s ease-in-out infinite; }
+
+.upv-sub { margin: 0; font-size: 13px; color: #686b78; }
+
+.upv-steps { display: flex; align-items: center; gap: 0; width: 100%; max-width: 300px; margin: 4px 0 2px; padding: 0; list-style: none; }
+
+.upv-steps li { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: #9a9aa8; }
+
+.upv-steps li + li::before { content: ""; position: absolute; top: 9px; right: 50%; width: 100%; height: 2px; background: #ececf1; z-index: 0; }
+
+.upv-steps li.on::before, .upv-steps li.done + li::before { background: linear-gradient(90deg, #1ba672, #ececf1); }
+
+.upv-steps li > span { position: relative; z-index: 1; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 2px solid #ececf1; color: #fff; }
+
+.upv-steps li.done { color: #1ba672; }
+
+.upv-steps li.done > span { background: #1ba672; border-color: #1ba672; }
+
+.upv-steps li.on { color: #1c1c28; }
+
+.upv-steps li.on > span { border-color: #1ba672; }
+
+.upv-steps li.on > span::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #1ba672; animation: upvPulse 1.2s ease-in-out infinite; }
+
+.upv-qr { width: 100%; border: 1px solid #ececf1; border-radius: 14px; background: #fafafb; text-align: left; }
+
+.upv-qr summary { list-style: none; display: flex; align-items: center; gap: 7px; padding: 11px 12px; font-size: 13px; font-weight: 700; color: #3d3d4e; cursor: pointer; }
+
+.upv-qr summary::-webkit-details-marker { display: none; }
+
+.upv-chev { margin-left: auto; transition: transform .2s; }
+
+.upv-qr[open] .upv-chev { transform: rotate(180deg); }
+
+.upv-qr-body { display: flex; align-items: center; gap: 12px; padding: 0 12px 12px; }
+
+.upv-qr-body img { width: 116px; height: 116px; object-fit: contain; border-radius: 10px; background: #fff; border: 1px solid #ececf1; flex: none; }
+
+.upv-qr-side { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+
+.upv-qr-side small { font-size: 11px; color: #8a8a99; word-break: break-all; }
+
+.upv-chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 10px; border: 1px solid #ececf1; background: #fff; font: inherit; font-size: 12.5px; font-weight: 700; color: #1c1c28; cursor: pointer; }
+
+.upv-actions { display: flex; gap: 8px; width: 100%; margin-top: 2px; }
+
+.upv-btn { flex: 1; height: 46px; border-radius: 12px; border: 1px solid #ececf1; background: #fff; font: inherit; font-size: 14px; font-weight: 800; color: #3d3d4e; cursor: pointer; }
+
+.upv-btn.pri { flex: 1.6; background: #1c1c28; border-color: #1c1c28; color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+.upv-ring::after, .upv-shield, .upv-steps li.on > span::after { animation: none; }
+}

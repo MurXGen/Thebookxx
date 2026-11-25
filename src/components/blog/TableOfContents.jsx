@@ -1,4 +1,5 @@
 "use client";
+import "./TableOfContents.styles.css";
 
 import { useEffect, useState } from "react";
 import { List } from "lucide-react";

@@ -1,0 +1,6 @@
+/* Styles used only by OneRupeeModal.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.mb-12 {
+  margin-bottom: 12px;
+}

@@ -1,4 +1,5 @@
 "use client";
+import "./QuickReadsSection.styles.css";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";

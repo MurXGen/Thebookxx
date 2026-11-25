@@ -1,4 +1,5 @@
 "use client";
+import "./BlogShare.styles.css";
 
 import { useState } from "react";
 import { Share2, Twitter, Facebook, Link2, Check } from "lucide-react";

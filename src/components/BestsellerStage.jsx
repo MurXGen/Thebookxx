@@ -1,4 +1,5 @@
 "use client";
+import "./BestsellerStage.styles.css";
 
 import { books } from "@/utils/book";
 import { AnimatePresence, motion } from "framer-motion";

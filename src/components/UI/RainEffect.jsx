@@ -1,4 +1,5 @@
 "use client";
+import "./RainEffect.styles.css";
 
 import { useEffect, useRef } from "react";
 

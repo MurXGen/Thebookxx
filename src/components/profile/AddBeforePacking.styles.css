@@ -1,0 +1,163 @@
+/* Styles used only by AddBeforePacking.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.abp-cart {
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(251, 133, 0, 0.35);
+  box-shadow: 0 6px 18px -12px rgba(251, 133, 0, 0.6);
+}
+
+.abp-cart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.abp-cart-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.abp-cart-title svg {
+  color: var(--tertiary, #fb8500);
+}
+
+.abp-cart-total {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+  white-space: nowrap;
+}
+
+.abp-cart-total em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.abp-cart-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.abp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 4px 6px 4px 10px;
+  border-radius: 999px;
+  background: rgba(251, 133, 0, 0.1);
+  color: #7c3a00;
+  font-size: 11.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.abp-chip button {
+  display: inline-flex;
+  border: none;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  padding: 2px;
+  color: #7c3a00;
+  cursor: pointer;
+}
+
+.abp-confirm {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  border-radius: 12px;
+  border: none;
+  background: #16a34a;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.abp-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.abp-head-txt {
+  min-width: 0;
+}
+
+.abp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(251, 133, 0, 0.14);
+  color: var(--tertiary, #fb8500);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.abp-title {
+  margin: 8px 0 3px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.abp-sub {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--gray-500, #6b7280);
+}
+
+.abp-off {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb703, #fb8500);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.abp .or1-add.on {
+  background: #16a34a;
+  color: #fff;
+}
+
+.abp .or1-scroll {
+  margin: 0;
+  padding: 2px 0 6px;
+  max-width: 100%;
+}
+
+.abp-tabbar {
+  margin-top: 4px;
+}

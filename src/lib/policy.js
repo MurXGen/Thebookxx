@@ -78,9 +78,10 @@ export const THUNDER = {
   cutoff: "4:00 PM IST",
   oneDay: "1 day (next day)",
   twoDay: "2 days",
-  // Fee on top of Standard: parcel weight × ₹224 per 2.9 kg, rounded up to the
-  // next rupee amount ending in 9 (e.g. one 400 g book → ₹39).
-  feeExample: "₹29–₹79 for most 1–3 book orders",
+  // Fee on top of Standard: at least ₹69; heavier parcels pay weight ×
+  // ₹224 per 2.9 kg + 1%, rounded up to the next rupee amount ending in 9.
+  minFee: 69,
+  feeExample: "from ₹69, more for heavier parcels",
 };
 
 // ── Cash on Delivery (mirrors AddressModal) ─────────────────────────────────

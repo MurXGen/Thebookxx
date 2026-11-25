@@ -1,4 +1,5 @@
 "use client";
+import "./ShareSheet.styles.css";
 
 // Site-wide sharing. `shareContent()` opens the device's own share sheet
 // (WhatsApp, Instagram, Messages… whatever the shopper has installed) when the

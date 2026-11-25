@@ -1,4 +1,5 @@
 "use client";
+import "./page.styles.css";
 
 import { useMemo } from "react";
 import Image from "next/image";

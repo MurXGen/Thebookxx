@@ -4,9 +4,10 @@
 //
 //  • Booked before 4 PM (India time) → "Thunder 1-day delivery", arrives
 //    tomorrow. After 4 PM → "Thunder 2-day delivery", arrives the day after.
-//  • Price: India Post charged ₹224 for a 2,900 g parcel, so Thunder costs
-//    Standard + (cart weight × ₹224 / 2,900 g), rounded UP to the next
-//    rupee amount ending in 9 (₹38.6 → ₹39, ₹40 → ₹49).
+//  • Price: India Post charged ₹224 for a 2,900 g parcel. Thunder costs
+//    Standard + a fee of at least ₹69; heavier parcels pay
+//    cart weight × ₹224 / 2,900 g, plus 1%, rounded UP to the next rupee
+//    amount ending in 9 (e.g. 1.5 kg → ₹117.0 → ₹119).
 //  • Online payment only (pay in full, or ₹99 now + rest at delivery). Full
 //    Cash on Delivery ships by Standard.
 
@@ -28,6 +29,9 @@ export const THUNDER_CITIES = [
 // Reference parcel: ₹224 for 2,900 g.
 export const THUNDER_REF_RUPEES = 224;
 export const THUNDER_REF_GRAMS = 2900;
+// Minimum Thunder fee, and the extra % added on top of the weight rate.
+export const THUNDER_MIN_FEE = 69;
+export const THUNDER_EXTRA_PCT = 1;
 const FALLBACK_BOOK_GRAMS = 250;
 
 export function thunderCity(pincode) {
@@ -56,7 +60,8 @@ export function cartWeightGrams(items = []) {
 // The Thunder fee on top of Standard delivery.
 export function thunderFee(grams) {
   if (!grams) return 0;
-  return roundUpTo9((grams * THUNDER_REF_RUPEES) / THUNDER_REF_GRAMS);
+  const byWeight = ((grams * THUNDER_REF_RUPEES) / THUNDER_REF_GRAMS) * (1 + THUNDER_EXTRA_PCT / 100);
+  return Math.max(THUNDER_MIN_FEE, roundUpTo9(byWeight));
 }
 
 // Full Thunder delivery charge (Standard charge + Thunder fee).

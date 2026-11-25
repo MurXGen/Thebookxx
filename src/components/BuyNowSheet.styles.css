@@ -1,0 +1,44 @@
+/* Styles used only by BuyNowSheet.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.bnw { max-height: 92vh; overflow-y: auto; }
+
+.bnw-book { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid #eef0f3; border-radius: 14px; }
+
+.bnw-cover { flex: none; width: 52px; height: 76px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px -4px rgba(0,0,0,.35); }
+
+.bnw-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+
+.bnw-info b { font-size: 14px; font-weight: 800; color: #1c1814; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.bnw-info small { font-size: 12px; color: #6b7280; }
+
+.bnw-price { font-size: 15px; font-weight: 800; color: #1c1814; }
+
+.bnw-price s { margin-left: 6px; font-size: 12px; font-weight: 500; color: #9ca3af; }
+
+.bnw-qty { flex: none; display: inline-flex; align-items: center; gap: 2px; padding: 3px; border: 1.5px solid #fb8500; border-radius: 12px; background: #fff; }
+
+.bnw-qty button { width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 9px; background: none; color: #fb8500; cursor: pointer; }
+
+.bnw-qty button:disabled { color: #d1d5db; cursor: default; }
+
+.bnw-qty .bga-step-n { min-width: 22px; text-align: center; font-size: 15px; font-weight: 800; color: #1c1814; }
+
+.bnw-addons { margin: 12px 0; }
+
+.bnw-gift { margin-top: 8px; }
+
+.bnw-gift.on { background: #fff7ed; border-color: rgba(251, 133, 0, .5); }
+
+.bnw-gift .bga-fast-txt b svg { color: #fb8500; }
+
+.bnw-bill { margin-bottom: 12px; }
+
+.bnw-note { margin: 8px 2px 0; font-size: 12.5px; color: #6b7280; }
+
+.bnw-note.is-warn { margin: 0 0 10px; padding: 8px 10px; border-radius: 10px; background: #fff7ed; color: #9a3412; font-weight: 600; }
+
+.bnw .cdp-save:disabled { opacity: .45; cursor: not-allowed; }
+
+.bnw-fine { text-align: center; }

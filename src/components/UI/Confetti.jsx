@@ -1,4 +1,5 @@
 "use client";
+import "./Confetti.styles.css";
 import { useEffect, useState } from "react";
 
 export default function CartConfetti({ trigger }) {

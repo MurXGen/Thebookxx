@@ -1,4 +1,5 @@
 "use client";
+import "./ComboDeals.styles.css";
 
 import { combos, mixedBookSets } from "@/utils/combos";
 import ComboCard from "./ComboCard";

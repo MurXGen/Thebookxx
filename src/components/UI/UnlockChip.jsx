@@ -1,5 +1,6 @@
 // components/UnlockChip.jsx
 "use client";
+import "./UnlockChip.styles.css";
 
 import { useState, useEffect } from "react";
 import { Lock, Zap } from "lucide-react";

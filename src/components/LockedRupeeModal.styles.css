@@ -1,0 +1,43 @@
+/* Styles used only by LockedRupeeModal.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.locked-modal-title {
+  font-size: var(--px-24);
+  font-weight: var(--weight-700);
+  margin-bottom: 12px;
+  color: #1a1a1a;
+}
+
+.locked-modal-description {
+  font-size: var(--px-14);
+  color: #6b7280;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.locked-modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+.locked-modal-title {
+    font-size: var(--px-20);
+  }
+}
+
+@media (max-width: 640px) {
+.locked-modal-icon {
+    width: 65px;
+    height: 65px;
+    font-size: 45px;
+  }
+}
+
+@media (max-width: 640px) {
+.locked-modal-description {
+    font-size: var(--px-12);
+  }
+}

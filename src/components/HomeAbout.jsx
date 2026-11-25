@@ -1,3 +1,4 @@
+import "./HomeAbout.styles.css";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 

@@ -1,4 +1,5 @@
 "use client";
+import "./BundleDeals.styles.css";
 
 import { useState } from "react";
 import Link from "next/link";

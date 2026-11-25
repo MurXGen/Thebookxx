@@ -1,4 +1,5 @@
 "use client";
+import "./UpiPayGuide.styles.css";
 
 // Full-page "pay in your UPI app" guide, shown after the shopper taps
 // "Open <app>" at checkout. The UPI ID is already copied; two sections walk

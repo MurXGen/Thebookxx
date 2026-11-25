@@ -1,4 +1,5 @@
 "use client";
+import "./BlogSubscribe.styles.css";
 
 import { useState, useEffect } from "react";
 import { Mail, Check } from "lucide-react";

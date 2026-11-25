@@ -1,3 +1,4 @@
+import "./page.styles.css";
 // /for-ai — how AI assistants (ChatGPT, Claude, Gemini, Perplexity…) can shop
 // TheBookX for a user. Plain, server-rendered text so any agent can read it.
 const SITE = "https://www.thebookx.in";

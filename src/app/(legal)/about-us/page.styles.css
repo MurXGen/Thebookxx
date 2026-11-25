@@ -1,0 +1,39 @@
+/* Styles used only by page.js (split out of globals.css so other pages
+   don't download them). */
+
+.about-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.about-cta-btn {
+  padding: 13px 22px !important;
+  font-size: var(--px-14) !important;
+}
+
+.legal-page .pri-big-btn,
+.legal-page .pri-big-btn:hover {
+  color: var(--white-100);
+  text-decoration: none;
+  background: #0a0a0a;
+}
+
+.legal-page .sec-big-btn,
+.legal-page .sec-big-btn:hover {
+  color: var(--foreground);
+  background: transparent;
+  border: 1px solid var(--dark) !important;
+  text-decoration: none;
+}
+
+.legal-page .about-policy-line {
+  margin-top: 22px;
+  font-size: 13px;
+  color: var(--dark-50);
+}
+
+.about-page .legal-header {
+  margin-bottom: 0;
+}

@@ -1,4 +1,6 @@
 "use client";
+import { optImg } from "@/lib/optImg";
+import "./HomeNavbar.styles.css";
 
 // Homepage-only header (quick-commerce style): delivery promise up top with the
 // delivery address, wallet / profile / cart on the right, a full-width search
@@ -259,7 +261,7 @@ export default function HomeNavbar({ onSearch }) {
           >
             <span className="catrow-tile hn-tile" aria-hidden="true">
               {t.covers.map((c, k) => (
-                <img key={c} src={c} alt="" loading="lazy" decoding="async" className={`catrow-cover catrow-cover-${k}`} />
+                <img key={c} src={optImg(c, 40)} alt="" loading="lazy" decoding="async" className={`catrow-cover catrow-cover-${k}`} />
               ))}
             </span>
             <span className="hn-tab-lbl">{t.label}</span>

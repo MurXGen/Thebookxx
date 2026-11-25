@@ -1,4 +1,5 @@
 "use client";
+import "./page.styles.css";
 
 import BookCard from "@/components/BookCard";
 import { deliveryWindows, isFastRegion, windowText } from "@/lib/deliveryEta";
@@ -19,7 +20,34 @@ import OrderRewards from "@/components/OrderRewards";
 import BagQuickAdd from "@/components/BagQuickAdd";
 import { fetchProStatus, cachedProStatus } from "@/utils/proPlan";
 import SearchOverlay from "@/components/SearchOverlay";
-import AddressModal from "@/components/UI/AddressModal";
+// The checkout modal is large (JS + CSS), so the bag loads it in the
+// background once the page has settled — or right away when checkout opens.
+let addressModalP = null;
+const loadAddressModal = () =>
+  (addressModalP ||= import("@/components/UI/AddressModal").then((m) => m.default));
+function AddressModal(props) {
+  const [Comp, setComp] = useState(null);
+  useEffect(() => {
+    let live = true;
+    const go = () => loadAddressModal().then((C) => live && setComp(() => C));
+    if (props.open) {
+      go();
+      return () => {
+        live = false;
+      };
+    }
+    let idle = 0;
+    const t = setTimeout(() => {
+      idle = window.requestIdleCallback ? window.requestIdleCallback(go, { timeout: 3000 }) : (go(), 0);
+    }, 1500);
+    return () => {
+      live = false;
+      clearTimeout(t);
+      if (idle && window.cancelIdleCallback) window.cancelIdleCallback(idle);
+    };
+  }, [props.open]);
+  return Comp ? <Comp {...props} /> : null;
+}
 import { SavingsGlow, TopUpCard, BillCard, PolicyNote } from "@/components/BagSections";
 import BagAddons, { BAG_ADDONS_KEY, MAX_BAG_BOOKMARKS, BAG_BOOKMARK_UNIT } from "@/components/BagAddons";
 import DeliveryEtaStripe from "@/components/DeliveryEtaStripe";

@@ -1,0 +1,33 @@
+/* Styles used only by LineDivider.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.label-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.label-text {
+  white-space: nowrap;
+  color: var(--foreground, #0a0a0a);
+}
+
+.label-line {
+  flex: 1;
+  height: 1px;
+
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.2) 0,
+    rgba(0, 0, 0, 0.2) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+
+  mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 1) 60%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}

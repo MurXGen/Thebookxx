@@ -1,4 +1,5 @@
 "use client";
+import "./BlogCover.styles.css";
 
 import { useState } from "react";
 import { BookOpen } from "lucide-react";

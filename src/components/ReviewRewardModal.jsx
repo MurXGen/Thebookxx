@@ -1,4 +1,5 @@
 "use client";
+import "./ReviewRewardModal.styles.css";
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";

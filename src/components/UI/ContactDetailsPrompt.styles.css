@@ -1,0 +1,20 @@
+/* Styles used only by ContactDetailsPrompt.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.cdp-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+
+.cdp-field > span:first-child { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: #374151; }
+
+.cdp-field input { width: 100%; height: 46px; padding: 0 14px; border: 1.5px solid #e5e7eb; border-radius: 12px; font: inherit; font-size: 15px; color: #111827; background: #fff; outline: none; transition: border-color .15s; }
+
+.cdp-field input:focus { border-color: #fd6b01; }
+
+.cdp-phone { display: flex; align-items: center; border: 1.5px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+
+.cdp-phone:focus-within { border-color: #fd6b01; }
+
+.cdp-phone i { padding: 0 4px 0 14px; font-style: normal; font-weight: 700; color: #374151; }
+
+.cdp-phone input { border: 0 !important; padding-left: 8px; }
+
+.cdp-err { display: block; margin-top: -2px; font-size: 12px; font-weight: 600; color: #dc2626; }

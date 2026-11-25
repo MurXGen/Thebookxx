@@ -163,26 +163,7 @@ const RailBlock = (props) => (
 );
 
 export default function HomePage() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return (
-      <div className="min-h-screen flex flex-col gap-32">
-        <Navbar />
-        <h1 className="sr-only">
-          Buy Books Online in India at Lowest Prices, TheBookX | Books Starting
-          at ₹1
-        </h1>
-        <BooksSkeleton />
-        <BooksSkeleton />
-      </div>
-    );
-  }
-
+  // Rendered on the server too, so the hero shows before the JavaScript loads.
   const handleOpenUnlockModal = () => {
     // Function to open the unlock modal
     // This should trigger the unlock modal to appear
@@ -379,8 +360,11 @@ export default function HomePage() {
 
       {/* Critical Components - Always Visible */}
 
+      {/* Renders as it nears the screen (keeps first load light). */}
       <div id="hs-allbooks" className="hs-anchor">
-        <AllBooks />
+        <LazySection threshold={0} fallback={<BooksSkeleton />}>
+          <AllBooks />
+        </LazySection>
       </div>
 
       <CartBar tab="books" />

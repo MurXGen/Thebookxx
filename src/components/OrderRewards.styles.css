@@ -1,0 +1,265 @@
+/* Styles used only by OrderRewards.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.orw-strip { padding: 12px 14px 14px; }
+
+.orw-strip.has { background: linear-gradient(180deg, #fffaf2, #fff); border-color: #f6dfbd; }
+
+.orw-strip-head,
+.orw-full-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.orw-full-head { cursor: default; }
+
+.orw-strip-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+
+.orw-strip-txt b { font-size: 13.5px; font-weight: 700; color: #1c1814; line-height: 1.35; }
+
+.orw-chev { flex-shrink: 0; color: #9a8b78; transition: transform .2s ease; }
+
+.orw-chev.open { transform: rotate(180deg); }
+
+.orw-track {
+  position: relative;
+  height: 6px;
+  margin: 14px 6px 22px;
+  border-radius: 999px;
+  background: #f0ebe3;
+}
+
+.orw-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #fb8500, #ffb703);
+  transition: width .5s ease;
+}
+
+.orw-dot {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  border: 2px solid #ddd3c4;
+  background: #fff;
+}
+
+.orw-dot.on { border-color: #fb8500; background: #fb8500; box-shadow: 0 0 0 3px rgba(251, 133, 0, .18); }
+
+.orw-dot small {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #9a8b78;
+  white-space: nowrap;
+}
+
+.orw-dot:last-child small { left: auto; right: -4px; transform: none; }
+
+.orw-dot.on small { color: #b45309; }
+
+.orw-more { margin-top: 2px; }
+
+.orw-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+
+.orw-lvl { display: flex; gap: 10px; padding: 10px 0; border-top: 1px dashed #ece6dc; }
+
+.orw-lvl.on .orw-lvl-ic { background: #16a34a; color: #fff; }
+
+.orw-lvl-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+
+.orw-lvl-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+
+.orw-lvl-top b { font-size: 13.5px; color: #1c1814; }
+
+.orw-lvl-top em { font-style: normal; font-size: 11.5px; font-weight: 700; color: #9a8b78; white-space: nowrap; }
+
+.orw-lvl.on .orw-lvl-top em { color: #15803d; }
+
+.orw-perk { font-size: 12.5px; color: #5c5145; line-height: 1.4; }
+
+.orw-away { font-size: 11.5px; font-weight: 700; color: #b45309; }
+
+.orw-foot { margin: 8px 0 0; font-size: 11.5px; color: #9a8b78; }
+
+.orw-full { padding: 14px; margin: 4px 0 14px; }
+
+.orw-full .orw-track { margin-bottom: 24px; }
+
+.orw-lvl.on .orw-lvl-ic {
+  background: none !important;
+  box-shadow: none !important;
+  color: #16a34a !important;
+}
+
+.bmk-row { display: inline-flex; align-items: flex-start; gap: 3px; flex-shrink: 0; }
+
+.bmk {
+  display: block;
+  width: 9px;
+  height: 22px;
+  background: #fb8500;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+}
+
+.bmk:nth-child(2n) { background: #1c1814; }
+
+.bmk:nth-child(3n) { background: #c2410c; }
+
+.bmk-new { animation: bmk-drop 0.55s cubic-bezier(0.22, 1.4, 0.36, 1) both; }
+
+.orw-strip-head .bmk-row,
+.orw-full-head .bmk-row { width: 44px; justify-content: center; }
+
+.orw-dot.box { border-radius: 4px; }
+
+.orw-dot.box.on { background: #1c1814; border-color: #1c1814; box-shadow: 0 0 0 3px rgba(28, 24, 20, 0.15); }
+
+.orw-dot:first-child small { left: 0; transform: none; }
+
+.orw-full { padding: 12px 14px 4px; }
+
+.orw-full .orw-track { margin-bottom: 26px; }
+
+@media (prefers-reduced-motion: reduce) {
+.bmk-new, .bmk-pop-box { animation: none; }
+}
+
+.orw-claim {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: -6px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+.orw-claim.done { margin: -6px 0 10px; color: #15803d; }
+
+.orw-claim-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: -6px 0 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.orw-claim-btn {
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 12px;
+  border: 1.5px solid #1c1814;
+  border-radius: 999px;
+  background: #fff;
+  color: #1c1814;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.orw-track { margin-bottom: 34px; }
+
+.orw-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  color: #fff;
+}
+
+.orw-dot svg { display: block; }
+
+.orw-dot.box.on { background: #1c1814; }
+
+.orw-dot small {
+  top: 19px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.orw-dot small b { font-size: 10.5px; font-weight: 800; }
+
+.orw-dot.first small { left: -2px; transform: none; align-items: flex-start; }
+
+.orw-dot:last-child small { right: -2px; left: auto; transform: none; align-items: flex-end; }
+
+.orw-dot.zero { width: 10px; height: 10px; margin-left: -5px; }
+
+.orw-dot.zero small { top: 15px; }
+
+.orw-strip .orw-track { margin-bottom: 40px; }
+
+.orw-strip .orw-claim { margin: 0; }
+
+.orw-fly { bottom: 2px; top: auto; z-index: 3; margin-left: -8px; }
+
+.orw-fly.box { margin-left: -13px; color: #1c1814; }
+
+.orw-strip { overflow: visible; }
+
+.orw-strip { padding: 10px 12px 2px; }
+
+.orw-strip-head { gap: 10px; }
+
+.orw-strip-head .bmk-row { width: auto; }
+
+.orw-strip-txt b { font-size: 13.5px; line-height: 1.25; }
+
+.orw-sub { font-size: 11.5px; font-weight: 600; color: #b45309; }
+
+.orw-next {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid #f2d3a6;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #b45309;
+  white-space: nowrap;
+}
+
+.orw-next.done { border-color: #bbf7d0; color: #15803d; }
+
+.orw-chev { margin-left: -2px; }
+
+.orw-strip .orw-track { height: 4px; margin: 12px 6px 26px; }
+
+.orw-strip .orw-dot { width: 12px; height: 12px; margin-left: -6px; border-width: 2px; }
+
+.orw-strip .orw-dot svg { width: 8px; height: 8px; }
+
+.orw-strip .orw-dot.zero { width: 8px; height: 8px; margin-left: -4px; }
+
+.orw-strip .orw-dot small { top: 14px; font-size: 10px; }
+
+.orw-strip .orw-dot small b { font-size: 10px; font-weight: 700; }
+
+.orw-strip .orw-dot.zero small { top: 12px; }

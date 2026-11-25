@@ -1,4 +1,5 @@
 "use client";
+import "./page.styles.css";
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";

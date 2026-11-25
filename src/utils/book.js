@@ -152,8 +152,6 @@ export const books = [
     id: "bk-001",
     name: "The Art of Spending Money",
     image: bookImages["the-art-of-spending-money"],
-    description:
-      "Discover the secrets to mindful spending and financial freedom with this practical guide from TheBookX.in. Learn to build a healthier relationship with money, spend intentionally, and make smart financial decisions. TheBookX provides premium quality books delivered securely via Delhivery and Indian Post, ensuring your reading journey begins safely. Shop now at TheBookX.in, where books start as low as ₹1 for a limited time. Contact us anytime for queries, your trusted book partner across India.",
     author: "Morgan Housel",
     authorSlug: "morgan-housel",
     pages: "210-230",
@@ -169,8 +167,6 @@ export const books = [
     id: "bk-002",
     name: "The Art of Clarity",
     image: bookImages["the-art-of-clarity"],
-    description:
-      "Transform your thinking with this powerful self-help guide from TheBookX.in. Authored by Murthy Thevar, this book teaches you proven strategies to eliminate confusion, think clearly, and make confident decisions without overthinking. TheBookX delivers high-quality books in pristine condition, securely packaged and shipped via Delhivery and Indian Post. Grab your copy today, books starting at just ₹1 for a limited time. Your trusted destination for affordable, authentic books across India.",
     catalogue: ["self-help", "bestseller", "trending"],
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 129,
@@ -212,8 +208,6 @@ export const books = [
     id: "bk-003",
     name: "Don't sweat the small stuff",
     image: bookImages["dont-sweat-the-small-stuff"],
-    description:
-      "Find peace in chaos with this timeless classic from TheBookX.in. Discover simple yet powerful practices to reduce stress, calm your mind, and live a more joyful life. TheBookX ensures your books arrive in excellent condition, securely delivered through Delhivery and Indian Post. Explore our collection with books starting at just ₹1, limited time offer. Contact us anytime for personalized assistance. Your go-to online bookstore for quality reads at unbeatable prices.",
     author: "Richard Carlson",
     pages: "250-270",
     language: "English",
@@ -228,8 +222,6 @@ export const books = [
     id: "bk-004",
     name: "Letters to Milena",
     image: bookImages["letters-to-the-milena"],
-    description:
-      "Experience profound reflections on love, existence, and human connection with this literary masterpiece from TheBookX.in. Franz Kafka's intimate letters offer timeless wisdom that resonates with modern readers. TheBookX delivers premium quality books in perfect condition, securely packaged and shipped via trusted partners Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period. Your satisfaction guaranteed with our dedicated customer support.",
     author: "Franz Kafka",
     pages: "280-300",
     language: "English",
@@ -244,8 +236,6 @@ export const books = [
     id: "bk-005",
     name: "Atomic Habits",
     image: bookImages["atomic-habits"],
-    description:
-      "Master the science of habit formation with this international bestseller from TheBookX.in. Learn how tiny changes can create remarkable results in your life. TheBookX provides authentic, high-quality books delivered securely via Delhivery and Indian Post. Join thousands of satisfied readers who trust us for their reading needs. Limited time offer, books starting at just ₹1. Contact our support team for any queries about your order.",
     author: "James Clear",
     pages: "300-320",
     language: "English",
@@ -260,8 +250,6 @@ export const books = [
     id: "bk-006",
     name: "The Psychology of Money",
     image: bookImages["psychology-of-money"],
-    description:
-      "Unlock timeless lessons on wealth, greed, and financial happiness with this modern classic from TheBookX.in. Morgan Housel's masterpiece reveals how behavior shapes financial success. TheBookX ensures pristine book quality with secure delivery via Delhivery and Indian Post. Discover India's most trusted online bookstore, books starting at just ₹1 for a limited time. Reach out anytime for assistance with your book purchases.",
     author: "Morgan Housel",
     pages: "240-260",
     language: "English",
@@ -276,8 +264,6 @@ export const books = [
     id: "bk-007",
     name: "Surrounded by Idiots",
     image: bookImages["surrounded-by-idiots"],
-    description:
-      "Revolutionize your communication skills with this international phenomenon from TheBookX.in. Understand personality types and build better relationships at work and home. TheBookX delivers premium books in excellent condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited period. Your trusted partner for quality reads across India.",
     author: "Thomas Erikson",
     pages: "280-300",
     language: "English",
@@ -292,8 +278,6 @@ export const books = [
     id: "bk-008",
     name: "The Palace of Illusions",
     image: bookImages["palace-of-illusions"],
-    description:
-      "Immerse yourself in this breathtaking retelling of the Mahabharata from TheBookX.in. Experience the epic through Draupadi's eyes in Chitra Banerjee Divakaruni's masterpiece. TheBookX provides high-quality books in pristine condition, securely delivered via Delhivery and Indian Post. Explore India's finest literature collection, books starting at just ₹1 for a limited time. Contact us for personalized book recommendations.",
     author: "Chitra Banerjee Divakaruni",
     pages: "360-380",
     language: "English",
@@ -308,8 +292,6 @@ export const books = [
     id: "bk-009",
     name: "The Courage to Be Disliked",
     image: bookImages["courage-to-be-disliked"],
-    description:
-      "Break free from self-imposed limitations with this philosophical guide from TheBookX.in. Discover Alfred Adler's timeless wisdom on personal freedom and happiness. TheBookX ensures authentic books in perfect condition, securely shipped via Delhivery and Indian Post. Your trusted online bookstore, books starting at just ₹1 for a limited offer. We're here to help with any questions about your order.",
     author: "Ichiro Kishimi, Fumitake Koga",
     pages: "270-290",
     language: "English",
@@ -324,8 +306,6 @@ export const books = [
     id: "bk-010",
     name: "The Subtle Art of Not Giving a F*ck",
     image: bookImages["subtle-art-not-giving-fck"],
-    description:
-      "Embrace a counterintuitive path to a better life with this bold bestseller from TheBookX.in. Mark Manson's no-nonsense approach to happiness will transform your perspective. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time. Your satisfaction is our priority, contact us anytime for support.",
     author: "Mark Manson",
     pages: "210-230",
     language: "English",
@@ -340,8 +320,6 @@ export const books = [
     id: "bk-011",
     name: "Talking with Psychopaths",
     image: bookImages["talking-with-psychopaths"],
-    description:
-      "Delve into the chilling minds of psychopaths with this gripping psychological exploration from TheBookX.in. Discover fascinating insights into criminal behavior, manipulation tactics, and the science behind psychopathy. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time. Your trusted destination for authentic books across India. Contact us anytime for reading recommendations.",
     author: "Christopher Berry-Dee",
     pages: "280-300",
     language: "English",
@@ -356,8 +334,6 @@ export const books = [
     id: "bk-012",
     name: "The Laws of Human Nature",
     image: bookImages["laws-of-human-nature"],
-    description:
-      "Master the hidden forces that shape human behavior with this definitive guide from TheBookX.in. Robert Greene reveals powerful insights into why people act the way they do and how to navigate social dynamics effectively. TheBookX ensures your books arrive in excellent condition, securely packaged via Delhivery and Indian Post. Explore our collection, books starting at just ₹1 for a limited time. Your satisfaction guaranteed with dedicated customer support.",
     author: "Robert Greene",
     pages: "600-620",
     language: "English",
@@ -372,8 +348,6 @@ export const books = [
     id: "bk-013",
     name: "The 48 Laws of Power",
     image: bookImages["48-laws-of-power"],
-    description:
-      "Unlock the timeless strategies of power and influence with this iconic masterpiece from TheBookX.in. Robert Greene's classic guide reveals the principles that have shaped history and continues to guide leaders today. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer. Reach out anytime for assistance with your book purchases.",
     author: "Robert Greene",
     pages: "450-470",
     language: "English",
@@ -388,8 +362,6 @@ export const books = [
     id: "bk-014",
     name: "Diary of a CEO",
     image: bookImages["diary-of-a-ceo"],
-    description:
-      "Gain invaluable insights from one of the world's most successful entrepreneurs with this transformative book from TheBookX.in. Steven Bartlett shares hard-earned lessons on business, leadership, and personal growth. TheBookX delivers authentic books in excellent condition, securely shipped via Delhivery and Indian Post. Discover India's most trusted online bookstore, books starting at just ₹1 for a limited time.",
     author: "Steven Bartlett",
     pages: "350-370",
     language: "English",
@@ -404,8 +376,6 @@ export const books = [
     id: "bk-015",
     name: "Red Flags and Rishtas",
     image: bookImages["red-flags-and-rishtas"],
-    description:
-      "Navigate modern relationships with wit and wisdom using this engaging guide from TheBookX.in. Learn to identify warning signs and build healthier connections in today's complex dating world. TheBookX ensures premium book quality with secure delivery via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period. Contact us for personalized book recommendations.",
     author: "Radhika Agrawal",
     pages: "230-250",
     language: "English",
@@ -420,8 +390,6 @@ export const books = [
     id: "bk-016",
     name: "The Inmate",
     image: bookImages["inmate"],
-    description:
-      "Get lost in this heart-pounding psychological thriller from TheBookX.in. Freida McFadden delivers a gripping tale of suspense, secrets, and shocking twists that will keep you turning pages until dawn. TheBookX delivers high-quality books in pristine condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time. Your satisfaction is our priority.",
     author: "Freida McFadden",
     pages: "320-340",
     language: "English",
@@ -436,8 +404,6 @@ export const books = [
     id: "bk-017",
     name: "The Housemaid",
     image: bookImages["housemaid-1"],
-    description:
-      "Experience the psychological thriller that took the world by storm, available now at TheBookX.in. Freida McFadden's gripping tale of secrets, suspense, and shocking revelations will leave you breathless. TheBookX provides authentic books in perfect condition, securely shipped via Delhivery and Indian Post. Grab your copy today, books starting at just ₹1 for a limited time. Your trusted book partner across India.",
     author: "Freida McFadden",
     pages: "330-350",
     language: "English",
@@ -452,8 +418,6 @@ export const books = [
     id: "bk-018",
     name: "The Housemaid's Secret",
     image: bookImages["housemaid-2"],
-    description:
-      "The suspense continues in this gripping sequel from TheBookX.in. Freida McFadden delivers even more twists, deeper secrets, and edge-of-your-seat thrills that will keep you guessing until the final page. TheBookX ensures premium book quality with secure delivery via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Freida McFadden",
     pages: "320-340",
     language: "English",
@@ -468,8 +432,6 @@ export const books = [
     id: "bk-019",
     name: "The Housemaid Is Watching",
     image: bookImages["housemaid-3"],
-    description:
-      "Experience the shocking conclusion to the bestselling Housemaid series from TheBookX.in. Freida McFadden brings the suspense to an unforgettable climax with twists you'll never see coming. TheBookX delivers high-quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited time.",
     author: "Freida McFadden",
     pages: "330-350",
     language: "English",
@@ -484,8 +446,6 @@ export const books = [
     id: "bk-020",
     name: "The Locked Door",
     image: bookImages["locked-door"],
-    description:
-      "Uncover the secrets hidden behind closed doors with this addictive thriller from TheBookX.in. Freida McFadden masterfully crafts a suspenseful tale of family secrets and shocking revelations. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Freida McFadden",
     pages: "310-330",
     language: "English",
@@ -500,8 +460,6 @@ export const books = [
     id: "bk-021",
     name: "Never Lie",
     image: bookImages["never-lie"],
-    description:
-      "Prepare for the twist that shocked millions with this psychological thriller from TheBookX.in. Freida McFadden weaves a masterful tale of truth, deception, and the secrets we keep. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Discover India's most trusted online bookstore, books starting at just ₹1 for a limited time.",
     author: "Freida McFadden",
     pages: "290-310",
     language: "English",
@@ -516,8 +474,6 @@ export const books = [
     id: "bk-022",
     name: "Days at the Morisaki Bookshop",
     image: bookImages["days-at-morisaki-1"],
-    description:
-      "Escape into this heartwarming Japanese bestseller from TheBookX.in. Satoshi Yagisawa's gentle tale of second chances, healing, and the magic of books will touch your soul. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited offer.",
     author: "Satoshi Yagisawa",
     pages: "160-180",
     language: "English",
@@ -532,8 +488,6 @@ export const books = [
     id: "bk-023",
     name: "More Days at the Morisaki Bookshop",
     image: bookImages["days-at-morisaki-2"],
-    description:
-      "Return to the beloved Morisaki Bookshop with this enchanting sequel from TheBookX.in. Satoshi Yagisawa continues the heartwarming journey of healing, friendship, and the transformative power of literature. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time.",
     author: "Satoshi Yagisawa",
     pages: "170-190",
     language: "English",
@@ -548,8 +502,6 @@ export const books = [
     id: "bk-024",
     name: "All He'll Ever Be",
     image: bookImages["all-hell-ever-be"],
-    description:
-      "Immerse yourself in this gripping romance that explores the depths of desire and deception, available at TheBookX.in. A powerful tale of love, power, and the lengths we go for connection. TheBookX delivers premium books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited time.",
     author: "W. Winters",
     pages: "380-400",
     language: "English",
@@ -564,8 +516,6 @@ export const books = [
     id: "bk-025",
     name: "Was I Ever Enough",
     image: bookImages["was-i-ever-enough"],
-    description:
-      "Find healing and discover your self-worth with this poignant reflection from TheBookX.in. A touching exploration of validation, relationships, and the journey to self-acceptance. TheBookX provides high-quality books in perfect condition, securely shipped via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited offer.",
     author: "Yash Ranjit Jain",
     pages: "190-210",
     language: "English",
@@ -580,8 +530,6 @@ export const books = [
     id: "bk-027",
     name: "Can We Be Strangers Again",
     image: bookImages["can-we-be-strangers-again"],
-    description:
-      "Explore the delicate complexities of modern relationships with this emotional novel from TheBookX.in. A poignant story about love, loss, and the spaces between. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited time.",
     author: "Shrijeet Shandilya",
     pages: "240-260",
     language: "English",
@@ -596,8 +544,6 @@ export const books = [
     id: "bk-028",
     name: "Thank You for Leaving",
     image: bookImages["thank-you-for-leaving"],
-    description:
-      "Discover strength and growth after heartbreak with this empowering guide from TheBookX.in. A compassionate journey through letting go, healing, and finding yourself again. TheBookX provides high-quality books in perfect condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Rithvik Singh",
     pages: "180-200",
     language: "English",
@@ -612,8 +558,6 @@ export const books = [
     id: "bk-029",
     name: "Too Good to Be True",
     image: bookImages["too-good-to-be-true"],
-    description:
-      "Hold your breath with this suspenseful tale of deception and unexpected twists from TheBookX.in. A gripping story that will make you question everything you think you know. TheBookX ensures authentic books in pristine condition, securely via Delhivery and Indian Post. Discover your next favorite read, books starting at just ₹1 for a limited time.",
     author: "Carola Lovering",
     pages: "340-360",
     language: "English",
@@ -628,8 +572,6 @@ export const books = [
     id: "bk-030",
     name: "I Don't Love You Anymore",
     image: bookImages["i-dont-love-you-anymore"],
-    description:
-      "Navigate the emotional journey of heartbreak and healing with this deeply moving book from TheBookX.in. A honest exploration of love lost and the path to rediscovering yourself. TheBookX delivers premium quality books in excellent condition, securely shipped via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited time.",
     author: "Rithvik Singh",
     pages: "170-190",
     language: "English",
@@ -644,8 +586,6 @@ export const books = [
     id: "bk-031",
     name: "Don't Believe Everything You Think",
     image: bookImages["dont-believe-everything-you-think"],
-    description:
-      "Learn to quiet your mind and break free from overthinking with this transformative guide from TheBookX.in. Joseph Nguyen offers practical wisdom for finding peace in a chaotic mind. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Joseph Nguyen",
     pages: "150-170",
     language: "English",
@@ -660,8 +600,6 @@ export const books = [
     id: "bk-032",
     name: "The Art of Not Overthinking",
     image: bookImages["art-of-not-overthinking"],
-    description:
-      "Master practical tools to control anxious thoughts and find mental clarity with this essential guide from TheBookX.in. Simple strategies for a calmer, more focused mind. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited time.",
     author: "Nick Trenton",
     pages: "140-160",
     language: "English",
@@ -676,8 +614,6 @@ export const books = [
     id: "bk-033",
     name: "The Art of Laziness",
     image: bookImages["art-of-laziness"],
-    description:
-      "Embrace rest and discover productivity in stillness with this refreshing perspective from TheBookX.in. Learn why doing less can help you achieve more. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Library Mindset",
     pages: "160-180",
     language: "English",
@@ -692,8 +628,6 @@ export const books = [
     id: "bk-034",
     name: "The Art of Being Alone",
     image: bookImages["art-of-being-alone"],
-    description:
-      "Transform solitude into a powerful path of self-discovery with this empowering guide from TheBookX.in. Embrace loneliness and find strength in your own company. TheBookX provides high-quality books in perfect condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Renuka Gavrani",
     pages: "150-170",
     language: "English",
@@ -708,8 +642,6 @@ export const books = [
     id: "bk-035",
     name: "The Art of Reading People's Mind",
     image: bookImages["art-of-reading-mind"],
-    description:
-      "Master the art of understanding nonverbal cues and emotional intelligence with this fascinating guide from TheBookX.in. Learn to read people, build better relationships, and navigate social situations with confidence. TheBookX ensures authentic books in pristine condition, securely via Delhivery and Indian Post. Discover India's most trusted bookstore, books starting at just ₹1.",
     author: "Prakash Sharma",
     pages: "190-210",
     language: "English",
@@ -724,8 +656,6 @@ export const books = [
     id: "bk-036",
     name: "The 5 Types of Wealth",
     image: bookImages["5-types-of-wealth"],
-    description:
-      "Redefine what it means to be wealthy with this transformative guide from TheBookX.in. Discover the five essential types of wealth that lead to a truly rich life beyond money. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited offer.",
     author: "Sahil Bloom",
     pages: "380-400",
     language: "English",
@@ -740,8 +670,6 @@ export const books = [
     id: "bk-037",
     name: "The Let Them Theory",
     image: bookImages["the-let-them-theory"],
-    description:
-      "Discover emotional freedom by learning to let go of control with this life-changing book from TheBookX.in. A powerful approach to finding peace and authenticity in relationships. TheBookX provides high-quality books in perfect condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time.",
     author: "Mel Robbins",
     pages: "290-310",
     language: "English",
@@ -756,8 +684,6 @@ export const books = [
     id: "bk-038",
     name: "The First 90 Days",
     image: bookImages["the-first-90-days"],
-    description:
-      "Master career transitions and accelerate your success with this essential guide from TheBookX.in. Proven strategies for making your first 90 days in any new role a success. TheBookX ensures authentic books in pristine condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "Michael D. Watkins",
     pages: "250-270",
     language: "English",
@@ -772,8 +698,6 @@ export const books = [
     id: "bk-039",
     name: "Life's Amazing Secret",
     image: bookImages["lifes-amazing-secret"],
-    description:
-      "Uncover the story-driven path to happiness and success with this inspiring book from TheBookX.in. A transformative journey that reveals life's most powerful truths. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited time.",
     author: "Gaur Gopal Das",
     pages: "220-240",
     language: "English",
@@ -788,8 +712,6 @@ export const books = [
     id: "bk-040",
     name: "Energize Your Mind",
     image: bookImages["energize-you-mind"],
-    description:
-      "Unlock mental energy and achieve peak performance with this practical guide from TheBookX.in. Learn science-backed strategies to boost focus, clarity, and cognitive function. TheBookX provides high-quality books in perfect condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Gaur Gopal Das",
     pages: "210-230",
     language: "English",
@@ -804,8 +726,6 @@ export const books = [
     id: "bk-041",
     name: "The Kite Runner",
     image: bookImages["kite-runner"],
-    description:
-      "Experience the unforgettable story of friendship, guilt, and redemption that touched millions worldwide, available now at TheBookX.in. Khaled Hosseini's masterpiece explores the complexities of loyalty and the search for atonement. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time. Your trusted destination for authentic literature across India.",
     author: "Khaled Hosseini",
     pages: "370-390",
     language: "English",
@@ -820,8 +740,6 @@ export const books = [
     id: "bk-042",
     name: "A Thousand Splendid Suns",
     image: bookImages["thousand-splendid-suns"],
-    description:
-      "Immerse yourself in this emotional tale of love, loss, and resilience from TheBookX.in. Khaled Hosseini weaves a powerful story of two women whose lives intersect in unforgettable ways. TheBookX ensures your books arrive in excellent condition, securely packaged via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period. Contact us anytime for personalized assistance.",
     author: "Khaled Hosseini",
     pages: "420-440",
     language: "English",
@@ -836,8 +754,6 @@ export const books = [
     id: "bk-043",
     name: "And the Mountains Echoed",
     image: bookImages["and-the-mountain-echoed"],
-    description:
-      "Discover this sweeping family saga spanning generations from TheBookX.in. Khaled Hosseini's masterful storytelling explores the bonds that unite us and the choices that define us. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer. Your satisfaction guaranteed with dedicated customer support.",
     author: "Khaled Hosseini",
     pages: "400-420",
     language: "English",
@@ -852,8 +768,6 @@ export const books = [
     id: "bk-044",
     name: "The Mountain Is You",
     image: bookImages["the-mountain-is-you"],
-    description:
-      "Transform self-sabotage into self-mastery with this empowering guide from TheBookX.in. Brianna Wiest offers profound insights on overcoming internal obstacles and embracing your true potential. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Discover India's most trusted online bookstore, books starting at just ₹1 for a limited time.",
     author: "Brianna Wiest",
     pages: "250-270",
     language: "English",
@@ -868,8 +782,6 @@ export const books = [
     id: "bk-045",
     name: "Before the Coffee Gets Cold",
     image: bookImages["before-the-coffee-gets-cold-1"],
-    description:
-      "Step into a magical café where time travel is possible with this heartwarming international bestseller from TheBookX.in. Toshikazu Kawaguchi's beloved tale explores the power of second chances and the beauty of human connection. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Toshikazu Kawaguchi",
     pages: "210-230",
     language: "English",
@@ -884,8 +796,6 @@ export const books = [
     id: "bk-046",
     name: "Tales from the Cafe",
     image: bookImages["before-the-coffee-gets-cold-2"],
-    description:
-      "Return to the beloved time-travel café with more heartwarming stories from TheBookX.in. Toshikazu Kawaguchi continues to enchant readers with tales of love, regret, and redemption. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Toshikazu Kawaguchi",
     pages: "220-240",
     language: "English",
@@ -900,8 +810,6 @@ export const books = [
     id: "bk-047",
     name: "Before Your Memory Fades",
     image: bookImages["before-the-coffee-gets-cold-3"],
-    description:
-      "Experience more emotional journeys across time and choices with this third installment from TheBookX.in. Toshikazu Kawaguchi delivers another collection of moving stories from the magical café. TheBookX ensures premium book quality with secure delivery via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Toshikazu Kawaguchi",
     pages: "210-230",
     language: "English",
@@ -916,8 +824,6 @@ export const books = [
     id: "bk-048",
     name: "Before We Say Goodbye",
     image: bookImages["before-the-coffee-gets-cold-4"],
-    description:
-      "Explore the depths of regret, hope, and second chances in this moving addition to the series from TheBookX.in. Toshikazu Kawaguchi's magical café continues to touch hearts worldwide. TheBookX delivers high-quality books in excellent condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "Toshikazu Kawaguchi",
     pages: "200-220",
     language: "English",
@@ -932,8 +838,6 @@ export const books = [
     id: "bk-049",
     name: "Before We Forget Kindness",
     image: bookImages["before-the-coffee-gets-cold-5"],
-    description:
-      "Discover the latest chapter in the beloved time-travel café series from TheBookX.in. Toshikazu Kawaguchi reminds us of the transformative power of kindness and connection. TheBookX provides authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited time.",
     author: "Toshikazu Kawaguchi",
     pages: "210-230",
     language: "English",
@@ -948,8 +852,6 @@ export const books = [
     id: "bk-050",
     name: "Twisted Love",
     image: bookImages["twisted-love"],
-    description:
-      "Fall into this dark romance filled with obsession and secrets from TheBookX.in. Ana Huang delivers a gripping story of passion, betrayal, and unexpected connections that will keep you turning pages. TheBookX ensures premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Ana Huang",
     pages: "340-360",
     language: "English",
@@ -964,8 +866,6 @@ export const books = [
     id: "bk-051",
     name: "Twisted Games",
     image: bookImages["twisted-game"],
-    description:
-      "Enter a dangerous game of love, power, and betrayal with this captivating romance from TheBookX.in. Ana Huang's addictive storytelling brings unforgettable characters to life. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Discover your next obsession, books starting at just ₹1 for a limited time.",
     author: "Ana Huang",
     pages: "350-370",
     language: "English",
@@ -980,8 +880,6 @@ export const books = [
     id: "bk-052",
     name: "Twisted Hate",
     image: bookImages["twisted-hate"],
-    description:
-      "Experience the electric chemistry when hate turns into irresistible attraction from TheBookX.in. Ana Huang delivers another sizzling romance that fans can't put down. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited period.",
     author: "Ana Huang",
     pages: "360-380",
     language: "English",
@@ -996,8 +894,6 @@ export const books = [
     id: "bk-053",
     name: "Twisted Lies",
     image: bookImages["twisted-lies"],
-    description:
-      "Uncover a romance built on secrets, deception, and burning desire from TheBookX.in. Ana Huang concludes her bestselling series with unforgettable twists and heart-stopping moments. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited time.",
     author: "Ana Huang",
     pages: "370-390",
     language: "English",
@@ -1012,8 +908,6 @@ export const books = [
     id: "bk-054",
     name: "King of Wrath",
     image: bookImages["king-of-wrath"],
-    description:
-      "Immerse yourself in this fiery romance driven by power and vengeance from TheBookX.in. Ana Huang launches her Kings of Sin series with an unforgettable enemies-to-lovers story. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Ana Huang",
     pages: "380-400",
     language: "English",
@@ -1028,8 +922,6 @@ export const books = [
     id: "bk-055",
     name: "King of Pride",
     image: bookImages["king-of-pride"],
-    description:
-      "Discover a passionate story of love and stubborn hearts from TheBookX.in. Ana Huang delivers another captivating romance filled with tension and emotional depth. TheBookX ensures premium book quality with secure delivery via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "Ana Huang",
     pages: "370-390",
     language: "English",
@@ -1044,8 +936,6 @@ export const books = [
     id: "bk-056",
     name: "King of Greed",
     image: bookImages["king-of-greed"],
-    description:
-      "Experience the collision of ambition and love in unexpected ways with this emotional romance from TheBookX.in. Ana Huang explores the complexities of sacrifice and second chances. TheBookX delivers authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited time.",
     author: "Ana Huang",
     pages: "360-380",
     language: "English",
@@ -1060,8 +950,6 @@ export const books = [
     id: "bk-057",
     name: "King of Sloth",
     image: bookImages["king-of-sloth"],
-    description:
-      "Savor this slow-burning romance with emotional depth from TheBookX.in. Ana Huang delivers another unforgettable addition to the Kings of Sin series. TheBookX provides high-quality books in excellent condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Ana Huang",
     pages: "350-370",
     language: "English",
@@ -1076,8 +964,6 @@ export const books = [
     id: "bk-058",
     name: "The God of Small Things",
     image: bookImages["god-of-small-things"],
-    description:
-      "Experience the Booker Prize-winning literary masterpiece from TheBookX.in. Arundhati Roy's luminous debut explores love, loss, and societal constraints in unforgettable prose. TheBookX ensures premium quality books in pristine condition, securely delivered via Delhivery and Indian Post. Discover India's finest literature, books starting at just ₹1 for a limited time.",
     author: "Arundhati Roy",
     pages: "330-350",
     language: "English",
@@ -1092,8 +978,6 @@ export const books = [
     id: "bk-059",
     name: "Forest of Enhancement",
     image: bookImages["forest-of-enhancement"],
-    description:
-      "Embark on a thrilling fantasy adventure of growth and power from TheBookX.in. Dive into a richly imagined world where magic and destiny collide. TheBookX provides authentic books in perfect condition, securely shipped via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited period.",
     author: "R.K. Singh",
     pages: "320-340",
     language: "English",
@@ -1108,8 +992,6 @@ export const books = [
     id: "bk-060",
     name: "The Last Queen",
     image: bookImages["last-queen"],
-    description:
-      "Step into a dramatic tale set in a rich historical backdrop from TheBookX.in. This gripping historical novel brings to life an era of power, passion, and political intrigue. TheBookX delivers high-quality books in excellent condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Chitra Banerjee Divakaruni",
     pages: "380-400",
     language: "English",
@@ -1124,8 +1006,6 @@ export const books = [
     id: "bk-061",
     name: "Ugly Love",
     image: bookImages["ugly-love"],
-    description:
-      "Experience this emotional romance about pain, healing, and the transformative power of love from TheBookX.in. Colleen Hoover delivers a heart-wrenching story that stays with you long after the final page. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited time.",
     author: "Colleen Hoover",
     pages: "320-340",
     language: "English",
@@ -1140,8 +1020,6 @@ export const books = [
     id: "bk-062",
     name: "A Little Life",
     image: bookImages["little-life"],
-    description:
-      "Discover the deeply moving story of friendship and trauma that became a literary phenomenon, available at TheBookX.in. Hanya Yanagihara's masterpiece explores the depths of human endurance and love. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited period.",
     author: "Hanya Yanagihara",
     pages: "700-720",
     language: "English",
@@ -1156,8 +1034,6 @@ export const books = [
     id: "bk-063",
     name: "Dark Matter",
     image: bookImages["dark-matter"],
-    description:
-      "Prepare for a mind-bending sci-fi thriller about parallel lives and impossible choices from TheBookX.in. Blake Crouch delivers an addictive page-turner that questions the nature of reality itself. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Discover your next obsession, books starting at just ₹1 for a limited time.",
     author: "Blake Crouch",
     pages: "340-360",
     language: "English",
@@ -1172,8 +1048,6 @@ export const books = [
     id: "bk-064",
     name: "Verity",
     image: bookImages["varity"],
-    description:
-      "Hold your breath with this psychological thriller full of shocking twists from TheBookX.in. Colleen Hoover's gripping suspense novel will keep you guessing until the final page. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Colleen Hoover",
     pages: "320-340",
     language: "English",
@@ -1188,8 +1062,6 @@ export const books = [
     id: "bk-065",
     name: "Zero to One",
     image: bookImages["zero-to-one"],
-    description:
-      "Gain invaluable insights on building groundbreaking startups from TheBookX.in. Peter Thiel shares contrarian wisdom on innovation, monopoly, and creating the future. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Peter Thiel",
     pages: "210-230",
     language: "English",
@@ -1204,8 +1076,6 @@ export const books = [
     id: "bk-066",
     name: "The $100 Startup",
     image: bookImages["100-dollar-startup"],
-    description:
-      "Learn how to turn small ideas into profitable businesses with this inspiring guide from TheBookX.in. Chris Guillebeau shares real-world stories of successful micro-businesses. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited time.",
     author: "Chris Guillebeau",
     pages: "260-280",
     language: "English",
@@ -1220,8 +1090,6 @@ export const books = [
     id: "bk-067",
     name: "The Lean Startup",
     image: bookImages["lean-startup"],
-    description:
-      "Master the art of building startups using continuous innovation from TheBookX.in. Eric Ries presents the methodology that revolutionized modern entrepreneurship. TheBookX provides authentic books in perfect condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited offer.",
     author: "Eric Ries",
     pages: "320-340",
     language: "English",
@@ -1236,8 +1104,6 @@ export const books = [
     id: "bk-068",
     name: "The Hard Thing About Hard Things",
     image: bookImages["hard-things-about-hard-things"],
-    description:
-      "Get real-world lessons on building and managing companies from TheBookX.in. Ben Horowitz shares unfiltered wisdom on the toughest challenges of leadership. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited period.",
     author: "Ben Horowitz",
     pages: "280-300",
     language: "English",
@@ -1252,8 +1118,6 @@ export const books = [
     id: "bk-069",
     name: "Blue Ocean Strategy",
     image: bookImages["blue-ocean-strategy"],
-    description:
-      "Learn to create uncontested market space and make competition irrelevant with this business classic from TheBookX.in. Chan Kim and Renée Mauborgne present a revolutionary approach to business strategy. TheBookX ensures high-quality books in pristine condition, securely shipped via Delhivery and Indian Post. Discover India's most trusted bookstore, books starting at just ₹1 for a limited time.",
     author: "W. Chan Kim, Renée Mauborgne",
     pages: "270-290",
     language: "English",
@@ -1268,8 +1132,6 @@ export const books = [
     id: "bk-070",
     name: "Ram Sita Raavan",
     image: bookImages["ram-sita-raavan"],
-    description:
-      "Experience this epic retelling of Indian mythology from multiple perspectives from TheBookX.in. A sweeping saga that reimagines the Ramayana with depth and nuance. TheBookX provides premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer. Contact us for personalized book recommendations.",
     author: "Devdutt Pattanaik",
     pages: "450-470",
     language: "English",
@@ -1284,8 +1146,6 @@ export const books = [
     id: "bk-071",
     name: "Ram: Scion of Ikshvaku",
     image: bookImages["ram"],
-    description:
-      "Discover the story of righteousness, duty, and leadership with this captivating retelling from TheBookX.in. Amish Tripathi reimagines the legendary prince of Ayodhya in this mythological masterpiece. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time. Your trusted destination for authentic Indian literature across India.",
     author: "Amish Tripathi",
     pages: "350-370",
     language: "English",
@@ -1300,8 +1160,6 @@ export const books = [
     id: "bk-072",
     name: "Sita: Warrior of Mithila",
     image: bookImages["sita"],
-    description:
-      "Experience the powerful portrayal of strength, courage, and resilience from TheBookX.in. Amish Tripathi presents Sita not just as a queen, but as a formidable warrior who shaped destiny. TheBookX ensures your books arrive in excellent condition, securely packaged via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Amish Tripathi",
     pages: "360-380",
     language: "English",
@@ -1316,8 +1174,6 @@ export const books = [
     id: "bk-073",
     name: "Raavan: Enemy of Aryavarta",
     image: bookImages["ravaan"],
-    description:
-      "Explore the misunderstood anti-hero of Indian mythology with this gripping narrative from TheBookX.in. Amish Tripathi unveils the complex layers of the legendary king of Lanka. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Amish Tripathi",
     pages: "340-360",
     language: "English",
@@ -1332,8 +1188,6 @@ export const books = [
     id: "bk-074",
     name: "The Shiva Trilogy: Meluha, Nagas & Vayaputra",
     image: bookImages["meluha-nagas-vayaputra"],
-    description:
-      "Own the complete epic saga that redefined Indian mythology from TheBookX.in. Amish Tripathi's bestselling trilogy follows the journey of Shiva from tribal leader to legend. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Discover India's most trusted online bookstore, books starting at just ₹1 for a limited time.",
     author: "Amish Tripathi",
     pages: "1200-1250",
     language: "English",
@@ -1348,8 +1202,6 @@ export const books = [
     id: "bk-075",
     name: "The Immortals of Meluha",
     image: bookImages["meluha"],
-    description:
-      "Witness the rise of Shiva and the beginning of a legend with this iconic novel from TheBookX.in. Amish Tripathi's debut masterpiece launched a new era in Indian mythology fiction. TheBookX delivers authentic books in perfect condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "Amish Tripathi",
     pages: "420-440",
     language: "English",
@@ -1364,8 +1216,6 @@ export const books = [
     id: "bk-076",
     name: "The Secret of the Nagas",
     image: bookImages["nagas"],
-    description:
-      "Uncover a tale of loyalty, mystery, and hidden warriors from TheBookX.in. Amish Tripathi continues Shiva's epic journey with shocking revelations and unexpected alliances. TheBookX provides high-quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Amish Tripathi",
     pages: "380-400",
     language: "English",
@@ -1380,8 +1230,6 @@ export const books = [
     id: "bk-077",
     name: "The Oath of the Vayaputras",
     image: bookImages["vayaputra"],
-    description:
-      "Experience the final battle and the destiny of Shiva in this epic conclusion from TheBookX.in. Amish Tripathi brings his legendary trilogy to a breathtaking finish. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time.",
     author: "Amish Tripathi",
     pages: "450-470",
     language: "English",
@@ -1396,8 +1244,6 @@ export const books = [
     id: "bk-078",
     name: "Mahagatha: 100 Tales from the Puranas",
     image: bookImages["mahagatha"],
-    description:
-      "Immerse yourself in ancient Indian stories that shape philosophical thought from TheBookX.in. Satyarth Nayak compiles timeless tales of gods, demons, and cosmic wisdom. TheBookX delivers high-quality books in excellent condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Satyarth Nayak",
     pages: "400-420",
     language: "English",
@@ -1412,8 +1258,6 @@ export const books = [
     id: "bk-079",
     name: "The Naga Warrior",
     image: bookImages["naga-warrior"],
-    description:
-      "Dive into a fierce mythological fantasy of power and honor from TheBookX.in. A thrilling tale of warriors, destiny, and ancient conflicts. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Anuja Chandramouli",
     pages: "280-300",
     language: "English",
@@ -1428,8 +1272,6 @@ export const books = [
     id: "bk-080",
     name: "The Gita: For Children",
     image: bookImages["gita"],
-    description:
-      "Discover timeless spiritual wisdom on life and duty with this accessible edition from TheBookX.in. A beautiful introduction to one of humanity's greatest philosophical texts. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover India's most trusted bookstore, books starting at just ₹1 for a limited time.",
     author: "Roopa Pai",
     pages: "250-270",
     language: "English",
@@ -1444,8 +1286,6 @@ export const books = [
     id: "bk-081",
     name: "Myth = Mythya",
     image: bookImages["myth-mythya"],
-    description:
-      "Experience the reinterpretation of mythology through modern perspectives from TheBookX.in. Devdutt Pattanaik offers fresh insights into ancient stories and their relevance today. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Devdutt Pattanaik",
     pages: "220-240",
     language: "English",
@@ -1460,8 +1300,6 @@ export const books = [
     id: "bk-082",
     name: "The Bhagavad Gita",
     image: bookImages["bhagvat-gita"],
-    description:
-      "Explore the sacred text of karma, devotion, and wisdom with this authoritative edition from TheBookX.in. A profound guide to living a meaningful life. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited period.",
     author: "Eknath Easwaran",
     pages: "290-310",
     language: "English",
@@ -1476,8 +1314,6 @@ export const books = [
     id: "bk-083",
     name: "The Hidden Hindu Set",
     image: bookImages["hidden-hindu"],
-    description:
-      "Embark on a thrilling blend of mythology and modern fiction from TheBookX.in. Akshat Gupta weaves an action-packed saga of ancient secrets, immortal beings, and timeless mysteries. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited time.",
     author: "Akshat Gupta",
     pages: "280-300",
     language: "English",
@@ -1492,8 +1328,6 @@ export const books = [
     id: "bk-084",
     name: "Mahabharat Unraveled",
     image: bookImages["mahabhrat-unraveled"],
-    description:
-      "Decode the epic with historical insights and fresh perspectives from TheBookX.in. A comprehensive exploration of India's greatest mythological saga. TheBookX delivers authentic books in pristine condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Amritanshu Pandey",
     pages: "350-370",
     language: "English",
@@ -1508,8 +1342,6 @@ export const books = [
     id: "bk-085",
     name: "Ramayan Unraveled",
     image: bookImages["ramayan-unraveled"],
-    description:
-      "Explore the Ramayan beyond the legends with this insightful guide from TheBookX.in. Deepen your understanding of India's beloved epic. TheBookX ensures premium quality books in excellent condition, securely shipped via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Amritanshu Pandey",
     pages: "330-350",
     language: "English",
@@ -1524,8 +1356,6 @@ export const books = [
     id: "bk-086",
     name: "The Metamorphosis",
     image: bookImages["the-metamorphosis"],
-    description:
-      "Experience the haunting classic on alienation and identity from TheBookX.in. Franz Kafka's masterpiece explores the boundaries of humanity and isolation. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover timeless literature, books starting at just ₹1 for a limited time.",
     author: "Franz Kafka",
     pages: "100-120",
     language: "English",
@@ -1540,8 +1370,6 @@ export const books = [
     id: "bk-087",
     name: "The Trial",
     image: bookImages["the-trial"],
-    description:
-      "Delve into a chilling exploration of justice and bureaucracy from TheBookX.in. Franz Kafka's unfinished masterpiece remains one of literature's most powerful allegories. TheBookX delivers premium quality books in pristine condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Franz Kafka",
     pages: "240-260",
     language: "English",
@@ -1556,8 +1384,6 @@ export const books = [
     id: "bk-088",
     name: "Notes from Underground",
     image: bookImages["notes-from-underground"],
-    description:
-      "Take a philosophical dive into human consciousness with this classic from TheBookX.in. Fyodor Dostoevsky's groundbreaking work explores existential alienation and free will. TheBookX ensures authentic books in excellent condition, securely shipped via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited period.",
     author: "Fyodor Dostoevsky",
     pages: "130-150",
     language: "English",
@@ -1572,8 +1398,6 @@ export const books = [
     id: "bk-089",
     name: "Crime and Punishment",
     image: bookImages["crime-and-punishment"],
-    description:
-      "Immerse yourself in the psychological classic exploring guilt, morality, and redemption from TheBookX.in. Fyodor Dostoevsky's masterpiece remains a cornerstone of world literature. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Fyodor Dostoevsky",
     pages: "650-670",
     language: "English",
@@ -1588,8 +1412,6 @@ export const books = [
     id: "bk-090",
     name: "White Nights",
     image: bookImages["white-nights"],
-    description:
-      "Experience this tender story of love, loneliness, and fleeting dreams from TheBookX.in. Fyodor Dostoevsky's poignant novella captures the beauty and pain of unrequited love. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited offer.",
     author: "Fyodor Dostoevsky",
     pages: "90-110",
     language: "English",
@@ -1604,8 +1426,6 @@ export const books = [
     id: "bk-091",
     name: "The Alchemist",
     image: bookImages["alchemist"],
-    description:
-      "Discover the philosophical tale about destiny, dreams, and self-discovery from TheBookX.in. Paulo Coelho's international bestseller has inspired millions to follow their personal legends. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Paulo Coelho",
     pages: "160-180",
     language: "English",
@@ -1620,8 +1440,6 @@ export const books = [
     id: "bk-092",
     name: "Haunting Adeline",
     image: bookImages["haunting-adeline"],
-    description:
-      "Enter the world of dark romance and obsession with this gripping thriller from TheBookX.in. H.D. Carlton's controversial masterpiece has captivated readers with its intense suspense. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time.",
     author: "H.D. Carlton",
     pages: "580-600",
     language: "English",
@@ -1636,8 +1454,6 @@ export const books = [
     id: "bk-093",
     name: "Hunting Adeline",
     image: bookImages["hunting-adeline"],
-    description:
-      "Experience the gripping continuation of this dark and intense love story from TheBookX.in. H.D. Carlton delivers the stunning conclusion to the Cat and Mouse Duet. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Discover your next obsession, books starting at just ₹1 for a limited offer.",
     author: "H.D. Carlton",
     pages: "620-640",
     language: "English",
@@ -1652,8 +1468,6 @@ export const books = [
     id: "bk-094",
     name: "Pride and Prejudice",
     image: bookImages["pride-and-prejudice"],
-    description:
-      "Fall in love with the timeless romance exploring love, class, and misunderstandings from TheBookX.in. Jane Austen's beloved classic remains one of literature's greatest love stories. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited period.",
     author: "Jane Austen",
     pages: "400-420",
     language: "English",
@@ -1668,8 +1482,6 @@ export const books = [
     id: "bk-095",
     name: "Make Epic Money",
     image: bookImages["make-epic-money"],
-    description:
-      "Master practical strategies for building wealth with clarity and confidence from TheBookX.in. Ankur Warikoo delivers actionable insights for financial freedom. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Ankur Warikoo",
     pages: "230-250",
     language: "English",
@@ -1684,8 +1496,6 @@ export const books = [
     id: "bk-096",
     name: "Do Epic Shit",
     image: bookImages["do-epic-shit"],
-    description:
-      "Get motivational insights to push beyond limits and take action from TheBookX.in. Ankur Warikoo shares powerful life lessons for achieving your goals. TheBookX delivers authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited offer.",
     author: "Ankur Warikoo",
     pages: "210-230",
     language: "English",
@@ -1700,8 +1510,6 @@ export const books = [
     id: "bk-097",
     name: "Get Epic Shit Done",
     image: bookImages["get-epic-shit-done"],
-    description:
-      "Discover actionable strategies to boost productivity and focus from TheBookX.in. Ankur Warikoo provides practical tools for achieving more in less time. TheBookX ensures premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Ankur Warikoo",
     pages: "220-240",
     language: "English",
@@ -1716,8 +1524,6 @@ export const books = [
     id: "bk-098",
     name: "Dark Psychology",
     image: bookImages["dark-pyshcology"],
-    description:
-      "Understand manipulation, influence, and human behavior with this revealing guide from TheBookX.in. Learn to recognize psychological tactics and protect yourself. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time.",
     author: "James W. Williams",
     pages: "170-190",
     language: "English",
@@ -1732,8 +1538,6 @@ export const books = [
     id: "bk-099",
     name: "Red, White & Royal Blue",
     image: bookImages["red-white-blue"],
-    description:
-      "Experience the dramatic fictional narrative filled with emotion and depth from TheBookX.in. Casey McQuiston's bestselling romance captured hearts worldwide. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Discover your next favorite read, books starting at just ₹1 for a limited offer.",
     author: "Casey McQuiston",
     pages: "420-440",
     language: "English",
@@ -1748,8 +1552,6 @@ export const books = [
     id: "bk-101",
     name: "The Love Hypothesis",
     image: bookImages["love-hypothesis"],
-    description:
-      "Fall in love with this smart romantic comedy set in the world of academia from TheBookX.in. Ali Hazelwood's breakout debut delivers fake dating, real chemistry, and heartwarming moments. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time. Your trusted destination for bestselling romance across India.",
     author: "Ali Hazelwood",
     pages: "350-370",
     language: "English",
@@ -1764,8 +1566,6 @@ export const books = [
     id: "bk-102",
     name: "Love from Lahore",
     image: bookImages["love-from-laothe"],
-    description:
-      "Experience a heartfelt romance exploring distance and destiny from TheBookX.in. A captivating cross-border love story that transcends boundaries and touches the soul. TheBookX ensures your books arrive in excellent condition, securely packaged via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Sabeen Ali",
     pages: "280-300",
     language: "English",
@@ -1780,8 +1580,6 @@ export const books = [
     id: "bk-103",
     name: "Love, Theoretically",
     image: bookImages["love-theoretically"],
-    description:
-      "Discover a contemporary romance blending science and emotions from TheBookX.in. Ali Hazelwood delivers another witty, STEM-filled romance with irresistible chemistry. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Ali Hazelwood",
     pages: "380-400",
     language: "English",
@@ -1796,8 +1594,6 @@ export const books = [
     id: "bk-104",
     name: "Icebreaker",
     image: bookImages["icebreakers"],
-    description:
-      "Dive into this fun, modern romance with charm and chemistry from TheBookX.in. Hannah Grace's TikTok sensation follows a figure skater and hockey player in an unforgettable enemies-to-lovers story. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Discover your next obsession, books starting at just ₹1 for a limited time.",
     author: "Hannah Grace",
     pages: "430-450",
     language: "English",
@@ -1812,8 +1608,6 @@ export const books = [
     id: "bk-105",
     name: "Wildfire",
     image: bookImages["wildfire"],
-    description:
-      "Experience an emotional romance ignited by passion and conflict from TheBookX.in. Hannah Grace's follow-up to Icebreaker delivers summer camp vibes and slow-burn romance. TheBookX delivers authentic books in perfect condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "Hannah Grace",
     pages: "380-400",
     language: "English",
@@ -1828,8 +1622,6 @@ export const books = [
     id: "bk-106",
     name: "Family of Liars",
     image: bookImages["family-of-liars"],
-    description:
-      "Uncover a suspenseful mystery packed with secrets and twists from TheBookX.in. E. Lockhart returns to the world of the Sinclairs in this gripping prequel to We Were Liars. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "E. Lockhart",
     pages: "280-300",
     language: "English",
@@ -1844,8 +1636,6 @@ export const books = [
     id: "bk-107",
     name: "Before the Coffee Gets Cold Series Set",
     image: bookImages["before-the-coffee-gets-cold-set"],
-    description:
-      "Own the complete collection of heartwarming magical realism stories about time, love, and connection from TheBookX.in. Toshikazu Kawaguchi's beloved series has touched millions of hearts worldwide. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited period.",
     author: "Toshikazu Kawaguchi",
     pages: "1050-1100",
     language: "English",
@@ -1860,8 +1650,6 @@ export const books = [
     id: "bk-108",
     name: "Jujutsu Kaisen Set (Volumes 1-21)",
     image: bookImages["jujutsu-set-1-21"],
-    description:
-      "Experience the complete collection of the popular dark fantasy manga series from TheBookX.in. Gege Akutami's gripping tale of curses, sorcerers, and supernatural battles awaits. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Discover India's most trusted manga destination, books starting at just ₹1 for a limited time.",
     author: "Gege Akutami",
     pages: "4200-4300",
     language: "English",
@@ -1876,8 +1664,6 @@ export const books = [
     id: "bk-109",
     name: "Harry Potter Series Set (Books 1-7)",
     image: bookImages["harry-porter-set-1-7"],
-    description:
-      "Embark on the complete magical journey of the boy wizard with this collector's set from TheBookX.in. J.K. Rowling's beloved series has enchanted readers for generations. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "J.K. Rowling",
     pages: "3400-3500",
     language: "English",
@@ -1892,8 +1678,6 @@ export const books = [
     id: "bk-110",
     name: "Agatha Christie Classic Collection Set",
     image: bookImages["agatha-christie-set"],
-    description:
-      "Own classic mystery collection from the queen of crime fiction from TheBookX.in. Agatha Christie's most celebrated works in one essential collector's set. TheBookX delivers premium quality books in pristine condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Agatha Christie",
     pages: "1800-1900",
     language: "English",
@@ -1909,8 +1693,6 @@ export const books = [
     id: "bk-111",
     name: "Dark Verse Series Set",
     image: bookImages["dark-verse-set"],
-    description:
-      "Experience a gripping collection of dark romance and psychological thrillers from TheBookX.in. Runyx's addictive series has captivated readers with its intensity and passion. TheBookX ensures premium quality books in excellent condition, securely shipped via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited time.",
     author: "Runyx",
     pages: "1500-1600",
     language: "English",
@@ -1925,8 +1707,6 @@ export const books = [
     id: "bk-112",
     name: "A Good Girl's Guide to Murder Series Set",
     image: bookImages["good-girl-guides-to-murder-set"],
-    description:
-      "Get the complete YA mystery trilogy with thrilling investigations and twists from TheBookX.in. Holly Jackson's bestselling series follows Pip as she uncovers dark secrets. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover your next favorite mystery, books starting at just ₹1 for a limited offer.",
     author: "Holly Jackson",
     pages: "1350-1400",
     language: "English",
@@ -1941,8 +1721,6 @@ export const books = [
     id: "bk-113",
     name: "Kings of Sin Series Set",
     image: bookImages["king-of-wrath-set"],
-    description:
-      "Own the complete contemporary romance series filled with passion and drama from TheBookX.in. Ana Huang's bestselling Kings of Sin series delivers unforgettable love stories. TheBookX delivers authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited period.",
     author: "Ana Huang",
     pages: "1450-1500",
     language: "English",
@@ -1957,8 +1735,6 @@ export const books = [
     id: "bk-114",
     name: "Twisted Series Set",
     image: bookImages["twisted-love-series-set"],
-    description:
-      "Experience the complete dark romance collection exploring complex relationships and secrets from TheBookX.in. Ana Huang's iconic Twisted series has taken the book world by storm. TheBookX ensures premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time.",
     author: "Ana Huang",
     pages: "1420-1480",
     language: "English",
@@ -1973,8 +1749,6 @@ export const books = [
     id: "bk-691",
     name: "Windy City Series (5 book series)",
     image: bookImages["windy-city-series-set"],
-    description:
-      "Buy the Windy City Series (5 Book Series) by Liz Tomforde online at the lowest price on TheBookX.in. Own the complete Chicago sports-romance saga — Mile High, The Right Move, Caught Up, Play Along and Wild Card — a swoon-worthy, slow-burn collection loved by BookTok, together in one paperback set. Every book is authentic and high-quality, delivered securely via Delhivery and Indian Post, with titles starting at just ₹1 for a limited time. Enjoy Cash on Delivery, free shipping and easy returns across India — your trusted destination for bestselling romance box sets.",
     author: "Liz Tomforde",
     pages: "1700-1900",
     language: "English",
@@ -1989,8 +1763,6 @@ export const books = [
     id: "bk-115",
     name: "The Shiva Trilogy Set",
     image: bookImages["meluha-nagas-vayaputra-set"],
-    description:
-      "Own the complete mythological fiction series based on Indian epics from TheBookX.in. Amish Tripathi's groundbreaking trilogy redefined Indian mythology for a new generation. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover India's most trusted bookstore, books starting at just ₹1 for a limited offer.",
     author: "Amish Tripathi",
     pages: "1250-1300",
     language: "English",
@@ -2005,8 +1777,6 @@ export const books = [
     id: "bk-116",
     name: "Chainsaw Man Set (Volumes 1-11+)",
     image: bookImages["chainsawman-set"],
-    description:
-      "Dive into the complete action-packed manga series with horror and supernatural elements from TheBookX.in. Tatsuki Fujimoto's groundbreaking series delivers non-stop thrills. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Tatsuki Fujimoto",
     pages: "2000-2100",
     language: "English",
@@ -2021,8 +1791,6 @@ export const books = [
     id: "bk-117",
     name: "Diary of a Wimpy Kid Series Set",
     image: bookImages["diary-of-a-whimpy-kid-set"],
-    description:
-      "Enjoy the complete collection of hilarious middle-grade stories and comics from TheBookX.in. Jeff Kinney's beloved series has entertained readers of all ages. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "2100-2200",
@@ -2038,8 +1806,6 @@ export const books = [
     id: "bk-118",
     name: "The Lord of the Rings Trilogy Set",
     image: bookImages["lord-of-the-rings-set"],
-    description:
-      "Experience the epic fantasy trilogy in a beautiful collector's edition from TheBookX.in. J.R.R. Tolkien's masterpiece remains the cornerstone of modern fantasy literature. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover timeless classics, books starting at just ₹1 for a limited offer.",
     author: "J.R.R. Tolkien",
     pages: "1100-1150",
     language: "English",
@@ -2054,8 +1820,6 @@ export const books = [
     id: "bk-119",
     name: "The Hunger Games Trilogy Set",
     image: bookImages["hunger-games-set"],
-    description:
-      "Own the complete dystopian trilogy of survival, revolution, and hope from TheBookX.in. Suzanne Collins' iconic series defined a generation of young adult fiction. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "Suzanne Collins",
     pages: "1050-1100",
     language: "English",
@@ -2076,8 +1840,6 @@ export const books = [
     id: "bk-120",
     name: "A Good Girl's Guide to Murder",
     image: bookImages["good-girl-guides-to-murder"],
-    description:
-      "Join a teen detective as she investigates a murder in her small town with this gripping YA mystery from TheBookX.in. Holly Jackson's bestselling debut will keep you guessing until the end. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time.",
     author: "Holly Jackson",
     pages: "380-400",
     language: "English",
@@ -2092,8 +1854,6 @@ export const books = [
     id: "bk-121",
     name: "Good Girl, Bad Blood",
     image: bookImages["good-girl-bad-blood"],
-    description:
-      "Experience the sequel where Pip finds herself in another chilling investigation with personal stakes from TheBookX.in. Holly Jackson raises the tension in this addictive mystery. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Holly Jackson",
     pages: "400-420",
     language: "English",
@@ -2108,8 +1868,6 @@ export const books = [
     id: "bk-122",
     name: "As Good As Dead",
     image: bookImages["as-good-as-dead"],
-    description:
-      "Discover the final installment where Pip faces her most dangerous adversary yet from TheBookX.in. Holly Jackson delivers a thrilling conclusion to the bestselling trilogy. TheBookX delivers authentic books in pristine condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited period.",
     author: "Holly Jackson",
     pages: "450-470",
     language: "English",
@@ -2124,8 +1882,6 @@ export const books = [
     id: "bk-123",
     name: "The Seven Husbands of Evelyn Hugo",
     image: bookImages["7-husbands-of-evelyn-hugo"],
-    description:
-      "Uncover the truth behind a legendary film star's glamorous life and seven marriages from TheBookX.in. Taylor Jenkins Reid's masterpiece is a modern literary sensation. TheBookX ensures premium quality books in excellent condition, securely shipped via Delhivery and Indian Post. Discover India's most trusted bookstore, books starting at just ₹1 for a limited time.",
     author: "Taylor Jenkins Reid",
     pages: "380-400",
     language: "English",
@@ -2140,8 +1896,6 @@ export const books = [
     id: "bk-124",
     name: "And Then There Were None",
     image: bookImages["and-then-there-were-none"],
-    description:
-      "Experience the classic mystery where ten strangers trapped on an island are murdered one by one from TheBookX.in. Agatha Christie's masterpiece remains the best-selling mystery of all time. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited offer.",
     author: "Agatha Christie",
     pages: "260-280",
     language: "English",
@@ -2156,8 +1910,6 @@ export const books = [
     id: "bk-125",
     name: "The Murder of Roger Ackroyd",
     image: bookImages["the-murder-of-roger-ackroyd"],
-    description:
-      "Join Hercule Poirot as he investigates the murder of a wealthy man in a village full of secrets from TheBookX.in. Agatha Christie's groundbreaking mystery features one of literature's most shocking twists. TheBookX delivers premium quality books in pristine condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Agatha Christie",
     pages: "280-300",
     language: "English",
@@ -2172,8 +1924,6 @@ export const books = [
     id: "bk-126",
     name: "Murder on the Orient Express",
     image: bookImages["murder-on-the-orient-express"],
-    description:
-      "Solve the mystery of a murder on a snowbound train with Poirot from TheBookX.in. Agatha Christie's iconic novel has captivated readers for generations. TheBookX ensures authentic books in excellent condition, securely shipped via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited time.",
     author: "Agatha Christie",
     pages: "260-280",
     language: "English",
@@ -2188,8 +1938,6 @@ export const books = [
     id: "bk-127",
     name: "Death on the Nile",
     image: bookImages["death-on-the-nile"],
-    description:
-      "Experience a luxurious Nile cruise that turns deadly with this Poirot mystery from TheBookX.in. Agatha Christie delivers an unforgettable tale of love, jealousy, and murder. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Agatha Christie",
     pages: "280-300",
     language: "English",
@@ -2204,8 +1952,6 @@ export const books = [
     id: "bk-128",
     name: "The A.B.C. Murders",
     image: bookImages["the-a-b-c-murders"],
-    description:
-      "Join Poirot as he races against time to stop a serial killer who murders in alphabetical order from TheBookX.in. Agatha Christie's ingenious mystery keeps readers guessing until the final page. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited period.",
     author: "Agatha Christie",
     pages: "240-260",
     language: "English",
@@ -2220,8 +1966,6 @@ export const books = [
     id: "bk-129",
     name: "A Murder Is Announced",
     image: bookImages["a-murder-is-announced"],
-    description:
-      "Watch Miss Marple investigate when a murder is advertised in the local newspaper before it happens from TheBookX.in. Agatha Christie's classic village mystery showcases the beloved detective at her best. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Discover your next favorite mystery, books starting at just ₹1 for a limited time.",
     author: "Agatha Christie",
     pages: "270-290",
     language: "English",
@@ -2236,8 +1980,6 @@ export const books = [
     id: "bk-130",
     name: "The Almanack of Naval Ravikant",
     image: bookImages["almanack-of-naval-ravikant"],
-    description:
-      "Discover a guide to wealth, happiness, and life wisdom from entrepreneur and philosopher Naval Ravikant from TheBookX.in. Eric Jorgenson compiles timeless principles for living a fulfilled life. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited offer.",
     author: "Eric Jorgenson",
     pages: "240-260",
     language: "English",
@@ -2252,8 +1994,6 @@ export const books = [
     id: "bk-131",
     name: "Crucial Conversations: Tools for Talking When Stakes Are High",
     image: bookImages["crucial-conversation-a-high-stake-book"],
-    description:
-      "Master the art of high-stakes communication with this essential guide from TheBookX.in. Learn proven tools for navigating difficult conversations when opinions vary and emotions run strong. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time. Your trusted destination for personal growth and professional development across India.",
     author: "Kerry Patterson, Joseph Grenny, Ron McMillan, Al Switzler",
     pages: "260-280",
     language: "English",
@@ -2268,8 +2008,6 @@ export const books = [
     id: "bk-132",
     name: "Breaking the Habit of Being Yourself",
     image: bookImages["breaking-the-habit-of-being-yourself"],
-    description:
-      "Discover how to rewire your brain and create a new personality through neuroscience and quantum physics from TheBookX.in. Dr. Joe Dispenza's revolutionary guide helps you break free from limiting patterns. TheBookX ensures your books arrive in excellent condition, securely packaged via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Dr. Joe Dispenza",
     pages: "320-340",
     language: "English",
@@ -2284,8 +2022,6 @@ export const books = [
     id: "bk-133",
     name: "Everything I Know About Love",
     image: bookImages["everything-i-know-about-love"],
-    description:
-      "Experience this heartfelt memoir about friendship, love, and figuring out life in your twenties from TheBookX.in. Dolly Alderton's bestselling book captures the chaos and beauty of growing up. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Dolly Alderton",
     pages: "350-370",
     language: "English",
@@ -2300,8 +2036,6 @@ export const books = [
     id: "bk-134",
     name: "Becoming Supernatural",
     image: bookImages["becoming-supernatural"],
-    description:
-      "Learn how common people are doing the uncommon to transform their health, wealth, and happiness from TheBookX.in. Dr. Joe Dispenza reveals practical methods for unlocking your extraordinary potential. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Discover your potential, books starting at just ₹1 for a limited time.",
     author: "Dr. Joe Dispenza",
     pages: "340-360",
     language: "English",
@@ -2316,8 +2050,6 @@ export const books = [
     id: "bk-135",
     name: "You Are the Placebo",
     image: bookImages["you-are-the-placebo"],
-    description:
-      "Discover how to make your mind matter through the power of belief and consciousness from TheBookX.in. Dr. Joe Dispenza explores the science behind the placebo effect and self-healing. TheBookX delivers authentic books in perfect condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "Dr. Joe Dispenza",
     pages: "320-340",
     language: "English",
@@ -2332,8 +2064,6 @@ export const books = [
     id: "bk-517",
     name: "Thinking, Fast and Slow",
     image: bookImages["thinking-fast-and-slow"],
-    description:
-      "Uncover the hidden forces that shape your decisions with Nobel laureate Daniel Kahneman's landmark bestseller 'Thinking, Fast and Slow' at TheBookX.in. This groundbreaking work of popular science takes you on a tour of the mind, explaining the two systems that drive the way we think [citation:2][citation:9]. 'System 1' is fast, intuitive, and emotional; 'System 2' is slower, more deliberative, and more logical [citation:2][citation:3][citation:9]. Kahneman exposes the extraordinary capabilities, and also the faults and biases, of fast thinking, and reveals the pervasive influence of intuitive impressions on our thoughts and behavior [citation:2][citation:5][citation:7]. Drawing on decades of research that launched the fields of behavioral economics and happiness studies, he offers practical insights into how choices are made in both our business and personal lives [citation:2][citation:4][citation:6]. Learn how to guard against cognitive biases, avoid costly mental glitches, and make more informed decisions. Perfect for anyone interested in psychology, economics, or simply understanding how their own mind works. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Daniel Kahneman",
     pages: "499",
     language: "English",
@@ -2348,8 +2078,6 @@ export const books = [
     id: "bk-137",
     name: "The Hidden Hindu: Book 1",
     image: bookImages["hidden-hindu-1"],
-    description:
-      "Embark on a mythological thriller exploring ancient secrets and divine mysteries from TheBookX.in. Akshat Gupta's gripping debut introduces a world where mythology meets modern adventure. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time.",
     author: "Akshat Gupta",
     pages: "280-300",
     language: "English",
@@ -2364,8 +2092,6 @@ export const books = [
     id: "bk-138",
     name: "The Hidden Hindu: Book 2",
     image: bookImages["hidden-hindu-2"],
-    description:
-      "Continue the epic mythological adventure with the second installment from TheBookX.in. Akshat Gupta raises the stakes as ancient powers and modern mysteries collide. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Akshat Gupta",
     pages: "290-310",
     language: "English",
@@ -2380,8 +2106,6 @@ export const books = [
     id: "bk-139",
     name: "The Hidden Hindu: Book 3",
     image: bookImages["hidden-hindu-3"],
-    description:
-      "Experience the thrilling conclusion to the mythological adventure trilogy from TheBookX.in. Akshat Gupta delivers an unforgettable finale to this bestselling series. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover your next obsession, books starting at just ₹1 for a limited offer.",
     author: "Akshat Gupta",
     pages: "310-330",
     language: "English",
@@ -2396,8 +2120,6 @@ export const books = [
     id: "bk-140",
     name: "The Secret",
     image: bookImages["the-secret-book"],
-    description:
-      "Uncover the groundbreaking book that revealed the law of attraction to the world from TheBookX.in. Rhonda Byrne's international phenomenon has transformed millions of lives. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited period.",
     author: "Rhonda Byrne",
     pages: "200-220",
     language: "English",
@@ -2412,8 +2134,6 @@ export const books = [
     id: "bk-141",
     name: "The Magic",
     image: bookImages["the-magic-book"],
-    description:
-      "Discover the magic in everyday life through gratitude and positive thinking from TheBookX.in. Rhonda Byrne's transformative book reveals the power of thankfulness. TheBookX ensures premium quality books in excellent condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited time.",
     author: "Rhonda Byrne",
     pages: "250-270",
     language: "English",
@@ -2428,8 +2148,6 @@ export const books = [
     id: "bk-142",
     name: "The Power",
     image: bookImages["the-power-book"],
-    description:
-      "Unleash the power within you to create the life you desire with this inspiring book from TheBookX.in. Rhonda Byrne reveals the hidden force that shapes our reality. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Rhonda Byrne",
     pages: "260-280",
     language: "English",
@@ -2444,8 +2162,6 @@ export const books = [
     id: "bk-143",
     name: "No Excuses!",
     image: bookImages["no-excuse"],
-    description:
-      "Find a powerful guide to taking responsibility and achieving your goals from TheBookX.in. Brian Tracy's classic self-help book provides actionable strategies for success. TheBookX delivers authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Brian Tracy",
     pages: "280-300",
     language: "English",
@@ -2460,8 +2176,6 @@ export const books = [
     id: "bk-144",
     name: "Influence: The Psychology of Persuasion",
     image: bookImages["influence-the-psychology-of-persuasion"],
-    description:
-      "Master the classic guide to persuasion and understanding psychological triggers from TheBookX.in. Robert Cialdini's groundbreaking book reveals the science behind getting people to say yes. TheBookX ensures premium quality books in excellent condition, securely via Delhivery and Indian Post. Discover India's most trusted bookstore, books starting at just ₹1 for a limited time.",
     author: "Robert B. Cialdini",
     pages: "320-340",
     language: "English",
@@ -2476,8 +2190,6 @@ export const books = [
     id: "bk-145",
     name: "The Silent Patient",
     image: bookImages["silent-patient"],
-    description:
-      "Experience the psychological thriller that took the world by storm from TheBookX.in. Alex Michaelides' gripping debut follows a woman who shoots her husband and then stops speaking. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited offer.",
     author: "Alex Michaelides",
     pages: "320-340",
     language: "English",
@@ -2492,8 +2204,6 @@ export const books = [
     id: "bk-146",
     name: "Can't Hurt Me",
     image: bookImages["cant-hurt-me"],
-    description:
-      "Discover David Goggins' inspirational story of transforming pain into power from TheBookX.in. This motivational masterpiece will push you beyond your perceived limits. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "David Goggins",
     pages: "360-380",
     language: "English",
@@ -2508,8 +2218,6 @@ export const books = [
     id: "bk-147",
     name: "Master Your Emotions",
     image: bookImages["master-your-emotions"],
-    description:
-      "Learn a practical guide to understanding and controlling your emotional state from TheBookX.in. Thibaut Meurisse provides actionable strategies for emotional mastery. TheBookX ensures authentic books in excellent condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Thibaut Meurisse",
     pages: "180-200",
     language: "English",
@@ -2524,8 +2232,6 @@ export const books = [
     id: "bk-148",
     name: "Make Time",
     image: bookImages["make-time"],
-    description:
-      "Discover how to focus on what matters every day in a world full of distractions from TheBookX.in. Jake Knapp and John Zeratsky share practical strategies from Google Ventures. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Jake Knapp, John Zeratsky",
     pages: "280-300",
     language: "English",
@@ -2540,8 +2246,6 @@ export const books = [
     id: "bk-150",
     name: "The Courage to Be Happy",
     image: bookImages["the-courage-to-be-happy"],
-    description:
-      "Continue the journey toward true happiness and fulfillment with this sequel from TheBookX.in. Ichiro Kishimi and Fumitake Koga expand on Adlerian wisdom for a meaningful life. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Discover your potential, books starting at just ₹1 for a limited time.",
     author: "Ichiro Kishimi, Fumitake Koga",
     pages: "260-280",
     language: "English",
@@ -2556,8 +2260,6 @@ export const books = [
     id: "bk-151",
     name: "Mindset: The New Psychology of Success",
     image: bookImages["mindset"],
-    description:
-      "Learn how we can learn to fulfill our potential through the power of our beliefs from TheBookX.in. Carol S. Dweck's groundbreaking research reveals the fixed vs. growth mindset. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited offer.",
     author: "Carol S. Dweck",
     pages: "320-340",
     language: "English",
@@ -2572,8 +2274,6 @@ export const books = [
     id: "bk-152",
     name: "Kafka on the Shore",
     image: bookImages["kafka-on-the-shore"],
-    description:
-      "Experience the mind-bending novel that intertwines two remarkable characters in magical realism from TheBookX.in. Haruki Murakami's masterpiece explores fate, memory, and transformation. TheBookX delivers authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "Haruki Murakami",
     pages: "460-480",
     language: "English",
@@ -2588,8 +2288,6 @@ export const books = [
     id: "bk-153",
     name: "Norwegian Wood",
     image: bookImages["norwegian-wood"],
-    description:
-      "Immerse yourself in this nostalgic story of loss and burgeoning sexuality set in 1960s Tokyo from TheBookX.in. Haruki Murakami's bestselling novel captures the pain and beauty of first love. TheBookX ensures premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Haruki Murakami",
     pages: "290-310",
     language: "English",
@@ -2604,8 +2302,6 @@ export const books = [
     id: "bk-154",
     name: "Sputnik Sweetheart",
     image: bookImages["sputnik-sweetheart"],
-    description:
-      "Discover a haunting story of unrequited love and mysterious disappearance from TheBookX.in. Haruki Murakami weaves a tale of longing, identity, and the search for connection. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Haruki Murakami",
     pages: "220-240",
     language: "English",
@@ -2620,8 +2316,6 @@ export const books = [
     id: "bk-155",
     name: "Men Without Women",
     image: bookImages["men-without-women"],
-    description:
-      "Read this collection of seven stories about men who find themselves alone from TheBookX.in. Haruki Murakami explores loneliness, love, and the spaces between. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Haruki Murakami",
     pages: "220-240",
     language: "English",
@@ -2636,8 +2330,6 @@ export const books = [
     id: "bk-156",
     name: "My Friends",
     image: bookImages["my-friends"],
-    description:
-      "Experience a compelling narrative about friendship, loyalty, and life's unexpected turns from TheBookX.in. Hisham Matar's powerful novel explores the bonds that shape us. TheBookX ensures authentic books in excellent condition, securely via Delhivery and Indian Post. Discover your next favorite read, books starting at just ₹1 for a limited time.",
     author: "Hisham Matar",
     pages: "380-400",
     language: "English",
@@ -2652,8 +2344,6 @@ export const books = [
     id: "bk-157",
     name: "Anxious People",
     image: bookImages["anxious-people"],
-    description:
-      "Enjoy this poignant comedy about a hostage drama that reveals our shared humanity from TheBookX.in. Fredrik Backman delivers a heartwarming and hilarious exploration of human connection. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited offer.",
     author: "Fredrik Backman",
     pages: "340-360",
     language: "English",
@@ -2668,8 +2358,6 @@ export const books = [
     id: "bk-158",
     name: "Mossad: The Greatest Missions of the Israeli Secret Service",
     image: bookImages["mossad"],
-    description:
-      "Uncover the secret history of Israel's intelligence agency and its most daring missions from TheBookX.in. Michael Bar-Zohar and Nissim Mishal reveal the thrilling operations. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "Michael Bar-Zohar, Nissim Mishal",
     pages: "360-380",
     language: "English",
@@ -2684,8 +2372,6 @@ export const books = [
     id: "bk-159",
     name: "Commando",
     image: bookImages["commando"],
-    description:
-      "Read gripping real-life stories of bravery and sacrifice from military operations from TheBookX.in. A compelling account of India's elite special forces in action. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Sanjay Jha",
     pages: "280-300",
     language: "English",
@@ -2700,8 +2386,6 @@ export const books = [
     id: "bk-160",
     name: "You've Reached Sam",
     image: bookImages["you-ve-reached-sam"],
-    description:
-      "Experience this heartfelt YA novel about grief, love, and letting go after a tragic loss from TheBookX.in. Dustin Thao's emotional debut explores the healing power of connection. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Dustin Thao",
     pages: "290-310",
     language: "English",
@@ -2716,8 +2400,6 @@ export const books = [
     id: "bk-161",
     name: "Ignited Minds: Unleashing the Power Within India",
     image: bookImages["ignite-minds-apj"],
-    description:
-      "Discover Dr. APJ Abdul Kalam's inspiring vision for empowering India's youth through education and self-belief from TheBookX.in. This national bestseller motivates young minds to dream big and work towards a developed India. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited time. Your trusted destination for inspiring biographies across India.",
     author: "Dr. A.P.J. Abdul Kalam",
     pages: "200-220",
     language: "English",
@@ -2732,8 +2414,6 @@ export const books = [
     id: "bk-162",
     name: "Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future",
     image: bookImages["elon-mush-biography"],
-    description:
-      "Explore the definitive biography of the visionary entrepreneur reshaping our world from TheBookX.in. Ashlee Vance's bestselling book reveals the fascinating story of Elon Musk's relentless pursuit of innovation. TheBookX ensures your books arrive in excellent condition, securely packaged via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Ashlee Vance",
     pages: "390-410",
     language: "English",
@@ -2748,8 +2428,6 @@ export const books = [
     id: "bk-163",
     name: "Lean In: Women, Work, and the Will to Lead",
     image: bookImages["lean-in"],
-    description:
-      "Experience Sheryl Sandberg's groundbreaking book on women, work, and leadership from TheBookX.in. This empowering manifesto has inspired millions to pursue their ambitions and challenge workplace inequality. TheBookX provides high-quality books in perfect condition, securely delivered via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Sheryl Sandberg",
     pages: "220-240",
     language: "English",
@@ -2764,8 +2442,6 @@ export const books = [
     id: "bk-164",
     name: "The Design of Everyday Things",
     image: bookImages["the-design-of-everyday-thing"],
-    description:
-      "Master human-centered design and creating user-friendly products with this classic guide from TheBookX.in. Don Norman's timeless book reveals why some products delight while others frustrate. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Discover your potential, books starting at just ₹1 for a limited time.",
     author: "Don Norman",
     pages: "340-360",
     language: "English",
@@ -2780,8 +2456,6 @@ export const books = [
     id: "bk-165",
     name: "Men Are from Mars, Women Are from Venus",
     image: bookImages["men-from-mars-and-women-from-venus"],
-    description:
-      "Discover the classic guide to understanding the opposite sex and improving relationships from TheBookX.in. John Gray's timeless bestseller has transformed millions of relationships worldwide. TheBookX delivers authentic books in perfect condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited period.",
     author: "John Gray",
     pages: "280-300",
     language: "English",
@@ -2796,8 +2470,6 @@ export const books = [
     id: "bk-166",
     name: "The Guest List",
     image: bookImages["guest-list"],
-    description:
-      "Experience a wedding celebration that turns deadly in this gripping locked-room mystery from TheBookX.in. Lucy Foley's bestselling thriller will keep you guessing until the final page. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited offer.",
     author: "Lucy Foley",
     pages: "360-380",
     language: "English",
@@ -2812,8 +2484,6 @@ export const books = [
     id: "bk-167",
     name: "The One Thing",
     image: bookImages["the-one-thing"],
-    description:
-      "Discover the surprisingly simple truth behind extraordinary results in work and life from TheBookX.in. Gary Keller's productivity masterpiece helps you focus on what truly matters. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Gary Keller, Jay Papasan",
     pages: "230-250",
     language: "English",
@@ -2828,8 +2498,6 @@ export const books = [
     id: "bk-168",
     name: "Why We Sleep",
     image: bookImages["why-we-sleep"],
-    description:
-      "Unlock the power of sleep and dreams for a healthier, safer, and smarter life with this groundbreaking book from TheBookX.in. Matthew Walker reveals the science behind one of our most essential activities. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Discover India's most trusted bookstore, books starting at just ₹1 for a limited time.",
     author: "Matthew Walker",
     pages: "350-370",
     language: "English",
@@ -2844,8 +2512,6 @@ export const books = [
     id: "bk-169",
     name: "Manifest (Price Drop)",
     image: bookImages["manifest"],
-    description:
-      "Transform your life with this mindset-shifting book focused on belief systems and manifestation from TheBookX.in. Roxie Nafousi's empowering guide reveals the science and spirituality of creating your reality. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited offer.",
     author: "Roxie Nafousi",
     pages: "260-280",
     language: "English",
@@ -2860,8 +2526,6 @@ export const books = [
     id: "bk-170",
     name: "The Psychology of Money (Price Drop)",
     image: bookImages["psychology-of-money"],
-    description:
-      "Discover timeless lessons on money, greed, and happiness with this modern classic from TheBookX.in. Morgan Housel's insightful book explores the behavioral aspects of personal finance. TheBookX ensures authentic books in excellent condition, securely shipped via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Morgan Housel",
     pages: "240-260",
     language: "English",
@@ -2876,8 +2540,6 @@ export const books = [
     id: "bk-171",
     name: "The Subtle Art of Not Giving a F*ck (Price Drop)",
     image: bookImages["subtle-art-not-giving-fck"],
-    description:
-      "Embrace a counterintuitive approach to living a good life with this bold bestseller from TheBookX.in. Mark Manson's no-nonsense guide to happiness has transformed millions of lives. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited time.",
     author: "Mark Manson",
     pages: "210-230",
     language: "English",
@@ -2907,8 +2569,6 @@ export const books = [
     id: "bk-173",
     name: "The Art of Laziness (Price Drop)",
     image: bookImages["art-of-laziness"],
-    description:
-      "Embrace rest and find productivity in stillness with this refreshing perspective from TheBookX.in. Learn why doing less can help you achieve more in work and life. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited period.",
     author: "Library Mindset",
     pages: "160-180",
     language: "English",
@@ -2923,8 +2583,6 @@ export const books = [
     id: "bk-174",
     name: "I Don't Love You Anymore (Price Drop)",
     image: bookImages["i-dont-love-you-anymore"],
-    description:
-      "Navigate the emotional journey of heartbreak and healing with this deeply moving book from TheBookX.in. A honest exploration of love lost and the path to rediscovering yourself. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Rithvik Singh",
     pages: "170-190",
     language: "English",
@@ -2939,8 +2597,6 @@ export const books = [
     id: "bk-175",
     name: "Don't Believe Everything You Think (Price Drop)",
     image: bookImages["dont-believe-everything-you-think"],
-    description:
-      "Learn to quiet your mind and stop overthinking with this transformative guide from TheBookX.in. Joseph Nguyen offers practical wisdom for finding peace in a chaotic mind. TheBookX delivers premium quality books in pristine condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited offer.",
     author: "Joseph Nguyen",
     pages: "150-170",
     language: "English",
@@ -2955,8 +2611,6 @@ export const books = [
     id: "bk-176",
     name: "The Art of Not Overthinking (Price Drop)",
     image: bookImages["art-of-not-overthinking"],
-    description:
-      "Discover practical tools to control anxious thoughts and find mental clarity with this essential guide from TheBookX.in. Simple strategies for a calmer, more focused mind. TheBookX ensures premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Nick Trenton",
     pages: "140-160",
     language: "English",
@@ -2971,8 +2625,6 @@ export const books = [
     id: "bk-177",
     name: "The Metamorphosis (Price Drop)",
     image: bookImages["the-metamorphosis"],
-    description:
-      "Experience the haunting classic on alienation and identity from TheBookX.in. Franz Kafka's masterpiece explores the boundaries of humanity and isolation. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover timeless literature, books starting at just ₹1 for a limited time.",
     author: "Franz Kafka",
     pages: "100-120",
     language: "English",
@@ -2987,8 +2639,6 @@ export const books = [
     id: "bk-178",
     name: "Notes from Underground (Price Drop)",
     image: bookImages["notes-from-underground"],
-    description:
-      "Take a philosophical dive into human consciousness with this classic from TheBookX.in. Fyodor Dostoevsky's groundbreaking work explores existential alienation and free will. TheBookX delivers premium quality books in pristine condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Fyodor Dostoevsky",
     pages: "130-150",
     language: "English",
@@ -3003,8 +2653,6 @@ export const books = [
     id: "bk-179",
     name: "White Nights (Price Drop)",
     image: bookImages["white-nights"],
-    description:
-      "Experience this tender story of love, loneliness, and fleeting dreams from TheBookX.in. Fyodor Dostoevsky's poignant novella captures the beauty and pain of unrequited love. TheBookX ensures authentic books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination, books starting at just ₹1 for a limited period.",
     author: "Fyodor Dostoevsky",
     pages: "90-110",
     language: "English",
@@ -3019,8 +2667,6 @@ export const books = [
     id: "bk-180",
     name: "The Alchemist (Price Drop)",
     image: bookImages["alchemist"],
-    description:
-      "Discover the philosophical tale about destiny, dreams, and self-discovery from TheBookX.in. Paulo Coelho's international bestseller has inspired millions to follow their personal legends. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop with confidence, books starting at just ₹1 for a limited time.",
     author: "Paulo Coelho",
     pages: "160-180",
     language: "English",
@@ -3035,8 +2681,6 @@ export const books = [
     id: "bk-181",
     name: "Don't Sweat the Small Stuff (Price Drop)",
     image: bookImages["dont-sweat-the-small-stuff"],
-    description:
-      "Find peace in chaos with simple practices to reduce stress and live a calmer life from TheBookX.in. Richard Carlson's timeless guide offers practical wisdom for everyday challenges. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Contact us anytime, books starting at just ₹1 for a limited offer.",
     author: "Richard Carlson",
     pages: "250-270",
     language: "English",
@@ -3051,8 +2695,6 @@ export const books = [
     id: "bk-182",
     name: "Thank You for Leaving (Price Drop)",
     image: bookImages["thank-you-for-leaving"],
-    description:
-      "Find strength and growth after heartbreak with this empowering guide from TheBookX.in. A compassionate journey through letting go, healing, and finding yourself again. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted partner, books starting at just ₹1 for a limited period.",
     author: "Rithvik Singh",
     pages: "180-200",
     language: "English",
@@ -3067,8 +2709,6 @@ export const books = [
     id: "bk-183",
     name: "The Trial (Price Drop)",
     image: bookImages["the-trial"],
-    description:
-      "Delve into a chilling exploration of justice and bureaucracy from TheBookX.in. Franz Kafka's unfinished masterpiece remains one of literature's most powerful allegories. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover timeless classics, books starting at just ₹1 for a limited time.",
     author: "Franz Kafka",
     pages: "240-260",
     language: "English",
@@ -3083,8 +2723,6 @@ export const books = [
     id: "bk-184",
     name: "Manifest: 7 Steps to Living Your Best Life ",
     image: bookImages["manifest"],
-    description:
-      "Transform your life with this mindset-shifting book focused on belief systems and manifestation from TheBookX.in. Roxie Nafousi's empowering guide reveals the science and spirituality of creating your reality. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Roxie Nafousi",
     pages: "260-280",
     language: "English",
@@ -3099,8 +2737,6 @@ export const books = [
     id: "bk-185",
     name: "Diwar Mein Ek Khidki Rahti Thi",
     image: bookImages["diwar-me-ek-khidki-rahti-thi"],
-    description:
-      "Experience this beloved classical Hindi story from TheBookX.in. A timeless tale that captures the essence of human emotions and relationships through beautiful storytelling. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination for Hindi literature, books starting at just ₹1 for a limited period.",
     author: "Mannu Bhandari",
     pages: "180-200",
     language: "Hindi",
@@ -3115,8 +2751,6 @@ export const books = [
     id: "bk-186",
     name: "Wise and Otherwise: A Salute to Life",
     image: bookImages["wise-and-otherwise-a-salute-to-life"],
-    description:
-      "Discover 51 eye-opening stories about human nature from India's most beloved author, Sudha Murthy, available at TheBookX.in. This bestselling non-fiction collection explores the fine line between wisdom and foolishness in everyday life. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Sudha Murthy",
     pages: "210",
     language: "English",
@@ -3131,8 +2765,6 @@ export const books = [
     id: "bk-187",
     name: "Three Thousand Stitches",
     image: bookImages["three-thousand-stitches"],
-    description:
-      "Uncover the power of resilience and social change with Sudha Murthy's 'Three Thousand Stitches' at TheBookX.in. This inspiring non-fiction work details her experiences fighting social evils and bringing dignity to marginalized communities. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination for meaningful reads, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "224",
     language: "English",
@@ -3147,8 +2779,6 @@ export const books = [
     id: "bk-188",
     name: "The Day I Stopped Drinking Milk",
     image: bookImages["the-day-i-stopped-drinking-milk"],
-    description:
-      "Experience heartwarming and thought-provoking tales from Sudha Murthy's 'The Day I Stopped Drinking Milk' at TheBookX.in. This bestselling collection of real-life stories reveals profound life lessons hidden in ordinary moments. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Sudha Murthy",
     pages: "216",
     language: "English",
@@ -3163,8 +2793,6 @@ export const books = [
     id: "bk-189",
     name: "The Old Man and His God",
     image: bookImages["the-old-man-and-his-god"],
-    description:
-      "Explore the depths of faith and humanity with Sudha Murthy's 'The Old Man and His God' from TheBookX.in. This spiritual non-fiction collection weaves together stories that celebrate the divine in everyday life and the goodness of people. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Sudha Murthy",
     pages: "208",
     language: "English",
@@ -3179,8 +2807,6 @@ export const books = [
     id: "bk-190",
     name: "Something Happened on the Way to Heaven",
     image: bookImages["something-happened-on-the-way-to-heaven"],
-    description:
-      "Be inspired by Sudha Murthy's 'Something Happened on the Way to Heaven' at TheBookX.in. This trending non-fiction work reveals how unexpected encounters can transform our perspective on life, love, and compassion. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "212",
     language: "English",
@@ -3195,8 +2821,6 @@ export const books = [
     id: "bk-191",
     name: "Here, There and Everywhere",
     image: bookImages["here-there-and-everywhere"],
-    description:
-      "Journey through life's many moments with Sudha Murthy's memoir 'Here, There and Everywhere' from TheBookX.in. This bestselling collection shares her personal experiences of travel, people, and the unexpected lessons learned along the way. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "218",
     language: "English",
@@ -3211,8 +2835,6 @@ export const books = [
     id: "bk-192",
     name: "Common Yet Uncommon",
     image: bookImages["common-yet-uncommon"],
-    description:
-      "Celebrate the extraordinary in ordinary people with Sudha Murthy's 'Common Yet Uncommon' at TheBookX.in. This trending non-fiction work highlights unsung heroes whose simple acts of kindness and courage change the world. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "222",
     language: "English",
@@ -3227,8 +2849,6 @@ export const books = [
     id: "bk-193",
     name: "Dollar Bahu",
     image: bookImages["dollar-bahu"],
-    description:
-      "Immerse yourself in Sudha Murthy's gripping fiction 'Dollar Bahu' at TheBookX.in. This bestselling family drama explores the complexities of relationships, jealousy, and the true meaning of wealth in modern Indian society. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Sudha Murthy",
     pages: "200",
     language: "English",
@@ -3243,8 +2863,6 @@ export const books = [
     id: "bk-194",
     name: "Mahashweta",
     image: bookImages["mahashweta"],
-    description:
-      "Experience the poignant tale of resilience in Sudha Murthy's 'Mahashweta' from TheBookX.in. This dramatic fiction novel follows a woman's journey of dignity and self-discovery after being ostracized for a skin condition, tackling deep social issues. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now at just ₹129.",
     author: "Sudha Murthy",
     pages: "206",
     language: "English",
@@ -3259,8 +2877,6 @@ export const books = [
     id: "bk-195",
     name: "Gently Falls the Bakula",
     image: bookImages["gently-falls-the-bakula"],
-    description:
-      "Explore the delicate balance between marriage and career with Sudha Murthy's 'Gently Falls the Bakula' at TheBookX.in. This touching romantic fiction tells the story of a couple whose relationship is tested by ambition and neglect. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "198",
     language: "English",
@@ -3275,8 +2891,6 @@ export const books = [
     id: "bk-196",
     name: "House of Cards",
     image: bookImages["house-of-cards"],
-    description:
-      "Dive into Sudha Murthy's bestselling fiction 'House of Cards' at TheBookX.in. This gripping family drama unravels how greed and deceit can slowly destroy relationships, love, and trust within a seemingly perfect household. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "214",
     language: "English",
@@ -3291,8 +2905,6 @@ export const books = [
     id: "bk-197",
     name: "The Mother I Never Knew",
     image: bookImages["the-mother-i-never-knew"],
-    description:
-      "Unravel hidden secrets and emotional mysteries with Sudha Murthy's 'The Mother I Never Knew' from TheBookX.in. This dramatic fiction novel explores two men's quest to find the mothers they never knew, leading to shocking revelations. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "220",
     language: "English",
@@ -3307,8 +2919,6 @@ export const books = [
     id: "bk-198",
     name: "Grandma's Bag of Stories",
     image: bookImages["grandmas-bag-of-stories"],
-    description:
-      "Delight in timeless tales with Sudha Murthy's 'Grandma's Bag of Stories' at TheBookX.in. This beloved children's classic is packed with enchanting fiction, mythology, and moral lessons that entertain and educate young readers. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, perfect for kids.",
     author: "Sudha Murthy",
     pages: "192",
     language: "English",
@@ -3323,8 +2933,6 @@ export const books = [
     id: "bk-199",
     name: "Grandparents' Bag of Stories",
     image: bookImages["grandparents-bag-of-stories"],
-    description:
-      "Spark young imaginations with Sudha Murthy's 'Grandparents' Bag of Stories' from TheBookX.in. This trending children's collection weaves together adventurous fiction and heartwarming tales that celebrate family, nature, and Indian culture. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "196",
     language: "English",
@@ -3339,8 +2947,6 @@ export const books = [
     id: "bk-200",
     name: "The Magic of the Lost Temple",
     image: bookImages["the-magic-of-the-lost-temple"],
-    description:
-      "Join an unforgettable adventure with Sudha Murthy's 'The Magic of the Lost Temple' at TheBookX.in. This bestselling children's fiction follows a young girl who discovers an ancient temple hidden in her grandmother's village, blending mystery and heritage. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now at just ₹129.",
     author: "Sudha Murthy",
     pages: "188",
     language: "English",
@@ -3355,8 +2961,6 @@ export const books = [
     id: "bk-201",
     name: "The Gopi Diaries (Set of 3)",
     image: bookImages["the-gopi-diaries-series"],
-    description:
-      "Fall in love with a mischievous dog in Sudha Murthy's 'The Gopi Diaries' — a complete 3-book set at TheBookX.in. This trending children's fiction is told from a pet's perspective, celebrating the bond between humans and animals through heartwarming adventures. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post.",
     author: "Sudha Murthy",
     pages: "204",
     language: "English",
@@ -3371,8 +2975,6 @@ export const books = [
     id: "bk-202",
     name: "How I Taught My Grandmother to Read",
     image: bookImages["how-i-taught-my-grandmother-to-read"],
-    description:
-      "Be inspired by Sudha Murthy's classic 'How I Taught My Grandmother to Read' from TheBookX.in. This bestselling children's non-fiction story celebrates the power of education, determination, and the special bond between generations. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "184",
     language: "English",
@@ -3387,8 +2989,6 @@ export const books = [
     id: "bk-203",
     name: "The Bird with Golden Wings",
     image: bookImages["the-bird-with-golden-wings"],
-    description:
-      "Enchant young readers with Sudha Murthy's 'The Bird with Golden Wings' at TheBookX.in. This bestselling children's fairy tale collection features magical stories of talking animals, brave children, and valuable life lessons wrapped in delightful fiction. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "176",
     language: "English",
@@ -3403,8 +3003,6 @@ export const books = [
     id: "bk-204",
     name: "The Magic Drum",
     image: bookImages["the-magic-drum"],
-    description:
-      "Discover timeless folk tales with Sudha Murthy's 'The Magic Drum and Other Favourite Stories' from TheBookX.in. This bestselling children's collection brings ancient Indian folk tales to life with humor, wisdom, and unforgettable characters. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "180",
     language: "English",
@@ -3419,8 +3017,6 @@ export const books = [
     id: "bk-205",
     name: "How the Earth Got Its Beauty",
     image: bookImages["how-the-earth-got-its-beauty"],
-    description:
-      "Explore magical origins with Sudha Murthy's 'How the Earth Got Its Beauty' at TheBookX.in. This charming children's mythology fiction weaves together nature, art, and ancient stories to explain the world's wonders. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "170",
     language: "English",
@@ -3435,8 +3031,6 @@ export const books = [
     id: "bk-206",
     name: "How the Sea Became Salty",
     image: bookImages["how-the-sea-became-salty"],
-    description:
-      "Uncover fascinating myths with Sudha Murthy's 'How the Sea Became Salty' from TheBookX.in. This delightful children's fiction blends nature, mythology, and storytelling to explain natural phenomena through imaginative tales. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "168",
     language: "English",
@@ -3451,8 +3045,6 @@ export const books = [
     id: "bk-207",
     name: "How the Onion Got Its Layers",
     image: bookImages["how-the-onion-got-its-layers"],
-    description:
-      "Laugh and learn with Sudha Murthy's 'How the Onion Got Its Layers' at TheBookX.in. This humorous children's mythology fiction uses wit and wisdom to explain why onions have layers, based on delightful Indian folklore. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Sudha Murthy",
     pages: "172",
     language: "English",
@@ -3467,8 +3059,6 @@ export const books = [
     id: "bk-208",
     name: "How the Mango Got Its Magic",
     image: bookImages["how-the-mango-got-its-magic"],
-    description:
-      "Savor the sweetest myth with Sudha Murthy's 'How the Mango Got Its Magic' from TheBookX.in. This enchanting children's fiction blends nature, mythology, and storytelling to reveal the magical origins of India's beloved fruit. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "174",
     language: "English",
@@ -3483,8 +3073,6 @@ export const books = [
     id: "bk-209",
     name: "The Serpent's Revenge",
     image: bookImages["the-serpents-revenge"],
-    description:
-      "Enter a world of gods and serpents with Sudha Murthy's 'The Serpent's Revenge' at TheBookX.in. This classic children's mythology fiction retells lesser-known stories from Indian epics with drama, intrigue, and timeless morals. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "190",
     language: "English",
@@ -3499,8 +3087,6 @@ export const books = [
     id: "bk-210",
     name: "The Upside-Down King",
     image: bookImages["the-upside-down-king"],
-    description:
-      "Discover fascinating tales from the Ramayana with Sudha Murthy's 'The Upside-Down King' from TheBookX.in. This classic children's mythology fiction uncovers lesser-known stories of wise kings, loyal servants, and divine interventions. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "194",
     language: "English",
@@ -3515,8 +3101,6 @@ export const books = [
     id: "bk-211",
     name: "The Man from the Egg",
     image: bookImages["the-man-from-the-egg"],
-    description:
-      "Uncover the birth of Brahma with Sudha Murthy's 'The Man from the Egg' at TheBookX.in. This classic children's mythology fiction explores the fascinating creation stories from Hindu mythology, perfect for young curious minds. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "186",
     language: "English",
@@ -3531,8 +3115,6 @@ export const books = [
     id: "bk-212",
     name: "The Sage with Two Horns",
     image: bookImages["the-sage-with-two-horns"],
-    description:
-      "Explore whimsical Indian mythology with Sudha Murthy's 'The Sage with Two Horns' from TheBookX.in. This trending children's fiction collection features unusual tales of sages, kings, and magical beings that will delight and surprise readers of all ages. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "182",
     language: "English",
@@ -3547,8 +3129,6 @@ export const books = [
     id: "bk-213",
     name: "Wings of Fire",
     image: bookImages["wings-of-fire"],
-    description:
-      "Experience the extraordinary journey of India's Missile Man with A.P.J. Abdul Kalam's autobiography 'Wings of Fire' at TheBookX.in. This bestselling non-fiction work chronicles his humble beginnings, his pivotal role in India's space and missile programs, and his vision for a developed nation. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "A.P.J. Abdul Kalam",
     pages: "288",
     language: "English",
@@ -3563,8 +3143,6 @@ export const books = [
     id: "bk-214",
     name: "The Diary of a Young Girl",
     image: bookImages["the-diary-of-a-young-girl-anne-frank"],
-    description:
-      "Step into history with Anne Frank's timeless 'The Diary of a Young Girl' at TheBookX.in. This powerful autobiography captures the raw emotions, hopes, and fears of a Jewish teenager hiding from the Nazis during World War II, becoming one of the most poignant non-fiction works ever written. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination for classics, books starting at just ₹1.",
     author: "Anne Frank",
     pages: "336",
     language: "English",
@@ -3579,8 +3157,6 @@ export const books = [
     id: "bk-215",
     name: "Autobiography of a Yogi",
     image: bookImages["autobiography-of-a-yogi-paramahansa-yogananda"],
-    description:
-      "Embark on a spiritual journey with Paramahansa Yogananda's 'Autobiography of a Yogi' from TheBookX.in. This beloved non-fiction classic introduces millions to the science of meditation, Eastern spirituality, and the fascinating lives of modern saints. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Paramahansa Yogananda",
     pages: "528",
     language: "English",
@@ -3595,8 +3171,6 @@ export const books = [
     id: "bk-216",
     name: "Becoming",
     image: bookImages["becoming-michelle-obama"],
-    description:
-      "Be inspired by former First Lady Michelle Obama's intimate memoir 'Becoming' at TheBookX.in. This bestselling autobiography chronicles her journey from the South Side of Chicago to the White House, offering a deeply personal look at her triumphs, struggles, and enduring hope. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Trending worldwide, books starting at just ₹1.",
     author: "Michelle Obama",
     pages: "448",
     language: "English",
@@ -3611,8 +3185,6 @@ export const books = [
     id: "bk-217",
     name: "Shoe Dog",
     image: bookImages["shoe-dog-phil-knight"],
-    description:
-      "Uncover the story behind Nike's empire with Phil Knight's 'Shoe Dog' from TheBookX.in. This gripping business autobiography reveals the risks, failures, and relentless determination that transformed a crazy idea into a global brand. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Phil Knight",
     pages: "400",
     language: "English",
@@ -3627,8 +3199,6 @@ export const books = [
     id: "bk-218",
     name: "I Am Malala",
     image: bookImages["i-am-malala-malala-yousafzai"],
-    description:
-      "Witness the courage of the youngest Nobel laureate with Malala Yousafzai's 'I Am Malala' at TheBookX.in. This powerful autobiography tells the story of a girl who stood up for education against the Taliban, surviving an assassination attempt to become a global symbol of resilience. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Malala Yousafzai",
     pages: "304",
     language: "English",
@@ -3643,8 +3213,6 @@ export const books = [
     id: "bk-219",
     name: "When Breath Becomes Air",
     image: bookImages["when-breath-becomes-air-paul-kalanithi"],
-    description:
-      "Experience the profound journey of a neurosurgeon facing mortality with Paul Kalanithi's 'When Breath Becomes Air' from TheBookX.in. This heartbreaking yet uplifting memoir explores what makes life meaningful when time is running out, becoming a modern non-fiction classic. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Paul Kalanithi",
     pages: "256",
     language: "English",
@@ -3659,8 +3227,6 @@ export const books = [
     id: "bk-220",
     name: "Steve Jobs",
     image: bookImages["steve-jobs-walter-isaacson"],
-    description:
-      "Explore the genius and madness of Apple's visionary with Walter Isaacson's 'Steve Jobs' at TheBookX.in. This definitive biography draws from exclusive interviews to reveal the real Steve Jobs, his perfectionism, creativity, and relentless drive that changed technology forever. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Walter Isaacson",
     pages: "656",
     language: "English",
@@ -3675,8 +3241,6 @@ export const books = [
     id: "bk-221",
     name: "Elon Musk",
     image: bookImages["elon-musk-walter-isaacson"],
-    description:
-      "Dive into the mind of the world's most controversial entrepreneur with Walter Isaacson's 'Elon Musk' from TheBookX.in. This explosive biography reveals the hidden story behind Tesla, SpaceX, and Twitter/X, capturing Musk's complex personality and audacious ambitions. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Trending now, books starting at just ₹1.",
     author: "Walter Isaacson",
     pages: "688",
     language: "English",
@@ -3691,8 +3255,6 @@ export const books = [
     id: "bk-222",
     name: "Mother Mary Comes to Me",
     image: bookImages["mother-mary-comes-to-me-arundhati-roy"],
-    description:
-      "Discover Booker Prize winner Arundhati Roy's deeply personal memoir 'Mother Mary Comes to Me' at TheBookX.in. This literary non-fiction work weaves together memory, grief, and love as she reflects on her mother's life and their complicated relationship. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Arundhati Roy",
     pages: "240",
     language: "English",
@@ -3707,8 +3269,6 @@ export const books = [
     id: "bk-223",
     name: "The Teacher",
     image: bookImages["the-teacher"],
-    description:
-      "Get ready for mind-bending twists with this psychological thriller at TheBookX.in. A gripping tale of secrets, obsession, and betrayal set within the walls of a seemingly ordinary school, where nothing is as it appears. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Freida McFadden",
     pages: "320",
     language: "English",
@@ -3723,8 +3283,6 @@ export const books = [
     id: "bk-224",
     name: "Ward D",
     image: bookImages["ward-d"],
-    description:
-      "Enter the chilling psychiatric ward with Freida McFadden's 'Ward D' at TheBookX.in. This medical thriller follows a medical student spending a night locked in a dangerous ward, uncovering dark secrets that threaten her sanity, and her life. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Trending now, books starting at just ₹1.",
     author: "Freida McFadden",
     pages: "304",
     language: "English",
@@ -3739,8 +3297,6 @@ export const books = [
     id: "bk-227",
     name: "The Ex",
     image: bookImages["the-ex"],
-    description:
-      "Get lost in Freida McFadden's twisted thriller 'The Ex' at TheBookX.in. A woman's past comes back to haunt her when her ex-boyfriend reappears with a sinister agenda, blurring the lines between love, revenge, and murder. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Trending, books starting at just ₹1 for a limited period.",
     author: "Freida McFadden",
     pages: "310",
     language: "English",
@@ -3755,8 +3311,6 @@ export const books = [
     id: "bk-228",
     name: "The Crash",
     image: bookImages["the-crash"],
-    description:
-      "Hold your breath with Freida McFadden's 'The Crash' from TheBookX.in. A seemingly accidental car crash reveals a web of deceit, conspiracy, and danger that one woman must unravel before becoming the next victim. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Freida McFadden",
     pages: "318",
     language: "English",
@@ -3771,8 +3325,6 @@ export const books = [
     id: "bk-229",
     name: "The Coworker",
     image: bookImages["the-coworker"],
-    description:
-      "Never trust your office colleagues with Freida McFadden's 'The Coworker' at TheBookX.in. A workplace thriller where friendly competition turns deadly, and everyone has something to hide, including the victim. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Freida McFadden",
     pages: "340",
     language: "English",
@@ -3787,8 +3339,6 @@ export const books = [
     id: "bk-230",
     name: "Dead Med",
     image: bookImages["dead-med"],
-    description:
-      "Enter the high-stakes world of medical suspense with Freida McFadden's 'Dead Med' from TheBookX.in. Doctors, drugs, and dark secrets collide in a hospital where patients keep dying, and someone wants to keep it that way. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Freida McFadden",
     pages: "370",
     language: "English",
@@ -3803,8 +3353,6 @@ export const books = [
     id: "bk-231",
     name: "Dear Debbie",
     image: bookImages["dear-debbie"],
-    description:
-      "Experience heartwarming romance with Freida McFadden's 'Dear Debbie' at TheBookX.in. A touching contemporary fiction about love, second chances, and the unexpected connections that change our lives forever. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Freida McFadden",
     pages: "290",
     language: "English",
@@ -3819,8 +3367,6 @@ export const books = [
     id: "bk-232",
     name: "Do You Remember",
     image: bookImages["do-you-remember"],
-    description:
-      "Question your own memories with Freida McFadden's psychological thriller 'Do You Remember' at TheBookX.in. A woman wakes up with no recollection of the past decade, only to discover that everyone around her is hiding terrifying secrets. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Trending, books starting at just ₹1.",
     author: "Freida McFadden",
     pages: "330",
     language: "English",
@@ -3835,8 +3381,6 @@ export const books = [
     id: "bk-233",
     name: "The Wife Upstairs",
     image: bookImages["the-wife-upstairs"],
-    description:
-      "Uncover dark suburban secrets with Freida McFadden's bestselling thriller 'The Wife Upstairs' from TheBookX.in. A new neighbor's curiosity leads her into a twisted web of lies, obsession, and a mysterious woman locked away upstairs. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy.",
     author: "Freida McFadden",
     pages: "346",
     language: "English",
@@ -3851,8 +3395,6 @@ export const books = [
     id: "bk-234",
     name: "Fourth Wing",
     image: bookImages["fourth-wing"],
-    description:
-      "Enter the brutal world of dragon riders with Rebecca Yarros's phenomenon 'Fourth Wing' at TheBookX.in. This bestselling romantic fantasy follows Violet Sorrengail as she survives a deadly war college where dragons bond only with the strongest, and enemies are everywhere. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Rebecca Yarros",
     pages: "528",
     language: "English",
@@ -3873,8 +3415,6 @@ export const books = [
     id: "bk-235",
     name: "Iron Flame",
     image: bookImages["iron-flame"],
-    description:
-      "Continue the epic journey with Rebecca Yarros's 'Iron Flame' at TheBookX.in. The second installment in the Empyrean series raises the stakes as Violet faces new enemies, deeper betrayals, and a love that could destroy everything she's fighting for. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Bestseller, books starting at just ₹1.",
     author: "Rebecca Yarros",
     pages: "640",
     language: "English",
@@ -3895,8 +3435,6 @@ export const books = [
     id: "bk-236",
     name: "Onyx Storm",
     image: bookImages["onyx-storm"],
-    description:
-      "Prepare for the next chapter with Rebecca Yarros's 'Onyx Storm' from TheBookX.in. The highly anticipated upcoming fantasy romance continues Violet's saga with more dragons, danger, and devastating choices. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Pre-order now, books starting at just ₹1.",
     author: "Rebecca Yarros",
     pages: "560",
     language: "English",
@@ -3911,8 +3449,6 @@ export const books = [
     id: "bk-237",
     name: "The Fine Print",
     image: bookImages["the-fine-print"],
-    description:
-      "Fall in love with Lauren Asher's bestselling romance 'The Fine Print' at TheBookX.in. A grumpy billionaire and a dreamy employee clash in this steamy contemporary romance about contracts, chemistry, and finding love in the most unexpected places. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Lauren Asher",
     pages: "448",
     language: "English",
@@ -3927,8 +3463,6 @@ export const books = [
     id: "bk-238",
     name: "Terms and Conditions",
     image: bookImages["terms-and-conditions"],
-    description:
-      "Continue the Dreamland romance with Lauren Asher's 'Terms and Conditions' from TheBookX.in. A marriage of convenience between a CEO and his assistant turns into something dangerously real in this bestselling steamy contemporary romance. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Trending, books starting at just ₹1.",
     author: "Lauren Asher",
     pages: "464",
     language: "English",
@@ -3943,8 +3477,6 @@ export const books = [
     id: "bk-239",
     name: "Final Offer",
     image: bookImages["final-offer"],
-    description:
-      "Experience the emotional conclusion of the Dreamland Billionaires series with Lauren Asher's 'Final Offer' at TheBookX.in. A second-chance romance about healing from addiction, facing the past, and fighting for the love you thought you'd lost forever. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Lauren Asher",
     pages: "512",
     language: "English",
@@ -3959,8 +3491,6 @@ export const books = [
     id: "bk-240",
     name: "Dreamland Billionaires Series",
     image: bookImages["dreamland-billionaires-series"],
-    description:
-      "Get the complete collection of Lauren Asher's addictive Dreamland Billionaires series at TheBookX.in. This box set includes all three bestselling romance novels, The Fine Print, Terms and Conditions, and Final Offer, following three billionaire brothers finding love against all odds. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Lauren Asher",
     pages: "1424",
     language: "English",
@@ -3975,8 +3505,6 @@ export const books = [
     id: "bk-241",
     name: "Ghosts",
     image: bookImages["ghosts"],
-    description:
-      "Navigate modern dating and friendship with Dolly Alderton's 'Ghosts' at TheBookX.in. This witty contemporary romance follows a food writer dealing with her ex's reappearance, her father's decline, and the haunting question of whether love is still possible. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Dolly Alderton",
     pages: "320",
     language: "English",
@@ -3991,8 +3519,6 @@ export const books = [
     id: "bk-242",
     name: "Good Material",
     image: bookImages["good-material"],
-    description:
-      "Laugh and cry through heartbreak with Dolly Alderton's 'Good Material' from TheBookX.in. A brilliantly funny and moving contemporary romance about a struggling comedian navigating a breakup, lost love, and the messy path to moving on. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Trending, books starting at just ₹1.",
     author: "Dolly Alderton",
     pages: "352",
     language: "English",
@@ -4007,8 +3533,6 @@ export const books = [
     id: "bk-244",
     name: "Dopamine Detox",
     image: bookImages["dopamine-detox"],
-    description:
-      "Reset your brain and reclaim focus with Thibaut Meurisse's 'Dopamine Detox' at TheBookX.in. This trending self-help guide reveals how to break free from addictive behaviors, social media cravings, and productivity killers to achieve mental clarity. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination for self-improvement, books starting at just ₹1.",
     author: "Thibaut Meurisse",
     pages: "140",
     language: "English",
@@ -4023,8 +3547,6 @@ export const books = [
     id: "bk-245",
     name: "The Art of Letting Go",
     image: bookImages["the-art-of-letting-go"],
-    description:
-      "Free yourself from emotional baggage with Nick Trenton's 'The Art of Letting Go' from TheBookX.in. This trending psychology-based self-help book teaches practical techniques to release anxiety, overcome past hurts, and embrace inner peace. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Nick Trenton",
     pages: "180",
     language: "English",
@@ -4039,8 +3561,6 @@ export const books = [
     id: "bk-246",
     name: "The Art of Saying No",
     image: bookImages["the-art-of-saying-no"],
-    description:
-      "Master boundaries and reclaim your time with Damon Zahariades's 'The Art of Saying No' at TheBookX.in. This bestselling self-help guide provides practical strategies to stop people-pleasing, set healthy limits, and prioritize your own goals. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Damon Zahariades",
     pages: "168",
     language: "English",
@@ -4055,8 +3575,6 @@ export const books = [
     id: "bk-247",
     name: "The Curse of Letting Go",
     image: bookImages["the-curse-of-letting-go"],
-    description:
-      "Explore the painful beauty of releasing love with Courtney Cook's 'The Curse of Letting Go' from TheBookX.in. This trending psychology-based self-help book delves into heartbreak, attachment, and the emotional journey of moving forward. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Courtney Cook",
     pages: "210",
     language: "English",
@@ -4071,8 +3589,6 @@ export const books = [
     id: "bk-248",
     name: "How to Read a Book",
     image: bookImages["how-to-read-a-book"],
-    description:
-      "Transform your reading experience with Mortimer J. Adler's classic 'How to Read a Book' at TheBookX.in. This timeless educational guide reveals the art of analytical reading, helping you extract deeper meaning and knowledge from any book. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Mortimer J. Adler & Charles Van Doren",
     pages: "448",
     language: "English",
@@ -4087,8 +3603,6 @@ export const books = [
     id: "bk-249",
     name: "Dark Psychology and Manipulation",
     image: bookImages["dark-psychology-and-manipulation"],
-    description:
-      "Understand and defend against manipulation with William Cooper's 'Dark Psychology and Manipulation' from TheBookX.in. This trending self-help book exposes toxic tactics, emotional blackmail, and NLP techniques used by manipulators, and how to protect yourself. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "William Cooper",
     pages: "156",
     language: "English",
@@ -4103,8 +3617,6 @@ export const books = [
     id: "bk-250",
     name: "The Body Keeps the Score",
     image: bookImages["the-body-keeps-the-score"],
-    description:
-      "Heal trauma through science with Bessel van der Kolk's groundbreaking 'The Body Keeps the Score' at TheBookX.in. This bestselling medical psychology book revolutionizes our understanding of how trauma reshapes the brain and body, and pathways to recovery. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Bessel van der Kolk",
     pages: "464",
     language: "English",
@@ -4119,8 +3631,6 @@ export const books = [
     id: "bk-251",
     name: "8 Rules of Love",
     image: bookImages["8-rules-of-love"],
-    description:
-      "Transform your relationships with Jay Shetty's '8 Rules of Love' from TheBookX.in. This bestselling self-help guide combines ancient wisdom with modern science to help you find, keep, and deepen meaningful love. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
     author: "Jay Shetty",
     pages: "320",
     language: "English",
@@ -4135,8 +3645,6 @@ export const books = [
     id: "bk-252",
     name: "You Become What You Think",
     image: bookImages["you-become-what-you-think"],
-    description:
-      "Harness the power of your thoughts with Shubham Uppal's 'You Become What You Think' at TheBookX.in. This trending psychology-based self-help book reveals how mindset shifts can transform your reality, habits, and destiny. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Shubham Uppal",
     pages: "152",
     language: "English",
@@ -4151,8 +3659,6 @@ export const books = [
     id: "bk-253",
     name: "Build, Don't Talk",
     image: bookImages["build-dont-talk"],
-    description:
-      "Stop overthinking and start creating with Raj Shamani's 'Build, Don't Talk' from TheBookX.in. This trending self-help business guide challenges you to take action, execute ideas, and build something meaningful instead of just discussing dreams. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Raj Shamani",
     pages: "200",
     language: "English",
@@ -4167,8 +3673,6 @@ export const books = [
     id: "bk-254",
     name: "Execution",
     image: bookImages["execution"],
-    description:
-      "Master the discipline of getting things done with Larry Bossidy's 'Execution' at TheBookX.in. This bestselling business non-fiction reveals why execution, not strategy, separates successful companies from failed ones, with practical management frameworks. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Larry Bossidy & Ram Charan",
     pages: "288",
     language: "English",
@@ -4183,8 +3687,6 @@ export const books = [
     id: "bk-255",
     name: "I Want to Die but I Want to Eat Tteokbokki",
     image: bookImages["i-want-to-die-but-i-want-to-eat-tteokbokki"],
-    description:
-      "Experience the raw honesty of living with depression with Baek Sehee's 'I Want to Die but I Want to Eat Tteokbokki' from TheBookX.in. This bestselling memoir records her therapy sessions, capturing the paradox of wanting to disappear while clinging to small joys. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Baek Sehee",
     pages: "192",
     language: "English",
@@ -4199,8 +3701,6 @@ export const books = [
     id: "bk-257",
     name: "The Vegetarian",
     image: bookImages["the-vegetarian"],
-    description:
-      "Experience the haunting power of Han Kang's Man Booker Prize-winning 'The Vegetarian' from TheBookX.in. This bestselling literary fiction follows a woman's shocking decision to stop eating meat, spiraling into psychological unraveling that disturbs everyone around her. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Han Kang",
     pages: "192",
     language: "English",
@@ -4215,8 +3715,6 @@ export const books = [
     id: "bk-258",
     name: "Circe",
     image: bookImages["circe"],
-    description:
-      "Step into the enchanting world of Greek mythology with Madeline Miller's 'Circe' at TheBookX.in. This bestselling fantasy reimagines the life of the forgotten goddess, a witch, a healer, and a woman who defied the gods to forge her own destiny. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Madeline Miller",
     pages: "416",
     language: "English",
@@ -4231,8 +3729,6 @@ export const books = [
     id: "bk-259",
     name: "The Forty Rules of Love",
     image: bookImages["the-forty-rules-of-love"],
-    description:
-      "Discover the transformative power of divine love with Elif Shafak's 'The Forty Rules of Love' from TheBookX.in. This bestselling spiritual romance intertwines a modern love story with the legendary friendship of Rumi and Shams of Tabriz. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Elif Shafak",
     pages: "368",
     language: "English",
@@ -4247,8 +3743,6 @@ export const books = [
     id: "bk-260",
     name: "A Woman Is No Man",
     image: bookImages["a-woman-is-no-man"],
-    description:
-      "Uncover the hidden struggles of generations of Arab women with Etaf Rum's 'A Woman Is No Man' at TheBookX.in. This powerful cultural fiction follows three generations of Palestinian women navigating tradition, oppression, and the quest for freedom. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Etaf Rum",
     pages: "352",
     language: "English",
@@ -4263,8 +3757,6 @@ export const books = [
     id: "bk-261",
     name: "Once Upon a Broken Heart",
     image: bookImages["once-upon-a-broken-heart"],
-    description:
-      "Enter a world of magical romance with Stephanie Garber's 'Once Upon a Broken Heart' from TheBookX.in. This bestselling young adult fantasy follows a hopeless romantic who makes a desperate deal with the Prince of Hearts, a charming, dangerous immortal. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Stephanie Garber",
     pages: "416",
     language: "English",
@@ -4279,8 +3771,6 @@ export const books = [
     id: "bk-262",
     name: "The Archer's Voice",
     image: bookImages["the-archers-voice"],
-    description:
-      "Fall in love with a silent man's healing heart with Mia Sheridan's 'The Archer's Voice' at TheBookX.in. This bestselling contemporary romance tells the unforgettable story of a woman who finds a wounded, reclusive man and teaches him to speak, with love. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Mia Sheridan",
     pages: "304",
     language: "English",
@@ -4295,8 +3785,6 @@ export const books = [
     id: "bk-263",
     name: "The American Roommate Experiment",
     image: bookImages["the-american-roommate-experiment"],
-    description:
-      "Enjoy a swoon-worthy romantic comedy with Elena Armas's 'The American Roommate Experiment' from TheBookX.in. This bestselling contemporary romance follows a struggling writer who finds the perfect fake-dating roommate, with hilarious and steamy results. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Trending, books starting at just ₹1.",
     author: "Elena Armas",
     pages: "400",
     language: "English",
@@ -4311,8 +3799,6 @@ export const books = [
     id: "bk-264",
     name: "People We Meet on Vacation",
     image: bookImages["people-we-meet-on-vacation"],
-    description:
-      "Experience the will-they-won't-they romance of Emily Henry's 'People We Meet on Vacation' at TheBookX.in. This bestselling love story follows two best friends who take annual summer trips together, and the one vacation that changes everything. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Emily Henry",
     pages: "384",
     language: "English",
@@ -4327,8 +3813,6 @@ export const books = [
     id: "bk-265",
     name: "I Fell in Love with Hope",
     image: bookImages["i-fell-in-love-with-hope"],
-    description:
-      "Heal your heart with Lancali's poetic 'I Fell in Love with Hope' from TheBookX.in. This trending young adult romance explores mental health, grief, and the fragile beauty of hope through the eyes of a group of hospitalized teens finding love. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Lancali",
     pages: "336",
     language: "English",
@@ -4343,8 +3827,6 @@ export const books = [
     id: "bk-266",
     name: "The Castle",
     image: bookImages["the-castle"],
-    description:
-      "Enter the absurdist masterpiece of Franz Kafka's 'The Castle' at TheBookX.in. This philosophical fiction classic follows a land surveyor's endless, frustrating quest to gain access to a mysterious castle, a haunting allegory of bureaucracy and isolation. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Franz Kafka",
     pages: "352",
     language: "English",
@@ -4359,8 +3841,6 @@ export const books = [
     id: "bk-267",
     name: "Project Hail Mary",
     image: bookImages["project-hail-mary"],
-    description:
-      "Get lost in Andy Weir's brilliant sci-fi thriller 'Project Hail Mary' from TheBookX.in. A lone astronaut wakes up with amnesia on a spaceship, tasked with saving humanity from extinction, and discovers an unlikely alien ally. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Bestseller, books starting at just ₹1.",
     author: "Andy Weir",
     pages: "496",
     language: "English",
@@ -4375,8 +3855,6 @@ export const books = [
     id: "bk-268",
     name: "The Family Upstairs",
     image: bookImages["the-family-upstairs"],
-    description:
-      "Unravel dark family secrets with Lisa Jewell's gripping thriller 'The Family Upstairs' at TheBookX.in. A woman inherits a mansion where a cult once lived, and discovers her own shocking connection to the twisted family that vanished decades ago. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Lisa Jewell",
     pages: "368",
     language: "English",
@@ -4391,8 +3869,6 @@ export const books = [
     id: "bk-269",
     name: "7 Deaths of Kashi",
     image: bookImages["7-deaths-of-kashi"],
-    description:
-      "Experience a mind-bending thriller with Saibal Das's '7 Deaths of Kashi' from TheBookX.in. A mystical murder mystery set in Varanasi, where a detective must solve seven ritualistic deaths connected to Hindu mythology and reincarnation. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Trending, books starting at just ₹1.",
     author: "Saibal Das",
     pages: "280",
     language: "English",
@@ -4407,8 +3883,6 @@ export const books = [
     id: "bk-270",
     name: "Murder at the Bookstore",
     image: bookImages["murder-at-the-bookstore"],
-    description:
-      "Solve a cozy mystery with Sue Minix's 'Murder at the Bookstore' at TheBookX.in. A bookstore owner becomes the prime suspect in a murder investigation and must use her literary knowledge to find the real killer. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Sue Minix",
     pages: "256",
     language: "English",
@@ -4423,8 +3897,6 @@ export const books = [
     id: "bk-271",
     name: "The Murder After",
     image: bookImages["the-murder-after"],
-    description:
-      "Get hooked on Anubhav Agrawal's suspenseful 'The Murder After' from TheBookX.in. A gripping mystery thriller where a single murder unravels a conspiracy of revenge, betrayal, and dark secrets that someone will kill to protect. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Anubhav Agrawal",
     pages: "268",
     language: "English",
@@ -4439,8 +3911,6 @@ export const books = [
     id: "bk-272",
     name: "In Silence We Left Behind",
     image: bookImages["in-silence-we-left-behind"],
-    description:
-      "Experience emotional depth with Shanya S. Kapoor's 'In Silence We Left Behind' at TheBookX.in. A dramatic mystery thriller about family secrets, lost love, and the silence that echoes through generations, haunting and unforgettable. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Shanya S. Kapoor",
     pages: "244",
     language: "English",
@@ -4455,8 +3925,6 @@ export const books = [
     id: "bk-273",
     name: "Two Can Play",
     image: bookImages["two-can-play-by-ali-hazelwood"],
-    description:
-      "Enjoy Ali Hazelwood's witty romance 'Two Can Play' at TheBookX.in. A trending contemporary love story about rivals who discover that the line between hate and love is dangerously thin, and oh so fun to cross. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Ali Hazelwood",
     pages: "320",
     language: "English",
@@ -4471,8 +3939,6 @@ export const books = [
     id: "bk-274",
     name: "The Art of War",
     image: bookImages["the-art-of-war"],
-    description:
-      "Master timeless strategy with Sun Tzu's classic 'The Art of War' from TheBookX.in. This ancient Chinese text remains the ultimate guide to competition, leadership, and outthinking your opponents, essential reading for business and life. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Bestseller, books starting at just ₹1.",
     author: "Sun Tzu",
     pages: "160",
     language: "English",
@@ -4487,8 +3953,6 @@ export const books = [
     id: "bk-275",
     name: "The Intelligent Investor",
     image: bookImages["the-intelligent-investor-finance-classic"],
-    description:
-      "Learn value investing from the master with Benjamin Graham's 'The Intelligent Investor' at TheBookX.in. This classic finance non-fiction has guided generations of investors with its timeless principles of risk management, margin of safety, and long-term wealth building. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Benjamin Graham",
     pages: "624",
     language: "English",
@@ -4503,8 +3967,6 @@ export const books = [
     id: "bk-276",
     name: "Diary of a Wimpy Kid",
     image: bookImages["diary-of-a-wimpy-kid"],
-    description:
-      "Laugh out loud with Jeff Kinney's global phenomenon 'Diary of a Wimpy Kid' at TheBookX.in. This beloved children's fiction follows Greg Heffley's hilarious middle school struggles through words and cartoons, perfect for reluctant readers. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4520,8 +3982,6 @@ export const books = [
     id: "bk-277",
     name: "Rodrick Rules",
     image: bookImages["rodrick-rules"],
-    description:
-      "Experience the chaos of brotherly rivalry with Jeff Kinney's 'Rodrick Rules' at TheBookX.in. Greg Heffley's evil older brother Rodrick knows Greg's deepest secret, and he's not afraid to use it. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination for children's books, starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "216",
@@ -4537,8 +3997,6 @@ export const books = [
     id: "bk-278",
     name: "The Last Straw",
     image: bookImages["the-last-straw"],
-    description:
-      "Join Greg Heffley's fight against his dad's boot camp plans in Jeff Kinney's 'The Last Straw' from TheBookX.in. This hilarious children's fiction follows Greg's desperate attempts to prove he's tough enough, with laugh-out-loud results. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4554,8 +4012,6 @@ export const books = [
     id: "bk-279",
     name: "Dog Days",
     image: bookImages["dog-days"],
-    description:
-      "Survive the worst summer ever with Jeff Kinney's 'Dog Days' at TheBookX.in. Greg Heffley's vacation plans go hilariously wrong in this bestselling children's fiction about family trips, swimming pools, and soggy dogs. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4571,8 +4027,6 @@ export const books = [
     id: "bk-280",
     name: "The Ugly Truth",
     image: bookImages["the-ugly-truth"],
-    description:
-      "Navigate the awkwardness of growing up with Jeff Kinney's 'The Ugly Truth' from TheBookX.in. Greg Heffley faces boy-girl parties, changing friendships, and the terrifying world of adolescence, with his signature hilarious honesty. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4588,8 +4042,6 @@ export const books = [
     id: "bk-281",
     name: "Cabin Fever",
     image: bookImages["cabin-fever"],
-    description:
-      "Get snowed in with Greg Heffley in Jeff Kinney's 'Cabin Fever' at TheBookX.in. A holiday blizzard traps Greg indoors while he's also trying to avoid trouble for a mysterious crime, hilarious chaos ensues. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4605,8 +4057,6 @@ export const books = [
     id: "bk-282",
     name: "The Third Wheel",
     image: bookImages["the-third-wheel"],
-    description:
-      "Survive the school dance disaster with Jeff Kinney's 'The Third Wheel' from TheBookX.in. Greg Heffley needs a date for the Valentine's Day dance, but love is complicated, and his plans go spectacularly wrong. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4622,8 +4072,6 @@ export const books = [
     id: "bk-283",
     name: "Hard Luck",
     image: bookImages["hard-luck"],
-    description:
-      "Flip a coin for Greg's fate in Jeff Kinney's 'Hard Luck' at TheBookX.in. Greg Heffley's friendship with Rowley is on the rocks, and he'll try anything, including consulting a Magic 8-Ball, to fix his luck. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4639,8 +4087,6 @@ export const books = [
     id: "bk-284",
     name: "The Long Haul",
     image: bookImages["the-long-haul"],
-    description:
-      "Buckle up for a disastrous family road trip with Jeff Kinney's 'The Long Haul' from TheBookX.in. Greg Heffley's vacation plans turn into a hilarious nightmare of seagulls, pigs, and bathroom emergencies. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4656,8 +4102,6 @@ export const books = [
     id: "bk-285",
     name: "Old School",
     image: bookImages["old-school"],
-    description:
-      "Go back to basics with Jeff Kinney's 'Old School' at TheBookX.in. Greg Heffley's town tries to live without electronics, but Greg discovers that 'old school' has its own set of terrors. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order today.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4673,8 +4117,6 @@ export const books = [
     id: "bk-286",
     name: "Double Down",
     image: bookImages["double-down"],
-    description:
-      "Get creative with Jeff Kinney's 'Double Down' from TheBookX.in. Greg Heffley decides to make a movie, but his artistic vision collides hilariously with reality, family, and school. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4690,8 +4132,6 @@ export const books = [
     id: "bk-287",
     name: "The Getaway",
     image: bookImages["the-getaway"],
-    description:
-      "Escape to a tropical disaster with Jeff Kinney's 'The Getaway' at TheBookX.in. Greg Heffley's family vacation to a luxury resort turns into a nightmare of sunburns, creepy critters, and holiday chaos. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4707,8 +4147,6 @@ export const books = [
     id: "bk-288",
     name: "The Meltdown",
     image: bookImages["the-meltdown"],
-    description:
-      "Survive a neighborhood snow war with Jeff Kinney's 'The Meltdown' from TheBookX.in. Greg Heffley and Rowley are caught in an epic snowball fight between rival groups, and the stakes have never been sillier. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4724,8 +4162,6 @@ export const books = [
     id: "bk-289",
     name: "Wrecking Ball",
     image: bookImages["wrecking-ball"],
-    description:
-      "Watch the Heffley house fall apart with Jeff Kinney's 'Wrecking Ball' at TheBookX.in. When Greg's family inherits some money, home renovations turn into a demolition disaster of epic proportions. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4741,8 +4177,6 @@ export const books = [
     id: "bk-290",
     name: "The Deep End",
     image: bookImages["the-deep-end"],
-    description:
-      "Dive into camping chaos with Jeff Kinney's 'The Deep End' from TheBookX.in. Greg Heffley's family buys an RV for a cross-country trip, but the campground is a muddy, mosquito-infested nightmare. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4758,8 +4192,6 @@ export const books = [
     id: "bk-291",
     name: "Big Shot",
     image: bookImages["big-shot"],
-    description:
-      "Hit the basketball court with Jeff Kinney's 'Big Shot' at TheBookX.in. Greg Heffley joins a struggling basketball team, proving that talent is optional when you have desperate determination and hilarious fails. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4775,8 +4207,6 @@ export const books = [
     id: "bk-292",
     name: "Diper Överlöde",
     image: bookImages["diper-overlode"],
-    description:
-      "Rock out with Greg's brother Rodrick's band in Jeff Kinney's 'Diper Överlöde' from TheBookX.in. Greg gets dragged into the chaotic world of heavy metal, complete with loud music, bad decisions, and exploding drums. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4792,8 +4222,6 @@ export const books = [
     id: "bk-293",
     name: "No Brainer",
     image: bookImages["no-brainer"],
-    description:
-      "Fight to save Greg's school in Jeff Kinney's 'No Brainer' at TheBookX.in. When funding is cut, Greg Heffley must come up with brilliant ideas to prevent his middle school from shutting down, no pressure. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, order now.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4809,8 +4237,6 @@ export const books = [
     id: "bk-294",
     name: "Hot Mess",
     image: bookImages["hot-mess"],
-    description:
-      "Step into the latest Wimpy Kid adventure with Jeff Kinney's 'Hot Mess' from TheBookX.in. Greg Heffley faces a new set of hilarious disasters that prove middle school is always a chaotic, embarrassing, unforgettable ride. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4826,8 +4252,6 @@ export const books = [
     id: "bk-295",
     name: "Partypooper",
     image: bookImages["partypooper"],
-    description:
-      "Crash the worst party ever with Jeff Kinney's 'Partypooper' at TheBookX.in. Greg Heffley's social life implodes when he accidentally becomes the kid who ruins everything, hilarious consequences guaranteed. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4843,8 +4267,6 @@ export const books = [
     id: "bk-296",
     name: "Fight or Flight",
     image: bookImages["fight-or-flight"],
-    description:
-      "Face Greg's toughest choice yet in Jeff Kinney's 'Fight or Flight' from TheBookX.in. When cornered by bullies, family, and school, Greg Heffley must decide, stand his ground or run for his life? Either way, it's hilarious. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     pages: "224",
@@ -4860,8 +4282,6 @@ export const books = [
     id: "bk-297",
     name: "The Girl on the Train",
     image: bookImages["the-girl-on-the-train"],
-    description:
-      "Unravel the gripping psychological thriller 'The Girl on the Train' by Paula Hawkins at TheBookX.in. Rachel takes the same commuter train every day, watching a seemingly perfect couple from afar, until she witnesses something shocking and becomes entangled in a missing person investigation. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Paula Hawkins",
     pages: "336",
     language: "English",
@@ -4876,8 +4296,6 @@ export const books = [
     id: "bk-298",
     name: "Animal Farm",
     image: bookImages["animal-farm"],
-    description:
-      "Discover George Orwell's timeless allegorical masterpiece 'Animal Farm' at TheBookX.in. This classic fiction tells the story of a group of farm animals who overthrow their human farmer, only to see their dream of equality corrupted by power-hungry leaders. A biting satire on revolution, propaganda, and tyranny that remains terrifyingly relevant. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "George Orwell",
     pages: "144",
     language: "English",
@@ -4892,8 +4310,6 @@ export const books = [
     id: "bk-299",
     name: "Deep Work",
     image: bookImages["deep-work"],
-    description:
-      "Master the art of focused success with Cal Newport's 'Deep Work' at TheBookX.in. This bestselling non-fiction self-help book reveals how cultivating deep, distraction-free concentration can help you achieve more in less time, master complex skills, and create valuable work in our increasingly distracted world. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination for productivity, books starting at just ₹1.",
     author: "Cal Newport",
     pages: "304",
     language: "English",
@@ -4908,8 +4324,6 @@ export const books = [
     id: "bk-300",
     name: "101 Essays That Will Change The Way You Think",
     image: bookImages["101-essays-that-will-change-the-way-you-think"],
-    description:
-      "Transform your perspective with Brianna Wiest's bestselling '101 Essays That Will Change The Way You Think' at TheBookX.in. This groundbreaking collection of essays explores the hidden patterns of your mind, emotional intelligence, self-awareness, and the art of rewiring your thought processes for a more fulfilling life. Each essay is a powerful reminder that your thoughts shape your reality, and you have the power to change them. Perfect for anyone seeking personal growth, mental clarity, and a deeper understanding of themselves. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Brianna Wiest",
     pages: "416",
     language: "English",
@@ -4924,8 +4338,6 @@ export const books = [
     id: "bk-301",
     name: "How to Kill Men and Get Away With It",
     image: bookImages["how-to-kill-men-and-get-away-with-it"],
-    description:
-      "Discover the darkly addictive and hilariously twisted debut 'How to Kill Men and Get Away With It' by Kitty Collins at TheBookX.in. Meet Kitty, a wealthy, glamorous, and completely unapologetic socialite who has developed a taste for revenge. When she accidentally kills a man who wronged her, she realizes she's found her true calling. This razor-sharp, wickedly funny thriller follows her killing spree across London's elite circles, all while maintaining her perfect Instagram aesthetic. Dark, satirical, and completely addictive, perfect for fans of 'Promising Young Woman' and 'Killing Eve.' TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Kitty Collins",
     pages: "352",
     language: "English",
@@ -4940,8 +4352,6 @@ export const books = [
     id: "bk-302",
     name: "Steal Like an Artist: 10 Things Nobody Told You About Being Creative",
     image: bookImages["steal-like-an-artist"],
-    description:
-      "Unlock your creative potential with Austin Kleon's transformative manifesto 'Steal Like an Artist' at TheBookX.in. This bestselling non-fiction guide debunks the myth of original genius and shows you that all creative work builds on what came before. Packed with 10 actionable principles, from embracing plagiarism to side projects and creative routines, this book is a must-read for writers, designers, artists, and anyone who wants to make something meaningful. Written in a witty, visual, and inspiring style with illustrations throughout. Perfect for overcoming creative blocks and imposter syndrome. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Austin Kleon",
     pages: "160",
     language: "English",
@@ -4956,8 +4366,6 @@ export const books = [
     id: "bk-303",
     name: "Tuesdays with Morrie: An Old Man, a Young Man, and Life's Greatest Lesson",
     image: bookImages["tuesdays-with-morrie"],
-    description:
-      "Experience the heartwarming and life-changing wisdom of Mitch Albom's 'Tuesdays with Morrie' at TheBookX.in. This timeless memoir chronicles the author's reconnection with his beloved college professor Morrie Schwartz, who is dying from ALS. Every Tuesday, Mitch visits Morrie, and they discuss life's most profound topics, love, work, death, forgiveness, and what truly matters. This international bestseller has touched millions of hearts worldwide, offering gentle yet powerful lessons on how to live a meaningful life. Perfect for anyone seeking comfort, perspective, and a reminder of our shared humanity. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Mitch Albom",
     pages: "224",
     language: "English",
@@ -4972,8 +4380,6 @@ export const books = [
     id: "bk-304",
     name: "As Long as the Lemon Trees Grow",
     image: bookImages["as-long-as-the-lemon-trees-grow"],
-    description:
-      "Immerse yourself in the heart-wrenching and hopeful debut 'As Long as the Lemon Trees Grow' by Zoulfa Katouh at TheBookX.in. Set during the Syrian civil war, this powerful young adult fiction follows Salama, a pharmacy student turned hospital volunteer, who grapples with grief, trauma, and the impossible choice between staying to fight for her country or fleeing to safety. Haunted by the ghost of a revolutionary, she must find the strength to hold onto hope amidst the ruins. This critically acclaimed novel is a stunning testament to love, resilience, and the unbreakable human spirit, perfect for fans of 'The Book Thief' and 'A Thousand Splendid Suns.' TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Zoulfa Katouh",
     pages: "432",
     language: "English",
@@ -4988,8 +4394,6 @@ export const books = [
     id: "bk-305",
     name: "The Daily Stoic: 366 Meditations on Wisdom, Perseverance, and the Art of Living",
     image: bookImages["the-daily-stoic"],
-    description:
-      "Transform your life with Ryan Holiday's international bestseller 'The Daily Stoic' at TheBookX.in. This timeless collection features 366 daily meditations, one for each day of the year, drawing from the timeless wisdom of Marcus Aurelius, Seneca, Epictetus, and other great Stoic philosophers. Each page offers a powerful quote, a practical reflection, and an actionable challenge to help you cultivate resilience, discipline, and inner peace in the face of modern chaos. Whether you're facing stress at work, relationship struggles, or simply seeking a more meaningful existence, this book provides ancient solutions for contemporary problems. Perfect for daily reading, journaling, or gifting. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Ryan Holiday",
     pages: "416",
     language: "English",
@@ -5004,8 +4408,6 @@ export const books = [
     id: "bk-306",
     name: "Normal People",
     image: bookImages["normal-people"],
-    description:
-      "Experience the phenomenon that captivated millions with Sally Rooney's 'Normal People' at TheBookX.in. This luminous literary fiction follows the complex, on-again-off-again relationship between Connell and Marianne, two teenagers from the same small Irish town who couldn't be more different. From high school to college and beyond, their intense connection weaves through class differences, intimacy, power, and the universal longing to be truly understood. Adapted into an Emmy-nominated Hulu series, this Man Booker Prize-longlisted novel is a masterclass in quiet devastation and aching tenderness. Perfect for readers who love character-driven stories about love, vulnerability, and human imperfection. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Sally Rooney",
     pages: "288",
     language: "English",
@@ -5020,8 +4422,6 @@ export const books = [
     id: "bk-307",
     name: "Conversations with Friends",
     image: bookImages["conversations-with-friends"],
-    description:
-      "Discover the razor-sharp debut that started it all, Sally Rooney's 'Conversations with Friends' at TheBookX.in. This stunning literary fiction follows Frances, a sharp-witted 21-year-old poet and performer, and her ex-girlfriend Bobbi, who become entangled in an unexpected affair with a sophisticated married couple, Nick and Melissa. Set against Dublin's vibrant literary scene, this novel explores infidelity, friendship, class, and the messy realities of love with unflinching honesty and breathtaking prose. Written with Rooney's signature wit and emotional intelligence, this is a must-read for fans of 'Normal People' and anyone who loves stories about flawed people making complicated choices. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Sally Rooney",
     pages: "320",
     language: "English",
@@ -5036,8 +4436,6 @@ export const books = [
     id: "bk-308",
     name: "The 7 Habits of Highly Effective People: Powerful Lessons in Personal Change",
     image: bookImages["the-7-habits-of-highly-effective-people"],
-    description:
-      "Transform your life with Stephen R. Covey's iconic masterpiece 'The 7 Habits of Highly Effective People' at TheBookX.in. This groundbreaking self-help book has sold over 40 million copies worldwide and remains one of the most influential business and personal development books of all time. Covey presents a principle-centered, character-based approach to solving personal and professional problems. The seven habits, from 'Be Proactive' and 'Begin with the End in Mind' to 'Seek First to Understand, Then to Be Understood' and 'Sharpen the Saw', provide a step-by-step framework for effectiveness, integrity, and meaningful success. Whether you're a CEO, student, parent, or entrepreneur, this timeless classic will help you align your actions with your values and create lasting positive change. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Stephen R. Covey",
     pages: "432",
     language: "English",
@@ -5052,8 +4450,6 @@ export const books = [
     id: "bk-309",
     name: "Sapiens: A Brief History of Humankind",
     image: bookImages["sapiens-a-brief-history-of-humankind"],
-    description:
-      "Discover the groundbreaking international bestseller 'Sapiens: A Brief History of Humankind' by Yuval Noah Harari at TheBookX.in. This masterpiece of non-fiction traces the entire history of our species, from the emergence of Homo sapiens in the Stone Age to the political and technological revolutions of the twenty-first century. Harari explores how humans conquered the world, created imagined orders like money and nations, and are now on the verge of becoming gods. Thought-provoking, illuminating, and utterly absorbing, this book will change the way you see humanity's past, present, and future. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Yuval Noah Harari",
     pages: "512",
     language: "English",
@@ -5068,8 +4464,6 @@ export const books = [
     id: "bk-311",
     name: "A Gentleman in Moscow",
     image: bookImages["a-gentleman-in-moscow"],
-    description:
-      "Immerse yourself in the elegant, witty, and heartwarming bestseller 'A Gentleman in Moscow' by Amor Towles at TheBookX.in. Count Alexander Rostov is sentenced to house arrest in a grand hotel across from the Kremlin, where he must watch history unfold from behind its doors. Over decades, he builds a remarkable life, with friendships, love, and purpose, within the hotel's walls. A dazzling novel about resilience, charm, and finding meaning in confinement. Perfect for fans of historical fiction and character-driven storytelling. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Amor Towles",
     pages: "480",
     language: "English",
@@ -5084,8 +4478,6 @@ export const books = [
     id: "bk-312",
     name: "A Promised Land",
     image: bookImages["a-promised-land"],
-    description:
-      "Experience the powerful presidential memoir 'A Promised Land' by Barack Obama at TheBookX.in. This deeply personal and inspiring autobiography chronicles Obama's journey from his early political career to his historic first term as the 44th President of the United States. With candor, wisdom, and eloquence, he reflects on the challenges of leadership, the weight of the Oval Office, and the hope that carried him forward. A must-read for anyone interested in politics, history, and the pursuit of a more perfect union. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Barack Obama",
     pages: "768",
     language: "English",
@@ -5100,8 +4492,6 @@ export const books = [
     id: "bk-313",
     name: "Absolute Friends",
     image: bookImages["absolute-friends"],
-    description:
-      "Dive into the gripping espionage thriller 'Absolute Friends' by John le Carré at TheBookX.in. A decades-long friendship between two men, one a disillusioned idealist, the other a cynical operative, unravels in the shadowy world of post-Cold War intelligence. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "John le Carré",
     pages: "368",
     language: "English",
@@ -5116,8 +4506,6 @@ export const books = [
     id: "bk-314",
     name: "The Accidental Billionaires",
     image: bookImages["the-accidental-billionaires"],
-    description:
-      "Uncover the dramatic true story behind Facebook's creation with Ben Mezrich's 'The Accidental Billionaires' at TheBookX.in. This gripping non-fiction narrative follows Eduardo Saverin and Mark Zuckerberg's Harvard friendship turned bitter legal war over the world's biggest social network. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Ben Mezrich",
     pages: "272",
     language: "English",
@@ -5132,8 +4520,6 @@ export const books = [
     id: "bk-315",
     name: "Advice & Dissent",
     image: bookImages["advice-and-dissent"],
-    description:
-      "Gain insider perspectives with 'Advice & Dissent' at TheBookX.in. A compelling non-fiction work exploring the tensions between economic advisors and policymakers in India's financial reforms. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Y.V. Reddy",
     pages: "288",
     language: "English",
@@ -5148,8 +4534,6 @@ export const books = [
     id: "bk-316",
     name: "Against the Gods",
     image: bookImages["against-the-gods"],
-    description:
-      "Explore the fascinating history of risk management with Peter L. Bernstein's 'Against the Gods' at TheBookX.in. This brilliant non-fiction work traces humanity's quest to tame uncertainty, from ancient gamblers to modern financial engineers. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Peter L. Bernstein",
     pages: "400",
     language: "English",
@@ -5164,8 +4548,6 @@ export const books = [
     id: "bk-318",
     name: "All the Way to the River",
     image: bookImages["all-the-way-to-the-river"],
-    description:
-      "Experience the heartfelt journey of 'All the Way to the River' at TheBookX.in. A moving story about love, loss, and the lengths we go to for family. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Elizabeth Gilbert",
     pages: "240",
     language: "English",
@@ -5180,8 +4562,6 @@ export const books = [
     id: "bk-320",
     name: "An Unsuitable Boy",
     image: bookImages["an-unsuitable-boy"],
-    description:
-      "Read the candid autobiography of Bollywood's most versatile filmmaker 'An Unsuitable Boy' at TheBookX.in. Karan Johar opens up about his life, career, controversies, and the entertainment industry with unflinching honesty. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Karan Johar",
     pages: "272",
     language: "English",
@@ -5196,8 +4576,6 @@ export const books = [
     id: "bk-322",
     name: "Andaman Adventure",
     image: bookImages["andaman-adventure"],
-    description:
-      "Embark on a thrilling journey with 'Andaman Adventure' at TheBookX.in. Perfect for young readers, this children's fiction follows a group of friends discovering mysteries and treasures in the beautiful Andaman Islands. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Deepak Dalal",
     pages: "160",
     language: "English",
@@ -5212,8 +4590,6 @@ export const books = [
     id: "bk-323",
     name: "First Man In",
     image: bookImages["first-man-in"],
-    description:
-      "Get inspired by Ant Middleton's powerful memoir 'First Man In' at TheBookX.in. The former Special Forces soldier shares his journey from chaos to discipline, resilience, and leadership, offering lessons on overcoming fear and becoming unstoppable. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Ant Middleton",
     pages: "288",
     language: "English",
@@ -5228,8 +4604,6 @@ export const books = [
     id: "bk-325",
     name: "The Art of Detachment",
     image: bookImages["the-art-of-detachment"],
-    description:
-      "Find inner peace with 'The Art of Detachment' at TheBookX.in. This practical self-help guide teaches you how to let go of emotional attachments, reduce suffering, and live with greater freedom and clarity. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Shubham Kumar Singh",
     pages: "160",
     language: "English",
@@ -5244,8 +4618,6 @@ export const books = [
     id: "bk-326",
     name: "As Good as Dead",
     image: bookImages["as-good-as-dead"],
-    description:
-      "Dive into the thrilling conclusion of the A Good Girl's Guide to Murder series with 'As Good as Dead' at TheBookX.in. Pip Fitz-Amobi faces her most dangerous case yet, a serial killer who's watching her every move. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Holly Jackson",
     pages: "464",
     language: "English",
@@ -5260,8 +4632,6 @@ export const books = [
     id: "bk-327",
     name: "Atma Siddhi Shastra",
     image: bookImages["atma-siddhi-shastra"],
-    description:
-      "Explore the profound spiritual text 'Atma Siddhi Shastra' at TheBookX.in. A classic Jain philosophical work that delves into the nature of the soul, liberation, and self-realization. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Shrimad Rajchandra",
     pages: "144",
     language: "English",
@@ -5276,8 +4646,6 @@ export const books = [
     id: "bk-328",
     name: "Attitude Is Everything",
     image: bookImages["attitude-is-everything"],
-    description:
-      "Transform your mindset with Jeff Keller's motivational classic 'Attitude Is Everything' at TheBookX.in. This concise self-help book reveals how changing your attitude can change your life, at work, at home, and in every relationship. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jeff Keller",
     pages: "144",
     language: "English",
@@ -5292,8 +4660,6 @@ export const books = [
     id: "bk-329",
     name: "Azaad",
     image: bookImages["azaad"],
-    description:
-      "Read the inspiring story of India's beloved horse 'Azaad' at TheBookX.in. A heartwarming children's fiction about friendship, courage, and the bond between a boy and his horse. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Unknown",
     pages: "120",
     language: "English",
@@ -5308,8 +4674,6 @@ export const books = [
     id: "bk-331",
     name: "Bad Leadership",
     image: bookImages["bad-leadership"],
-    description:
-      "Learn what NOT to do with 'Bad Leadership' at TheBookX.in. A compelling business book that analyzes leadership failures and toxic management, offering lessons from history's worst leaders. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Barbara Kellerman",
     pages: "272",
     language: "English",
@@ -5324,8 +4688,6 @@ export const books = [
     id: "bk-333",
     name: "Behind the Net",
     image: bookImages["behind-the-net"],
-    description:
-      "Score big with the steamy sports romance 'Behind the Net' at TheBookX.in. A grumpy hockey player and his quirky assistant navigate attraction, rivalry, and falling in love in this addictive contemporary romance. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Stephanie Archer",
     pages: "352",
     language: "English",
@@ -5340,8 +4702,6 @@ export const books = [
     id: "bk-334",
     name: "The Autobiography of Benjamin Franklin",
     image: bookImages["the-autobiography-of-benjamin-franklin"],
-    description:
-      "Read the timeless classic 'The Autobiography of Benjamin Franklin' at TheBookX.in. One of the most influential memoirs ever written, filled with Franklin's wisdom on self-improvement, industry, frugality, and the American spirit. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Benjamin Franklin",
     pages: "176",
     language: "English",
@@ -5356,8 +4716,6 @@ export const books = [
     id: "bk-336",
     name: "Beyond Great",
     image: bookImages["beyond-great"],
-    description:
-      "Go beyond greatness with 'Beyond Great' at TheBookX.in. A strategic business book that reveals how companies can thrive in a radically changing world, offering nine practices for enduring success. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Arindam Bhattacharya, Nikolaus Lang & Jim Hemerling",
     pages: "336",
     language: "English",
@@ -5372,8 +4730,6 @@ export const books = [
     id: "bk-337",
     name: "Binge",
     image: bookImages["binge"],
-    description:
-      "Dive into the hilarious and raw memoir 'Binge' by Tyler Oakley at TheBookX.in. The beloved YouTuber shares personal stories about fandom, friendship, family, and finding yourself, with wit, vulnerability, and signature charm. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Tyler Oakley",
     pages: "320",
     language: "English",
@@ -5388,8 +4744,6 @@ export const books = [
     id: "bk-338",
     name: "Bulls, Bears and Other Beasts",
     image: bookImages["bulls-bears-and-other-beasts"],
-    description:
-      "Master the stock market with 'Bulls, Bears and Other Beasts' at TheBookX.in. An insightful guide to understanding market cycles, investor psychology, and the colorful characters that drive financial markets. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Santosh Nair",
     pages: "280",
     language: "English",
@@ -5404,8 +4758,6 @@ export const books = [
     id: "bk-339",
     name: "Capital Ideas",
     image: bookImages["capital-ideas"],
-    description:
-      "Explore the revolutionary ideas that shaped modern finance with Peter L. Bernstein's 'Capital Ideas' at TheBookX.in. From efficient markets to portfolio theory, this brilliant book traces the intellectual history of investing. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Peter L. Bernstein",
     pages: "352",
     language: "English",
@@ -5420,8 +4772,6 @@ export const books = [
     id: "bk-341",
     name: "Chaos and Order in the Capital Markets",
     image: bookImages["chaos-and-order-in-the-capital-markets"],
-    description:
-      "Unravel the complexities of financial markets with 'Chaos and Order in the Capital Markets' at TheBookX.in. A deep dive into market dynamics, behavioral finance, and the delicate balance between randomness and predictability. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Edgar E. Peters",
     pages: "384",
     language: "English",
@@ -5436,8 +4786,6 @@ export const books = [
     id: "bk-342",
     name: "Chasing the Flame",
     image: bookImages["chasing-the-flame"],
-    description:
-      "Experience the extraordinary life of Sergio Vieira de Mello with 'Chasing the Flame' at TheBookX.in. This gripping biography follows the UN diplomat who risked everything to bring peace to war-torn nations, until his tragic death in Baghdad. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Samantha Power",
     pages: "640",
     language: "English",
@@ -5452,8 +4800,6 @@ export const books = [
     id: "bk-343",
     name: "Chatter",
     image: bookImages["chatter"],
-    description:
-      "Silence the negative voice in your head with Ethan Kross's 'Chatter' at TheBookX.in. This groundbreaking psychology book reveals how to control your inner voice, reduce anxiety, and harness the power of self-talk for better mental health. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Ethan Kross",
     pages: "272",
     language: "English",
@@ -5468,8 +4814,6 @@ export const books = [
     id: "bk-344",
     name: "Chemistry and Technology of Silicones",
     image: bookImages["chemistry-and-technology-of-silicones"],
-    description:
-      "Explore the science of silicones with this comprehensive technical guide at TheBookX.in. Essential reading for chemists, engineers, and materials scientists working with these versatile polymers. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Walter Noll",
     pages: "720",
     language: "English",
@@ -5484,8 +4828,6 @@ export const books = [
     id: "bk-345",
     name: "Cleopatra and Antony",
     image: bookImages["cleopatra-and-antony"],
-    description:
-      "Uncover the legendary love story of 'Cleopatra and Antony' by Diana Preston at TheBookX.in. This riveting historical biography reveals the passion, politics, and power struggles between Egypt's last pharaoh and Rome's greatest general. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Diana Preston",
     pages: "384",
     language: "English",
@@ -5500,8 +4842,6 @@ export const books = [
     id: "bk-346",
     name: "Coffee Can Investing",
     image: bookImages["coffee-can-investing"],
-    description:
-      "Build long-term wealth with 'Coffee Can Investing' by Saurabh Mukherjea at TheBookX.in. This bestselling Indian finance book reveals a simple, low-risk strategy for buying and holding quality stocks for decades, just like a coffee can. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Saurabh Mukherjea",
     pages: "240",
     language: "English",
@@ -5516,8 +4856,6 @@ export const books = [
     id: "bk-347",
     name: "Conquering the Chaos",
     image: bookImages["conquering-the-chaos"],
-    description:
-      "Find clarity amidst chaos with 'Conquering the Chaos' at TheBookX.in. A practical self-help guide for navigating uncertainty, managing stress, and building resilience in turbulent times. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Ravi Venkatesan",
     pages: "224",
     language: "English",
@@ -5532,8 +4870,6 @@ export const books = [
     id: "bk-348",
     name: "Crazy Rich Asians",
     image: bookImages["crazy-rich-asians"],
-    description:
-      "Indulge in the hilarious, glamorous bestseller 'Crazy Rich Asians' by Kevin Kwan at TheBookX.in. This addictive fiction follows Rachel Chu as she discovers that her boyfriend's family is unimaginably wealthy, and utterly insane. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Kevin Kwan",
     pages: "544",
     language: "English",
@@ -5548,8 +4884,6 @@ export const books = [
     id: "bk-349",
     name: "Curse for True Love",
     image: bookImages["curse-for-true-love"],
-    description:
-      "Fall into the enchanting world of 'Curse for True Love' at TheBookX.in. A spellbinding fantasy romance about forbidden love, ancient curses, and the courage to defy destiny. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Stephanie Garber",
     pages: "368",
     language: "English",
@@ -5564,8 +4898,6 @@ export const books = [
     id: "bk-350",
     name: "The Defector",
     image: bookImages["the-defector"],
-    description:
-      "Experience the gripping espionage thriller 'The Defector' by Daniel Silva at TheBookX.in. Gabriel Allon returns in this high-stakes adventure involving a Russian oligarch, a missing intelligence officer, and a deadly game of cat and mouse. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Daniel Silva",
     pages: "496",
     language: "English",
@@ -5580,8 +4912,6 @@ export const books = [
     id: "bk-351",
     name: "Darkverse Series",
     image: bookImages["darkverse-series"],
-    description:
-      "Immerse yourself in the complete 'Darkverse Series' box set at TheBookX.in. This epic fantasy collection includes all books in the gripping dark fantasy saga, perfect for binge-reading. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "RuNyx",
     pages: "1200",
     language: "English",
@@ -5596,8 +4926,6 @@ export const books = [
     id: "bk-352",
     name: "Darkdawn",
     image: bookImages["darkdawn"],
-    description:
-      "Conclude the epic Nevernight Chronicle with Jay Kristoff's 'Darkdawn' at TheBookX.in. The final installment follows Mia Corvere as she confronts her destiny, her enemies, and the gods themselves in a breathtaking finale. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jay Kristoff",
     pages: "512",
     language: "English",
@@ -5612,8 +4940,6 @@ export const books = [
     id: "bk-353",
     name: "Data Driven Marketing",
     image: bookImages["data-driven-marketing"],
-    description:
-      "Master the science of modern marketing with 'Data Driven Marketing' at TheBookX.in. Learn how to leverage analytics, customer insights, and AI to create campaigns that actually convert. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Mark Jeffery",
     pages: "288",
     language: "English",
@@ -5628,8 +4954,6 @@ export const books = [
     id: "bk-354",
     name: "Never Finished",
     image: bookImages["never-finished"],
-    description:
-      "Get inspired by David Goggins's powerful follow-up 'Never Finished' at TheBookX.in. The ultra-endurance athlete shares more raw, unfiltered lessons on mental toughness, resilience, and becoming unstoppable. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "David Goggins",
     pages: "336",
     language: "English",
@@ -5644,8 +4968,6 @@ export const books = [
     id: "bk-355",
     name: "Daydream",
     image: bookImages["daydream"],
-    description:
-      "Escape into the delightful romance 'Daydream' at TheBookX.in. A heartwarming contemporary love story about second chances, summer adventures, and finding yourself when you least expect it. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Hannah Grace",
     pages: "304",
     language: "English",
@@ -5660,8 +4982,6 @@ export const books = [
     id: "bk-357",
     name: "My Autobiography",
     image: bookImages["my-autobiography"],
-    description:
-      "Read the candid life story of cricketing legend Dickie Bird in 'My Autobiography' at TheBookX.in. The beloved umpire shares his journey from Yorkshire pits to the world's biggest stadiums, with humor, humility, and unforgettable anecdotes. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Dickie Bird",
     pages: "384",
     language: "English",
@@ -5676,8 +4996,6 @@ export const books = [
     id: "bk-362",
     name: "Durand's Curse",
     image: bookImages["durands-curse"],
-    description:
-      "Explore the troubled history of the Durand Line with 'Durand's Curse' by Rajiv Dogra at TheBookX.in. A fascinating account of the border that divided nations and continues to shape Afghanistan-Pakistan relations. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Rajiv Dogra",
     pages: "320",
     language: "English",
@@ -5692,8 +5010,6 @@ export const books = [
     id: "bk-365",
     name: "Equity Culture",
     image: bookImages["equity-culture"],
-    description:
-      "Build a workplace where everyone thrives with 'Equity Culture' at TheBookX.in. A practical guide to creating fair, inclusive organizations that value diversity and empower all employees. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "B. Mark Smith",
     pages: "288",
     language: "English",
@@ -5708,8 +5024,6 @@ export const books = [
     id: "bk-366",
     name: "Everything Is F*cked",
     image: bookImages["everything-is-fucked"],
-    description:
-      "Find hope in hopeless times with Mark Manson's 'Everything Is F*cked' at TheBookX.in. The bestselling author of 'The Subtle Art of Not Giving a F*ck' returns with more irreverent wisdom on hope, happiness, and the human condition. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Mark Manson",
     pages: "288",
     language: "English",
@@ -5724,8 +5038,6 @@ export const books = [
     id: "bk-367",
     name: "Excuses Begone!",
     image: bookImages["excuses-begone"],
-    description:
-      "Break free from self-limiting beliefs with Dr. Wayne Dyer's 'Excuses Begone!' at TheBookX.in. This transformative self-help book reveals how to identify and eliminate the excuses that hold you back from living your best life. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Dr. Wayne Dyer",
     pages: "272",
     language: "English",
@@ -5740,8 +5052,6 @@ export const books = [
     id: "bk-368",
     name: "Factfulness",
     image: bookImages["factfulness"],
-    description:
-      "Discover the groundbreaking global bestseller 'Factfulness' by Hans Rosling at TheBookX.in. This brilliant non-fiction book reveals why most of us are wrong about the world and teaches you ten instincts that distort our perspective, offering a radically refreshing view of humanity's progress. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Hans Rosling",
     pages: "352",
     language: "English",
@@ -5756,8 +5066,6 @@ export const books = [
     id: "bk-369",
     name: "Fault Lines",
     image: bookImages["fault-lines"],
-    description:
-      "Explore the hidden fractures in modern society with 'Fault Lines' at TheBookX.in. A compelling analysis of economic inequality, political polarization, and the forces threatening to tear our world apart. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Raghuram Rajan",
     pages: "368",
     language: "English",
@@ -5772,8 +5080,6 @@ export const books = [
     id: "bk-370",
     name: "Fire and Fury",
     image: bookImages["fire-and-fury"],
-    description:
-      "Go inside the Trump White House with Michael Wolff's explosive bestseller 'Fire and Fury' at TheBookX.in. This gripping non-fiction account reveals the chaos, infighting, and unprecedented drama of the most controversial presidency in modern history. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Michael Wolff",
     pages: "352",
     language: "English",
@@ -5788,8 +5094,6 @@ export const books = [
     id: "bk-372",
     name: "Flawed",
     image: bookImages["flawed"],
-    description:
-      "Experience the dystopian thriller 'Flawed' by Cecelia Ahern at TheBookX.in. In a society where perfection is the only virtue, one woman's single act of defiance brands her as Flawed, and she must fight for her freedom. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Cecelia Ahern",
     pages: "336",
     language: "English",
@@ -5804,8 +5108,6 @@ export const books = [
     id: "bk-375",
     name: "The Fury",
     image: bookImages["fury"],
-    description:
-      "Unleash the gripping psychological thriller 'Fury' at TheBookX.in. A dark tale of revenge, obsession, and the destructive power of anger, perfect for fans of twisty, edge-of-your-seat suspense. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Alex Michaelides",
     pages: "288",
     language: "English",
@@ -5820,8 +5122,6 @@ export const books = [
     id: "bk-376",
     name: "Girl in Pieces",
     image: bookImages["girl-in-pieces"],
-    description:
-      "Experience the raw, heartbreaking debut 'Girl in Pieces' by Kathleen Glasgow at TheBookX.in. This powerful young adult novel follows Charlie, a teenage girl struggling to piece herself back together after trauma, addiction, and loss. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Kathleen Glasgow",
     pages: "416",
     language: "English",
@@ -5836,8 +5136,6 @@ export const books = [
     id: "bk-378",
     name: "Global Tilt",
     image: bookImages["global-tilt"],
-    description:
-      "Understand the shifting global economy with 'Global Tilt' by Ram Charan at TheBookX.in. A strategic business guide to navigating emerging markets, global competition, and the new rules of international commerce. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Ram Charan",
     pages: "288",
     language: "English",
@@ -5852,8 +5150,6 @@ export const books = [
     id: "bk-379",
     name: "Globalization and Its Discontents",
     image: bookImages["globalization-and-its-discontents"],
-    description:
-      "Read Nobel laureate Joseph Stiglitz's landmark critique 'Globalization and Its Discontents' at TheBookX.in. This essential non-fiction work exposes the failures of international financial institutions and offers a path to fairer globalization. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Joseph Stiglitz",
     pages: "320",
     language: "English",
@@ -5868,8 +5164,6 @@ export const books = [
     id: "bk-380",
     name: "Go Set a Watchman",
     image: bookImages["go-set-a-watchman"],
-    description:
-      "Discover the controversial literary sequel 'Go Set a Watchman' by Harper Lee at TheBookX.in. Set 20 years after 'To Kill a Mockingbird,' Scout Finch returns to Maycomb to confront her father, and her own shattered illusions. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Harper Lee",
     pages: "288",
     language: "English",
@@ -5884,8 +5178,6 @@ export const books = [
     id: "bk-382",
     name: "Good Vibes, Good Life",
     image: bookImages["good-vibes-good-life"],
-    description:
-      "Transform your mindset with Vex King's international bestseller 'Good Vibes, Good Life' at TheBookX.in. This powerful self-help book teaches you how self-love, positive thinking, and gratitude can manifest the life you deserve. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Vex King",
     pages: "288",
     language: "English",
@@ -5900,8 +5192,6 @@ export const books = [
     id: "bk-383",
     name: "Great People Decisions",
     image: bookImages["great-people-decisions"],
-    description:
-      "Master the art of hiring with 'Great People Decisions' by Claudio Fernández-Aráoz at TheBookX.in. A strategic business guide to selecting, developing, and retaining top talent for organizational success. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Claudio Fernández-Aráoz",
     pages: "352",
     language: "English",
@@ -5916,8 +5206,6 @@ export const books = [
     id: "bk-384",
     name: "Wise Guy",
     image: bookImages["wise-guy"],
-    description:
-      "Learn from Silicon Valley legend Guy Kawasaki's 'Wise Guy' at TheBookX.in. This insightful memoir and business guide shares lessons on entrepreneurship, innovation, and living a meaningful life from Apple's original evangelist. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Guy Kawasaki",
     pages: "240",
     language: "English",
@@ -5932,8 +5220,6 @@ export const books = [
     id: "bk-385",
     name: "Harry Potter Set",
     image: bookImages["harry-potter-set"],
-    description:
-      "Experience the magic with the complete 'Harry Potter Set' at TheBookX.in. This 7-book box set includes all of J.K. Rowling's beloved classics, from 'The Sorcerer's Stone' to 'The Deathly Hallows.' Perfect for new readers and longtime fans alike. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "J.K. Rowling",
     pages: "3400",
     language: "English",
@@ -5948,8 +5234,6 @@ export const books = [
     id: "bk-386",
     name: "Heart Bones",
     image: bookImages["heart-bones"],
-    description:
-      "Fall into Colleen Hoover's emotional romance 'Heart Bones' at TheBookX.in. A moving story about a young woman abandoned by her mother, a summer romance that changes everything, and the healing power of love. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Colleen Hoover",
     pages: "368",
     language: "English",
@@ -5964,8 +5248,6 @@ export const books = [
     id: "bk-387",
     name: "How to Fall in Love",
     image: bookImages["how-to-fall-in-love"],
-    description:
-      "Discover the heartwarming romance 'How to Fall in Love' by Cecelia Ahern at TheBookX.in. A woman on a bridge saves a stranger from jumping, and makes a deal to prove that life is worth living in just two weeks. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Cecelia Ahern",
     pages: "384",
     language: "English",
@@ -5980,8 +5262,6 @@ export const books = [
     id: "bk-388",
     name: "How to Treat Her Right?",
     image: bookImages["how-to-treat-her-right"],
-    description:
-      "Build better relationships with 'How to Treat Her Right?' at TheBookX.in. A practical relationship guide for men on communication, respect, emotional intelligence, and creating lasting love. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Gautam Grover",
     pages: "144",
     language: "English",
@@ -5996,8 +5276,6 @@ export const books = [
     id: "bk-389",
     name: "HDFC Bank 2.0",
     image: bookImages["hdfc-bank-2.0"],
-    description:
-      "Understand India's most valuable bank with 'HDFC Bank 2.0' at TheBookX.in. A fascinating business case study on HDFC Bank's journey, strategy, and transformation into a financial powerhouse. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Tamal Bandyopadhyay",
     pages: "256",
     language: "English",
@@ -6012,8 +5290,6 @@ export const books = [
     id: "bk-390",
     name: "I Do What I Do",
     image: bookImages["i-do-what-i-do"],
-    description:
-      "Read former RBI Governor Raghuram Rajan's insightful 'I Do What I Do' at TheBookX.in. A collection of speeches and essays on economics, policy, and governance from one of India's most respected economists. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Raghuram Rajan",
     pages: "344",
     language: "English",
@@ -6028,8 +5304,6 @@ export const books = [
     id: "bk-391",
     name: "Ikigai",
     image: bookImages["ikigai"],
-    description:
-      "Discover the Japanese secret to a long and happy life with 'Ikigai' by Héctor García and Francesc Miralles at TheBookX.in. This international bestseller reveals the simple practices of Okinawa's centenarians, purpose, joy, and everyday fulfillment. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Héctor García & Francesc Miralles",
     pages: "208",
     language: "English",
@@ -6044,8 +5318,6 @@ export const books = [
     id: "bk-392",
     name: "Insurgent",
     image: bookImages["insurgent"],
-    description:
-      "Continue the Divergent series with Veronica Roth's 'Insurgent' at TheBookX.in. Tris and Four fight to survive in a dystopian Chicago where loyalty and betrayal blur, and one choice could destroy them all. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Veronica Roth",
     pages: "544",
     language: "English",
@@ -6060,8 +5332,6 @@ export const books = [
     id: "bk-393",
     name: "Inventing Money",
     image: bookImages["inventing-money"],
-    description:
-      "Explore the fascinating world of derivatives with 'Inventing Money' by Nicholas Dunbar at TheBookX.in. This gripping narrative reveals the story of Long-Term Capital Management and the quants who almost broke the financial system. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Nicholas Dunbar",
     pages: "304",
     language: "English",
@@ -6076,8 +5346,6 @@ export const books = [
     id: "bk-394",
     name: "Investment Biker",
     image: bookImages["investment-biker"],
-    description:
-      "Join the ultimate financial adventure with 'Investment Biker' by Jim Rogers at TheBookX.in. The legendary investor travels the world on a motorcycle, sharing insights on global markets, emerging economies, and life on the road. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jim Rogers",
     pages: "432",
     language: "English",
@@ -6092,8 +5360,6 @@ export const books = [
     id: "bk-396",
     name: "It Starts with Us",
     image: bookImages["it-starts-with-us"],
-    description:
-      "Return to the world of 'It Ends with Us' with Colleen Hoover's 'It Starts with Us' at TheBookX.in. This highly anticipated sequel follows Atlas as he shares his side of the story, and the possibility of a second chance at love. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Colleen Hoover",
     pages: "336",
     language: "English",
@@ -6108,8 +5374,6 @@ export const books = [
     id: "bk-397",
     name: "Jack: Straight from the Gut",
     image: bookImages["jack-straight-from-the-gut"],
-    description:
-      "Read the legendary autobiography of Jack Welch, 'Jack: Straight from the Gut' at TheBookX.in. One of America's most celebrated CEOs shares his raw, unfiltered story of leadership, transformation, and building GE into a global powerhouse. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Jack Welch",
     pages: "480",
     language: "English",
@@ -6124,8 +5388,6 @@ export const books = [
     id: "bk-398",
     name: "Street Smarts",
     image: bookImages["street-smarts"],
-    description:
-      "Learn from investing legend Jim Rogers in 'Street Smarts' at TheBookX.in. This compelling memoir and financial guide shares lessons from a lifetime of global investing, adventure, and defying conventional wisdom. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Jim Rogers",
     pages: "288",
     language: "English",
@@ -6140,8 +5402,6 @@ export const books = [
     id: "bk-399",
     name: "Jugalbandi",
     image: bookImages["jugalbandi"],
-    description:
-      "Explore the powerful collaboration between public and private sectors with 'Jugalbandi' at TheBookX.in. A fascinating Indian business book on how partnerships can drive economic growth and innovation. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Vinay Sitapati",
     pages: "320",
     language: "English",
@@ -6156,8 +5416,6 @@ export const books = [
     id: "bk-400",
     name: "Keep Going",
     image: bookImages["keep-going"],
-    description:
-      "Find creative motivation in Austin Kleon's 'Keep Going' at TheBookX.in. This inspiring book offers 10 ways to stay creative in good times and bad, perfect for artists, writers, and anyone facing burnout. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Austin Kleon",
     pages: "224",
     language: "English",
@@ -6172,8 +5430,6 @@ export const books = [
     id: "bk-402",
     name: "Know How",
     image: bookImages["know-how"],
-    description:
-      "Master the art of strategic thinking with Ram Charan's 'Know How' at TheBookX.in. This business guide reveals the eight skills that separate great leaders from the rest, practical, actionable, and proven. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Ram Charan",
     pages: "304",
     language: "English",
@@ -6188,8 +5444,6 @@ export const books = [
     id: "bk-403",
     name: "Lean In",
     image: bookImages["lean-in"],
-    description:
-      "Read Sheryl Sandberg's groundbreaking feminist manifesto 'Lean In' at TheBookX.in. The Facebook COO shares powerful insights on women, leadership, ambition, and breaking barriers in the workplace. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Sheryl Sandberg",
     pages: "240",
     language: "English",
@@ -6204,8 +5458,6 @@ export const books = [
     id: "bk-404",
     name: "Leading",
     image: bookImages["leading"],
-    description:
-      "Learn from the ultimate cricket captain with Sir Alex Ferguson's 'Leading' at TheBookX.in. The legendary Manchester United manager shares his principles on leadership, teamwork, and winning, applicable to any field. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Sir Alex Ferguson",
     pages: "272",
     language: "English",
@@ -6220,8 +5472,6 @@ export const books = [
     id: "bk-405",
     name: "Light on Yoga",
     image: bookImages["light-on-yoga"],
-    description:
-      "Master the practice of yoga with B.K.S. Iyengar's classic 'Light on Yoga' at TheBookX.in. The definitive guide to asanas, pranayama, and yogic philosophy, illustrated with over 600 photographs. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "B.K.S. Iyengar",
     pages: "544",
     language: "English",
@@ -6236,8 +5486,6 @@ export const books = [
     id: "bk-407",
     name: "Lost Girls",
     image: bookImages["lost-girls"],
-    description:
-      "Uncover the haunting true crime story 'Lost Girls' at TheBookX.in. An investigative journalist follows the unsolved murders of sex workers on Long Island, exposing failures in the justice system. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Robert Kolker",
     pages: "416",
     language: "English",
@@ -6252,8 +5500,6 @@ export const books = [
     id: "bk-408",
     name: "Lucy Score Book Set",
     image: bookImages["lucy-score"],
-    description:
-      "Enjoy a heartwarming romance book set from bestselling author Lucy Score at TheBookX.in. A delightful collection of contemporary love stories about second chances, small towns, and finding happiness when you least expect it. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Lucy Score",
     pages: "384",
     language: "English",
@@ -6268,8 +5514,6 @@ export const books = [
     id: "bk-410",
     name: "Madam Sir",
     image: bookImages["madam-sir"],
-    description:
-      "Read the inspiring autobiography of India's first woman IPS officer, 'Madam Sir' by Kiran Bedi at TheBookX.in. A powerful memoir of breaking barriers, fighting corruption, and serving the nation with integrity. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Kiran Bedi",
     pages: "256",
     language: "English",
@@ -6284,8 +5528,6 @@ export const books = [
     id: "bk-411",
     name: "Magic of the Lost Temple",
     image: bookImages["magic-of-the-lost-temple"],
-    description:
-      "Join an unforgettable adventure with Sudha Murthy's 'Magic of the Lost Temple' at TheBookX.in. This bestselling children's fiction follows a young girl who discovers an ancient temple hidden in her grandmother's village, blending mystery and heritage. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Sudha Murthy",
     pages: "188",
     language: "English",
@@ -6300,8 +5542,6 @@ export const books = [
     id: "bk-412",
     name: "Malcolm Gladwell",
     image: bookImages["malcolm-gladwell"],
-    description:
-      "Dive into the brilliant mind of Malcolm Gladwell at TheBookX.in. This collection features his most influential works on psychology, sociology, and the hidden patterns that shape our world. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Malcolm Gladwell",
     pages: "400",
     language: "English",
@@ -6316,8 +5556,6 @@ export const books = [
     id: "bk-413",
     name: "Market Wizards",
     image: bookImages["market-wizards"],
-    description:
-      "Learn from the world's greatest traders with Jack D. Schwager's 'Market Wizards' at TheBookX.in. This classic finance book interviews top investors, revealing their strategies, mindsets, and secrets to success. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jack D. Schwager",
     pages: "512",
     language: "English",
@@ -6332,8 +5570,6 @@ export const books = [
     id: "bk-414",
     name: "The Dark Hours",
     image: bookImages["the-dark-hours"],
-    description:
-      "Experience the gripping thriller 'The Dark Hours' by Michael Connelly at TheBookX.in. Detective Renée Ballard teams up with Harry Bosch to track a killer during a New Year's Eve blackout in Los Angeles. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Michael Connelly",
     pages: "416",
     language: "English",
@@ -6348,8 +5584,6 @@ export const books = [
     id: "bk-415",
     name: "The Target",
     image: bookImages["the-target"],
-    description:
-      "Read the heart-pounding thriller 'The Target' by Michael Crichton at TheBookX.in. A high-stakes story of espionage, technology, and global conspiracy from the master of the techno-thriller. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "David Baldacci",
     pages: "384",
     language: "English",
@@ -6364,8 +5598,6 @@ export const books = [
     id: "bk-417",
     name: "Mindset",
     image: bookImages["mindset"],
-    description:
-      "Transform your life with Carol S. Dweck's groundbreaking 'Mindset' at TheBookX.in. This psychology classic reveals how changing your beliefs about intelligence and talent can unlock your full potential. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Carol S. Dweck",
     pages: "320",
     language: "English",
@@ -6380,8 +5612,6 @@ export const books = [
     id: "bk-420",
     name: "Nani A. Palkhivala - A Life",
     image: bookImages["nani-a-palkhivala-a-life"],
-    description:
-      "Read the definitive biography of India's greatest constitutional lawyer 'Nani A. Palkhivala - A Life' at TheBookX.in. This tribute celebrates his legacy of integrity, eloquence, and unwavering commitment to justice. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "M.V. Kamath",
     pages: "360",
     language: "English",
@@ -6396,8 +5626,6 @@ export const books = [
     id: "bk-421",
     name: "And Then One Day",
     image: bookImages["and-then-one-day"],
-    description:
-      "Read the candid memoir of legendary actor Naseeruddin Shah, 'And Then One Day' at TheBookX.in. The veteran of Indian cinema shares his journey, triumphs, struggles, and unflinching honesty about life and art. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Naseeruddin Shah",
     pages: "320",
     language: "English",
@@ -6412,8 +5640,6 @@ export const books = [
     id: "bk-422",
     name: "Never Split the Difference",
     image: bookImages["never-split-the-difference"],
-    description:
-      "Master the art of negotiation with Chris Voss's 'Never Split the Difference' at TheBookX.in. A former FBI hostage negotiator shares proven techniques for getting what you want in any situation. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Chris Voss",
     pages: "288",
     language: "English",
@@ -6428,8 +5654,6 @@ export const books = [
     id: "bk-426",
     name: "One Piece",
     image: bookImages["one-piece"],
-    description:
-      "Embark on the legendary pirate adventure with 'One Piece' at TheBookX.in. Join Monkey D. Luffy and his crew as they search for the ultimate treasure in this beloved manga series. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Eiichiro Oda",
     pages: "200",
     language: "English",
@@ -6444,8 +5668,6 @@ export const books = [
     id: "bk-428",
     name: "Origins of the Crash",
     image: bookImages["origins-of-the-crash"],
-    description:
-      "Uncover the root causes of the 2008 financial crisis with 'Origins of the Crash' at TheBookX.in. A deep-dive into deregulation, banking excess, and the systemic failures that led to economic collapse. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Roger Lowenstein",
     pages: "320",
     language: "English",
@@ -6460,8 +5682,6 @@ export const books = [
     id: "bk-429",
     name: "Paula: My Story So Far",
     image: bookImages["paula-my-story-so-far"],
-    description:
-      "Read the inspiring journey of Paula, 'My Story So Far' at TheBookX.in. A candid memoir of resilience, faith, and finding strength through life's darkest moments. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Paula Radcliffe",
     pages: "280",
     language: "English",
@@ -6476,8 +5696,6 @@ export const books = [
     id: "bk-430",
     name: "Percy Jackson Ultimate Collection",
     image: bookImages["percy-jackson-ultimate-collection"],
-    description:
-      "Experience the complete mythological adventure with 'Percy Jackson Ultimate Collection' at TheBookX.in. All five books in Rick Riordan's bestselling series following the demigod hero Percy Jackson. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Rick Riordan",
     pages: "1840",
     language: "English",
@@ -6492,8 +5710,6 @@ export const books = [
     id: "bk-431",
     name: "The Greed Merchants",
     image: bookImages["the-greed-merchants"],
-    description:
-      "Uncover the dark side of capitalism with Philip Kotler's 'The Greed Merchants' at TheBookX.in. A critical examination of how corporate greed has undermined trust, ethics, and the global economy. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Philip Augar",
     pages: "256",
     language: "English",
@@ -6508,8 +5724,6 @@ export const books = [
     id: "bk-434",
     name: "Quiet",
     image: bookImages["quiet"],
-    description:
-      "Discover the power of introverts with Susan Cain's groundbreaking 'Quiet' at TheBookX.in. This bestselling psychology book reveals how introverted personalities can thrive in an extroverted world. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Susan Cain",
     pages: "352",
     language: "English",
@@ -6524,8 +5738,6 @@ export const books = [
     id: "bk-435",
     name: "Reengineering the Corporation",
     image: bookImages["reengineering-the-corporation"],
-    description:
-      "Transform your business with 'Reengineering the Corporation' at TheBookX.in. The classic management book on radical redesign, process improvement, and achieving breakthrough results. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Michael Hammer & James Champy",
     pages: "272",
     language: "English",
@@ -6540,8 +5752,6 @@ export const books = [
     id: "bk-436",
     name: "Reminders of Him",
     image: bookImages["reminders-of-him"],
-    description:
-      "Fall into Colleen Hoover's emotional masterpiece 'Reminders of Him' at TheBookX.in. A powerful story about redemption, forgiveness, and the unbreakable bond between a mother and her daughter. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Colleen Hoover",
     pages: "336",
     language: "English",
@@ -6556,8 +5766,6 @@ export const books = [
     id: "bk-437",
     name: "Rework",
     image: bookImages["rework"],
-    description:
-      "Challenge everything you know about business with Jason Fried's 'Rework' at TheBookX.in. This unconventional manifesto shows a better, simpler way to succeed, without the corporate BS. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jason Fried & David Heinemeier Hansson",
     pages: "288",
     language: "English",
@@ -6572,8 +5780,6 @@ export const books = [
     id: "bk-438",
     name: "Rich Dad Poor Dad",
     image: bookImages["rich-dad-poor-dad"],
-    description:
-      "Transform your financial future with Robert Kiyosaki's classic 'Rich Dad Poor Dad' at TheBookX.in. The #1 personal finance book of all time teaches you to think like the rich and build lasting wealth. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Robert Kiyosaki",
     pages: "336",
     language: "English",
@@ -6588,8 +5794,6 @@ export const books = [
     id: "bk-440",
     name: "Sacred Games",
     image: bookImages["sacred-games"],
-    description:
-      "Immerse yourself in Vikram Chandra's epic thriller 'Sacred Games' at TheBookX.in. A sprawling masterpiece of crime, corruption, and redemption set against the backdrop of modern Mumbai. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Vikram Chandra",
     pages: "900",
     language: "English",
@@ -6604,8 +5808,6 @@ export const books = [
     id: "bk-442",
     name: "Shatter Me Series",
     image: bookImages["shatter-me-series"],
-    description:
-      "Experience the complete dystopian romance with 'Shatter Me Series' at TheBookX.in. All six books in Tahereh Mafi's addictive series about Juliette, a girl whose touch is lethal, and the love that changes everything. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Tahereh Mafi",
     pages: "2500",
     language: "English",
@@ -6620,8 +5822,6 @@ export const books = [
     id: "bk-444",
     name: "Super Trader",
     image: bookImages["super-trader"],
-    description:
-      "Master the markets with Van K. Tharp's 'Super Trader' at TheBookX.in. A comprehensive guide to developing the psychology, systems, and discipline of successful traders. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Van K. Tharp",
     pages: "384",
     language: "English",
@@ -6636,8 +5836,6 @@ export const books = [
     id: "bk-445",
     name: "Sweet Venom",
     image: bookImages["sweet-venom"],
-    description:
-      "Enter the world of monster-hunting teens with 'Sweet Venom' at TheBookX.in. A thrilling young adult fantasy about triplets destined to battle mythological beasts in modern-day San Francisco. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Tera Lynn Childs",
     pages: "352",
     language: "English",
@@ -6654,8 +5852,6 @@ export const books = [
     id: "bk-447",
     name: "Technical Analysis of Financial Markets",
     image: bookImages["technical-analysis-of-financial-markets"],
-    description:
-      "Buy Technical Analysis of the Financial Markets by John J. Murphy online at the lowest price on TheBookX.in. The trader's bible — a complete, beginner-to-advanced guide to chart patterns, candlesticks, trends, indicators, moving averages and market timing for stocks, forex, commodities and crypto. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery, free shipping and easy returns across India — your trusted destination for the best trading and investing books.",
     author: "John J. Murphy",
     pages: "576",
     language: "English",
@@ -6670,8 +5866,6 @@ export const books = [
     id: "bk-692",
     name: "Gunahon Ka Devta (गुनाहों का देवता)",
     image: bookImages["gunahon-ka-devta"],
-    description:
-      "Buy Gunahon Ka Devta (गुनाहों का देवता) by Dharamvir Bharati online at the lowest price on TheBookX.in. One of the most loved Hindi novels of all time — a heart-touching, timeless love story of Chander and Sudha set in Allahabad that has moved readers for generations. An authentic, high-quality Hindi paperback (हिंदी संस्करण) delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery, free shipping and easy returns across India — your trusted destination for the best Hindi literature (हिंदी साहित्य).",
     author: "Dharamvir Bharati (धर्मवीर भारती)",
     pages: "150-170",
     language: "Hindi",
@@ -6686,8 +5880,6 @@ export const books = [
     id: "bk-693",
     name: "The Art of Persuasion",
     image: bookImages["the-art-of-persuasion"],
-    description:
-      "Buy The Art of Persuasion online at the lowest price on TheBookX.in. A practical, powerful guide to winning hearts and minds — master the psychology of influence, confident communication, negotiation and getting a yes in work and life. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery, free shipping and easy returns across India — your trusted destination for the best self-help and communication books.",
     author: "Bob Burg",
     pages: "200-240",
     language: "English",
@@ -6702,8 +5894,6 @@ export const books = [
     id: "bk-694",
     name: "Behave",
     image: bookImages["behave"],
-    description:
-      "Buy Behave: The Biology of Humans at Our Best and Worst by Robert M. Sapolsky online at the lowest price on TheBookX.in. A landmark, deeply researched exploration of why we do what we do — spanning neuroscience, psychology, genes, evolution and culture to explain human behaviour. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery, free shipping and easy returns across India — your trusted destination for the best science and psychology books.",
     author: "Robert M. Sapolsky",
     pages: "790",
     language: "English",
@@ -6718,8 +5908,6 @@ export const books = [
     id: "bk-695",
     name: "Better Than the Movies",
     image: bookImages["better-than-the-movies"],
-    description:
-      "Buy Better Than the Movies by Lynn Painter online at the lowest price on TheBookX.in. A swoon-worthy, laugh-out-loud YA rom-com packed with rom-com movie magic, fake-dating, enemies-to-lovers and the boy next door — a TikTok and bestseller favourite. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery, free shipping and easy returns across India — your trusted destination for the best romance and young-adult books.",
     author: "Lynn Painter",
     pages: "368",
     language: "English",
@@ -6736,8 +5924,6 @@ export const books = [
     id: "bk-696",
     name: "Dog Man",
     image: bookImages["dog-man"],
-    description:
-      "Buy Dog Man (Book 1) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The hilarious, action-packed graphic novel that started it all — part dog, part cop, all hero. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "240",
     language: "English",
@@ -6752,8 +5938,6 @@ export const books = [
     id: "bk-697",
     name: "Dog Man Unleashed",
     image: bookImages["dog-man-unleashed"],
-    description:
-      "Buy Dog Man Unleashed (Book 2) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The laugh-out-loud #1 bestselling graphic novel series for kids. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6768,8 +5952,6 @@ export const books = [
     id: "bk-698",
     name: "Dog Man: A Tale of Two Kitties",
     image: bookImages["dog-man-a-tale-of-two-kitties"],
-    description:
-      "Buy Dog Man: A Tale of Two Kitties (Book 3) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The #1 bestselling graphic novel series kids and parents love. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6784,8 +5966,6 @@ export const books = [
     id: "bk-699",
     name: "Dog Man and Cat Kid",
     image: bookImages["dog-man-and-cat-kid"],
-    description:
-      "Buy Dog Man and Cat Kid (Book 4) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. More supa-epic adventures from the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6800,8 +5980,6 @@ export const books = [
     id: "bk-700",
     name: "Dog Man: Lord of the Fleas",
     image: bookImages["dog-man-lord-of-the-fleas"],
-    description:
-      "Buy Dog Man: Lord of the Fleas (Book 5) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. A hilarious, heartfelt graphic novel from the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6816,8 +5994,6 @@ export const books = [
     id: "bk-701",
     name: "Dog Man: Brawl of the Wild",
     image: bookImages["dog-man-brawl-of-the-wild"],
-    description:
-      "Buy Dog Man: Brawl of the Wild (Book 6) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. Another supa-epic entry in the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "240",
     language: "English",
@@ -6832,8 +6008,6 @@ export const books = [
     id: "bk-702",
     name: "Dog Man: For Whom the Ball Rolls",
     image: bookImages["dog-man-for-whom-the-ball-rolls"],
-    description:
-      "Buy Dog Man: For Whom the Ball Rolls (Book 7) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. Fetching fun from the #1 bestselling graphic novel series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6848,8 +6022,6 @@ export const books = [
     id: "bk-703",
     name: "Dog Man: Fetch-22",
     image: bookImages["dog-man-fetch-22"],
-    description:
-      "Buy Dog Man: Fetch-22 (Book 8) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. A paws-itively hilarious instalment of the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6864,8 +6036,6 @@ export const books = [
     id: "bk-704",
     name: "Dog Man: Grime and Punishment",
     image: bookImages["dog-man-grime-and-punishment"],
-    description:
-      "Buy Dog Man: Grime and Punishment (Book 9) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The #1 bestselling graphic novel series kids can't put down. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6880,8 +6050,6 @@ export const books = [
     id: "bk-705",
     name: "Dog Man: Mothering Heights",
     image: bookImages["dog-man-mothering-heights"],
-    description:
-      "Buy Dog Man: Mothering Heights (Book 10) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. A supa-emotional, supa-funny entry in the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6896,8 +6064,6 @@ export const books = [
     id: "bk-706",
     name: "Dog Man: Twenty Thousand Fleas Under the Sea",
     image: bookImages["dog-man-twenty-thousand-fleas-under-the-sea"],
-    description:
-      "Buy Dog Man: Twenty Thousand Fleas Under the Sea (Book 11) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. A deep-sea dose of the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6912,8 +6078,6 @@ export const books = [
     id: "bk-707",
     name: "Dog Man: The Scarlet Shedder",
     image: bookImages["dog-man-the-scarlet-shedder"],
-    description:
-      "Buy Dog Man: The Scarlet Shedder (Book 12) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The latest supa-epic laughs from the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6928,8 +6092,6 @@ export const books = [
     id: "bk-708",
     name: "Dog Man: Big Jim Begins",
     image: bookImages["dog-man-big-jim-begins"],
-    description:
-      "Buy Dog Man: Big Jim Begins (Book 13) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. An origin-story adventure from the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6944,8 +6106,6 @@ export const books = [
     id: "bk-709",
     name: "Dog Man: Big Jim Believes",
     image: bookImages["dog-man-big-jim-believes"],
-    description:
-      "Buy Dog Man: Big Jim Believes (Book 14) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. More big-hearted, big-laugh adventures from the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6960,8 +6120,6 @@ export const books = [
     id: "bk-710",
     name: "Dog Man: A Sprinkle in Time",
     image: bookImages["dog-man-a-sprinkle-in-time"],
-    description:
-      "Buy Dog Man: A Sprinkle in Time (Book 15) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The newest supa-epic adventure in the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "224",
     language: "English",
@@ -6976,8 +6134,6 @@ export const books = [
     id: "bk-711",
     name: "Dog Man: Complete Hardcover Set (Books 1–13)",
     image: bookImages["dog-man-complete-set"],
-    description:
-      "Buy the complete Dog Man hardcover set (Books 1–13) by Dav Pilkey online at the lowest price on TheBookX.in. All fifteen supa-epic graphic novels in premium hardcover — the perfect gift and the best value for every young reader. Save 10% versus buying the singles. Delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
     pages: "13 books",
     language: "English",
@@ -7009,8 +6165,6 @@ export const books = [
     id: "bk-450",
     name: "The Bane Chronicles",
     image: bookImages["the-bane-chronicles"],
-    description:
-      "Enter the shadow world with Cassandra Clare's 'The Bane Chronicles' at TheBookX.in. Eleven stories following the immortal warlock Magnus Bane through centuries of adventure, love, and magic. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Cassandra Clare",
     pages: "464",
     language: "English",
@@ -7025,8 +6179,6 @@ export const books = [
     id: "bk-451",
     name: "The Bell Jar",
     image: bookImages["the-bell-jar"],
-    description:
-      "Read Sylvia Plath's haunting classic 'The Bell Jar' at TheBookX.in. A semi-autobiographical masterpiece exploring mental illness, identity, and the pressures of womanhood in 1950s America. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Sylvia Plath",
     pages: "256",
     language: "English",
@@ -7041,8 +6193,6 @@ export const books = [
     id: "bk-452",
     name: "The Big Short",
     image: bookImages["the-big-short"],
-    description:
-      "Uncover the story of the financial crisis with Michael Lewis's 'The Big Short' at TheBookX.in. The brilliant account of the outsiders who predicted the housing bubble and bet against the banks. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Michael Lewis",
     pages: "320",
     language: "English",
@@ -7057,8 +6207,6 @@ export const books = [
     id: "bk-453",
     name: "The Broken Ear",
     image: bookImages["the-broken-ear"],
-    description:
-      "Join Tintin's thrilling adventure in 'The Broken Ear' at TheBookX.in. A classic mystery involving a stolen artifact, a missing statue, and a conspiracy that spans continents. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Hergé",
     pages: "64",
     language: "English",
@@ -7073,8 +6221,6 @@ export const books = [
     id: "bk-454",
     name: "The Comfort Crisis",
     image: bookImages["the-comfort-crisis"],
-    description:
-      "Break free from modern comfort with Michael Easter's 'The Comfort Crisis' at TheBookX.in. Discover how discomfort, challenge, and embracing the unknown can unlock a more meaningful life. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Michael Easter",
     pages: "304",
     language: "English",
@@ -7089,8 +6235,6 @@ export const books = [
     id: "bk-456",
     name: "The Fault in Our Stars",
     image: bookImages["the-fault-in-our-stars"],
-    description:
-      "Experience the heartbreakingly beautiful love story 'The Fault in Our Stars' by John Green at TheBookX.in. Hazel and Augustus meet at a cancer support group and fall in love, facing life's biggest questions with humor, courage, and unforgettable tenderness. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "John Green",
     pages: "336",
     language: "English",
@@ -7105,8 +6249,6 @@ export const books = [
     id: "bk-457",
     name: "The Final Gambit",
     image: bookImages["the-final-gambit"],
-    description:
-      "Solve the final puzzle with Jennifer Lynn Barnes's 'The Final Gambit' at TheBookX.in. The thrilling conclusion to the Inheritance Games series, where Avery must outsmart a mastermind to claim her fortune, and survive. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Jennifer Lynn Barnes",
     pages: "384",
     language: "English",
@@ -7121,8 +6263,6 @@ export const books = [
     id: "bk-458",
     name: "The First Fifteen Lives of Harry August",
     image: bookImages["the-first-fifteen-lives-of-harry-august"],
-    description:
-      "Dive into the mind-bending sci-fi classic 'The First Fifteen Lives of Harry August' by Claire North at TheBookX.in. A man lives his life over and over, remembering everything, until he receives a message that the world is ending and he must stop it. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Claire North",
     pages: "416",
     language: "English",
@@ -7137,8 +6277,6 @@ export const books = [
     id: "bk-459",
     name: "The Girls",
     image: bookImages["the-girls"],
-    description:
-      "Read the gripping psychological novel 'The Girls' by Emma Cline at TheBookX.in. A mesmerizing debut about a teenage girl drawn into a dangerous cult in 1960s California, inspired by the Manson family. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Emma Cline",
     pages: "368",
     language: "English",
@@ -7153,8 +6291,6 @@ export const books = [
     id: "bk-460",
     name: "The House of Morgan",
     image: bookImages["the-house-of-morgan"],
-    description:
-      "Explore the epic history of American finance with Ron Chernow's 'The House of Morgan' at TheBookX.in. A Pulitzer Prize-winning biography of the legendary banking dynasty that shaped modern capitalism. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Ron Chernow",
     pages: "848",
     language: "English",
@@ -7169,8 +6305,6 @@ export const books = [
     id: "bk-461",
     name: "The Inheritance Games",
     image: bookImages["the-inheritance-games"],
-    description:
-      "Enter the addictive puzzle-filled world of 'The Inheritance Games' by Jennifer Lynn Barnes at TheBookX.in. A teenage girl inherits billions from a mysterious stranger, but only if she can solve his deadly riddles. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jennifer Lynn Barnes",
     pages: "400",
     language: "English",
@@ -7185,8 +6319,6 @@ export const books = [
     id: "bk-463",
     name: "The Last Letter",
     image: bookImages["the-last-letter"],
-    description:
-      "Fall into the emotional romance 'The Last Letter' by Rebecca Yarros at TheBookX.in. A heart-wrenching story of love, loss, and a promise written in a letter that changes everything. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Rebecca Yarros",
     pages: "400",
     language: "English",
@@ -7201,8 +6333,6 @@ export const books = [
     id: "bk-464",
     name: "The Leadership Engine",
     image: bookImages["the-leadership-engine"],
-    description:
-      "Build leaders at every level with 'The Leadership Engine' by Noel Tichy at TheBookX.in. A proven framework for creating a leadership culture that drives sustainable success. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Noel Tichy",
     pages: "400",
     language: "English",
@@ -7217,8 +6347,6 @@ export const books = [
     id: "bk-466",
     name: "The Lords of Strategy",
     image: bookImages["the-lords-of-strategy"],
-    description:
-      "Discover the secret history of modern business with 'The Lords of Strategy' by Walter Kiechel at TheBookX.in. How a group of brilliant minds revolutionized the way companies are run. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Walter Kiechel",
     pages: "368",
     language: "English",
@@ -7233,8 +6361,6 @@ export const books = [
     id: "bk-467",
     name: "The Maverick Effect",
     image: bookImages["the-maverick-effect"],
-    description:
-      "Read the inspiring story of India's IT revolution with 'The Maverick Effect' at TheBookX.in. The fascinating account of how a band of rebels built an industry from scratch. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Harish Mehta",
     pages: "280",
     language: "English",
@@ -7249,8 +6375,6 @@ export const books = [
     id: "bk-468",
     name: "The Mind of Wall Street",
     image: bookImages["the-mind-of-wall-street"],
-    description:
-      "Understand investor psychology with 'The Mind of Wall Street' by Leon Levy at TheBookX.in. A legendary investor reveals the emotional and psychological forces that drive markets. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Leon Levy",
     pages: "240",
     language: "English",
@@ -7265,8 +6389,6 @@ export const books = [
     id: "bk-470",
     name: "The Naturals Set",
     image: bookImages["the-naturals-set"],
-    description:
-      "Binge the complete thrilling series with 'The Naturals Set' by Jennifer Lynn Barnes at TheBookX.in. Four books following a group of teens with extraordinary abilities solving cold cases for the FBI. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Jennifer Lynn Barnes",
     pages: "1400",
     language: "English",
@@ -7281,8 +6403,6 @@ export const books = [
     id: "bk-471",
     name: "The Power Broker",
     image: bookImages["the-power-broker"],
-    description:
-      "Read Robert Caro's Pulitzer Prize-winning masterpiece 'The Power Broker' at TheBookX.in. The definitive biography of Robert Moses and how one man shaped, and corrupted, New York City. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Robert Caro",
     pages: "1344",
     language: "English",
@@ -7297,8 +6417,6 @@ export const books = [
     id: "bk-472",
     name: "The Second Machine Age",
     image: bookImages["the-second-machine-age"],
-    description:
-      "Understand the future of technology with 'The Second Machine Age' by Erik Brynjolfsson at TheBookX.in. How AI, automation, and digital innovation are transforming work, economy, and society. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Erik Brynjolfsson & Andrew McAfee",
     pages: "336",
     language: "English",
@@ -7313,8 +6431,6 @@ export const books = [
     id: "bk-474",
     name: "The Sun Is Also a Star",
     image: bookImages["the-sun-is-also-a-star"],
-    description:
-      "Fall into the romantic YA novel 'The Sun Is Also a Star' by Nicola Yoon at TheBookX.in. A girl who believes in science and a boy who believes in fate meet for one life-changing day in New York City. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Nicola Yoon",
     pages: "384",
     language: "English",
@@ -7329,8 +6445,6 @@ export const books = [
     id: "bk-475",
     name: "The Things We Leave Behind",
     image: bookImages["the-things-we-leave-behind"],
-    description:
-      "Experience the haunting drama 'The Things We Leave Behind' at TheBookX.in. A powerful story about secrets, inheritance, and the ghosts that follow us through generations. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Unknown",
     pages: "320",
     language: "English",
@@ -7345,8 +6459,6 @@ export const books = [
     id: "bk-477",
     name: "The Wal-Mart Effect",
     image: bookImages["the-wal-mart-effect"],
-    description:
-      "Understand the true cost of low prices with 'The Wal-Mart Effect' by Charles Fishman at TheBookX.in. A revealing investigation into how the retail giant reshaped global commerce and everyday life. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Charles Fishman",
     pages: "336",
     language: "English",
@@ -7361,8 +6473,6 @@ export const books = [
     id: "bk-478",
     name: "The Witch of Portobello",
     image: bookImages["the-witch-of-portobello"],
-    description:
-      "Discover Paulo Coelho's spiritual masterpiece 'The Witch of Portobello' at TheBookX.in. A mysterious story of a woman who defies convention to follow her own spiritual path. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Paulo Coelho",
     pages: "304",
     language: "English",
@@ -7377,8 +6487,6 @@ export const books = [
     id: "bk-479",
     name: "The Witcher",
     image: bookImages["the-witcher"],
-    description:
-      "Enter the dark fantasy world of 'The Witcher' by Andrzej Sapkowski at TheBookX.in. The basis for the hit Netflix series, follow Geralt of Rivia, a monster hunter in a morally complex universe. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Andrzej Sapkowski",
     pages: "384",
     language: "English",
@@ -7393,8 +6501,6 @@ export const books = [
     id: "bk-480",
     name: "The World Is Flat",
     image: bookImages["the-world-is-flat"],
-    description:
-      "Understand globalization with Thomas L. Friedman's landmark 'The World Is Flat' at TheBookX.in. How technology, outsourcing, and connectivity have leveled the global playing field. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Thomas L. Friedman",
     pages: "672",
     language: "English",
@@ -7409,8 +6515,6 @@ export const books = [
     id: "bk-481",
     name: "Things We Never Got Over",
     image: bookImages["things-we-never-got-over"],
-    description:
-      "Fall into Lucy Score's addictive romance 'Things We Never Got Over' at TheBookX.in. A grumpy small-town sheriff and a runaway bride collide in this steamy, heartwarming bestseller. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Lucy Score",
     pages: "576",
     language: "English",
@@ -7425,8 +6529,6 @@ export const books = [
     id: "bk-482",
     name: "Tintin Set",
     image: bookImages["tinin-set"],
-    description:
-      "Collect the complete classic comic collection with 'Tinin Set' at TheBookX.in. Timeless adventures of the beloved Belgian reporter, perfect for collectors and new readers alike. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Hergé",
     pages: "1600",
     language: "English",
@@ -7441,8 +6543,6 @@ export const books = [
     id: "bk-484",
     name: "To Catch a Russian Spy",
     image: bookImages["to-catch-a-russian-spy"],
-    description:
-      "Read the true spy thriller 'To Catch a Russian Spy' at TheBookX.in. The gripping real-life story of espionage, betrayal, and the hunt for a mole in the West. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Naveed Jamali",
     pages: "320",
     language: "English",
@@ -7457,8 +6557,6 @@ export const books = [
     id: "bk-485",
     name: "Tom Gates",
     image: bookImages["tom-gates"],
-    description:
-      "Laugh out loud with Liz Pichon's hilarious 'Tom Gates' at TheBookX.in. A diary-style children's series about a boy, his band, and the everyday chaos of school and family. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Liz Pichon",
     pages: "240",
     language: "English",
@@ -7473,8 +6571,6 @@ export const books = [
     id: "bk-487",
     name: "Tuesdays with Morrie",
     image: bookImages["tuesdays-with-morrie"],
-    description:
-      "Experience the life-changing wisdom of Mitch Albom's 'Tuesdays with Morrie' at TheBookX.in. An old professor, a young man, and life's greatest lessons, a timeless memoir that has touched millions of hearts. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Mitch Albom",
     pages: "224",
     language: "English",
@@ -7489,8 +6585,6 @@ export const books = [
     id: "bk-488",
     name: "Unhinged",
     image: bookImages["unhinged"],
-    description:
-      "Continue the dangerous romance with 'Unhinged' by A.G. Howard at TheBookX.in. The sequel to 'Splintered' follows Alyssa as she navigates love, madness, and the dark Wonderland. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "A.G. Howard",
     pages: "400",
     language: "English",
@@ -7505,8 +6599,6 @@ export const books = [
     id: "bk-489",
     name: "Venture Deals",
     image: bookImages["venture-deals"],
-    description:
-      "Master startup fundraising with Brad Feld's 'Venture Deals' at TheBookX.in. The essential guide to term sheets, valuations, and negotiating with venture capitalists. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Brad Feld & Jason Mendelson",
     pages: "336",
     language: "English",
@@ -7521,8 +6613,6 @@ export const books = [
     id: "bk-490",
     name: "An Equal Music",
     image: bookImages["an-equal-music"],
-    description:
-      "Read Vikram Seth's lyrical masterpiece 'An Equal Music' at TheBookX.in. A haunting love story about a violinist and the pianist he loved, and lost, set against the world of classical music. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Vikram Seth",
     pages: "496",
     language: "English",
@@ -7537,8 +6627,6 @@ export const books = [
     id: "bk-492",
     name: "Warmth",
     image: bookImages["warmth"],
-    description:
-      "Find comfort in 'Warmth' at TheBookX.in. A collection of gentle essays and reflections on finding light in dark times, love in loneliness, and hope in hardship. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Rithvik Singh",
     pages: "160",
     language: "English",
@@ -7553,8 +6641,6 @@ export const books = [
     id: "bk-493",
     name: "We Don't Die",
     image: bookImages["we-dont-die"],
-    description:
-      "Explore the afterlife with 'We Don't Die' by Sandra Champlain at TheBookX.in. A comforting exploration of near-death experiences, spiritual communication, and the survival of consciousness. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Sandra Champlain",
     pages: "256",
     language: "English",
@@ -7569,8 +6655,6 @@ export const books = [
     id: "bk-494",
     name: "Welcome to the Hyunam-dong Bookshop",
     image: bookImages["welcome-to-the-hyunam-dong-bookshop"],
-    description:
-      "Escape into the heartwarming Korean bestseller 'Welcome to the Hyunam-dong Bookshop' at TheBookX.in. A woman leaves her corporate job to open a small bookshop, and discovers community, purpose, and healing. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Hwang Bo-reum",
     pages: "300",
     language: "English",
@@ -7585,8 +6669,6 @@ export const books = [
     id: "bk-496",
     name: "When the Wolves Bite",
     image: bookImages["when-the-wolves-bite"],
-    description:
-      "Read the gripping financial thriller 'When the Wolves Bite' at TheBookX.in. A high-stakes story of hedge funds, short sellers, and the battle for corporate survival. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Scott Wapner",
     pages: "320",
     language: "English",
@@ -7601,8 +6683,6 @@ export const books = [
     id: "bk-498",
     name: "Who Will Cry When You Die?",
     image: bookImages["who-will-cry-when-you-die"],
-    description:
-      "Find life-changing wisdom in Robin Sharma's 'Who Will Cry When You Die?' at TheBookX.in. 101 simple, powerful lessons on living a meaningful, legacy-building life. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Robin Sharma",
     pages: "256",
     language: "English",
@@ -7617,8 +6697,6 @@ export const books = [
     id: "bk-499",
     name: "Why Nations Fail",
     image: bookImages["why-nations-fail"],
-    description:
-      "Understand the roots of prosperity with Daron Acemoglu's 'Why Nations Fail' at TheBookX.in. A groundbreaking political and economic history of why some nations thrive while others collapse. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Daron Acemoglu & James A. Robinson",
     pages: "544",
     language: "English",
@@ -7633,8 +6711,6 @@ export const books = [
     id: "bk-500",
     name: "Wilbur Smith",
     image: bookImages["wilbur-smith"],
-    description:
-      "Experience the epic adventure fiction of master storyteller Wilbur Smith at TheBookX.in. Action-packed novels of African landscapes, historical drama, and unforgettable heroes. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Wilbur Smith",
     pages: "400",
     language: "English",
@@ -7649,8 +6725,6 @@ export const books = [
     id: "bk-501",
     name: "Winning Ugly",
     image: bookImages["winning-ugly"],
-    description:
-      "Master the mental game of tennis with Brad Gilbert's 'Winning Ugly' at TheBookX.in. A legendary coach reveals the strategies, tactics, and psychology of winning, even on your worst days. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Brad Gilbert",
     pages: "256",
     language: "English",
@@ -7665,8 +6739,6 @@ export const books = [
     id: "bk-502",
     name: "Word Power Made Easy",
     image: bookImages["word-power"],
-    description:
-      "Build your vocabulary with 'Word Power' at TheBookX.in. A comprehensive guide to mastering English words, roots, and usage for students, writers, and competitive exam takers. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
     author: "Norman Lewis",
     pages: "256",
     language: "English",
@@ -7682,8 +6754,6 @@ export const books = [
     id: "bk-505",
     name: "Your Money & Your Brain",
     image: bookImages["your-money-and-your-brain"],
-    description:
-      "Understand the psychology of investing with Jason Zweig's 'Your Money & Your Brain' at TheBookX.in. How emotions, biases, and neuroscience influence financial decisions, and how to overcome them. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Jason Zweig",
     pages: "352",
     language: "English",
@@ -7698,8 +6768,6 @@ export const books = [
     id: "bk-507",
     name: "Hero",
     image: bookImages["hero"],
-    description:
-      "Discover your inner power and life's true purpose with Rhonda Byrne's 'Hero' at TheBookX.in. From the creator of the international phenomenon 'The Secret,' this transformative self-help book reveals a step-by-step map to living your most brilliant, rich, and fulfilling life. By following the seemingly impossible journeys of twelve of the most successful people on the planet, from football coach Pete Carroll to surfers, entrepreneurs, and beyond, you'll learn how to overcome obstacles, find your calling, and unleash the hero within. This is the story of why you are here on Earth. No matter your age or circumstances, it is never too late to follow your dream and change the world. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer. [citation:1][citation:4][citation:9]",
     author: "Rhonda Byrne",
     pages: "240",
     language: "English",
@@ -7714,8 +6782,6 @@ export const books = [
     id: "bk-508",
     name: "Crooked House",
     image: bookImages["crooked-house"],
-    description:
-      "Unravel one of Agatha Christie's most twisted and personal mysteries with 'Crooked House' at TheBookX.in. In this masterful standalone thriller, a wealthy Greek tycoon is poisoned in his sprawling, crooked mansion, and every member of his dysfunctional family is a suspect. His granddaughter's fiancé, a young diplomat and amateur detective, takes on the investigation, only to discover that behind the grand facade lies a nest of jealousy, greed, hatred, and dark secrets. The family is compared to a 'crooked house', twisted and unstable at its core. With an ending that will shock even the most seasoned mystery reader, Christie herself considered this one of her finest puzzles. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Agatha Christie",
     pages: "256",
     language: "English",
@@ -7730,8 +6796,6 @@ export const books = [
     id: "bk-509",
     name: "Blue Sisters",
     image: bookImages["blue-sisters"],
-    description:
-      "Experience the heart-wrenching and luminous debut 'Blue Sisters' by Coco Mellors at TheBookX.in. Three estranged sisters, each struggling with addiction, grief, and the weight of family legacy, come together in New York City after the death of their fourth sister. Avery, a high-powered lawyer; Bonnie, a former boxer; and Lucky, a model chasing oblivion, must confront their past, their demons, and each other. This is a breathtaking novel about sisterhood, survival, learning to fall, and the courage it takes to get back up. Perfect for fans of 'Conversations with Friends' and 'Little Fires Everywhere.' TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Coco Mellors",
     pages: "352",
     language: "English",
@@ -7746,8 +6810,6 @@ export const books = [
     id: "bk-511",
     name: "Cleopatra and Frankenstein",
     image: bookImages["cleopatra-and-frankenstein"],
-    description:
-      "Fall into the dazzling, devastating debut 'Cleopatra and Frankenstein' by Coco Mellors at TheBookX.in. Twenty-four-year-old Cleopatra and forty-something Frankie enter a whirlwind marriage after meeting at a New Year's Eve party in New York City. What follows is a raw, unflinching portrait of a relationship, its soaring highs, its crushing lows, and the messy, beautiful chaos of two broken people trying to love each other. Set against the backdrop of New York's art scene, this novel explores addiction, mental health, friendship, and the question of whether love can ever truly save us. Perfect for fans of Sally Rooney and 'Conversations with Friends.' TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Coco Mellors",
     pages: "416",
     language: "English",
@@ -7762,8 +6824,6 @@ export const books = [
     id: "bk-512",
     name: "The Midnight Library",
     image: bookImages["the-midnight-library"],
-    description:
-      "Discover the uplifting international bestseller 'The Midnight Library' by Matt Haig at TheBookX.in. Between life and death lies a magical library, one that contains an infinite number of books, each offering a chance to explore a different version of your life. When Nora Seed finds herself there, she gets the opportunity to undo her deepest regrets and try on the lives she could have lived. But as she journeys through alternate realities, she discovers that the life she truly wants might be closer than she thinks. This heartwarming, philosophical novel explores regret, possibility, mental health, and the beautiful mess of being human. Perfect for fans of 'The Alchemist' and 'Replay.' TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Matt Haig",
     pages: "304",
     language: "English",
@@ -7778,8 +6838,6 @@ export const books = [
     id: "bk-513",
     name: "How to Talk to Anyone: 92 Little Tricks for Big Success in Relationships",
     image: bookImages["how-to-talk-to-anyone"],
-    description:
-      "Master the art of conversation with Leil Lowndes' international bestseller 'How to Talk to Anyone' at TheBookX.in. Have you ever admired those successful people who seem to have it all? They're not necessarily smarter or better looking, they simply have more skillful ways of communicating. This fun, witty, and insightful guide reveals 92 proven techniques to help you connect with anyone, anytime, anywhere. From working a party like a politician and becoming an insider in any crowd to using key words and body language that create chemistry, this book will transform your personal and professional relationships. Learn how to make a killer first impression, avoid awkward silences, and turn every conversation into an opportunity for success. Perfect for shy individuals, professionals, networkers, and anyone who wants to feel more confident in social situations. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Leil Lowndes",
     pages: "352",
     language: "English",
@@ -7794,8 +6852,6 @@ export const books = [
     id: "bk-514",
     name: "Trading in the Zone: Master the Market with Confidence, Discipline, and a Winning Attitude",
     image: bookImages["trading-in-the-zone"],
-    description:
-      "Maximize your trading success by mastering your mindset with Mark Douglas's landmark bestseller 'Trading in the Zone' at TheBookX.in. This essential guide to trading psychology reveals why even the most skilled traders fail, not from lack of market knowledge, but from counterproductive thinking and emotional errors [citation:2][citation:5]. Douglas uncovers the underlying reasons for inconsistent results and helps you overcome ingrained mental habits that cost you money. He debunks market myths one by one, teaching you to look beyond random outcomes, understand the true realities of risk, and become comfortable with market probabilities. Learn why traders in the 'zone' don't need to know, or care, what the market will do next; they know what they will do next, and that makes all the difference [citation:2]. Adopt the core beliefs of a winner's mindset and leverage the power of the zone for unprecedented profits. Perfect for day traders, swing traders, options traders, and anyone serious about consistent success in the financial markets. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Mark Douglas",
     pages: "240",
     language: "English",
@@ -7810,8 +6866,6 @@ export const books = [
     id: "bk-515",
     name: "The Striker",
     image: bookImages["the-striker"],
-    description:
-      "Experience the #1 New York Times bestseller 'The Striker' by Ana Huang at TheBookX.in [citation:1][citation:4]. Asher Donovan is a living legend, the darling of the Premier League and arguably the greatest footballer in the world. But his reckless antics and feud with his rival-turned-teammate cost them a championship title, forcing him into mandatory ballet training to improve his agility. Enter Scarlett DuBois, his beautiful and demanding ballet instructor. She's a former prima ballerina who loathes the spotlight, and she's also his best friend's little sister. The only woman he can't have becomes the only one he desperately wants. A forbidden, enemies-to-lovers romance set against the backdrop of professional sports and classical dance. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited offer.",
     author: "Ana Huang",
     pages: "592",
     language: "English",
@@ -7826,8 +6880,6 @@ export const books = [
     id: "bk-516",
     name: "The Defender",
     image: bookImages["the-defender"],
-    description:
-      "Dive into the highly anticipated second book in Ana Huang's Gods of the Game series, 'The Defender' at TheBookX.in [citation:3][citation:6]. Vincent DuBois is the captain of Blackcastle Football Club, cool, controlled, and one of the highest-paid athletes in the game. But when his fame brings a stalker to his doorstep, he secretly moves in with Brooklyn Armstrong, his coach's confident and outspoken daughter. She's a sports nutritionist determined to keep him at arm's length to protect her career. He's used to getting what he wants. Forced proximity ignites undeniable chemistry, but with a stalker lurking in the shadows, their lives, and hearts, are on the line. This is a gripping, slow-burn romance with suspense and high emotional stakes. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1, grab your copy today.",
     author: "Ana Huang",
     pages: "400",
     language: "English",
@@ -7842,8 +6894,6 @@ export const books = [
     id: "bk-518",
     name: "It Ends with Us",
     image: bookImages["it-ends-with-us"],
-    description:
-      "Buy It Ends with Us by Colleen Hoover online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Colleen Hoover",
     authorSlug: "colleen-hoover",
     pages: "360-390",
@@ -7859,8 +6909,6 @@ export const books = [
     id: "bk-519",
     name: "The Song of Achilles",
     image: bookImages["the-song-of-achilles"],
-    description:
-      "Buy The Song of Achilles by Madeline Miller online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Madeline Miller",
     authorSlug: "madeline-miller",
     pages: "350-380",
@@ -7877,8 +6925,6 @@ export const books = [
     id: "bk-521",
     name: "1984",
     image: bookImages["1984"],
-    description:
-      "Buy 1984 by George Orwell online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "George Orwell",
     authorSlug: "george-orwell",
     pages: "320-340",
@@ -7894,8 +6940,6 @@ export const books = [
     id: "bk-522",
     name: "To Kill a Mockingbird",
     image: bookImages["to-kill-a-mockingbird"],
-    description:
-      "Buy To Kill a Mockingbird by Harper Lee online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Harper Lee",
     authorSlug: "harper-lee",
     pages: "280-320",
@@ -7911,8 +6955,6 @@ export const books = [
     id: "bk-523",
     name: "The Great Gatsby",
     image: bookImages["the-great-gatsby"],
-    description:
-      "Buy The Great Gatsby by F. Scott Fitzgerald online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "F. Scott Fitzgerald",
     authorSlug: "f-scott-fitzgerald",
     pages: "180-200",
@@ -7928,8 +6970,6 @@ export const books = [
     id: "bk-524",
     name: "How to Win Friends and Influence People",
     image: bookImages["how-to-win-friends-and-influence-people"],
-    description:
-      "Buy How to Win Friends and Influence People by Dale Carnegie online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Dale Carnegie",
     authorSlug: "dale-carnegie",
     pages: "280-300",
@@ -7945,8 +6985,6 @@ export const books = [
     id: "bk-525",
     name: "Think and Grow Rich",
     image: bookImages["think-and-grow-rich"],
-    description:
-      "Buy Think and Grow Rich by Napoleon Hill online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Napoleon Hill",
     authorSlug: "napoleon-hill",
     pages: "230-260",
@@ -7962,8 +7000,6 @@ export const books = [
     id: "bk-526",
     name: "Man's Search for Meaning",
     image: bookImages["mans-search-for-meaning"],
-    description:
-      "Buy Man's Search for Meaning by Viktor Frankl online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Viktor Frankl",
     authorSlug: "viktor-frankl",
     pages: "180-200",
@@ -7979,8 +7015,6 @@ export const books = [
     id: "bk-527",
     name: "The Power of Your Subconscious Mind",
     image: bookImages["the-power-of-your-subconscious-mind"],
-    description:
-      "Buy The Power of Your Subconscious Mind by Joseph Murphy online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Joseph Murphy",
     authorSlug: "joseph-murphy",
     pages: "290-320",
@@ -7996,8 +7030,6 @@ export const books = [
     id: "bk-528",
     name: "Where the Crawdads Sing",
     image: bookImages["where-the-crawdads-sing"],
-    description:
-      "Buy Where the Crawdads Sing by Delia Owens online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Delia Owens",
     authorSlug: "delia-owens",
     pages: "360-400",
@@ -8013,8 +7045,6 @@ export const books = [
     id: "bk-529",
     name: "Five Point Someone",
     image: bookImages["five-point-someone"],
-    description:
-      "Buy Five Point Someone by Chetan Bhagat online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Chetan Bhagat",
     authorSlug: "chetan-bhagat",
     pages: "270-300",
@@ -8030,8 +7060,6 @@ export const books = [
     id: "bk-712",
     name: "12 Years: My Messed-Up Love Story",
     image: bookImages["12-years-messed-up-love-story"],
-    description:
-      "Buy 12 Years: My Messed-Up Love Story by Chetan Bhagat online at the lowest price on TheBookX.in. Chetan Bhagat's twelfth book is a warm, funny and bittersweet return to the middle-class romance that made him India's favourite storyteller. It follows Saket, a thirty-three-year-old stand-up comedian piecing his life back together after a divorce, and Payal, a twenty-one-year-old finance prodigy fresh out of Stanford. Across Mumbai and Dubai, a twelve-year age gap and two very different worlds put one question to the test — how do you know if someone is 'the one', especially when everything says they're not? A sharp, modern love story for the age of situationships. An authentic, high-quality copy delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Chetan Bhagat",
     authorSlug: "chetan-bhagat",
     pages: "200-230",
@@ -8047,8 +7075,6 @@ export const books = [
     id: "bk-530",
     name: "2 States",
     image: bookImages["2-states"],
-    description:
-      "Buy 2 States by Chetan Bhagat online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Chetan Bhagat",
     authorSlug: "chetan-bhagat",
     pages: "260-290",
@@ -8064,8 +7090,6 @@ export const books = [
     id: "bk-531",
     name: "The 3 Mistakes of My Life",
     image: bookImages["the-3-mistakes-of-my-life"],
-    description:
-      "Buy The 3 Mistakes of My Life by Chetan Bhagat online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Chetan Bhagat",
     authorSlug: "chetan-bhagat",
     pages: "250-270",
@@ -8081,8 +7105,6 @@ export const books = [
     id: "bk-532",
     name: "Half Girlfriend",
     image: bookImages["half-girlfriend"],
-    description:
-      "Buy Half Girlfriend by Chetan Bhagat online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Chetan Bhagat",
     authorSlug: "chetan-bhagat",
     pages: "260-280",
@@ -8098,8 +7120,6 @@ export const books = [
     id: "bk-533",
     name: "Revolution 2020",
     image: bookImages["revolution-2020"],
-    description:
-      "Buy Revolution 2020 by Chetan Bhagat online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Chetan Bhagat",
     authorSlug: "chetan-bhagat",
     pages: "290-310",
@@ -8115,8 +7135,6 @@ export const books = [
     id: "bk-534",
     name: "The Blue Umbrella",
     image: bookImages["the-blue-umbrella"],
-    description:
-      "Buy The Blue Umbrella by Ruskin Bond online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ruskin Bond",
     authorSlug: "ruskin-bond",
     pages: "80-100",
@@ -8132,8 +7150,6 @@ export const books = [
     id: "bk-535",
     name: "The Room on the Roof",
     image: bookImages["the-room-on-the-roof"],
-    description:
-      "Buy The Room on the Roof by Ruskin Bond online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ruskin Bond",
     authorSlug: "ruskin-bond",
     pages: "150-180",
@@ -8149,8 +7165,6 @@ export const books = [
     id: "bk-536",
     name: "A Flight of Pigeons",
     image: bookImages["a-flight-of-pigeons"],
-    description:
-      "Buy A Flight of Pigeons by Ruskin Bond online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ruskin Bond",
     authorSlug: "ruskin-bond",
     pages: "100-130",
@@ -8166,8 +7180,6 @@ export const books = [
     id: "bk-537",
     name: "Malgudi Days",
     image: bookImages["malgudi-days"],
-    description:
-      "Buy Malgudi Days by R.K. Narayan online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "R.K. Narayan",
     authorSlug: "r-k-narayan",
     pages: "250-270",
@@ -8183,8 +7195,6 @@ export const books = [
     id: "bk-538",
     name: "The Guide",
     image: bookImages["the-guide"],
-    description:
-      "Buy The Guide by R.K. Narayan online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "R.K. Narayan",
     authorSlug: "r-k-narayan",
     pages: "220-250",
@@ -8200,8 +7210,6 @@ export const books = [
     id: "bk-539",
     name: "The Monk Who Sold His Ferrari",
     image: bookImages["the-monk-who-sold-his-ferrari"],
-    description:
-      "Buy The Monk Who Sold His Ferrari by Robin Sharma online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Robin Sharma",
     authorSlug: "robin-sharma",
     pages: "200-220",
@@ -8217,8 +7225,6 @@ export const books = [
     id: "bk-540",
     name: "The 5 AM Club",
     image: bookImages["the-5-am-club"],
-    description:
-      "Buy The 5 AM Club by Robin Sharma online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Robin Sharma",
     authorSlug: "robin-sharma",
     pages: "310-340",
@@ -8234,8 +7240,6 @@ export const books = [
     id: "bk-541",
     name: "The Power of Now",
     image: bookImages["the-power-of-now"],
-    description:
-      "Buy The Power of Now by Eckhart Tolle online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Eckhart Tolle",
     authorSlug: "eckhart-tolle",
     pages: "230-250",
@@ -8251,8 +7255,6 @@ export const books = [
     id: "bk-542",
     name: "Jaya: An Illustrated Retelling of the Mahabharata",
     image: bookImages["jaya-illustrated-mahabharata"],
-    description:
-      "Buy Jaya: An Illustrated Retelling of the Mahabharata by Devdutt Pattanaik online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Devdutt Pattanaik",
     authorSlug: "devdutt-pattanaik",
     pages: "350-380",
@@ -8268,8 +7270,6 @@ export const books = [
     id: "bk-543",
     name: "Sita: An Illustrated Retelling of the Ramayana",
     image: bookImages["sita-illustrated-ramayana"],
-    description:
-      "Buy Sita: An Illustrated Retelling of the Ramayana by Devdutt Pattanaik online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Devdutt Pattanaik",
     authorSlug: "devdutt-pattanaik",
     pages: "300-330",
@@ -8285,8 +7285,6 @@ export const books = [
     id: "bk-544",
     name: "I Too Had a Love Story",
     image: bookImages["i-too-had-a-love-story"],
-    description:
-      "Buy I Too Had a Love Story by Ravinder Singh online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ravinder Singh",
     authorSlug: "ravinder-singh",
     pages: "200-230",
@@ -8302,8 +7300,6 @@ export const books = [
     id: "bk-545",
     name: "November 9",
     image: bookImages["november-9"],
-    description:
-      "Buy November 9 by Colleen Hoover online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Colleen Hoover",
     authorSlug: "colleen-hoover",
     pages: "300-320",
@@ -8319,8 +7315,6 @@ export const books = [
     id: "bk-546",
     name: "Confess",
     image: bookImages["confess"],
-    description:
-      "Buy Confess by Colleen Hoover online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Colleen Hoover",
     authorSlug: "colleen-hoover",
     pages: "300-320",
@@ -8336,8 +7330,6 @@ export const books = [
     id: "bk-547",
     name: "All Your Perfects",
     image: bookImages["all-your-perfects"],
-    description:
-      "Buy All Your Perfects by Colleen Hoover online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Colleen Hoover",
     authorSlug: "colleen-hoover",
     pages: "290-310",
@@ -8353,8 +7345,6 @@ export const books = [
     id: "bk-548",
     name: "Maybe Someday",
     image: bookImages["maybe-someday"],
-    description:
-      "Buy Maybe Someday by Colleen Hoover online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Colleen Hoover",
     authorSlug: "colleen-hoover",
     pages: "320-350",
@@ -8370,8 +7360,6 @@ export const books = [
     id: "bk-549",
     name: "Layla",
     image: bookImages["layla"],
-    description:
-      "Buy Layla by Colleen Hoover online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Colleen Hoover",
     authorSlug: "colleen-hoover",
     pages: "290-310",
@@ -8387,8 +7375,6 @@ export const books = [
     id: "bk-550",
     name: "Beach Read",
     image: bookImages["beach-read"],
-    description:
-      "Buy Beach Read by Emily Henry online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Emily Henry",
     authorSlug: "emily-henry",
     pages: "350-370",
@@ -8404,8 +7390,6 @@ export const books = [
     id: "bk-551",
     name: "Book Lovers",
     image: bookImages["book-lovers"],
-    description:
-      "Buy Book Lovers by Emily Henry online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Emily Henry",
     authorSlug: "emily-henry",
     pages: "370-390",
@@ -8421,8 +7405,6 @@ export const books = [
     id: "bk-552",
     name: "Happy Place",
     image: bookImages["happy-place"],
-    description:
-      "Buy Happy Place by Emily Henry online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Emily Henry",
     authorSlug: "emily-henry",
     pages: "380-400",
@@ -8438,8 +7420,6 @@ export const books = [
     id: "bk-553",
     name: "Funny Story",
     image: bookImages["funny-story"],
-    description:
-      "Buy Funny Story by Emily Henry online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Emily Henry",
     authorSlug: "emily-henry",
     pages: "380-400",
@@ -8455,8 +7435,6 @@ export const books = [
     id: "bk-554",
     name: "Not in Love",
     image: bookImages["not-in-love"],
-    description:
-      "Buy Not in Love by Ali Hazelwood online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ali Hazelwood",
     authorSlug: "ali-hazelwood",
     pages: "380-400",
@@ -8472,8 +7450,6 @@ export const books = [
     id: "bk-555",
     name: "Bride",
     image: bookImages["bride"],
-    description:
-      "Buy Bride by Ali Hazelwood online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ali Hazelwood",
     authorSlug: "ali-hazelwood",
     pages: "400-420",
@@ -8489,8 +7465,6 @@ export const books = [
     id: "bk-556",
     name: "Check & Mate",
     image: bookImages["check-and-mate"],
-    description:
-      "Buy Check & Mate by Ali Hazelwood online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ali Hazelwood",
     authorSlug: "ali-hazelwood",
     pages: "350-370",
@@ -8506,8 +7480,6 @@ export const books = [
     id: "bk-557",
     name: "Deep End",
     image: bookImages["deep-end"],
-    description:
-      "Buy Deep End by Ali Hazelwood online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ali Hazelwood",
     authorSlug: "ali-hazelwood",
     pages: "380-400",
@@ -8523,8 +7495,6 @@ export const books = [
     id: "bk-558",
     name: "Daisy Jones & The Six",
     image: bookImages["daisy-jones-and-the-six"],
-    description:
-      "Buy Daisy Jones & The Six by Taylor Jenkins Reid online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Taylor Jenkins Reid",
     authorSlug: "taylor-jenkins-reid",
     pages: "350-380",
@@ -8540,8 +7510,6 @@ export const books = [
     id: "bk-559",
     name: "Malibu Rising",
     image: bookImages["malibu-rising"],
-    description:
-      "Buy Malibu Rising by Taylor Jenkins Reid online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Taylor Jenkins Reid",
     authorSlug: "taylor-jenkins-reid",
     pages: "370-400",
@@ -8557,8 +7525,6 @@ export const books = [
     id: "bk-560",
     name: "Carrie Soto Is Back",
     image: bookImages["carrie-soto-is-back"],
-    description:
-      "Buy Carrie Soto Is Back by Taylor Jenkins Reid online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Taylor Jenkins Reid",
     authorSlug: "taylor-jenkins-reid",
     pages: "360-380",
@@ -8574,8 +7540,6 @@ export const books = [
     id: "bk-561",
     name: "Things We Hide from the Light",
     image: bookImages["things-we-hide-from-the-light"],
-    description:
-      "Buy Things We Hide from the Light by Lucy Score online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Lucy Score",
     authorSlug: "lucy-score",
     pages: "450-480",
@@ -8591,8 +7555,6 @@ export const books = [
     id: "bk-562",
     name: "Things We Left Behind",
     image: bookImages["things-we-left-behind"],
-    description:
-      "Buy Things We Left Behind by Lucy Score online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Lucy Score",
     authorSlug: "lucy-score",
     pages: "500-530",
@@ -8608,8 +7570,6 @@ export const books = [
     id: "bk-563",
     name: "Throne of Glass",
     image: bookImages["throne-of-glass"],
-    description:
-      "Buy Throne of Glass by Sarah J. Maas online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Sarah J. Maas",
     authorSlug: "sarah-j-maas",
     pages: "400-430",
@@ -8625,8 +7585,6 @@ export const books = [
     id: "bk-564",
     name: "Six of Crows",
     image: bookImages["six-of-crows"],
-    description:
-      "Buy Six of Crows by Leigh Bardugo online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Leigh Bardugo",
     authorSlug: "leigh-bardugo",
     pages: "460-490",
@@ -8642,8 +7600,6 @@ export const books = [
     id: "bk-565",
     name: "Shadow and Bone",
     image: bookImages["shadow-and-bone"],
-    description:
-      "Buy Shadow and Bone by Leigh Bardugo online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Leigh Bardugo",
     authorSlug: "leigh-bardugo",
     pages: "350-380",
@@ -8659,8 +7615,6 @@ export const books = [
     id: "bk-566",
     name: "Mistborn: The Final Empire",
     image: bookImages["mistborn-the-final-empire"],
-    description:
-      "Buy Mistborn: The Final Empire by Brandon Sanderson online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Brandon Sanderson",
     authorSlug: "brandon-sanderson",
     pages: "540-560",
@@ -8676,8 +7630,6 @@ export const books = [
     id: "bk-567",
     name: "The Way of Kings",
     image: bookImages["the-way-of-kings"],
-    description:
-      "Buy The Way of Kings by Brandon Sanderson online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Brandon Sanderson",
     authorSlug: "brandon-sanderson",
     pages: "1000-1100",
@@ -8693,8 +7645,6 @@ export const books = [
     id: "bk-568",
     name: "Dune",
     image: bookImages["dune"],
-    description:
-      "Buy Dune by Frank Herbert online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Frank Herbert",
     authorSlug: "frank-herbert",
     pages: "600-700",
@@ -8710,8 +7660,6 @@ export const books = [
     id: "bk-569",
     name: "The Name of the Wind",
     image: bookImages["the-name-of-the-wind"],
-    description:
-      "Buy The Name of the Wind by Patrick Rothfuss online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Patrick Rothfuss",
     authorSlug: "patrick-rothfuss",
     pages: "650-700",
@@ -8727,8 +7675,6 @@ export const books = [
     id: "bk-570",
     name: "Red Queen",
     image: bookImages["red-queen"],
-    description:
-      "Buy Red Queen by Victoria Aveyard online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Victoria Aveyard",
     authorSlug: "victoria-aveyard",
     pages: "380-400",
@@ -8744,8 +7690,6 @@ export const books = [
     id: "bk-571",
     name: "Gone Girl",
     image: bookImages["gone-girl"],
-    description:
-      "Buy Gone Girl by Gillian Flynn online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Gillian Flynn",
     authorSlug: "gillian-flynn",
     pages: "400-430",
@@ -8761,8 +7705,6 @@ export const books = [
     id: "bk-572",
     name: "Sharp Objects",
     image: bookImages["sharp-objects"],
-    description:
-      "Buy Sharp Objects by Gillian Flynn online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Gillian Flynn",
     authorSlug: "gillian-flynn",
     pages: "320-340",
@@ -8778,8 +7720,6 @@ export const books = [
     id: "bk-573",
     name: "The Da Vinci Code",
     image: bookImages["the-da-vinci-code"],
-    description:
-      "Buy The Da Vinci Code by Dan Brown online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Dan Brown",
     authorSlug: "dan-brown",
     pages: "480-500",
@@ -8795,8 +7735,6 @@ export const books = [
     id: "bk-574",
     name: "Angels & Demons",
     image: bookImages["angels-and-demons"],
-    description:
-      "Buy Angels & Demons by Dan Brown online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Dan Brown",
     authorSlug: "dan-brown",
     pages: "560-590",
@@ -8812,8 +7750,6 @@ export const books = [
     id: "bk-575",
     name: "Inferno",
     image: bookImages["inferno"],
-    description:
-      "Buy Inferno by Dan Brown online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Dan Brown",
     authorSlug: "dan-brown",
     pages: "480-500",
@@ -8829,8 +7765,6 @@ export const books = [
     id: "bk-576",
     name: "The Girl with the Dragon Tattoo",
     image: bookImages["the-girl-with-the-dragon-tattoo"],
-    description:
-      "Buy The Girl with the Dragon Tattoo by Stieg Larsson online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Stieg Larsson",
     authorSlug: "stieg-larsson",
     pages: "540-560",
@@ -8846,8 +7780,6 @@ export const books = [
     id: "bk-577",
     name: "Shutter Island",
     image: bookImages["shutter-island"],
-    description:
-      "Buy Shutter Island by Dennis Lehane online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Dennis Lehane",
     authorSlug: "dennis-lehane",
     pages: "360-380",
@@ -8863,8 +7795,6 @@ export const books = [
     id: "bk-578",
     name: "Lessons in Chemistry",
     image: bookImages["lessons-in-chemistry"],
-    description:
-      "Buy Lessons in Chemistry by Bonnie Garmus online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Bonnie Garmus",
     authorSlug: "bonnie-garmus",
     pages: "390-400",
@@ -8880,8 +7810,6 @@ export const books = [
     id: "bk-579",
     name: "Tomorrow, and Tomorrow, and Tomorrow",
     image: bookImages["tomorrow-and-tomorrow-and-tomorrow"],
-    description:
-      "Buy Tomorrow, and Tomorrow, and Tomorrow by Gabrielle Zevin online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Gabrielle Zevin",
     authorSlug: "gabrielle-zevin",
     pages: "400-420",
@@ -8897,8 +7825,6 @@ export const books = [
     id: "bk-580",
     name: "Yellowface",
     image: bookImages["yellowface"],
-    description:
-      "Buy Yellowface by R.F. Kuang online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "R.F. Kuang",
     authorSlug: "r-f-kuang",
     pages: "320-340",
@@ -8914,8 +7840,6 @@ export const books = [
     id: "bk-581",
     name: "Babel",
     image: bookImages["babel"],
-    description:
-      "Buy Babel by R.F. Kuang online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "R.F. Kuang",
     authorSlug: "r-f-kuang",
     pages: "540-560",
@@ -8931,8 +7855,6 @@ export const books = [
     id: "bk-582",
     name: "Klara and the Sun",
     image: bookImages["klara-and-the-sun"],
-    description:
-      "Buy Klara and the Sun by Kazuo Ishiguro online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Kazuo Ishiguro",
     authorSlug: "kazuo-ishiguro",
     pages: "300-320",
@@ -8948,8 +7870,6 @@ export const books = [
     id: "bk-583",
     name: "Never Let Me Go",
     image: bookImages["never-let-me-go"],
-    description:
-      "Buy Never Let Me Go by Kazuo Ishiguro online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Kazuo Ishiguro",
     authorSlug: "kazuo-ishiguro",
     pages: "280-300",
@@ -8965,8 +7885,6 @@ export const books = [
     id: "bk-584",
     name: "The Catcher in the Rye",
     image: bookImages["the-catcher-in-the-rye"],
-    description:
-      "Buy The Catcher in the Rye by J.D. Salinger online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "J.D. Salinger",
     authorSlug: "j-d-salinger",
     pages: "220-240",
@@ -8982,8 +7900,6 @@ export const books = [
     id: "bk-585",
     name: "Brave New World",
     image: bookImages["brave-new-world"],
-    description:
-      "Buy Brave New World by Aldous Huxley online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Aldous Huxley",
     authorSlug: "aldous-huxley",
     pages: "280-300",
@@ -8999,8 +7915,6 @@ export const books = [
     id: "bk-586",
     name: "Little Women",
     image: bookImages["little-women"],
-    description:
-      "Buy Little Women by Louisa May Alcott online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Louisa May Alcott",
     authorSlug: "louisa-may-alcott",
     pages: "450-480",
@@ -9016,8 +7930,6 @@ export const books = [
     id: "bk-587",
     name: "Jane Eyre",
     image: bookImages["jane-eyre"],
-    description:
-      "Buy Jane Eyre by Charlotte Bronte online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Charlotte Bronte",
     authorSlug: "charlotte-bronte",
     pages: "450-480",
@@ -9033,8 +7945,6 @@ export const books = [
     id: "bk-588",
     name: "Wuthering Heights",
     image: bookImages["wuthering-heights"],
-    description:
-      "Buy Wuthering Heights by Emily Bronte online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Emily Bronte",
     authorSlug: "emily-bronte",
     pages: "350-380",
@@ -9050,8 +7960,6 @@ export const books = [
     id: "bk-589",
     name: "The Picture of Dorian Gray",
     image: bookImages["the-picture-of-dorian-gray"],
-    description:
-      "Buy The Picture of Dorian Gray by Oscar Wilde online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Oscar Wilde",
     authorSlug: "oscar-wilde",
     pages: "250-270",
@@ -9067,8 +7975,6 @@ export const books = [
     id: "bk-590",
     name: "Anna Karenina",
     image: bookImages["anna-karenina"],
-    description:
-      "Buy Anna Karenina by Leo Tolstoy online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Leo Tolstoy",
     authorSlug: "leo-tolstoy",
     pages: "800-870",
@@ -9084,8 +7990,6 @@ export const books = [
     id: "bk-591",
     name: "War and Peace",
     image: bookImages["war-and-peace"],
-    description:
-      "Buy War and Peace by Leo Tolstoy online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Leo Tolstoy",
     authorSlug: "leo-tolstoy",
     pages: "1200-1300",
@@ -9101,8 +8005,6 @@ export const books = [
     id: "bk-592",
     name: "Outliers",
     image: bookImages["outliers"],
-    description:
-      "Buy Outliers by Malcolm Gladwell online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Malcolm Gladwell",
     authorSlug: "malcolm-gladwell",
     pages: "300-320",
@@ -9118,8 +8020,6 @@ export const books = [
     id: "bk-593",
     name: "Blink",
     image: bookImages["blink"],
-    description:
-      "Buy Blink by Malcolm Gladwell online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Malcolm Gladwell",
     authorSlug: "malcolm-gladwell",
     pages: "290-310",
@@ -9135,8 +8035,6 @@ export const books = [
     id: "bk-594",
     name: "Talking to Strangers",
     image: bookImages["talking-to-strangers"],
-    description:
-      "Buy Talking to Strangers by Malcolm Gladwell online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Malcolm Gladwell",
     authorSlug: "malcolm-gladwell",
     pages: "380-400",
@@ -9152,8 +8050,6 @@ export const books = [
     id: "bk-595",
     name: "The Tipping Point",
     image: bookImages["the-tipping-point"],
-    description:
-      "Buy The Tipping Point by Malcolm Gladwell online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Malcolm Gladwell",
     authorSlug: "malcolm-gladwell",
     pages: "300-320",
@@ -9169,8 +8065,6 @@ export const books = [
     id: "bk-596",
     name: "The 4-Hour Workweek",
     image: bookImages["the-4-hour-workweek"],
-    description:
-      "Buy The 4-Hour Workweek by Tim Ferriss online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Tim Ferriss",
     authorSlug: "tim-ferriss",
     pages: "400-420",
@@ -9186,8 +8080,6 @@ export const books = [
     id: "bk-597",
     name: "The Obstacle Is the Way",
     image: bookImages["the-obstacle-is-the-way"],
-    description:
-      "Buy The Obstacle Is the Way by Ryan Holiday online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ryan Holiday",
     authorSlug: "ryan-holiday",
     pages: "220-240",
@@ -9203,8 +8095,6 @@ export const books = [
     id: "bk-598",
     name: "Ego Is the Enemy",
     image: bookImages["ego-is-the-enemy"],
-    description:
-      "Buy Ego Is the Enemy by Ryan Holiday online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ryan Holiday",
     authorSlug: "ryan-holiday",
     pages: "250-270",
@@ -9220,8 +8110,6 @@ export const books = [
     id: "bk-599",
     name: "Show Your Work",
     image: bookImages["show-your-work"],
-    description:
-      "Buy Show Your Work by Austin Kleon online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Austin Kleon",
     authorSlug: "austin-kleon",
     pages: "210-220",
@@ -9237,8 +8125,6 @@ export const books = [
     id: "bk-600",
     name: "Eat That Frog",
     image: bookImages["eat-that-frog"],
-    description:
-      "Buy Eat That Frog by Brian Tracy online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Brian Tracy",
     authorSlug: "brian-tracy",
     pages: "120-140",
@@ -9254,8 +8140,6 @@ export const books = [
     id: "bk-601",
     name: "Dopamine Nation",
     image: bookImages["dopamine-nation"],
-    description:
-      "Buy Dopamine Nation by Anna Lembke online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Anna Lembke",
     authorSlug: "anna-lembke",
     pages: "290-300",
@@ -9271,8 +8155,6 @@ export const books = [
     id: "bk-602",
     name: "Demon Slayer: Kimetsu no Yaiba",
     image: bookImages["demon-slayer"],
-    description:
-      "Buy Demon Slayer: Kimetsu no Yaiba by Koyoharu Gotouge online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Koyoharu Gotouge",
     authorSlug: "koyoharu-gotouge",
     pages: "190-200",
@@ -9288,8 +8170,6 @@ export const books = [
     id: "bk-603",
     name: "Naruto",
     image: bookImages["naruto"],
-    description:
-      "Buy Naruto by Masashi Kishimoto online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Masashi Kishimoto",
     authorSlug: "masashi-kishimoto",
     pages: "190-200",
@@ -9305,8 +8185,6 @@ export const books = [
     id: "bk-604",
     name: "Death Note",
     image: bookImages["death-note"],
-    description:
-      "Buy Death Note by Tsugumi Ohba online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Tsugumi Ohba",
     authorSlug: "tsugumi-ohba",
     pages: "190-200",
@@ -9322,8 +8200,6 @@ export const books = [
     id: "bk-605",
     name: "Attack on Titan",
     image: bookImages["attack-on-titan"],
-    description:
-      "Buy Attack on Titan by Hajime Isayama online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Hajime Isayama",
     authorSlug: "hajime-isayama",
     pages: "190-200",
@@ -9339,8 +8215,6 @@ export const books = [
     id: "bk-606",
     name: "My Hero Academia",
     image: bookImages["my-hero-academia"],
-    description:
-      "Buy My Hero Academia by Kohei Horikoshi online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Kohei Horikoshi",
     authorSlug: "kohei-horikoshi",
     pages: "190-200",
@@ -9356,8 +8230,6 @@ export const books = [
     id: "bk-607",
     name: "Berserk",
     image: bookImages["berserk"],
-    description:
-      "Buy Berserk by Kentaro Miura online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Kentaro Miura",
     authorSlug: "kentaro-miura",
     pages: "220-240",
@@ -9373,8 +8245,6 @@ export const books = [
     id: "bk-608",
     name: "Tokyo Ghoul",
     image: bookImages["tokyo-ghoul"],
-    description:
-      "Buy Tokyo Ghoul by Sui Ishida online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Sui Ishida",
     authorSlug: "sui-ishida",
     pages: "190-200",
@@ -9390,8 +8260,6 @@ export const books = [
     id: "bk-609",
     name: "A Random Walk Down Wall Street",
     image: bookImages["a-random-walk-down-wall-street"],
-    description:
-      "Buy A Random Walk Down Wall Street by Burton G. Malkiel online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Burton G. Malkiel",
     authorSlug: "burton-g-malkiel",
     pages: "400-420",
@@ -9407,8 +8275,6 @@ export const books = [
     id: "bk-610",
     name: "When Haru Was Here",
     image: bookImages["when-haru-was-here"],
-    description:
-      "Buy When Haru Was Here online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     pages: "200-220",
     language: "English",
     size: "Paperback",
@@ -9422,8 +8288,6 @@ export const books = [
     id: "bk-611",
     name: "Cosmos",
     image: bookImages["cosmos"],
-    description:
-      "Buy Cosmos by Carl Sagan online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Carl Sagan",
     authorSlug: "carl-sagan",
     pages: "380-400",
@@ -9439,8 +8303,6 @@ export const books = [
     id: "bk-612",
     name: "I Want to Eat Your Pancreas",
     image: bookImages["i-want-to-eat-your-pancreas"],
-    description:
-      "Buy I Want to Eat Your Pancreas by Yoru Sumino online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Yoru Sumino",
     authorSlug: "yoru-sumino",
     pages: "180-200",
@@ -9456,8 +8318,6 @@ export const books = [
     id: "bk-613",
     name: "The God Delusion",
     image: bookImages["the-god-delusion"],
-    description:
-      "Buy The God Delusion by Richard Dawkins online at the lowest price on TheBookX.in. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Richard Dawkins",
     authorSlug: "richard-dawkins",
     pages: "420-440",
@@ -9473,8 +8333,6 @@ export const books = [
     id: "bk-614",
     name: "The Off-Campus Set",
     image: bookImages["the-off-campus-set"],
-    description:
-      "Buy The Off-Campus Set by Elle Kennedy online at the lowest price on TheBookX.in. An authentic, high-quality boxed set delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Elle Kennedy",
     authorSlug: "elle-kennedy",
     pages: "1400-1600",
@@ -9490,8 +8348,6 @@ export const books = [
     id: "bk-615",
     name: "Surrounded by Psychopaths",
     image: bookImages["surrounded-by-psychopaths"],
-    description:
-      "Buy Surrounded by Psychopaths by Thomas Erikson online at the lowest price on TheBookX.in. In this eye-opening follow-up to the mega-bestseller Surrounded by Idiots, Thomas Erikson decodes the manipulators, gaslighters and toxic personalities you meet at work and at home — and hands you practical tools to spot their tactics, protect your boundaries, and stay in control of every conversation. Written with the same sharp, DISC-based clarity that made Erikson a global phenomenon. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Thomas Erikson",
     authorSlug: "thomas-erikson",
     pages: "300-320",
@@ -9507,8 +8363,6 @@ export const books = [
     id: "bk-616",
     name: "Surrounded by Bad Bosses",
     image: bookImages["surrounded-by-bad-bosses"],
-    description:
-      "Buy Surrounded by Bad Bosses (and Lazy Employees) by Thomas Erikson online at the lowest price on TheBookX.in. From the internationally bestselling author of Surrounded by Idiots comes the definitive survival guide to the modern workplace. Erikson uses his signature four-colour behaviour model to explain why bosses micromanage, why teams underperform, and exactly how to communicate your way to a healthier, higher-performing career — whether you manage others or answer to a difficult manager yourself. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Thomas Erikson",
     authorSlug: "thomas-erikson",
     pages: "290-310",
@@ -9524,8 +8378,6 @@ export const books = [
     id: "bk-617",
     name: "Surrounded by Setbacks",
     image: bookImages["surrounded-by-setbacks"],
-    description:
-      "Buy Surrounded by Setbacks by Thomas Erikson online at the lowest price on TheBookX.in. Life rarely goes to plan — and in this motivating bestseller Thomas Erikson turns his behavioural expertise toward resilience itself. Using real stories and his proven DISC framework, he shows how different personalities react to failure, rejection and crisis, and how anyone can reframe obstacles, bounce back faster, and keep moving toward their goals. A must-read companion to Surrounded by Idiots. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Thomas Erikson",
     authorSlug: "thomas-erikson",
     pages: "280-300",
@@ -9541,8 +8393,6 @@ export const books = [
     id: "bk-618",
     name: "The Deal",
     image: bookImages["the-deal"],
-    description:
-      "Buy The Deal (Off-Campus #1) by Elle Kennedy online at the lowest price on TheBookX.in. A steamy, addictive New Adult sports romance — Hannah strikes a deal with campus hockey star Garrett, and what starts as tutoring turns into something neither expected. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Elle Kennedy",
     authorSlug: "elle-kennedy",
     pages: "360-380",
@@ -9558,8 +8408,6 @@ export const books = [
     id: "bk-619",
     name: "The Mistake",
     image: bookImages["the-mistake"],
-    description:
-      "Buy The Mistake (Off-Campus #2) by Elle Kennedy online at the lowest price on TheBookX.in. Hockey star Logan falls for the one girl determined to keep her distance, in this swoony, emotional New Adult romance from the bestselling Off-Campus series. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Elle Kennedy",
     authorSlug: "elle-kennedy",
     pages: "360-380",
@@ -9575,8 +8423,6 @@ export const books = [
     id: "bk-620",
     name: "The Score",
     image: bookImages["the-score"],
-    description:
-      "Buy The Score (Off-Campus #3) by Elle Kennedy online at the lowest price on TheBookX.in. A fun, flirty friends-with-benefits romance between playboy Dean and the guarded Allie — the third irresistible instalment in the Off-Campus series. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Elle Kennedy",
     authorSlug: "elle-kennedy",
     pages: "360-380",
@@ -9592,8 +8438,6 @@ export const books = [
     id: "bk-621",
     name: "The Goal",
     image: bookImages["the-goal"],
-    description:
-      "Buy The Goal (Off-Campus #4) by Elle Kennedy online at the lowest price on TheBookX.in. Sweet, confident Sabrina and college hockey player Tucker take centre stage in this heartfelt, steamy finale to the beloved Off-Campus series. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Elle Kennedy",
     authorSlug: "elle-kennedy",
     pages: "380-400",
@@ -9609,8 +8453,6 @@ export const books = [
     id: "bk-622",
     name: "The Legacy",
     image: bookImages["the-legacy"],
-    description:
-      "Buy The Legacy (Off-Campus #5) by Elle Kennedy online at the lowest price on TheBookX.in. The much-loved Off-Campus gang is back in this steamy, feel-good return to Briar University, catching up with all your favourite couples. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Elle Kennedy",
     authorSlug: "elle-kennedy",
     pages: "300-320",
@@ -9626,8 +8468,6 @@ export const books = [
     id: "bk-623",
     name: "The Boy, the Mole, the Fox and the Horse",
     image: bookImages["the-boy-the-mole-the-fox-and-the-horse"],
-    description:
-      "Buy The Boy, the Mole, the Fox and the Horse by Charlie Mackesy online at the lowest price on TheBookX.in. A beautiful, hand-lettered treasury of kindness, courage and hope — the worldwide bestseller loved by readers of every age. A premium hardcover copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Charlie Mackesy",
     authorSlug: "charlie-mackesy",
     pages: "120-140",
@@ -9643,8 +8483,6 @@ export const books = [
     id: "bk-624",
     name: "Big Panda and Tiny Dragon",
     image: bookImages["big-panda-and-tiny-dragon"],
-    description:
-      "Buy Big Panda and Tiny Dragon by James Norbury online at the lowest price on TheBookX.in. Inspired by Buddhist philosophy, this gorgeously illustrated tale of two friends journeying through the seasons offers gentle wisdom, comfort and calm. A premium hardcover copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "James Norbury",
     authorSlug: "james-norbury",
     pages: "150-170",
@@ -9660,8 +8498,6 @@ export const books = [
     id: "bk-625",
     name: "The Journey: A Big Panda and Tiny Dragon Adventure",
     image: bookImages["the-journey-big-panda"],
-    description:
-      "Buy The Journey: A Big Panda and Tiny Dragon Adventure by James Norbury online at the lowest price on TheBookX.in. The much-loved companions set off on a new illustrated adventure filled with warmth, resilience and quiet wisdom for difficult times. A premium hardcover copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "James Norbury",
     authorSlug: "james-norbury",
     pages: "150-170",
@@ -9677,8 +8513,6 @@ export const books = [
     id: "bk-626",
     name: "Japanese Candlestick Charting Techniques",
     image: bookImages["japanese-candlestick-charting-techniques"],
-    description:
-      "Buy Japanese Candlestick Charting Techniques by Steve Nison online at the lowest price on TheBookX.in. The definitive classic that introduced candlestick charting to the Western world — a must-read for traders and investors wanting to read market sentiment, spot reversals and time entries and exits with confidence. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Steve Nison",
     authorSlug: "steve-nison",
     pages: "300-320",
@@ -9694,8 +8528,6 @@ export const books = [
     id: "bk-627",
     name: "A Court of Mist and Fury",
     image: bookImages["a-court-of-mist-and-fury"],
-    description:
-      "Buy A Court of Mist and Fury by Sarah J. Maas online at the lowest price on TheBookX.in. The explosive, beloved second instalment of the Court of Thorns and Roses romantasy series that BookTok can't stop talking about. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Sarah J. Maas",
     authorSlug: "sarah-j-maas",
     pages: "300-420",
@@ -9711,8 +8543,6 @@ export const books = [
     id: "bk-628",
     name: "A Court of Wings and Ruin",
     image: bookImages["a-court-of-wings-and-ruin"],
-    description:
-      "Buy A Court of Wings and Ruin by Sarah J. Maas online at the lowest price on TheBookX.in. War comes to Prythian in this epic third chapter of Sarah J. Maas's Court of Thorns and Roses saga. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Sarah J. Maas",
     authorSlug: "sarah-j-maas",
     pages: "300-420",
@@ -9728,8 +8558,6 @@ export const books = [
     id: "bk-629",
     name: "A Court of Frost and Starlight",
     image: bookImages["a-court-of-frost-and-starlight"],
-    description:
-      "Buy A Court of Frost and Starlight by Sarah J. Maas online at the lowest price on TheBookX.in. A tender, festive interlude in the Court of Thorns and Roses world, bridging the series' biggest arcs. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Sarah J. Maas",
     authorSlug: "sarah-j-maas",
     pages: "300-420",
@@ -9745,8 +8573,6 @@ export const books = [
     id: "bk-630",
     name: "A Court of Silver Flames",
     image: bookImages["a-court-of-silver-flames"],
-    description:
-      "Buy A Court of Silver Flames by Sarah J. Maas online at the lowest price on TheBookX.in. Nesta takes centre stage in this fierce, steamy fan-favourite of the Court of Thorns and Roses series. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Sarah J. Maas",
     authorSlug: "sarah-j-maas",
     pages: "300-420",
@@ -9762,8 +8588,6 @@ export const books = [
     id: "bk-631",
     name: "A Court of Thorns and Roses Box Set (5 Books)",
     image: bookImages["a-court-of-thorns-and-roses-box-set-5-books"],
-    description:
-      "Buy A Court of Thorns and Roses Box Set (5 Books) by Sarah J. Maas online at the lowest price on TheBookX.in. The complete 5-book Court of Thorns and Roses paperback box set by Sarah J. Maas — the romantasy phenomenon in one collectible set. An authentic, high-quality boxed set delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Sarah J. Maas",
     authorSlug: "sarah-j-maas",
     pages: "1400-2200",
@@ -9779,8 +8603,6 @@ export const books = [
     id: "bk-632",
     name: "Powerless",
     image: bookImages["powerless"],
-    description:
-      "Buy Powerless by Lauren Roberts online at the lowest price on TheBookX.in. A forbidden Elite-and-Ordinary romance and deadly trials kick off Lauren Roberts's viral Powerless trilogy. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Lauren Roberts",
     authorSlug: "lauren-roberts",
     pages: "300-420",
@@ -9796,8 +8618,6 @@ export const books = [
     id: "bk-633",
     name: "Reckless",
     image: bookImages["reckless"],
-    description:
-      "Buy Reckless by Lauren Roberts online at the lowest price on TheBookX.in. The stakes and the heat rise in the second book of Lauren Roberts's bestselling Powerless trilogy. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Lauren Roberts",
     authorSlug: "lauren-roberts",
     pages: "300-420",
@@ -9813,8 +8633,6 @@ export const books = [
     id: "bk-634",
     name: "Fearless",
     image: bookImages["fearless"],
-    description:
-      "Buy Fearless by Lauren Roberts online at the lowest price on TheBookX.in. The breathtaking finale to Lauren Roberts's Powerless trilogy. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Lauren Roberts",
     authorSlug: "lauren-roberts",
     pages: "300-420",
@@ -9830,8 +8648,6 @@ export const books = [
     id: "bk-635",
     name: "The Powerless Trilogy Box Set (3 Books)",
     image: bookImages["the-powerless-trilogy-box-set-3-books"],
-    description:
-      "Buy The Powerless Trilogy Box Set (3 Books) by Lauren Roberts online at the lowest price on TheBookX.in. All three books — Powerless, Reckless and Fearless — of Lauren Roberts's viral trilogy in one set. An authentic, high-quality boxed set delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Lauren Roberts",
     authorSlug: "lauren-roberts",
     pages: "1400-2200",
@@ -9847,8 +8663,6 @@ export const books = [
     id: "bk-636",
     name: "The Cruel Prince",
     image: bookImages["the-cruel-prince"],
-    description:
-      "Buy The Cruel Prince by Holly Black online at the lowest price on TheBookX.in. Holly Black's dark, addictive faerie fantasy that launched the beloved Folk of the Air series. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Holly Black",
     authorSlug: "holly-black",
     pages: "300-420",
@@ -9864,8 +8678,6 @@ export const books = [
     id: "bk-637",
     name: "The Wicked King",
     image: bookImages["the-wicked-king"],
-    description:
-      "Buy The Wicked King by Holly Black online at the lowest price on TheBookX.in. Cunning, betrayal and slow-burn tension deepen in book two of Holly Black's Folk of the Air. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Holly Black",
     authorSlug: "holly-black",
     pages: "300-420",
@@ -9881,8 +8693,6 @@ export const books = [
     id: "bk-638",
     name: "The Queen of Nothing",
     image: bookImages["the-queen-of-nothing"],
-    description:
-      "Buy The Queen of Nothing by Holly Black online at the lowest price on TheBookX.in. The triumphant conclusion to Holly Black's Folk of the Air trilogy. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Holly Black",
     authorSlug: "holly-black",
     pages: "300-420",
@@ -9898,8 +8708,6 @@ export const books = [
     id: "bk-639",
     name: "The Cruel Prince Series Box Set (3 Books)",
     image: bookImages["the-cruel-prince-series-box-set-3-books"],
-    description:
-      "Buy The Cruel Prince Series Box Set (3 Books) by Holly Black online at the lowest price on TheBookX.in. The complete Folk of the Air trilogy — The Cruel Prince, The Wicked King and The Queen of Nothing — in one set. An authentic, high-quality boxed set delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Holly Black",
     authorSlug: "holly-black",
     pages: "1400-2200",
@@ -9915,8 +8723,6 @@ export const books = [
     id: "bk-640",
     name: "Sunrise on the Reaping",
     image: bookImages["sunrise-on-the-reaping"],
-    description:
-      "Buy Sunrise on the Reaping by Suzanne Collins online at the lowest price on TheBookX.in. Return to Panem in Suzanne Collins's blockbuster Hunger Games prequel following a young Haymitch Abernathy. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Suzanne Collins",
     authorSlug: "suzanne-collins",
     pages: "300-420",
@@ -9932,8 +8738,6 @@ export const books = [
     id: "bk-641",
     name: "Silver Elite",
     image: bookImages["silver-elite"],
-    description:
-      "Buy Silver Elite by Dani Francis online at the lowest price on TheBookX.in. A gripping new romantasy sensation packed with rebellion, secrets and slow-burn romance. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Dani Francis",
     authorSlug: "dani-francis",
     pages: "300-420",
@@ -9949,8 +8753,6 @@ export const books = [
     id: "bk-642",
     name: "The Knight and the Moth",
     image: bookImages["the-knight-and-the-moth"],
-    description:
-      "Buy The Knight and the Moth by Rachel Gillig online at the lowest price on TheBookX.in. Rachel Gillig's lush, atmospheric romantasy hailed as one of the year's must-read fantasy romances. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Rachel Gillig",
     authorSlug: "rachel-gillig",
     pages: "300-420",
@@ -9966,8 +8768,6 @@ export const books = [
     id: "bk-643",
     name: "Love on the Brain",
     image: bookImages["love-on-the-brain"],
-    description:
-      "Buy Love on the Brain by Ali Hazelwood online at the lowest price on TheBookX.in. A witty, swoony enemies-to-lovers STEM romance from the bestselling author of The Love Hypothesis. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ali Hazelwood",
     authorSlug: "ali-hazelwood",
     pages: "300-420",
@@ -9983,8 +8783,6 @@ export const books = [
     id: "bk-644",
     name: "The Spanish Love Deception",
     image: bookImages["the-spanish-love-deception"],
-    description:
-      "Buy The Spanish Love Deception by Elena Armas online at the lowest price on TheBookX.in. The fake-dating, slow-burn TikTok sensation that made Elena Armas a romance superstar. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Elena Armas",
     authorSlug: "elena-armas",
     pages: "300-420",
@@ -10000,8 +8798,6 @@ export const books = [
     id: "bk-645",
     name: "If He Had Been with Me",
     image: bookImages["if-he-had-been-with-me"],
-    description:
-      "Buy If He Had Been with Me by Laura Nowlin online at the lowest price on TheBookX.in. A heart-wrenching, unforgettable coming-of-age love story that went viral on BookTok. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Laura Nowlin",
     authorSlug: "laura-nowlin",
     pages: "300-420",
@@ -10017,8 +8813,6 @@ export const books = [
     id: "bk-646",
     name: "Intermezzo",
     image: bookImages["intermezzo"],
-    description:
-      "Buy Intermezzo by Sally Rooney online at the lowest price on TheBookX.in. Sally Rooney's acclaimed novel about two grieving brothers, love and connection. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Sally Rooney",
     authorSlug: "sally-rooney",
     pages: "300-420",
@@ -10034,8 +8828,6 @@ export const books = [
     id: "bk-647",
     name: "Tomorrow, and Tomorrow, and Tomorrow",
     image: bookImages["tomorrow-and-tomorrow-and-tomorrow"],
-    description:
-      "Buy Tomorrow, and Tomorrow, and Tomorrow by Gabrielle Zevin online at the lowest price on TheBookX.in. Gabrielle Zevin's beloved bestseller about friendship, creativity and love told through video-game makers. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Gabrielle Zevin",
     authorSlug: "gabrielle-zevin",
     pages: "300-420",
@@ -10051,8 +8843,6 @@ export const books = [
     id: "bk-648",
     name: "The God of the Woods",
     image: bookImages["the-god-of-the-woods"],
-    description:
-      "Buy The God of the Woods by Liz Moore online at the lowest price on TheBookX.in. Liz Moore's twisty, atmospheric bestseller — a missing-child mystery set at a summer camp. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Liz Moore",
     authorSlug: "liz-moore",
     pages: "300-420",
@@ -10068,8 +8858,6 @@ export const books = [
     id: "bk-649",
     name: "The Wedding People",
     image: bookImages["the-wedding-people"],
-    description:
-      "Buy The Wedding People by Alison Espach online at the lowest price on TheBookX.in. A warm, funny and moving novel about unexpected friendship and second chances at a seaside wedding. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Alison Espach",
     authorSlug: "alison-espach",
     pages: "300-420",
@@ -10085,8 +8873,6 @@ export const books = [
     id: "bk-650",
     name: "Butter",
     image: bookImages["butter"],
-    description:
-      "Buy Butter by Asako Yuzuki online at the lowest price on TheBookX.in. The hypnotic Japanese bestseller inspired by a true crime — about food, desire and womanhood. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Asako Yuzuki",
     authorSlug: "asako-yuzuki",
     pages: "300-420",
@@ -10102,8 +8888,6 @@ export const books = [
     id: "bk-651",
     name: "The Widow",
     image: bookImages["the-widow"],
-    description:
-      "Buy The Widow by John Grisham online at the lowest price on TheBookX.in. A gripping new legal thriller from the master of suspense, John Grisham. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "John Grisham",
     authorSlug: "john-grisham",
     pages: "300-420",
@@ -10119,8 +8903,6 @@ export const books = [
     id: "bk-652",
     name: "First Lie Wins",
     image: bookImages["first-lie-wins"],
-    description:
-      "Buy First Lie Wins by Ashley Elston online at the lowest price on TheBookX.in. A slick, addictive con-artist thriller and Reese's Book Club pick full of twists. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ashley Elston",
     authorSlug: "ashley-elston",
     pages: "300-420",
@@ -10136,8 +8918,6 @@ export const books = [
     id: "bk-653",
     name: "Outlive",
     image: bookImages["outlive"],
-    description:
-      "Buy Outlive by Peter Attia online at the lowest price on TheBookX.in. Dr Peter Attia's landmark bestseller on the science and art of living longer and healthier. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Peter Attia",
     authorSlug: "peter-attia",
     pages: "300-420",
@@ -10153,8 +8933,6 @@ export const books = [
     id: "bk-654",
     name: "A House Without Windows",
     image: bookImages["a-house-without-windows"],
-    description:
-      "Buy A House Without Windows by Nadia Hashimi online at the lowest price on TheBookX.in. A moving, beautifully written novel of family, freedom and resilience from bestselling author Nadia Hashimi. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Nadia Hashimi",
     authorSlug: "nadia-hashimi",
     pages: "180-220",
@@ -10170,8 +8948,6 @@ export const books = [
     id: "bk-655",
     name: "Did You Ever Love Me?",
     image: bookImages["did-you-ever-love-me"],
-    description:
-      "Buy Did You Ever Love Me? by Rithvik Singh online at the lowest price on TheBookX.in. A book for people who feel everything deeply — a tender reminder of the love, care and kindness you truly deserve, from one of India's most popular young authors. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Rithvik Singh",
     authorSlug: "rithvik-singh",
     pages: "150-190",
@@ -10187,8 +8963,6 @@ export const books = [
     id: "bk-656",
     name: "The Art of Seduction",
     image: bookImages["the-art-of-seduction"],
-    description:
-      "Buy The Art of Seduction by Robert Greene online at the lowest price on TheBookX.in. A masterful, in-depth guide to charm, influence and persuasion from the bestselling author of The 48 Laws of Power. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Robert Greene",
     pages: "450-470",
     language: "English",
@@ -10203,8 +8977,6 @@ export const books = [
     id: "bk-657",
     name: "Mastery",
     image: bookImages["mastery"],
-    description:
-      "Buy Mastery by Robert Greene online at the lowest price on TheBookX.in. A powerful guide that decodes the path to mastery, drawing on the lives of history's greatest achievers, from the bestselling author of The 48 Laws of Power. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Robert Greene",
     pages: "320-360",
     language: "English",
@@ -10219,8 +8991,6 @@ export const books = [
     id: "bk-658",
     name: "The Richest Man in Babylon",
     image: bookImages["the-richest-man-in-babylon"],
-    description:
-      "Buy The Richest Man in Babylon by George S. Clason online at the lowest price on TheBookX.in. Timeless financial wisdom told through simple parables set in ancient Babylon — the classic guide to saving, investing and building lasting wealth. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "George S. Clason",
     pages: "140-160",
     language: "English",
@@ -10235,8 +9005,6 @@ export const books = [
     id: "bk-659",
     name: "Meditations",
     image: bookImages["meditations"],
-    description:
-      "Buy Meditations by Marcus Aurelius online at the lowest price on TheBookX.in. The personal writings of the Roman emperor and Stoic philosopher — a timeless source of reflection on discipline, resilience and living a good life. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Marcus Aurelius",
     pages: "250-280",
     language: "English",
@@ -10251,8 +9019,6 @@ export const books = [
     id: "bk-660",
     name: "The 4-Hour Work Week",
     image: bookImages["the-4-hour-work-week"],
-    description:
-      "Buy The 4-Hour Work Week by Timothy Ferriss online at the lowest price on TheBookX.in. The blueprint for escaping the 9–5, automating your income and designing a life of freedom and adventure. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Timothy Ferriss",
     pages: "400-440",
     language: "English",
@@ -10267,8 +9033,6 @@ export const books = [
     id: "bk-661",
     name: "Who Moved My Cheese?",
     image: bookImages["who-moved-my-cheese"],
-    description:
-      "Buy Who Moved My Cheese? by Spencer Johnson online at the lowest price on TheBookX.in. A simple, powerful parable about embracing change at work and in life — one of the best-selling business books of all time. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Spencer Johnson",
     pages: "90-110",
     language: "English",
@@ -10283,8 +9047,6 @@ export const books = [
     id: "bk-662",
     name: "The One Minute Manager",
     image: bookImages["the-one-minute-manager"],
-    description:
-      "Buy The One Minute Manager by Ken Blanchard and Spencer Johnson online at the lowest price on TheBookX.in. A quick, practical guide to effective management and leadership through three simple, powerful techniques. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ken Blanchard",
     pages: "100-120",
     language: "English",
@@ -10299,8 +9061,6 @@ export const books = [
     id: "bk-663",
     name: "Good to Great",
     image: bookImages["good-to-great"],
-    description:
-      "Buy Good to Great by Jim Collins online at the lowest price on TheBookX.in. The landmark study of how good companies become great — packed with insights on leadership, discipline and building enduring success. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Jim Collins",
     pages: "300-340",
     language: "English",
@@ -10315,8 +9075,6 @@ export const books = [
     id: "bk-664",
     name: "The Personal MBA",
     image: bookImages["the-personal-mba"],
-    description:
-      "Buy The Personal MBA by Josh Kaufman online at the lowest price on TheBookX.in. A master class in business — the core concepts of sales, marketing, finance, operations and human psychology distilled into one practical guide, no expensive degree required. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Josh Kaufman",
     pages: "400-460",
     language: "English",
@@ -10331,8 +9089,6 @@ export const books = [
     id: "bk-665",
     name: "The Power of Your Subconscious Mind",
     image: bookImages["the-power-of-your-subconscious-mind"],
-    description:
-      "Buy The Power of Your Subconscious Mind by Joseph Murphy online at the lowest price on TheBookX.in. A timeless self-help classic that shows how to unlock the hidden power of your mind to bring about lasting change, health, wealth and happiness through the practical techniques of belief and visualisation. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Joseph Murphy",
     pages: "280-320",
     language: "English",
@@ -10353,8 +9109,6 @@ export const books = [
     id: "bk-666",
     name: "Talk Like TED",
     image: bookImages["talk-like-ted"],
-    description:
-      "Buy Talk Like TED by Carmine Gallo online at the lowest price on TheBookX.in. The 9 public-speaking secrets of the world's top minds — a practical guide to crafting and delivering presentations that are emotional, novel and memorable, drawn from analysis of hundreds of the best TED talks. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Carmine Gallo",
     pages: "270-320",
     language: "English",
@@ -10375,8 +9129,6 @@ export const books = [
     id: "bk-667",
     name: "You Were Never Meant To Read This",
     image: bookImages["you-were-never-meant-to-read-this"],
-    description:
-      "Buy You Were Never Meant To Read This by Shrijeet Shandilya online at the lowest price on TheBookX.in. From the bestselling author of Can We Be Strangers Again?, a tender return to a world of love, loss and everything in between — bittersweet, nostalgic and impossible to put down. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Shrijeet Shandilya",
     pages: "180-220",
     language: "English",
@@ -10391,8 +9143,6 @@ export const books = [
     id: "bk-668",
     name: "I Cannot Say Goodbye to You",
     image: bookImages["i-cannot-say-goodbye-to-you"],
-    description:
-      "Buy I Cannot Say Goodbye to You by Rithvik Singh online at the lowest price on TheBookX.in. An unforgettable, emotional romance from one of India's most popular young writers — a story of profound loss, second chances and a love that refuses to let go. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Rithvik Singh",
     pages: "180-220",
     language: "English",
@@ -10407,8 +9157,6 @@ export const books = [
     id: "bk-669",
     name: "Focus on What Matters",
     image: bookImages["focus-on-what-matters"],
-    description:
-      "Buy Focus on What Matters by Darius Foroux online at the lowest price on TheBookX.in. A practical collection of essays on productivity, purpose and living intentionally — helping you cut the noise and put your energy where it counts. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Darius Foroux",
     pages: "200-240",
     language: "English",
@@ -10429,8 +9177,6 @@ export const books = [
     id: "bk-670",
     name: "Do It Today",
     image: bookImages["do-it-today"],
-    description:
-      "Buy Do It Today by Darius Foroux online at the lowest price on TheBookX.in. Overcome procrastination, improve productivity and achieve more meaningful things in life — a short, powerful, no-nonsense guide to getting things done. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Darius Foroux",
     pages: "120-160",
     language: "English",
@@ -10451,8 +9197,6 @@ export const books = [
     id: "bk-671",
     name: "Think Straight",
     image: bookImages["think-straight"],
-    description:
-      "Buy Think Straight by Darius Foroux online at the lowest price on TheBookX.in. Change your thoughts, change your life — a clear, practical guide to controlling your thinking, avoiding mental clutter and making better decisions. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Darius Foroux",
     pages: "120-160",
     language: "English",
@@ -10473,8 +9217,6 @@ export const books = [
     id: "bk-673",
     name: "Always Remember",
     image: bookImages["always-remember"],
-    description:
-      "Buy Always Remember: The Boy, the Mole, the Fox, the Horse and the Storm by Charlie Mackesy online at the lowest price on TheBookX.in. A tender, hand-lettered companion to the beloved bestseller — gentle wisdom on hope, kindness and weathering life's storms together. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Charlie Mackesy",
     pages: "60-80",
     language: "English",
@@ -10489,8 +9231,6 @@ export const books = [
     id: "bk-674",
     name: "Nothing Like the Movies",
     image: bookImages["nothing-like-the-movies"],
-    description:
-      "Buy Nothing Like the Movies by Lynn Painter online at the lowest price on TheBookX.in. The swoony, laugh-out-loud sequel to the bestselling Better Than the Movies — a second-chance college romance about first love, heartbreak and hope. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Lynn Painter",
     pages: "320-380",
     language: "English",
@@ -10505,8 +9245,6 @@ export const books = [
     id: "bk-675",
     name: "The Maidens",
     image: bookImages["the-maidens"],
-    description:
-      "Buy The Maidens by Alex Michaelides online at the lowest price on TheBookX.in. From the author of the record-breaking bestseller The Silent Patient comes a spellbinding psychological thriller of obsession, myth and murder at Cambridge University. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Alex Michaelides",
     pages: "320-350",
     language: "English",
@@ -10521,8 +9259,6 @@ export const books = [
     id: "bk-676",
     name: "Psycho-Cybernetics",
     image: bookImages["psycho-cybernetics"],
-    description:
-      "Buy Psycho-Cybernetics by Maxwell Maltz online at the lowest price on TheBookX.in. A self-image psychology classic that shows how changing the mental picture you hold of yourself can transform your confidence, habits and success. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Maxwell Maltz",
     pages: "300-320",
     language: "English",
@@ -10537,8 +9273,6 @@ export const books = [
     id: "bk-677",
     name: "Powerful",
     image: bookImages["powerful"],
-    description:
-      "Buy Powerful by Lauren Roberts online at the lowest price on TheBookX.in. A gripping companion novella in the viral Powerless saga — Kai and Paedyn's story burns brighter as loyalty, power and forbidden love collide. Perfect for BookTok fans of romantasy, enemies-to-lovers and high-stakes fantasy romance. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner for bestselling young-adult fantasy.",
     author: "Lauren Roberts",
     authorSlug: "lauren-roberts",
     pages: "150-260",
@@ -10560,8 +9294,6 @@ export const books = [
     id: "bk-678",
     name: "Fearful",
     image: bookImages["fearful"],
-    description:
-      "Buy Fearful by Lauren Roberts online at the lowest price on TheBookX.in. The swoon-worthy companion to the Powerless trilogy that every romantasy reader is talking about — a tender, high-tension slice of Kai and Paedyn's world. A must-read for fans of BookTok fantasy romance, enemies-to-lovers and slow-burn love stories. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for bestselling young-adult fantasy.",
     author: "Lauren Roberts",
     authorSlug: "lauren-roberts",
     pages: "150-260",
@@ -10583,8 +9315,6 @@ export const books = [
     id: "bk-679",
     name: "The Powerless Saga 5-Book Set (Powerless, Reckless, Powerful, Fearless, Fearful)",
     image: bookImages["the-powerless-saga-5-book-set"],
-    description:
-      "Buy the complete Powerless Saga 5-Book Set by Lauren Roberts online at the lowest price on TheBookX.in. Get the entire viral collection in one value box — Powerless, Reckless, Powerful, Fearless and Fearful — the full BookTok romantasy phenomenon of forbidden Elite-and-Ordinary love, deadly trials and jaw-dropping twists. The best-value way to binge Kai and Paedyn's saga end to end. Authentic, high-quality paperbacks delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner for bestselling fantasy box sets.",
     author: "Lauren Roberts",
     authorSlug: "lauren-roberts",
     pages: "1500-2400",
@@ -10607,8 +9337,6 @@ export const books = [
     id: "bk-680",
     name: "My Husband's Wife",
     image: bookImages["my-husbands-wife"],
-    description:
-      "Buy My Husband's Wife by Jane Corry online at the lowest price on TheBookX.in. A twisty, addictive psychological thriller of secrets, obsession and a marriage built on lies — where one deadly mistake echoes across the years. A perfect pick for fans of Gone Girl, The Girl on the Train and edge-of-your-seat domestic suspense. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for bestselling thrillers and mystery fiction.",
     author: "Jane Corry",
     authorSlug: "jane-corry",
     pages: "380-460",
@@ -10624,8 +9352,6 @@ export const books = [
     id: "bk-681",
     name: "The Brothers Karamazov",
     image: bookImages["the-brothers-karamazov"],
-    description:
-      "Buy The Brothers Karamazov by Fyodor Dostoevsky online at the lowest price on TheBookX.in. Dostoevsky's towering final masterpiece — a passionate, philosophical drama of faith, doubt, family and murder that remains one of the greatest novels ever written. Essential reading for lovers of Russian literature and timeless classics. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for classic fiction at unbeatable prices.",
     author: "Fyodor Dostoevsky",
     authorSlug: "fyodor-dostoevsky",
     pages: "700-900",
@@ -10641,8 +9367,6 @@ export const books = [
     id: "bk-682",
     name: "The Idiot",
     image: bookImages["the-idiot"],
-    description:
-      "Buy The Idiot by Fyodor Dostoevsky online at the lowest price on TheBookX.in. A luminous, unforgettable classic following the pure-hearted Prince Myshkin as innocence collides with a corrupt society — one of Dostoevsky's most beloved and moving novels. A must-have for readers of Russian literature and timeless world classics. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for classic fiction.",
     author: "Fyodor Dostoevsky",
     authorSlug: "fyodor-dostoevsky",
     pages: "600-720",
@@ -10658,8 +9382,6 @@ export const books = [
     id: "bk-683",
     name: "Dostoevsky Set of 3 (Crime and Punishment, The Brothers Karamazov & The Idiot)",
     image: bookImages["dostoevsky-set-of-3"],
-    description:
-      "Buy the Fyodor Dostoevsky Set of 3 online at the lowest price on TheBookX.in. The three essential masterpieces — Crime and Punishment, The Brothers Karamazov and The Idiot — bundled in one unbeatable-value collection for every lover of Russian literature and world classics. The perfect gift box and the best way to build your classics shelf in one order. Authentic, high-quality paperbacks delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for classic fiction box sets.",
     author: "Fyodor Dostoevsky",
     authorSlug: "fyodor-dostoevsky",
     pages: "1900-2400",
@@ -10675,8 +9397,6 @@ export const books = [
     id: "bk-684",
     name: "Musafir Cafe (मुसाफ़िर कैफ़े)",
     image: bookImages["musafir-cafe"],
-    description:
-      "Buy Musafir Cafe (मुसाफ़िर कैफ़े) by Divya Prakash Dubey online at the lowest price on TheBookX.in. One of the most-loved contemporary Hindi novels — a tender, quietly rebellious love story about chasing your own dreams instead of the world's script. A trending Hindi bestseller for readers who adore modern Hindi fiction and heartfelt romance. मुसाफ़िर कैफ़े — दिव्य प्रकाश दुबे का चर्चित हिंदी उपन्यास. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for the best Hindi books online.",
     author: "Divya Prakash Dubey",
     authorSlug: "divya-prakash-dubey",
     pages: "160-220",
@@ -10692,8 +9412,6 @@ export const books = [
     id: "bk-685",
     name: "October Junction (अक्टूबर जंक्शन)",
     image: bookImages["october-junction"],
-    description:
-      "Buy October Junction (अक्टूबर जंक्शन) by Divya Prakash Dubey online at the lowest price on TheBookX.in. A bittersweet, beautifully written contemporary Hindi love story that follows two people across the years — a trending Hindi bestseller adored by young readers. अक्टूबर जंक्शन — दिव्य प्रकाश दुबे की बेहतरीन प्रेम कहानी. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for famous and trending Hindi books online.",
     author: "Divya Prakash Dubey",
     authorSlug: "divya-prakash-dubey",
     pages: "160-220",
@@ -10709,8 +9427,6 @@ export const books = [
     id: "bk-686",
     name: "Banaras Talkies (बनारस टॉकीज़)",
     image: bookImages["banaras-talkies"],
-    description:
-      "Buy Banaras Talkies (बनारस टॉकीज़) by Satya Vyas online at the lowest price on TheBookX.in. A hilarious, heart-warming campus novel set in the hostels of BHU — nostalgia, friendship and laugh-out-loud desi humour make it one of the most popular modern Hindi bestsellers. बनारस टॉकीज़ — सत्य व्यास का सुपरहिट हिंदी उपन्यास. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for trending Hindi books online.",
     author: "Satya Vyas",
     authorSlug: "satya-vyas",
     pages: "150-210",
@@ -10726,8 +9442,6 @@ export const books = [
     id: "bk-687",
     name: "UP 65 (यूपी 65)",
     image: bookImages["up-65"],
-    description:
-      "Buy UP 65 (यूपी 65) by Nikhil Sachan online at the lowest price on TheBookX.in. A witty, slice-of-life Hindi novel of small-town dreams, college days and big-city struggles — a trending contemporary Hindi bestseller loved for its honesty and humour. यूपी 65 — निखिल सचान का चर्चित हिंदी उपन्यास. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for famous Hindi books online.",
     author: "Nikhil Sachan",
     authorSlug: "nikhil-sachan",
     pages: "180-240",
@@ -10743,8 +9457,6 @@ export const books = [
     id: "bk-688",
     name: "Ibne Batuta Ka Joota (इब्ने बतूता का जूता)",
     image: bookImages["ibne-batuta-ka-joota"],
-    description:
-      "Buy Ibne Batuta Ka Joota (इब्ने बतूता का जूता) by Divya Prakash Dubey online at the lowest price on TheBookX.in. A sparkling collection of modern Hindi short stories — sharp, funny and deeply relatable snapshots of today's India from a favourite trending Hindi author. इब्ने बतूता का जूता — दिव्य प्रकाश दुबे की लोकप्रिय कहानियाँ. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for trending Hindi books online.",
     author: "Divya Prakash Dubey",
     authorSlug: "divya-prakash-dubey",
     pages: "150-210",
@@ -10760,8 +9472,6 @@ export const books = [
     id: "bk-689",
     name: "Chaurasi (चौरासी)",
     image: bookImages["chaurasi"],
-    description:
-      "Buy Chaurasi (चौरासी) by Satya Vyas online at the lowest price on TheBookX.in. A moving, powerful contemporary Hindi novel set against the events of 1984 — a love story tested by history that has become a trending modern Hindi bestseller. चौरासी — सत्य व्यास का बहुचर्चित हिंदी उपन्यास. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for famous and trending Hindi books online.",
     author: "Satya Vyas",
     authorSlug: "satya-vyas",
     pages: "160-220",
@@ -10777,8 +9487,6 @@ export const books = [
     id: "bk-690",
     name: "Think Faster, Talk Smarter",
     image: bookImages["think-faster-talk-smarter"],
-    description:
-      "Buy Think Faster, Talk Smarter by Matt Abrahams online at the lowest price on TheBookX.in. A practical, science-backed guide to speaking with confidence on the spot — nail Q&A, small talk, feedback, toasts and tough questions without freezing. A must-read for anyone who wants to master communication, public speaking and everyday conversations. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for bestselling self-help and business books.",
     author: "Matt Abrahams",
     authorSlug: "matt-abrahams",
     pages: "240-300",
@@ -10796,8 +9504,6 @@ export const books = [
     id: "bk-713",
     name: "The Housemaid Series (3-Book Set)",
     image: bookImages["the-housemaid-set"],
-    description:
-      "Buy The Housemaid 3-book series box set by Freida McFadden online at the lowest price on TheBookX.in. This complete collection brings together the global #1 bestselling psychological thrillers — The Housemaid, The Housemaid's Secret and The Housemaid Is Watching — in one value-packed set. Follow Millie from the cleaning cupboard of a sinister household through twist after shocking twist in the most addictive thriller series of the decade. The perfect binge-read gift for every thriller lover and the best value compared to buying the three books separately. Authentic, high-quality copies delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Freida McFadden",
     authorSlug: "freida-mcfadden",
     pages: "3 books",
@@ -10814,8 +9520,6 @@ export const books = [
     id: "bk-714",
     name: "The Girl in the Glass Case",
     image: bookImages["the-girl-in-the-glass-case"],
-    description:
-      "Buy The Girl in the Glass Case by Devashish Sardana online at the lowest price on TheBookX.in. A gripping Indian psychological crime thriller in the Simone Singh series — IPS officer Simone Singh and DSP Zoya Bharucha race to catch the Doll Maker, a chilling serial killer who dresses her victims as dolls and displays them in glass cases. Fast-paced, dark and impossible to put down, it is a must-read for fans of edge-of-the-seat Indian crime fiction. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Devashish Sardana",
     authorSlug: "devashish-sardana",
     pages: "344",
@@ -10832,8 +9536,6 @@ export const books = [
     id: "bk-715",
     name: "Not Quite Dead Yet",
     image: bookImages["not-quite-dead-yet"],
-    description:
-      "Buy Not Quite Dead Yet by Holly Jackson online at the lowest price on TheBookX.in. From the bestselling author of A Good Girl's Guide to Murder comes a razor-sharp adult thriller — Jet Mason has just one week to live after a brutal attack, and she is going to spend it solving her own murder. Twisty, propulsive and unforgettable, this Goodreads Choice Award-winning mystery is a must-read for every thriller fan. An authentic, high-quality copy delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Holly Jackson",
     authorSlug: "holly-jackson",
     pages: "350-400",
@@ -10850,8 +9552,6 @@ export const books = [
     id: "bk-716",
     name: "Sudha Murty Collection (12-Book Set)",
     image: bookImages["sudha-murty-12-book-set"],
-    description:
-      "Buy the Sudha Murty 12-book collection online at the lowest price on TheBookX.in. A beautifully curated set of India's most loved storyteller and Padma Shri awardee — warm, wise and heart-touching stories, essays and novels that the whole family can read together. The perfect gift set for readers of every age and the best value compared to buying the books individually. Authentic, high-quality copies delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Sudha Murty",
     authorSlug: "sudha-murty",
     pages: "12 books",
@@ -10868,8 +9568,6 @@ export const books = [
     id: "bk-717",
     name: "Diary of a Wimpy Kid (15-Book Set)",
     image: bookImages["diary-of-a-wimpy-kid-15-book-set"],
-    description:
-      "Buy the Diary of a Wimpy Kid 15-book set by Jeff Kinney online at the lowest price on TheBookX.in. The ultimate collection of the world's funniest children's series — join Greg Heffley through fifteen laugh-out-loud illustrated adventures in one incredible value box set. The perfect gift to get kids hooked on reading and the best value compared to buying the singles. Authentic, high-quality copies delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Jeff Kinney",
     series: "Diary of a Wimpy Kid",
     authorSlug: "jeff-kinney",
@@ -10887,8 +9585,6 @@ export const books = [
     id: "bk-718",
     name: "Geronimo Stilton #1: Lost Treasure of the Emerald Eye",
     image: bookImages["geronimo-01-lost-treasure-emerald-eye"],
-    description:
-      "Buy Geronimo Stilton #1: Lost Treasure of the Emerald Eye online at the lowest price on TheBookX.in. Geronimo sets sail on a treasure hunt for the legendary Emerald Eye, braving storms and giant squid in the very first fabumouse adventure. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -10905,8 +9601,6 @@ export const books = [
     id: "bk-723",
     name: "Geronimo Stilton #2: The Curse of the Cheese Pyramid",
     image: bookImages["geronimo-02-curse-cheese-pyramid"],
-    description:
-      "Buy Geronimo Stilton #2: The Curse of the Cheese Pyramid online at the lowest price on TheBookX.in. Geronimo is dragged off to Egypt to decode an ancient scroll and uncover the curse hidden deep inside a mysterious cheese pyramid. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -10923,8 +9617,6 @@ export const books = [
     id: "bk-724",
     name: "Geronimo Stilton #3: Cat and Mouse in a Haunted House",
     image: bookImages["geronimo-03-cat-mouse-haunted-house"],
-    description:
-      "Buy Geronimo Stilton #3: Cat and Mouse in a Haunted House online at the lowest price on TheBookX.in. A spooky old mansion, creaking doors and a terrified Geronimo make for one hilarious, hair-raising mouse-adventure. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -10941,8 +9633,6 @@ export const books = [
     id: "bk-725",
     name: "Geronimo Stilton #4: I'm Too Fond of My Fur!",
     image: bookImages["geronimo-04-too-fond-of-my-fur"],
-    description:
-      "Buy Geronimo Stilton #4: I'm Too Fond of My Fur! online at the lowest price on TheBookX.in. Geronimo is roped into a wild, muddy outdoor survival trip — and he would much rather be home with a good book. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -10959,8 +9649,6 @@ export const books = [
     id: "bk-726",
     name: "Geronimo Stilton #5: Four Mice Deep in the Jungle",
     image: bookImages["geronimo-05-four-mice-deep-jungle"],
-    description:
-      "Buy Geronimo Stilton #5: Four Mice Deep in the Jungle online at the lowest price on TheBookX.in. Geronimo and friends trek deep into the jungle in search of a rare plant, dodging danger at every turn. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -10977,8 +9665,6 @@ export const books = [
     id: "bk-727",
     name: "Geronimo Stilton #6: Paws Off, Cheddarface!",
     image: bookImages["geronimo-06-paws-off-cheddarface"],
-    description:
-      "Buy Geronimo Stilton #6: Paws Off, Cheddarface! online at the lowest price on TheBookX.in. Geronimo's great-grandfather drags him into a cut-throat newspaper war against the sneaky Cheddarface. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -10995,8 +9681,6 @@ export const books = [
     id: "bk-728",
     name: "Geronimo Stilton #7: Red Pizzas for a Blue Count",
     image: bookImages["geronimo-07-red-pizzas-blue-count"],
-    description:
-      "Buy Geronimo Stilton #7: Red Pizzas for a Blue Count online at the lowest price on TheBookX.in. Geronimo travels to Transratania to help a vampire count — and ends up serving pizza in the spookiest castle around. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11013,8 +9697,6 @@ export const books = [
     id: "bk-729",
     name: "Geronimo Stilton #8: Attack of the Bandit Cats",
     image: bookImages["geronimo-08-attack-bandit-cats"],
-    description:
-      "Buy Geronimo Stilton #8: Attack of the Bandit Cats online at the lowest price on TheBookX.in. Geronimo rushes to the Cannibal Islands to rescue his nephew Benjamin from a gang of ferocious bandit cats. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11031,8 +9713,6 @@ export const books = [
     id: "bk-730",
     name: "Geronimo Stilton #9: A Fabumouse Vacation for Geronimo",
     image: bookImages["geronimo-09-fabumouse-vacation"],
-    description:
-      "Buy Geronimo Stilton #9: A Fabumouse Vacation for Geronimo online at the lowest price on TheBookX.in. Geronimo's dream getaway turns into a disaster-packed holiday full of chaos, laughs and cheesy surprises. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11049,8 +9729,6 @@ export const books = [
     id: "bk-731",
     name: "Geronimo Stilton #10: All Because of a Cup of Coffee",
     image: bookImages["geronimo-10-cup-of-coffee"],
-    description:
-      "Buy Geronimo Stilton #10: All Because of a Cup of Coffee online at the lowest price on TheBookX.in. One spilled cup of coffee sends Geronimo tumbling into a tangle of mix-ups and mouse-sized misadventures. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11067,8 +9745,6 @@ export const books = [
     id: "bk-732",
     name: "Geronimo Stilton #11: It's Halloween, You 'Fraidy Mouse!",
     image: bookImages["geronimo-11-its-halloween-fraidy-mouse"],
-    description:
-      "Buy Geronimo Stilton #11: It's Halloween, You 'Fraidy Mouse! online at the lowest price on TheBookX.in. It's the spookiest night of the year and scaredy-mouse Geronimo must survive a Halloween full of frights and fun. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11085,8 +9761,6 @@ export const books = [
     id: "bk-733",
     name: "Geronimo Stilton #12: Merry Christmas, Geronimo!",
     image: bookImages["geronimo-12-merry-christmas"],
-    description:
-      "Buy Geronimo Stilton #12: Merry Christmas, Geronimo! online at the lowest price on TheBookX.in. A heart-warming, snow-filled festive adventure as Geronimo races to save Christmas in New Mouse City. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11103,8 +9777,6 @@ export const books = [
     id: "bk-734",
     name: "Geronimo Stilton #13: The Phantom of the Subway",
     image: bookImages["geronimo-13-phantom-of-subway"],
-    description:
-      "Buy Geronimo Stilton #13: The Phantom of the Subway online at the lowest price on TheBookX.in. A mysterious phantom haunts the New Mouse City subway, and brave-ish Geronimo must solve the eerie mystery. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11121,8 +9793,6 @@ export const books = [
     id: "bk-735",
     name: "Geronimo Stilton #14: The Temple of the Ruby of Fire",
     image: bookImages["geronimo-14-temple-ruby-of-fire"],
-    description:
-      "Buy Geronimo Stilton #14: The Temple of the Ruby of Fire online at the lowest price on TheBookX.in. Geronimo journeys to a far-off land to find the fabled Ruby of Fire before it falls into the wrong paws. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11139,8 +9809,6 @@ export const books = [
     id: "bk-736",
     name: "Geronimo Stilton #15: The Mona Mousa Code",
     image: bookImages["geronimo-15-mona-mousa-code"],
-    description:
-      "Buy Geronimo Stilton #15: The Mona Mousa Code online at the lowest price on TheBookX.in. A stolen masterpiece and a secret code send Geronimo on an art-filled mystery across New Mouse City. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11157,8 +9825,6 @@ export const books = [
     id: "bk-737",
     name: "Geronimo Stilton #16: A Cheese-Colored Camper",
     image: bookImages["geronimo-16-cheese-colored-camper"],
-    description:
-      "Buy Geronimo Stilton #16: A Cheese-Colored Camper online at the lowest price on TheBookX.in. Geronimo hits the open road in a cheese-colored camper for a holiday that is anything but relaxing. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11175,8 +9841,6 @@ export const books = [
     id: "bk-738",
     name: "Geronimo Stilton #17: Watch Your Whiskers, Stilton!",
     image: bookImages["geronimo-17-watch-your-whiskers"],
-    description:
-      "Buy Geronimo Stilton #17: Watch Your Whiskers, Stilton! online at the lowest price on TheBookX.in. Geronimo is tricked into a daring contest that tests his whiskers, his wits and his courage. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11193,8 +9857,6 @@ export const books = [
     id: "bk-739",
     name: "Geronimo Stilton #18: Shipwreck on the Pirate Islands",
     image: bookImages["geronimo-18-shipwreck-pirate-islands"],
-    description:
-      "Buy Geronimo Stilton #18: Shipwreck on the Pirate Islands online at the lowest price on TheBookX.in. Marooned on the Pirate Islands, Geronimo must outsmart swashbuckling pirates to find his way home. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11211,8 +9873,6 @@ export const books = [
     id: "bk-740",
     name: "Geronimo Stilton #19: My Name Is Stilton, Geronimo Stilton",
     image: bookImages["geronimo-19-my-name-is-stilton"],
-    description:
-      "Buy Geronimo Stilton #19: My Name Is Stilton, Geronimo Stilton online at the lowest price on TheBookX.in. Geronimo turns secret agent in a thrilling, action-packed spy caper full of gadgets and giggles. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11229,8 +9889,6 @@ export const books = [
     id: "bk-741",
     name: "Geronimo Stilton #20: Surf's Up, Geronimo!",
     image: bookImages["geronimo-20-surfs-up"],
-    description:
-      "Buy Geronimo Stilton #20: Surf's Up, Geronimo! online at the lowest price on TheBookX.in. Geronimo catches the waves on a sun-soaked island where surfing, sun and mouse-sized mayhem await. A hilarious, full-colour chapter book from the world's favourite mouse journalist — zany fonts and fun illustrations that turn reluctant readers into book lovers. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "~128",
@@ -11247,8 +9905,6 @@ export const books = [
     id: "bk-719",
     name: "Geronimo Stilton Collection (20-Book Set)",
     image: bookImages["geronimo-stilton-set"],
-    description:
-      "Buy the Geronimo Stilton 20-book collection (Vol 1–20) online at the lowest price on TheBookX.in. A huge value box set of the best-loved mouse journalist's adventures — full-colour, zany-font chapter books that make kids fall in love with reading. Save 20% versus buying the singles. The perfect gift set for young readers. Authentic, high-quality copies delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Geronimo Stilton",
     authorSlug: "geronimo-stilton",
     pages: "20 books",
@@ -11265,8 +9921,6 @@ export const books = [
     id: "bk-720",
     name: "The Adventures of Tintin (Collector's Box Set)",
     image: bookImages["tintin-adventures-red-box-set"],
-    description:
-      "Buy The Adventures of Tintin collector's box set by Hergé online at the lowest price on TheBookX.in. The iconic red keepsake box brings together the timeless comic-strip adventures of Tintin and Snowy — a treasured collection every comic and graphic-novel lover deserves on their shelf. The perfect premium gift and the best value compared to buying the singles. Authentic, high-quality copies delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Hergé",
     authorSlug: "herge",
     pages: "Multi-volume box set",
@@ -11283,8 +9937,6 @@ export const books = [
     id: "bk-721",
     name: "Solo Leveling Box Set (Volumes 1–10)",
     image: bookImages["solo-leveling-set-1-10"],
-    description:
-      "Buy the Solo Leveling box set (Volumes 1–10) by Chugong online at the lowest price on TheBookX.in. The complete first arc of the record-breaking global phenomenon — follow Sung Jinwoo from the world's weakest hunter to its most powerful in this stunning full-colour manhwa collection. A must-have for every manga, manhwa and anime fan. The perfect gift box set and the best value compared to buying the singles. Authentic, high-quality copies delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Chugong",
     authorSlug: "chugong",
     pages: "10 volumes",
@@ -11301,8 +9953,6 @@ export const books = [
     id: "bk-722",
     name: "Demon Slayer: Kimetsu no Yaiba Complete Box Set (Volumes 1–23)",
     image: bookImages["demon-slayer-complete-box-set"],
-    description:
-      "Buy the Demon Slayer: Kimetsu no Yaiba complete box set (Volumes 1–23) by Koyoharu Gotouge online at the lowest price on TheBookX.in. The entire best-selling saga in one collector's box — join Tanjiro and the Demon Slayer Corps from the very first chapter to the epic finale. A must-have for every manga and anime fan and the ultimate gift for Demon Slayer lovers. The best value compared to buying the volumes individually. Authentic, high-quality copies delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Koyoharu Gotouge",
     authorSlug: "koyoharu-gotouge",
     pages: "23 volumes",
@@ -11319,8 +9969,6 @@ export const books = [
     id: "bk-742",
     name: "Happy Place",
     image: bookImages["happy-place"],
-    description:
-      "Buy Happy Place by Emily Henry online at the lowest price on TheBookX.in. From the #1 bestselling author of Beach Read and Book Lovers comes a warm, witty second-chance romance — Harriet and Wyatt broke up months ago but still have to share a cottage with their best friends for one last annual getaway, so they pretend they're still together. A swoony, heartfelt summer read you won't be able to put down. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Emily Henry",
     authorSlug: "emily-henry",
     pages: "380-420",
@@ -11337,8 +9985,6 @@ export const books = [
     id: "bk-743",
     name: "Funny Story",
     image: bookImages["funny-story"],
-    description:
-      "Buy Funny Story by Emily Henry online at the lowest price on TheBookX.in. From the #1 bestselling author of Happy Place and Book Lovers comes a sparkling, feel-good romance — dumped and stranded, Daphne ends up rooming with Miles, the ex of her ex's new fiancée, and what starts as a revenge plan turns into something real. Sharp, funny and impossible to put down. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Emily Henry",
     authorSlug: "emily-henry",
     pages: "380-420",
@@ -11355,8 +10001,6 @@ export const books = [
     id: "bk-744",
     name: "Fake Skating",
     image: bookImages["fake-skating"],
-    description:
-      "Buy Fake Skating online at the lowest price on TheBookX.in. A fast-paced, feel-good read packed with heart, rivalry and romance on and off the ice. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "TheBookX",
     authorSlug: "thebookx",
     pages: "300-360",
@@ -11373,8 +10017,6 @@ export const books = [
     id: "bk-745",
     name: "The Dinner Party",
     image: bookImages["the-dinner-party"],
-    description:
-      "Buy The Dinner Party by Freida McFadden online at the lowest price on TheBookX.in. From the #1 bestselling author of The Housemaid comes a twisty, page-turning thriller where one evening among friends spirals into secrets, suspicion and a night no one will forget. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Freida McFadden",
     authorSlug: "freida-mcfadden",
     pages: "300-360",
@@ -11391,8 +10033,6 @@ export const books = [
     id: "bk-746",
     name: "U n Me... It's Complicated",
     image: bookImages["u-n-me-its-complicated"],
-    description:
-      "Buy U n Me... It's Complicated by Aditya Nighhot online at the lowest price on TheBookX.in. A heartfelt Indian college romance told from Aditya's point of view — a shy, bookish boy who falls for Rutuja, the most admired girl in college — and the misunderstandings, heartbreak and hard-won lessons that follow. Inspired by a true story and carrying a gentle message of hope, it's a relatable read for every young heart. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Aditya Nighhot",
     authorSlug: "aditya-nighhot",
     pages: "200-240",
@@ -11409,8 +10049,6 @@ export const books = [
     id: "bk-747",
     name: "Lights Out",
     image: bookImages["lights-out"],
-    description:
-      "Buy Lights Out by Navessa Allen online at the lowest price on TheBookX.in. The viral TikTok-sensation and book one of the multi-million-copy Into Darkness series — a darkly addictive, spicy romance where an anonymous online game between a masked stranger and a burnt-out nurse turns dangerously real. Bold, twisty and impossible to put down. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Navessa Allen",
     authorSlug: "navessa-allen",
     pages: "320-360",
@@ -11427,8 +10065,6 @@ export const books = [
     id: "bk-748",
     name: "Caught Up",
     image: bookImages["caught-up"],
-    description:
-      "Buy Caught Up by Navessa Allen online at the lowest price on TheBookX.in. The #1 New York Times bestselling sequel to Lights Out and book two of the Into Darkness series — a sizzling, high-stakes dark romance that raises the tension, the danger and the heat. Perfect for fans of BookTok's most talked-about love stories. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Navessa Allen",
     authorSlug: "navessa-allen",
     pages: "350-400",
@@ -11445,8 +10081,6 @@ export const books = [
     id: "bk-749",
     name: "Game On",
     image: bookImages["game-on"],
-    description:
-      "Buy Game On by Navessa Allen online at the lowest price on TheBookX.in. The thrilling final book of the New York Times bestselling Into Darkness series — Tyler and Stella's story brings the dark, addictive trilogy to its explosive, swoon-worthy close. A must-have for every romance shelf. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Navessa Allen",
     authorSlug: "navessa-allen",
     pages: "350-400",
@@ -11463,8 +10097,6 @@ export const books = [
     id: "bk-750",
     name: "Lights Out, Caught Up & Game On Combo (Into Darkness Trilogy)",
     image: bookImages["into-darkness-trilogy-set"],
-    description:
-      "Buy the Lights Out, Caught Up & Game On combo by Navessa Allen online at the lowest price on TheBookX.in. Own the complete Into Darkness trilogy — the multi-million-copy, BookTok-viral dark romance series — in one value bundle, and follow the series from its masked-stranger beginnings to its explosive finale. The best value compared to buying the singles and the perfect gift for romance lovers. Authentic, high-quality paperbacks delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Navessa Allen",
     authorSlug: "navessa-allen",
     pages: "1020-1160",
@@ -11481,8 +10113,6 @@ export const books = [
     id: "bk-751",
     name: "Guide to Technical Analysis & Candlesticks",
     image: bookImages["technical-analysis-candlesticks"],
-    description:
-      "Buy Guide to Technical Analysis & Candlesticks by Ravi Patel online at the lowest price on TheBookX.in. A clear, practical guide to reading charts, candlestick patterns and market trends — perfect for beginners and traders who want to make smarter, more confident decisions in the stock market. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Ravi Patel",
     authorSlug: "ravi-patel",
     pages: "200-260",
@@ -11496,3 +10126,14 @@ export const books = [
     rating: 4.5,
   },
 ];
+
+// Long descriptions live in ./bookDescriptions and are attached on the server
+// only (book pages, feeds, JSON-LD, sitemaps). Next.js drops this branch from
+// browser bundles, so shoppers don't download ~280 KB of text on every page;
+// the book page gets its description through the server-rendered props.
+if (typeof window === "undefined" && typeof require === "function") {
+  const { bookDescriptions } = require("./bookDescriptions");
+  for (const b of books) {
+    if (b.description === undefined && bookDescriptions[b.id]) b.description = bookDescriptions[b.id];
+  }
+}

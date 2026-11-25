@@ -1,0 +1,6 @@
+/* Styles used only by OneRupeeGrid.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.or1-accent {
+  color: var(--tertiary, #fb8500);
+}

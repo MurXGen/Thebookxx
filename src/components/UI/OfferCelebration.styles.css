@@ -1,0 +1,52 @@
+/* Styles used only by OfferCelebration.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.offer-pop {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 150px);
+  z-index: 100000;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: calc(100vw - 32px);
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: linear-gradient(95deg, #fb8500, #ffb703 55%, #ff9e1f);
+  background-size: 180% 100%;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  box-shadow: 0 12px 28px -8px rgba(251, 133, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: offerPopIn 2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards,
+    offerPopShine 1.5s linear infinite;
+}
+
+.offer-pop-emoji {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.offer-pop-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+.offer-pop {
+    font-size: 12.5px;
+    padding: 8px 14px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 140px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+.offer-pop {
+    animation: offerPopIn 2s ease forwards;
+  }
+}

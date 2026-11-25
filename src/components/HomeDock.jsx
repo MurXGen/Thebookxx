@@ -1,4 +1,5 @@
 "use client";
+import "./HomeDock.styles.css";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";

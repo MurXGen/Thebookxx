@@ -1,0 +1,46 @@
+/* Styles used only by ShareSheet.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.shs-overlay { position: fixed; inset: 0; z-index: 10000; background: rgba(10,10,10,.45); display: flex; align-items: flex-end; justify-content: center; }
+
+@media (min-width: 640px) {
+.shs-overlay { align-items: center; }
+}
+
+.shs { width: 100%; max-width: 440px; background: #fff; border-radius: 20px 20px 0 0; padding: 18px 18px calc(18px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 40px rgba(0,0,0,.18); }
+
+@media (min-width: 640px) {
+.shs { border-radius: 20px; padding: 22px; }
+}
+
+.shs-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--dark-10); }
+
+.shs-head-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.shs-head-txt b { font-size: 17px; font-weight: 700; }
+
+.shs-head-txt small { font-size: 13px; color: var(--dark-50); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.shs-x { flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--foreground); }
+
+.shs-x:hover { background: #f3f3f3; }
+
+.shs-apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 8px; padding: 18px 0; }
+
+.shs-app { display: flex; flex-direction: column; align-items: center; gap: 7px; text-decoration: none; color: var(--foreground) !important; }
+
+.shs-app-ic { width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--dark-20); background: #fff; transition: transform .15s, border-color .15s; }
+
+.shs-app:hover .shs-app-ic { transform: translateY(-2px); border-color: var(--dark-50); }
+
+.shs-app-name { font-size: 12px; font-weight: 500; }
+
+.shs-link { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 12px; border: 1px solid var(--dark-20); border-radius: 12px; }
+
+.shs-link-ic { flex: none; color: var(--dark-50); }
+
+.shs-link-url { flex: 1; min-width: 0; font-size: 13px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.shs-copy { flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 8px 16px; border: 0; border-radius: 9px; background: var(--foreground); color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+.shs-copy.done { background: var(--success); }

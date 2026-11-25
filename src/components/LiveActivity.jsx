@@ -1,4 +1,6 @@
 "use client";
+import { optImg } from "@/lib/optImg";
+import "./LiveActivity.styles.css";
 
 import { useEffect, useRef, useState } from "react";
 import { ShoppingBag, Zap, BookPlus, Star, Camera } from "lucide-react";
@@ -74,7 +76,7 @@ function Photo({ r, hidden }) {
     <figure className={`la-photo${state === "loading" ? " is-loading" : ""}`}>
       <img
         ref={imgRef}
-        src={r.img}
+        src={optImg(r.img, 118)}
         alt={hidden ? "" : r.alt || `TheBookX reader photo${r.name ? ` from ${r.name}` : ""}`}
         loading="lazy"
         decoding="async"

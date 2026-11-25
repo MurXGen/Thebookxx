@@ -1,5 +1,6 @@
 // components/AdminLock.jsx
 "use client";
+import "./AdminLock.styles.css";
 
 import { useState, useEffect } from "react";
 import { Lock, Eye, EyeOff } from "lucide-react";

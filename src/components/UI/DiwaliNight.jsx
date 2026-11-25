@@ -1,4 +1,5 @@
 "use client";
+import "./DiwaliNight.styles.css";
 
 import { Great_Vibes } from "next/font/google";
 

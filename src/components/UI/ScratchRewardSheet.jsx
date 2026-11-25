@@ -1,4 +1,5 @@
 "use client";
+import "./ScratchRewardSheet.styles.css";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Gift, Hand } from "lucide-react";

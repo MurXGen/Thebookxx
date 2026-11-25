@@ -1,4 +1,5 @@
 "use client";
+import "./HomeTabs.styles.css";
 
 import { motion } from "framer-motion";
 import { BookOpen, Zap } from "lucide-react";

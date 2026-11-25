@@ -1,3 +1,4 @@
+import "./page.styles.css";
 // app/author/page.js
 import { books } from "@/utils/book";
 import Link from "next/link";

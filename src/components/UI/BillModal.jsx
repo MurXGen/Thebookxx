@@ -1,4 +1,5 @@
 "use client";
+import "./BillModal.styles.css";
 
 import { useEffect, useRef, useState } from "react";
 import {

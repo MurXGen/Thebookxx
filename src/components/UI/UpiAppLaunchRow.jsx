@@ -1,4 +1,5 @@
 "use client";
+import "./UpiAppLaunchRow.styles.css";
 
 import { useEffect, useState } from "react";
 import { ArrowRight, ChevronDown, Smartphone } from "lucide-react";

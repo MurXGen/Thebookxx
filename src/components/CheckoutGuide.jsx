@@ -1,4 +1,5 @@
 "use client";
+import "./CheckoutGuide.styles.css";
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Check } from "lucide-react";

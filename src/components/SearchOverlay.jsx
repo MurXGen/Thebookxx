@@ -1,4 +1,5 @@
 "use client";
+import "./SearchOverlay.styles.css";
 
 import BookCard from "@/components/BookCard";
 import RecommendationModal from "@/components/RecommendationModal";

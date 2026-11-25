@@ -1,4 +1,5 @@
 "use client";
+import "./OneRupeeModal.styles.css";
 
 import BookCard from "@/components/BookCard";
 import { books } from "@/utils/book";

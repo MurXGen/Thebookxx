@@ -1,0 +1,60 @@
+/* Styles used only by ComboDeals.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.combo-section {
+  margin: 0 auto 10px;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.combo-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.combo-heading {
+  margin: 6px 0 2px;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--foreground);
+}
+
+.combo-sub {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--text-muted, #6b7280);
+  max-width: 560px;
+}
+
+.combo-more-card {
+  flex: 0 0 auto;
+  width: 150px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1.5px dashed var(--tertiary, #fb8500);
+  border-radius: 18px;
+  color: var(--tertiary, #fb8500);
+  font-weight: 800;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  padding: 16px;
+}
+
+.combo-more-card:hover {
+  background: rgba(251, 133, 0, 0.06);
+}
+
+@media (max-width: 640px) {
+.combo-heading {
+    font-size: 19px;
+  }
+}

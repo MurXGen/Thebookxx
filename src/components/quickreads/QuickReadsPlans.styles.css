@@ -1,0 +1,163 @@
+/* Styles used only by QuickReadsPlans.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.qrp-modal {
+  width: 100%;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.qrp-modal.qrc-modal-center {
+  max-width: 480px;
+}
+
+.qrp-hero {
+  position: relative;
+  padding: 22px 22px 18px;
+  background:
+    radial-gradient(120% 100% at 100% 0%, rgba(251, 133, 0, 0.16), rgba(251, 133, 0, 0) 60%),
+    linear-gradient(160deg, #fffdf9 0%, #fff4e4 100%);
+  border-bottom: 1px solid var(--hairline, #eee);
+}
+
+.qrp-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--tertiary, #fb8500);
+}
+
+.qrp-hero-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+  margin: 8px 0 4px;
+}
+
+.qrp-hero-sub {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dark-50, #6b7280);
+  max-width: 380px;
+}
+
+.qrp-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  cursor: pointer;
+  color: var(--dark-50, #6b7280);
+}
+
+.qrp-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  max-height: 62vh;
+  overflow-y: auto;
+}
+
+.qrp-card {
+  position: relative;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--background, #fff);
+}
+
+.qrp-card.best {
+  border-color: var(--tertiary, #fb8500);
+  background: linear-gradient(180deg, rgba(251, 133, 0, 0.06), rgba(251, 133, 0, 0));
+  box-shadow: 0 12px 30px -20px rgba(251, 133, 0, 0.6);
+}
+
+.qrp-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+}
+
+.qrp-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qrp-card-titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.qrp-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+}
+
+.qrp-card-tag {
+  font-size: 11.5px;
+  color: var(--dark-50, #6b7280);
+}
+
+.qrp-price {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 12px 0 10px;
+}
+
+.qrp-price-amt {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+}
+
+.qrp-price-unit {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+
+.qrp-bullets {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.qrp-bullets li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--foreground, #222);
+}
+
+.qrp-bullets li svg {
+  flex: 0 0 auto;
+  color: var(--success, #0a8f0c);
+}
+
+.qrp-foot {
+  padding: 0 18px 18px;
+  font-size: 12px;
+  color: var(--dark-50, #6b7280);
+  text-align: center;
+}

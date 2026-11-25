@@ -1,0 +1,16 @@
+/* Styles used only by CodSwitchBtn.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.cod-switch-ic { flex: none; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: #e8f7f0; color: #1ba672; }
+
+.cod-switch-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+
+.cod-switch-tx small { font-size: 11.5px; font-weight: 600; color: #6b7280; }
+
+.cod-switch-tx b { font-size: 14.5px; font-weight: 800; color: #0f5f43; }
+
+.cod-switch-chev { flex: none; color: #1ba672; }
+
+.cod-switch-link { align-self: center; margin: 2px auto 8px; padding: 6px 4px; border: 0; background: none; color: #6b7280; font: inherit; font-size: 12.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+.cod-switch-link:hover { color: #111827; }

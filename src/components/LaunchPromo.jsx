@@ -1,4 +1,5 @@
 "use client";
+import "./LaunchPromo.styles.css";
 
 import Link from "next/link";
 import { Sparkles, ArrowRight, BadgePercent, Star, Truck } from "lucide-react";

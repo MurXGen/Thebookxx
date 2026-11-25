@@ -1,5 +1,6 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import "./layout.styles.css";
 import Script from "next/script";
 import { StoreProvider } from "@/context/StoreContext";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
@@ -19,7 +20,7 @@ import { PLProvider } from "@/context/PLContext";
 /* Font */
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"], // Only load weights you actually use
+  weight: ["400", "500", "600", "700", "800", "900"], // self-hosted; the old Google Fonts @import is gone
   variable: "--font-poppins",
   display: "swap", // Critical - prevents FOIT
   preload: true, // Preload font for faster rendering
@@ -134,13 +135,6 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="TheBookX" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link rel="preload" as="image" href="/favicon.ico" />
 
         {/* Organization + WebSite structured data (brand entity for SEO) */}
         <script
@@ -191,6 +185,27 @@ export default function RootLayout({ children }) {
           }}
         />
 
+        {/* Analytics libraries download after the page is usable: on the first
+            tap / scroll / key, or 3.5 s after load. Events fired before that
+            are queued by the gtag / fbq stubs, so nothing is lost. */}
+        <Script id="tbx-later" strategy="afterInteractive">
+          {`
+            (function () {
+              var q = [], done = false;
+              function run() {
+                if (done) return; done = true;
+                ["pointerdown","keydown","scroll","touchstart"].forEach(function (ev) { removeEventListener(ev, run, true); });
+                q.forEach(function (f) { try { f(); } catch (e) {} });
+                q = null;
+              }
+              window.__tbxLater = function (f) { done ? f() : q.push(f); };
+              ["pointerdown","keydown","scroll","touchstart"].forEach(function (ev) { addEventListener(ev, run, { capture: true, passive: true, once: true }); });
+              function arm() { setTimeout(run, 3500); }
+              document.readyState === "complete" ? arm() : addEventListener("load", arm, { once: true });
+            })();
+          `}
+        </Script>
+
         {/* Google Analytics, skipped on admin paths.
             gtag stub is defined synchronously so events fired before the
             library finishes loading are queued into dataLayer (not dropped). */}
@@ -207,10 +222,12 @@ export default function RootLayout({ children }) {
                 page_path: window.location.pathname,
                 send_page_view: false
               });
-              var s = document.createElement('script');
-              s.async = true;
-              s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VZX7GSTR9Z';
-              document.head.appendChild(s);
+              (window.__tbxLater || function (f) { f(); })(function () {
+                var s = document.createElement('script');
+                s.async = true;
+                s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VZX7GSTR9Z';
+                document.head.appendChild(s);
+              });
             }
           `}
         </Script>
@@ -223,9 +240,9 @@ export default function RootLayout({ children }) {
               {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
               n.callMethod.apply(n,arguments):n.queue.push(arguments)};
               if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-              n.queue=[];t=b.createElement(e);t.async=!0;
+              n.queue=[];(window.__tbxLater||function(f){f()})(function(){t=b.createElement(e);t.async=!0;
               t.src=v;s=b.getElementsByTagName(e)[0];
-              s.parentNode.insertBefore(t,s)}(window, document,'script',
+              s.parentNode.insertBefore(t,s)})}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
               fbq('init', '1050460933362185');
               fbq('track', 'PageView');

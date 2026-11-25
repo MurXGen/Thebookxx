@@ -1,0 +1,25 @@
+/* Styles used only by page.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.forai { max-width: 760px; margin: 0 auto; padding: 28px 18px 120px; color: #1c1814; line-height: 1.6; }
+
+.forai h1 { font-size: 28px; line-height: 1.2; margin: 0 0 10px; }
+
+.forai h2 { font-size: 18px; margin: 26px 0 6px; }
+
+.forai-lead { font-size: 16px; color: #4a3f33; }
+
+.forai pre {
+  margin: 8px 0; padding: 12px 14px; border-radius: 12px;
+  background: #1c1814; color: #f4f4f5; font-size: 12.5px; overflow-x: auto;
+}
+
+.forai-wrap { white-space: pre-wrap; word-break: break-all; }
+
+.forai code { padding: 1px 6px; border-radius: 6px; background: #f4efe8; font-size: 13px; }
+
+.forai blockquote { margin: 8px 0; padding: 10px 14px; border-left: 3px solid #fb8500; background: #fffaf2; border-radius: 0 10px 10px 0; }
+
+.forai ul { padding-left: 20px; }
+
+.forai-foot { margin-top: 28px; font-size: 13px; color: #6b5f52; }

@@ -1,0 +1,19 @@
+/* Styles used only by FreeShippingNudgeModal.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.load-more-btn {
+  padding: 12px 24px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: var(--px-14);
+  font-weight: var(--weight-500);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.load-more-btn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}

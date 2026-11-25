@@ -1,0 +1,44 @@
+/* Styles used only by AllBooks.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.flex-1 {
+  flex: 1;
+}
+
+.trending-section .grid-2 {
+  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 900px) {
+.trending-section .grid-2 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+.trending-section .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.allbooks-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.allbooks-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+.allbooks-controls {
+    align-items: flex-start;
+  }
+}

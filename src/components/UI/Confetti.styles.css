@@ -1,0 +1,20 @@
+/* Styles used only by Confetti.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.confetti-mask {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 6px;
+  height: 18px;
+  border-radius: 2px;
+  background: linear-gradient(45deg, #ff4d4d, #ffd84d);
+  animation: confettiFall 1.1s ease forwards;
+}

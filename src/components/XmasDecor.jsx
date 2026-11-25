@@ -1,4 +1,5 @@
 "use client";
+import "./XmasDecor.styles.css";
 
 import { useEffect, useRef } from "react";
 
@@ -102,8 +103,11 @@ export function XmasSnow({ density = 1, max = 140, ink = false, className = "" }
       draw();
       raf = requestAnimationFrame(step);
     };
+    // Flakes are drawn still at first and start moving once the page has
+    // loaded and gone idle, so the animation never competes with page load.
+    let ready = false;
     const start = () => {
-      if (!raf && visible && !reduce) {
+      if (!raf && visible && ready && !reduce) {
         last = 0;
         raf = requestAnimationFrame(step);
       }
@@ -126,8 +130,23 @@ export function XmasSnow({ density = 1, max = 140, ink = false, className = "" }
       start();
     };
     document.addEventListener("visibilitychange", onVis);
-    start();
+    let idleId = 0,
+      wait = 0;
+    const goLive = () => {
+      ready = true;
+      start();
+    };
+    const afterLoad = () => {
+      wait = setTimeout(() => {
+        idleId = window.requestIdleCallback ? window.requestIdleCallback(goLive, { timeout: 2000 }) : (goLive(), 0);
+      }, 2500);
+    };
+    if (document.readyState === "complete") afterLoad();
+    else window.addEventListener("load", afterLoad, { once: true });
     return () => {
+      window.removeEventListener("load", afterLoad);
+      clearTimeout(wait);
+      if (idleId && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();

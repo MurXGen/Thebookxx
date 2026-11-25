@@ -1,0 +1,252 @@
+/* Styles used only by BestsellerStage.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--px-12);
+  font-weight: var(--weight-500);
+  color: #4b5563;
+}
+
+.carousel-container {
+  position: relative;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  margin: 20px 0;
+}
+
+.carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-book {
+  position: absolute;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+  border-radius: var(--px-8);
+  border: 1px solid var(--dark-10);
+}
+
+.book-info {
+  position: absolute;
+  bottom: -60px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  background: white;
+  padding: 12px;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+}
+
+.book-title {
+  font-size: var(--px-14);
+  font-weight: var(--weight-600);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-author {
+  font-size: var(--px-12);
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.book-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.book-price .discounted {
+  font-size: var(--px-14);
+  font-weight: var(--weight-700);
+  color: #22c55e;
+}
+
+.book-price .original {
+  font-size: var(--px-12);
+  text-decoration: line-through;
+  color: #999;
+}
+
+.carousel-shadow {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 20px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.15), transparent 70%);
+  filter: blur(6px);
+  z-index: 1;
+}
+
+.controls-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 32px auto;
+}
+
+.play-pause-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 28px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 40px;
+  color: white;
+  font-size: var(--px-14);
+  font-weight: var(--weight-500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.play-pause-btn:hover {
+  background: black;
+  transform: scale(1.02);
+}
+
+.trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+  padding: 12px 20px;
+  border-radius: 48px;
+  font-size: var(--px-12);
+  color: #444;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+.trust-item:hover {
+  opacity: 0.7;
+}
+
+.trust-strip {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: var(--px-42);
+  flex-wrap: wrap;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--px-12);
+  color: var(--dark);
+  background: var(--white-100);
+  padding: var(--px-12);
+  border-radius: var(--px-16);
+  border: 1px solid var(--dark-20);
+  text-decoration: underline;
+}
+
+.trust-item svg {
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+.trust-item {
+    font-size: var(--px-12);
+  }
+}
+
+@media (max-width: 768px) {
+.carousel-container {
+    height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+.carousel-book {
+    width: 130px !important;
+    height: 195px !important;
+    margin-left: -65px !important;
+  }
+}
+
+@media (max-width: 768px) {
+.book-info {
+    bottom: -50px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+.book-title {
+    font-size: var(--px-12);
+  }
+}
+
+@media (max-width: 768px) {
+.book-author {
+    font-size: var(--px-10);
+  }
+}
+
+@media (max-width: 768px) {
+.book-price .discounted {
+    font-size: var(--px-12);
+  }
+}
+
+@media (max-width: 768px) {
+.book-price .original {
+    font-size: var(--px-10);
+  }
+}
+
+@media (max-width: 768px) {
+.carousel-shadow {
+    width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+.play-pause-btn {
+    padding: 8px 20px;
+    font-size: var(--px-12);
+  }
+}
+
+@media (max-width: 768px) {
+.trust-strip {
+    gap: 12px;
+    border-radius: 32px;
+    padding: 10px 16px;
+  }
+}
+
+.bestseller-stage--merged {
+  padding-top: 4px;
+}

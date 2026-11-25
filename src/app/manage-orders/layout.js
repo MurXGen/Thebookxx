@@ -3,6 +3,8 @@ import AdminLock from "@/components/AdminLock";
 // Monochrome design layer. Scoped to `.my-orders-page.mo-glass`, so it only
 // ever applies inside this route — the storefront is untouched. The generated
 // mono sheet remaps globals.css literals; the hand-written UI sheet loads last.
+// Manage Orders rules split out of globals.css (load first, as before).
+import "./manage-orders-globals.css";
 import "./manage-orders-mono.css";
 import "./manage-orders-ui.css";
 

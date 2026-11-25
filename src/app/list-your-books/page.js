@@ -1,3 +1,4 @@
+import "./page.styles.css";
 // app/list-your-books/page.js — Sell/list your books with TheBookX.
 import Navbar from "@/components/Navbar";
 import Breadcrumbs from "@/components/UI/Breadcrumbs";

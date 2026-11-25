@@ -1,0 +1,6 @@
+/* Styles used only by InstallPWA.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.gap-32 {
+  gap: var(--px-32);
+}

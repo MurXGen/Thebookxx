@@ -1,4 +1,5 @@
 "use client";
+import "./SplashScreen.styles.css";
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";

@@ -1,4 +1,5 @@
 "use client";
+import "./GiftQR.styles.css";
 
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";

@@ -1,3 +1,4 @@
+import "./page.styles.css";
 // app/quickreads/page.jsx — QuickReads hub (server component for SEO).
 import Script from "next/script";
 import Navbar from "@/components/Navbar";

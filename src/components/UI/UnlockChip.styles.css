@@ -1,0 +1,11 @@
+/* Styles used only by UnlockChip.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.unlock-chip-badge {
+  background: var(--tertiary-light);
+  color: #1a1a1a;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: var(--px-10);
+  font-weight: var(--weight-700);
+}

@@ -1,0 +1,32 @@
+/* Styles used only by DeliveryEtaStripe.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.eta-stripe { position: relative; overflow: hidden; display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 7px 12px; border-radius: 12px; background: linear-gradient(90deg, #ecfdf5 0%, #f0fdf4 60%, #fefce8 100%); border: 1px solid #bbf7d0; color: #14532d; font-size: 12.5px; line-height: 1.3; isolation: isolate; }
+
+.eta-stripe::after { content: ""; position: absolute; top: -20%; bottom: -20%; left: -40%; width: 30%; z-index: -1; background: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.95) 50%, rgba(255,255,255,0) 100%); transform: skewX(-18deg); animation: etaSheen 4.8s ease-in-out infinite; animation-delay: 1.2s; pointer-events: none; }
+
+.eta-ic { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 8px; background: #16a34a; color: #fff; }
+
+.eta-tx { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.eta-tx b { font-weight: 800; color: #052e16; }
+
+.eta-cd { color: #c2410c !important; font-variant-numeric: tabular-nums; }
+
+.eta-dot { margin: 0 6px; color: #86efac; font-weight: 800; }
+
+.eta-days { flex: none; padding: 2px 8px; border-radius: 999px; background: #fff; border: 1px solid #bbf7d0; color: #15803d; font-size: 11px; font-weight: 800; }
+
+@media (max-width: 380px) {
+.eta-days { display: none; }
+}
+
+@media (max-width: 380px) {
+.eta-stripe { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+.eta-stripe::after { animation: none; display: none; }
+}
+
+.eta-stripe.is-thunder { background: linear-gradient(90deg, #fff8e1 0%, #ffefc2 60%, #fffbeb 100%); border-color: #fcd34d; color: #78350f; }

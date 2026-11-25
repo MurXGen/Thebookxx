@@ -1,0 +1,34 @@
+/* Styles used only by OneRupeeUnlock.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.r1u { background: #fff; border: 1px dashed #fca5a5; border-radius: 16px; padding: 12px; margin: 12px 0; }
+
+.r1u-head { display: flex; gap: 10px; align-items: flex-start; }
+
+.r1u-ic { flex: none; width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; background: #fef2f2; color: #dc2626; }
+
+.r1u-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.r1u-txt b { font-size: 14px; font-weight: 800; color: #111827; line-height: 1.3; }
+
+.r1u-txt small { font-size: 12px; color: #6b7280; }
+
+.r1u-picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+
+.r1u-pick { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px; border: 1px solid #eef0f3; border-radius: 12px; background: #fafafa; cursor: pointer; text-align: center; transition: border-color .15s, transform .15s; }
+
+.r1u-pick:active { transform: scale(.97); }
+
+.r1u-pick img { width: 56px; height: 80px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,.12); }
+
+.r1u-name { font-size: 11.5px; font-weight: 700; color: #1f2937; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5em; }
+
+.r1u-price { font-size: 12.5px; font-weight: 800; color: #111827; }
+
+.r1u-price s { margin-left: 4px; font-weight: 500; color: #9ca3af; font-size: 11px; }
+
+.r1u-add { display: inline-flex; align-items: center; gap: 3px; font-size: 11.5px; font-weight: 800; color: #fd6b01; border: 1px solid #fed7aa; background: #fff7ed; padding: 3px 10px; border-radius: 999px; }
+
+.r1u-pick.on { border-color: #86efac; background: #f0fdf4; }
+
+.r1u-pick.on .r1u-add { color: #15803d; border-color: #86efac; background: #dcfce7; }

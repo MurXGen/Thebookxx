@@ -1,4 +1,5 @@
 "use client";
+import "./PayNowChooser.styles.css";
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";

@@ -1,0 +1,118 @@
+/* Styles used only by ScratchRewardSheet.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.scratch-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.5);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  padding: 0;
+}
+
+.scratch-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  padding: 22px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 -18px 50px rgba(0, 0, 0, 0.4);
+}
+
+.scratch-sheet.srs { isolation: isolate; overflow: hidden; gap: 0; max-width: 460px; padding: 22px 20px calc(18px + env(safe-area-inset-bottom, 0px)); border-radius: 26px 26px 0 0;
+  background: radial-gradient(circle at 50% 46%, #fffdf5 0%, #fff3cf 40%, #ffd978 100%); }
+
+@media (max-width: 767px) {
+.scratch-sheet-overlay:has(.srs) { align-items: stretch; }
+}
+
+@media (max-width: 767px) {
+.scratch-sheet.srs { height: 100dvh; max-width: none; border-radius: 0; justify-content: center; }
+}
+
+@media (min-width: 768px) {
+.scratch-sheet-overlay:has(.srs) { align-items: center; }
+}
+
+@media (min-width: 768px) {
+.scratch-sheet.srs { border-radius: 26px; padding-bottom: 22px; }
+}
+
+.srs-rays { position: absolute; inset: -40%; z-index: -1; pointer-events: none; opacity: .55;
+  background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,.95) 0deg 6deg, rgba(255,214,102,0) 6deg 14deg);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 28%, transparent 60%); mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 28%, transparent 60%);
+  animation: pinfs-spin 40s linear infinite; }
+
+.srs-float { position: absolute; z-index: 0; pointer-events: none; animation: pinfs-float 4s ease-in-out infinite; }
+
+.srs-float.c1 { width: 36px; height: 36px; font-size: 16px; top: 16%; left: 8%; }
+
+.srs-x { position: absolute; top: 12px; right: 12px; z-index: 3; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: rgba(255,255,255,.8); color: #3f2a00; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+
+.srs-head { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 10px; }
+
+.srs-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: #1c1917; color: #ffd166; font-size: 12px; font-weight: 800; letter-spacing: .04em; }
+
+.srs-title { margin: 12px 0 4px; font-size: 28px; font-weight: 900; line-height: 1.1; letter-spacing: -.02em; color: #1c1917; }
+
+.srs-title em { font-style: normal; background: linear-gradient(90deg, #e85d04, #fb8500, #f59e0b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.srs-sub { margin: 0; font-size: 14px; color: #57534e; }
+
+.srs-card { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; margin: 22px 0 6px; }
+
+.srs-hint { margin-top: 16px; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: #7c4a03; }
+
+.srs-hint svg { animation: srs-swipe 1.6s ease-in-out infinite; }
+
+.srs-confetti { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+
+.srs-confetti i { position: absolute; width: 8px; height: 12px; border-radius: 2px; opacity: 0;
+  background: hsl(calc(var(--i) * 37deg + 20deg) 95% 55%);
+  animation: srs-burst 1.2s cubic-bezier(.15,.7,.3,1) forwards; animation-delay: calc(var(--i) * 12ms);
+  --a: calc(var(--i) * 20deg); }
+
+.srs-note { position: relative; z-index: 1; width: 100%; max-width: 340px; margin-top: 14px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.85); font-size: 12.5px; line-height: 1.5; text-align: center; color: #292524; }
+
+.srs-note strong { color: #c2410c; }
+
+.srs-foot { position: relative; z-index: 1; width: 100%; max-width: 340px; display: flex; justify-content: center; margin-top: 18px; }
+
+.srs-cta { width: 100%; height: 50px; border: 0; border-radius: 14px; background: linear-gradient(90deg, #e85d04, #fb8500, #f59e0b); color: #fff; font-size: 15.5px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 22px -10px rgba(232,93,4,.8); }
+
+.srs-later { border: 0; background: none; padding: 10px 16px; color: #7c4a03; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+.srs-rays, .srs-float, .srs-card .scratch-card, .srs-hint svg, .srs-confetti i { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+.srs-confetti { display: none; }
+}
+
+.scratch-sheet.srs.srs-xmas { background: radial-gradient(120% 80% at 50% 0%, #e0303c 0%, #c1121f 45%, #7d0a13 100%); }
+
+.srs-xmas .srs-rays { opacity: .18; }
+
+.srs-snow { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
+.srs-xmas .srs-title, .srs-xmas .srs-sub { color: #fff; }
+
+.srs-xmas .srs-title em { background: none; color: #f4c430; }
+
+.srs-xmas .srs-badge { background: #f4c430; color: #7d0a13; }
+
+.srs-xmas .srs-hint, .srs-xmas .srs-later { color: rgba(255,255,255,.9); }
+
+.srs-xmas .srs-note { background: rgba(255,255,255,.95); }
+
+.srs-xmas .srs-cta { background: linear-gradient(90deg, #1f7a4a, #2a9d5c); box-shadow: 0 10px 22px -10px rgba(0,0,0,.5); }

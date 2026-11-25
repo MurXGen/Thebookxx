@@ -1,0 +1,31 @@
+/* Styles used only by Breadcrumbs.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.breadcrumbs-pro {
+  margin: 0;
+  padding: 16px var(--px-24) 0;
+  font-size: 14px;
+  color: var(--dark-50);
+  text-align: left;
+  align-self: flex-start; /* don't get centered inside flex-column parents */
+  width: 100%;
+}
+
+.breadcrumbs-pro .bc-item {
+  display: inline;
+}
+
+.breadcrumbs-pro .bc-link:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbs-pro .bc-sep {
+  color: var(--dark-50);
+}
+
+@media (max-width: 640px) {
+.breadcrumbs-pro {
+    padding-left: var(--px-16);
+    padding-right: var(--px-16);
+  }
+}

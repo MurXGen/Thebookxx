@@ -1,4 +1,5 @@
 "use client";
+import "./ReviewClient.styles.css";
 
 // Review page (festive theme). Sectioned like a Swiggy feedback flow:
 //   1 What are you reviewing → 2 Rate it → 3 Tell us more → 4 Reward details

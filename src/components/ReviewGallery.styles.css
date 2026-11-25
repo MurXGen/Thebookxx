@@ -1,0 +1,206 @@
+/* Styles used only by ReviewGallery.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.review-cf-stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.rg2-wrapper {
+  margin: 8px 0;
+}
+
+.rg2-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rg2-title {
+  font-size: clamp(20px, 5vw, 26px);
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.rg2-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--dark-50, #6b7280);
+}
+
+.rg2-arrows {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.rg2-arrow {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--dark-20, #82828240);
+  background: #fff;
+  color: var(--tertiary, #fb8500);
+  cursor: pointer;
+}
+
+.rg2-arrow:hover {
+  background: rgba(251, 133, 0, 0.08);
+}
+
+.rg2-review-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: #0a0a0a;
+  text-decoration: none;
+}
+
+.rg2-badges {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.rg2-badges::-webkit-scrollbar {
+  display: none;
+}
+
+.rg2-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(251, 133, 0, 0.28);
+  background: rgba(251, 133, 0, 0.06);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+  white-space: nowrap;
+}
+
+.rg2-badge-ic {
+  color: var(--tertiary, #fb8500);
+}
+
+.rg3 { padding: 20px 0 8px; }
+
+.rg3-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+
+.rg3-heads { min-width: 0; }
+
+.rg3-kicker { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 4px; padding: 4px 10px; border-radius: 999px; background: #fff8ef; border: 1px solid #ffe2bd; font-size: 12px; font-weight: 700; color: #9a4d00; }
+
+.rg3 .rg2-title { margin: 2px 0 0; }
+
+.rg3-strip { position: relative; overflow: hidden; margin: 0 -16px; padding: 4px 16px 10px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+
+.rg3-track { display: flex; gap: 14px; width: max-content; }
+
+.rg3-card { position: relative; flex: none; width: min(64vw, 280px); aspect-ratio: 4 / 5; margin: 0; border-radius: 18px; overflow: hidden; background: #f4f4f5; box-shadow: 0 14px 30px -18px rgba(0,0,0,.45); transition: transform .3s; }
+
+.rg3-card:hover { transform: translateY(-4px); }
+
+.rg3-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.rg3-cap { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 4px; padding: 44px 14px 14px; color: #fff; background: linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.55) 55%, transparent 100%); }
+
+.rg3-cap .review-cf-stars { display: inline-flex; gap: 2px; }
+
+.rg3-quote { font-size: 13.5px; font-weight: 600; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+.rg3-who { font-size: 12px; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.rg3-tag { align-self: flex-start; padding: 2px 8px; border-radius: 999px; background: #fb8500; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+
+.rg3-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+
+.rg3-foot .rg2-badges { margin: 0; }
+
+@media (min-width: 900px) {
+.rg3-card { width: 280px; }
+}
+
+@media (min-width: 900px) {
+.rg3 { padding-top: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+.rg3-strip { overflow-x: auto; }
+}
+
+.rg3-strip { overflow-x: auto !important; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; scroll-padding-left: 16px; }
+
+.rg3-strip::-webkit-scrollbar { display: none; }
+
+.rg3-track { animation: none !important; transform: none !important; }
+
+.rg3-card { scroll-snap-align: start; }
+
+.rg3 { padding: 14px 0 6px !important; }
+
+.rg3-head { margin-bottom: 10px !important; align-items: center !important; }
+
+.rg3 .rg2-title { font-size: 21px !important; line-height: 1.15 !important; }
+
+.rg3 .rg2-subtitle { margin: 2px 0 0 !important; font-size: 12.5px !important; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+
+.rg3 .rg2-arrow { width: 34px !important; height: 34px !important; }
+
+.rg3-card { width: min(46vw, 220px) !important; border-radius: 14px !important; }
+
+.rg3-cap { padding: 30px 10px 10px !important; gap: 3px !important; }
+
+.rg3-quote { font-size: 12px !important; -webkit-line-clamp: 2 !important; }
+
+.rg3-who { font-size: 11px !important; }
+
+.rg3-tag { font-size: 9.5px !important; }
+
+.rg3-foot { margin-top: 2px !important; gap: 8px !important; }
+
+.rg3 .rg2-badge { padding: 6px 10px !important; font-size: 12.5px !important; }
+
+.rg3 .rg2-review-btn { min-height: 40px !important; padding: 0 16px !important; font-size: 14px !important; }
+
+@media (max-width: 640px) {
+.rg3-kicker { display: none !important; }
+}
+
+@media (max-width: 640px) {
+.rg3-foot { flex-wrap: nowrap !important; }
+}
+
+@media (max-width: 640px) {
+.rg3 .rg2-badges { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+}
+
+@media (max-width: 640px) {
+.rg3 .rg2-badges::-webkit-scrollbar { display: none; }
+}
+
+@media (max-width: 640px) {
+.rg3 .rg2-title { font-size: 18px !important; }
+}
+
+@media (max-width: 640px) {
+.rg3 .rg2-arrows { gap: 6px; }
+}
+
+@media (max-width: 640px) {
+.rg3 .rg2-arrow { width: 30px !important; height: 30px !important; }
+}

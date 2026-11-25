@@ -1,0 +1,64 @@
+/* Styles used only by CheckoutGuide.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.cg-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+
+.cg-label { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #8a8a99; }
+
+.cg-item { display: flex; align-items: center; gap: 4px; padding: 5px; border-radius: 7px; background: #fff; }
+
+.cg-item i { width: 12px; height: 17px; border-radius: 2px; background: #fdba74; }
+
+.cg-item b { flex: 1; height: 5px; border-radius: 3px; background: #e3e3ea; }
+
+.cg-item em { width: 12px; height: 5px; border-radius: 3px; background: #1c1c28; }
+
+.cg-in { height: 16px; border-radius: 6px; background: #fff; border: 1.5px solid #dcdce4; padding: 4px; }
+
+.cg-in.half { width: 60%; }
+
+.cg-in b { display: block; height: 100%; width: 0; border-radius: 2px; background: #b5b5c3; }
+
+.cg-fr.on .cg-in b { animation: cgType .9s ease-out forwards; }
+
+.cg-fr.on .cg-in:nth-of-type(2) b { animation-delay: .1s; }
+
+.cg-fr.on .cg-in:nth-of-type(3) b { animation-delay: .45s; }
+
+.cg-fr.on .cg-in:nth-of-type(4) b { animation-delay: .8s; }
+
+.cg-fr.on .cg-in { animation: cgFocus .9s ease-out both; }
+
+.cg-opt { position: relative; display: flex; align-items: center; gap: 4px; padding: 5px 6px; border-radius: 7px; background: #fff; font-size: 7.5px; font-weight: 700; color: #55555f; }
+
+.cg-opt b { width: 10px; height: 10px; border-radius: 3px; background: #e3e3ea; }
+
+.cg-opt.sel { box-shadow: inset 0 0 0 1px var(--sw-green); }
+
+.cg-tick { position: absolute; right: 5px; width: 11px; height: 11px; border-radius: 50%; background: var(--sw-green); color: #fff; display: grid; place-items: center; transform: scale(0); }
+
+.cg-fr.on .cg-tick { animation: cgPop .35s .5s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+.cg-fr.on .cg-in b { width: 80%; }
+}
+
+.cg-head { width: 100%; margin: 0 !important; padding: 2px 0; border: 0; background: none; font: inherit; cursor: pointer; text-align: left; }
+
+.cg-chev { color: #8a8a99; transition: transform .3s ease; }
+
+.cg.open .cg-chev { transform: rotate(180deg); }
+
+.cg-wrap { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s cubic-bezier(.22,1,.36,1); }
+
+.cg.open .cg-wrap { grid-template-rows: 1fr; }
+
+.cg-wrap > .cg-body { min-height: 0; overflow: hidden; opacity: 0; transition: opacity .3s ease, padding .3s ease; }
+
+.cg.open .cg-wrap > .cg-body { opacity: 1; padding-top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+.cg-wrap, .cg-chev { transition: none; }
+}
+
+.cg-off *, .cg-off *::before, .cg-off *::after { animation-play-state: paused !important; }

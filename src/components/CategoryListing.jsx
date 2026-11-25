@@ -1,4 +1,5 @@
 "use client";
+import "./CategoryListing.styles.css";
 
 import { XmasSnow } from "@/components/XmasDecor";
 import { useMemo, useState } from "react";

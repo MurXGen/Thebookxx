@@ -1,0 +1,7 @@
+/* Styles used only by SearchButton.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.rotate-icon {
+  display: inline-block;
+  animation: smoothRotate 3s ease-in-out infinite;
+}

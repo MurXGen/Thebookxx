@@ -1,0 +1,132 @@
+/* Styles used only by ReferralApply.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.refapply {
+  margin: 2px 0;
+}
+
+.refapply-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 2px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fb8500;
+  cursor: pointer;
+}
+
+.refapply-box {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #ffe3c2;
+  background: linear-gradient(160deg, #fff7ed 0%, #ffffff 70%);
+}
+
+.refapply-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.refapply-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+
+.refapply-x {
+  border: none;
+  background: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.refapply-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+.refapply-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.refapply-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.refapply-input:focus {
+  outline: none;
+  border-color: #fb8500;
+}
+
+.refapply-btn {
+  flex-shrink: 0;
+  min-width: 76px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #0a0a0a;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.refapply-btn:disabled {
+  opacity: 0.5;
+}
+
+.refapply-spin {
+  animation: refSpin 0.8s linear infinite;
+}
+
+.refapply-err {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #dc2626;
+}
+
+.refapply-done {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid #eef0f2;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.refapply-done.ok {
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+  color: #047857;
+}
+
+.refapply-done.ok .refapply-done-ic {
+  color: #10b981;
+}

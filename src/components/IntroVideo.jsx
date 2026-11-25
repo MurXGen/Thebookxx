@@ -1,4 +1,5 @@
 "use client";
+import "./IntroVideo.styles.css";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";

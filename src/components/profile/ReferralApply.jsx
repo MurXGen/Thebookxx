@@ -1,4 +1,5 @@
 "use client";
+import "./ReferralApply.styles.css";
 
 import { useEffect, useState } from "react";
 import { Gift, Loader2, Check, X, ChevronRight } from "lucide-react";

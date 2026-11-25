@@ -1,4 +1,5 @@
 "use client";
+import "./MobileBottomNav.styles.css";
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";

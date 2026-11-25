@@ -1,0 +1,196 @@
+/* Styles used only by page.js (split out of globals.css so other pages
+   don't download them). */
+
+.lb-page {
+  padding-bottom: 60px;
+}
+
+.lb-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--px-12) var(--px-16) 0;
+}
+
+.lb-hero {
+  position: relative;
+  text-align: center;
+  border-radius: var(--px-16);
+  padding: 40px var(--px-20);
+  margin-top: var(--px-8);
+  background: linear-gradient(
+    135deg,
+    rgba(251, 133, 0, 0.12),
+    rgba(251, 133, 0, 0.02)
+  );
+  border: 1px solid rgba(251, 133, 0, 0.28);
+}
+
+.lb-hero-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--hairline);
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: var(--px-12);
+}
+
+.lb-hero-title {
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: var(--weight-800, 800);
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  margin: 0 0 var(--px-10);
+}
+
+.lb-accent {
+  color: var(--tertiary);
+}
+
+.lb-hero-sub {
+  max-width: 620px;
+  margin: 0 auto var(--px-20);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--dark-50);
+}
+
+.lb-hero-cta {
+  display: inline-block;
+  background: var(--foreground);
+  color: #fff;
+  font-size: 14px;
+  font-weight: var(--weight-700);
+  padding: 12px 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.lb-hero-cta:hover {
+  opacity: 0.9;
+}
+
+.lb-section {
+  margin-top: 44px;
+}
+
+.lb-section-title {
+  font-size: 20px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 var(--px-20);
+  text-align: center;
+}
+
+.lb-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--px-16);
+}
+
+.lb-benefit {
+  border: 1px solid var(--hairline);
+  border-radius: var(--px-16);
+  padding: var(--px-20);
+  background: var(--surface-2, var(--dark-4));
+}
+
+.lb-benefit-title {
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 var(--px-6);
+}
+
+.lb-benefit-desc {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+.lb-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--px-16);
+}
+
+.lb-step {
+  text-align: center;
+  padding: var(--px-16);
+}
+
+.lb-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: #fff;
+  margin-bottom: var(--px-12);
+}
+
+.lb-step-title {
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 var(--px-6);
+}
+
+.lb-step-desc {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+.lb-form-section {
+  scroll-margin-top: 80px;
+}
+
+.lb-faq-list {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-16);
+}
+
+.lb-faq-q {
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 4px;
+}
+
+.lb-faq-a {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+.lb-benefits,
+  .lb-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+.lb-hero-title {
+    font-size: 24px;
+  }
+}
+
+.lb-step-icon {
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--foreground) !important;
+}

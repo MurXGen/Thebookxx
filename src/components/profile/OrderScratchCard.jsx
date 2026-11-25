@@ -1,4 +1,5 @@
 "use client";
+import "./OrderScratchCard.styles.css";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";

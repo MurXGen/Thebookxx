@@ -1,4 +1,5 @@
 "use client";
+import "./DeliveryEtaStripe.styles.css";
 
 // Slim "Order within 2h 14m · Get it Wed 26 – Mon 1 Dec" stripe for the book
 // page, bag and checkout. Dates come from src/lib/deliveryEta.js (India time,

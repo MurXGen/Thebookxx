@@ -1,0 +1,96 @@
+/* Styles used only by HomeAbout.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.ha {
+  max-width: 1152px; margin: 8px auto 4px; padding: 22px 18px 18px; border-radius: 20px;
+  margin-left: max(16px, calc((100% - 1152px) / 2)); margin-right: max(16px, calc((100% - 1152px) / 2));
+  background: linear-gradient(180deg, #fff 0%, #fff8f0 100%); border: 1px solid #f6e3cc;
+}
+
+.ha-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #fb8500; }
+
+.ha-title { margin: 4px 0 8px; font-size: clamp(20px, 3.4vw, 26px); font-weight: 800; letter-spacing: -0.02em; color: #1c1814; }
+
+.ha-text { margin: 0 0 14px; font-size: 14px; line-height: 1.6; color: #57534e; max-width: 640px; }
+
+.ha-points { list-style: none; margin: 0 0 14px; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+@media (min-width: 768px) {
+.ha-points { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.ha-points li { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 14px; background: #fff; border: 1px solid #f3e6d6; }
+
+.ha-k { flex-shrink: 0; min-width: 40px; height: 40px; padding: 0 6px; display: grid; place-items: center; border-radius: 12px; background: #1c1814; color: #fff; font-size: 13px; font-weight: 800; }
+
+.ha-points span { display: flex; flex-direction: column; min-width: 0; }
+
+.ha-points strong { font-size: 13px; font-weight: 800; color: #1c1814; }
+
+.ha-points small { font-size: 11.5px; color: #78716c; }
+
+.ha-link { display: inline-flex; align-items: center; gap: 3px; font-size: 14px; font-weight: 700; color: #fb8500 !important; text-decoration: none; }
+
+.hav { display: none; }
+
+@media (max-width: 767px) {
+.ha { display: none !important; }
+}
+
+@media (max-width: 767px) {
+.hav { display: block; margin: 14px 12px 0; padding: 14px 14px 12px; border-radius: 20px; background: linear-gradient(160deg, #fff 0%, #fff7f0 100%); box-shadow: 0 1px 2px rgba(28, 28, 40, 0.05), 0 10px 24px -20px rgba(28, 28, 40, 0.45); }
+}
+
+@media (max-width: 767px) {
+.hav-title { margin: 3px 0 12px; font-size: 16.5px; line-height: 1.3; font-weight: 800; letter-spacing: -.015em; color: #1c1814; }
+}
+
+@media (max-width: 767px) {
+.hav-title em { font-style: normal; color: #fb8500; }
+}
+
+@media (max-width: 767px) {
+.hav-row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+}
+
+@media (max-width: 767px) {
+.hav-row li { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; opacity: 0; animation: havIn .5s cubic-bezier(.22,1,.36,1) forwards; animation-delay: calc(var(--i) * 90ms); }
+}
+
+@media (max-width: 767px) {
+.hav-tile { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: #fff; border: 1px solid #f1ece6; }
+}
+
+@media (max-width: 767px) {
+.hav-svg { width: 40px; height: 40px; overflow: visible; }
+}
+
+@media (max-width: 767px) {
+.hav-lbl { font-size: 11px; font-weight: 700; line-height: 1.2; color: #44403c; }
+}
+
+@media (max-width: 767px) {
+.hav-link { display: inline-flex; align-items: center; gap: 2px; margin-top: 10px; font-size: 13px; font-weight: 800; color: #fb8500 !important; text-decoration: none; }
+}
+
+.hav-page { transform-origin: 24px 25px; animation: havFlip 2.6s ease-in-out infinite; }
+
+.hav-van-body { animation: havDrive 1.6s ease-in-out infinite; }
+
+.hav-wheel { transform-box: fill-box; transform-origin: center; animation: havSpin .7s linear infinite; }
+
+.hav-speed { animation: havSpeed .8s linear infinite; }
+
+.hav-coin { animation: havCoin 2s ease-in-out infinite; }
+
+.hav-note { transform-box: fill-box; transform-origin: center; animation: havNote 2s ease-in-out infinite; }
+
+.hav-arrows { transform-origin: 24px 24px; animation: havSpin 3.2s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+.hav-row li { animation: none; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+.hav-page, .hav-van-body, .hav-wheel, .hav-speed, .hav-coin, .hav-note, .hav-arrows { animation: none; }
+}

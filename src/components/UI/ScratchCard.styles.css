@@ -1,0 +1,58 @@
+/* Styles used only by ScratchCard.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.scratch-reveal {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  padding: 12px;
+}
+
+.scratch-reveal-main {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+}
+
+.scratch-reveal-sub {
+  font-size: 12px;
+  color: var(--dark-50, #6b7280);
+}
+
+.scratch-canvas {
+  position: relative;
+  display: block;
+  cursor: grab;
+  touch-action: none;
+  transition: opacity 0.3s ease;
+}
+
+.scratch-canvas.done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scratch-reveal-ic { width: 54px; height: 54px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffe08a, #f59e0b 70%); border: 3px solid #d97706; color: #92400e; font-size: 26px; font-weight: 900; box-shadow: 0 8px 16px -6px rgba(146,64,14,.6); }
+
+.scratch-card.festive .scratch-reveal-main { font-size: 34px; font-weight: 900; color: #c2410c; line-height: 1; }
+
+.scratch-card.festive .scratch-reveal-sub { font-size: 12.5px; font-weight: 600; color: #57534e; }
+
+.scratch-card.festive.revealed .scratch-reveal > * { animation: srs-rise .45s ease-out both; }
+
+.scratch-card.festive.revealed .scratch-reveal > :nth-child(2) { animation-delay: .08s; }
+
+.scratch-card.festive.revealed .scratch-reveal > :nth-child(3) { animation-delay: .16s; }
+
+.scratch-card.auto .scratch-reveal { animation: scratch-auto-pop .55s cubic-bezier(.2,1.5,.4,1) both; }
+
+.scratch-canvas { cursor: crosshair; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+
+@media (prefers-reduced-motion: reduce) {
+.scratch-card.auto .scratch-reveal { animation: none; }
+}

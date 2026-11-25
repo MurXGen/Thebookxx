@@ -1,0 +1,120 @@
+/* Styles used only by SplashScreen.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.splash-center {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  will-change: transform, filter, opacity;
+  transform: translateZ(0);
+}
+
+.splash-wordmark {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 46px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #fff;
+}
+
+.splash-tagline {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.splash-trust {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 36px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  will-change: transform, opacity;
+}
+
+.splash-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  padding: 0 20px;
+}
+
+.splash-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.splash-badge svg {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 420px) {
+.splash-wordmark {
+    font-size: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+.splash-center,
+  .splash-trust,
+  .splash-rule {
+    filter: none !important;
+    transform: none !important;
+  }
+}
+
+.splash.splash-xmas {
+  background:
+    radial-gradient(120% 80% at 50% 38%, #d92b2b 0%, #b91c1c 45%, #7f1414 100%);
+}
+
+.splash-glow {
+  position: absolute; left: 50%; top: 38%; width: 340px; height: 340px; transform: translate(-50%, -50%);
+  border-radius: 50%; background: radial-gradient(circle, rgba(255, 214, 102, .35), transparent 65%);
+  animation: splashGlow 2.4s ease-in-out infinite; pointer-events: none;
+}
+
+.splash-garland { position: absolute; top: 0; left: 0; right: 0; width: 100%; }
+
+.splash-snow { position: absolute; inset: 0; pointer-events: none; }
+
+.splash-xmas .splash-center { z-index: 1; gap: 6px; }
+
+.splash-tree { display: block; margin-bottom: 6px; filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .25)); }
+
+.splash-xmas .splash-wordmark { position: relative; text-shadow: 0 4px 18px rgba(0, 0, 0, .25); }
+
+.splash-sparkle {
+  position: absolute; top: -10px; right: -16px; font-size: 16px; color: #fde68a;
+  animation: splashTwinkle 1.4s ease-in-out infinite;
+}
+
+.splash-merry {
+  font-size: 12.5px; font-weight: 800; text-transform: uppercase; color: #fde68a;
+}
+
+.splash-xmas .splash-tagline { color: rgba(255, 255, 255, .85); }
+
+.splash-xmas .splash-trust { z-index: 1; bottom: calc(env(safe-area-inset-bottom, 0px) + 58px); }
+
+.splash-xmas .splash-badge { color: rgba(255, 255, 255, .85); padding: 5px 10px; border-radius: 999px; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .18); }
+
+.splash-xmas .splash-badge svg { color: #fde68a; }
+
+.splash-bank { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 46px; }
+
+@media (prefers-reduced-motion: reduce) {
+.splash-glow, .splash-sparkle { animation: none; }
+}

@@ -1,0 +1,68 @@
+/* Styles used only by OffersGift.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.gift-pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 183, 3, 0.6);
+  animation: pulse 1.6s infinite;
+}
+
+.offers-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  z-index: 55;
+}
+
+.offers-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+
+  width: min(90%, 420px);
+  max-height: 80vh;
+
+  /* background: var(--white-100); */
+  border-radius: 20px;
+  padding: 20px;
+
+  z-index: 60;
+  /* box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25); */
+
+  display: flex;
+  flex-direction: column;
+}
+
+.offers-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-32);
+  overflow-y: auto;
+}
+
+.offer-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  padding: 12px;
+  border-radius: 12px;
+
+  background: #fafafa;
+  box-shadow: 0px 0px 12px grey;
+}
+
+.offer-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-4);
+}
+
+@media (max-width: 768px) {
+.offer-icon {
+    animation: pop 1.2s infinite ease-in-out;
+  }
+}

@@ -1,4 +1,5 @@
 "use client";
+import "./DeliveryCheckBar.styles.css";
 
 // Slim delivery stripe, fixed under the navbar: the delivery message on the
 // left, the shopper's pincode (orange button) on the right. Tapping the button

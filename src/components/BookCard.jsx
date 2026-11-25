@@ -1,4 +1,5 @@
 "use client";
+import "./BookCard.styles.css";
 
 import { useStore } from "@/context/StoreContext";
 import { trackAddToCart } from "@/lib/ga";

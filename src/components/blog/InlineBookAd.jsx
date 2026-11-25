@@ -1,3 +1,4 @@
+import "./InlineBookAd.styles.css";
 import Link from "next/link";
 import { slugifyText } from "@/utils/blogExtras";
 

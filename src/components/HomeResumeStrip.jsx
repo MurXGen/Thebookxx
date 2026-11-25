@@ -1,4 +1,5 @@
 "use client";
+import "./HomeResumeStrip.styles.css";
 
 // Slim rows above the homepage hero for returning shoppers:
 //  • books in the bag → covers + total + the next reward + "Checkout"

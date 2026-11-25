@@ -1,0 +1,165 @@
+/* Styles used only by CartOfferStrip.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.highlight-amount {
+  font-size: var(--px-16);
+  color: var(--tertiary);
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #000000;
+  border-radius: 20px;
+  transition: width 0.03s linear;
+}
+
+.offer-left {
+  flex: 1;
+}
+
+.offer-message {
+  font-size: var(--px-12);
+  font-weight: var(--weight-500);
+  margin-bottom: 6px;
+}
+
+.offer-msg-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.offer-msg-row .offer-message {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.offer-see-all {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--tertiary-light, #ffb703);
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.offer-sheet-cta {
+  gap: 8px;
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 1)
+  );
+
+  transition: width 0.4s ease;
+}
+
+.progress-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 12px;
+  height: 8px;
+  border-radius: 0 10px 0px 0;
+  background: white;
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 1),
+    0 0 20px rgba(255, 255, 255, 0.8);
+
+  pointer-events: none;
+}
+
+.offer-cart {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-preview {
+  display: flex;
+  align-items: center;
+}
+
+.cart-card {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  overflow: hidden;
+
+  border: 2px solid white;
+  margin-left: -8px;
+  background: white;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.cart-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cart-card.extra {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--px-12);
+  font-weight: var(--weight-700);
+  background: black;
+  color: white;
+}
+
+.highlight-amount {
+  font-weight: var(--weight-700);
+  color: var(--tertiary);
+  border-radius: 6px;
+}
+
+.highlight-amount {
+  animation: pulseAmount 1.2s ease-in-out infinite;
+}
+
+.offer-see-all.offer-see-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  text-decoration: none;
+  color: #7ee08a;
+}
+
+.offer-avail-btn {
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--tertiary-light, #ffb703);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.offer-avail-btn:hover { color: #ffd166; }
+
+.offer-avail-btn:active { transform: scale(0.97); }

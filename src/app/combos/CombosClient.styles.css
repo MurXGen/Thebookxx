@@ -1,0 +1,80 @@
+/* Styles used only by CombosClient.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.combos-page {
+  padding: 22px 16px 60px;
+  box-sizing: border-box;
+}
+
+.combos-hero {
+  max-width: 820px;
+  margin: 0 auto 22px;
+  text-align: center;
+}
+
+.combos-hero h1 {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 8px 0 8px;
+  color: var(--foreground);
+}
+
+.combos-hero p {
+  margin: 0 auto;
+  max-width: 640px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--text-muted, #6b7280);
+}
+
+.combos-filter {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px 14px;
+  max-width: 1120px;
+  margin: 0 auto 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.combos-chip {
+  flex: 0 0 auto;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+  color: var(--foreground);
+  border-radius: 999px;
+  padding: 8px 15px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.combos-chip.active {
+  background: var(--foreground, #0a0a0a);
+  color: var(--background, #fff);
+  border-color: var(--foreground, #0a0a0a);
+}
+
+.combos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 16px;
+  max-width: 1120px;
+  margin: 10px auto 0;
+}
+
+@media (max-width: 640px) {
+.combos-hero h1 {
+    font-size: 23px;
+  }
+}
+
+@media (max-width: 640px) {
+.combos-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}

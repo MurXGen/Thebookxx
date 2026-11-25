@@ -1,0 +1,8 @@
+/* Styles used only by AppInstall.jsx (split out of globals.css so other pages
+   don't download them). */
+
+.psh-grid.is-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.psh-done { display: grid; place-items: center; gap: 6px; padding: 8px 0 4px; text-align: center; }
+
+.psh-done svg { color: #16a34a; }

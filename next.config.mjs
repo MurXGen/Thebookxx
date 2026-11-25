@@ -82,8 +82,11 @@ const nextConfig = {
   },
 
   images: {
-    // Disable image optimization to avoid Vercel usage charges
-    unoptimized: true,
+    // Optimised by Netlify Image CDN on deploy (sharp locally): covers are
+    // resized per screen and sent as AVIF/WebP.
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [360, 414, 640, 768, 1080, 1280, 1920],
+    imageSizes: [32, 48, 64, 96, 128, 160, 240, 320],
     minimumCacheTTL: 31536000, // 1 year cache
     dangerouslyAllowSVG: true,
   },
@@ -212,7 +215,7 @@ const nextConfig = {
 
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ["lucide-react", "framer-motion"],
+    optimizePackageImports: ["lucide-react", "framer-motion", "react-icons"],
   },
 
   // Increase timeout for page generation

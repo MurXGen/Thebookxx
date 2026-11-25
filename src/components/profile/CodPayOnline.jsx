@@ -1,4 +1,5 @@
 "use client";
+import "./CodPayOnline.styles.css";
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";

@@ -204,6 +204,14 @@ export default function Navbar() {
           <DeliveryCheckBar />
         </header>
         <div className="navbar-spacer" aria-hidden="true" style={{ height: navH }} />
+        {/* Size the spacer to the real header height while the page is still
+            parsing (before first paint), so content below never jumps. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var s=document.currentScript,p=s&&s.previousElementSibling,h=p&&p.previousElementSibling;if(p&&h&&h.offsetHeight)p.style.height=h.offsetHeight+'px'}catch(e){}})()",
+          }}
+        />
         <SearchOverlay
           open={searchOpen}
           onClose={() => setSearchOpen(false)}
@@ -338,6 +346,14 @@ export default function Navbar() {
         className="navbar-spacer"
         aria-hidden="true"
         style={{ height: navH }}
+      />
+      {/* Size the spacer to the real header height while the page is still
+          parsing (before first paint), so content below never jumps. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "(function(){try{var s=document.currentScript,p=s&&s.previousElementSibling,h=p&&p.previousElementSibling;if(p&&h&&h.offsetHeight)p.style.height=h.offsetHeight+'px'}catch(e){}})()",
+        }}
       />
 
 

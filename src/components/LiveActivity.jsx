@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ShoppingBag, Zap, BookPlus, Star, Camera } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { REVIEWS } from "./ReviewGallery";
+import CommunityJoin from "./CommunityJoin";
 
 const ICONS = {
   order: { Icon: ShoppingBag, cls: "la-ic-order" },
@@ -144,6 +145,9 @@ export default function LiveActivity() {
           render={(e, key) => <Card key={key} e={e} />}
         />
       )}
+
+      {/* Join the reader community — lives with the readers' photos & orders */}
+      <CommunityJoin variant="hero" className="la-join" />
 
       <a href={SHARE_URL} target="_blank" rel="noopener noreferrer" className="la-share">
         <FaWhatsapp size={15} /> Got your books? Share a photo

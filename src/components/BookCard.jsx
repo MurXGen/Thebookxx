@@ -2,7 +2,6 @@
 import "./BookCard.styles.css";
 
 import { useStore } from "@/context/StoreContext";
-import { trackAddToCart } from "@/lib/ga";
 import { books, bookDisplayTitle } from "@/utils/book";
 import { Book, Minus, Plus, Share2, ShoppingCart, Bell, Heart } from "lucide-react";
 import Image from "next/image";
@@ -66,7 +65,6 @@ function BookCardInner({ book: bookProp }) {
     useStore();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const [hasTrackedView, setHasTrackedView] = useState(false);
   // Viewport gating — the cover image is only requested once the card scrolls
   // near the viewport. Cards far down the page (home sections, long grids) never
   // hit the image CDN until the user actually scrolls to them, which cuts cover
@@ -97,29 +95,8 @@ function BookCardInner({ book: bookProp }) {
   const bookUrl = `/books/${slugify(book.name)}`;
   const fullUrl = `https://thebookx.in${bookUrl}`;
 
-  // Track book view once per session
-  useEffect(() => {
-    if (!hasTrackedView && book) {
-      setHasTrackedView(true);
-
-      if (isOneRupee) {
-        trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_VIEWED, {
-          book_id: book.id,
-          book_name: book.name,
-          price: book.discountedPrice,
-          cart_total: cartTotal,
-        });
-      } else {
-        trackFunnelEvent(EVENTS.REGULAR_BOOK_VIEWED, {
-          book_id: book.id,
-          book_name: book.name,
-          price: book.discountedPrice,
-          category: book.catalogue?.[0] || "unknown",
-          cart_total: cartTotal,
-        });
-      }
-    }
-  }, [book, isOneRupee, cartTotal, hasTrackedView]);
+  // Card impressions are not sent to GA (they were ~70% of all events);
+  // a real book view is the `view_item` fired on the book page.
 
   const coverRef = useRef(null);
 
@@ -159,7 +136,6 @@ function BookCardInner({ book: bookProp }) {
       title: "Added to your bag",
       icon: "cart",
     });
-    trackAddToCart({ book, qty: 1 });
 
     if (isOneRupee) {
       trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_ADDED, {
@@ -193,7 +169,6 @@ function BookCardInner({ book: bookProp }) {
       title: "Added to your bag",
       icon: "cart",
     });
-    trackAddToCart({ book, qty: 1 });
   };
 
   // Get category links for internal linking

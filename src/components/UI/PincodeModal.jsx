@@ -454,20 +454,31 @@ export default function PincodeModal() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="bill-modal-overlay"
-            style={{ maxWidth: "980px", margin: "0 auto" }}
+            className={`bill-modal-overlay${stage === "teaser" ? "" : " pinfs-overlay"}`}
+            style={stage === "teaser" ? { maxWidth: "980px", margin: "0 auto" } : undefined}
             onClick={handleOutsideClick}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 0, transition: { duration: 0.18 } }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
           >
             <motion.div
               className={`bill-modal${stage === "teaser" ? "" : " pinfs-modal"}`}
               onClick={(e) => e.stopPropagation()}
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "100%", opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+              role="dialog"
+              aria-modal="true"
+              initial={stage === "teaser" ? { y: "100%", opacity: 0 } : { opacity: 0, scale: 0.92, y: 24 }}
+              animate={stage === "teaser" ? { y: 0, opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+              exit={
+                stage === "teaser"
+                  ? { y: "100%", opacity: 0 }
+                  : { opacity: 0, scale: 0.96, y: 12, transition: { duration: 0.16, ease: "easeIn" } }
+              }
+              transition={
+                stage === "teaser"
+                  ? { duration: 0.4, ease: "easeOut" }
+                  : { type: "spring", stiffness: 380, damping: 30, mass: 0.8 }
+              }
             >
               {stage === "teaser" ? (
                 <>
@@ -522,7 +533,7 @@ export default function PincodeModal() {
                   {xmas ? (
                     <>
                       {/* Christmas: hero look — rose backdrop, garland, snow, baubles */}
-                      <XmasSnow className="pinfs-snow" density={0.7} max={50} />
+                      <XmasSnow className="pinfs-snow" density={0.5} max={28} />
                       <XmasGarland
                         className="pinfs-garland"
                         baubles={[
@@ -545,10 +556,6 @@ export default function PincodeModal() {
                     </>
                   )}
 
-                  <button type="button" className="pinfs-x" onClick={handleSkip} aria-label="Close">
-                    <X size={20} />
-                  </button>
-
                   <div className="pinfs-top">
                     <span className={`pinfs-brand${xmas ? " hx-capped" : ""}`}>
                       {xmas ? "TheBookX · Christmas gift" : "TheBookX"}
@@ -562,8 +569,8 @@ export default function PincodeModal() {
                   </div>
 
                   <div className="pinfs-badge" aria-hidden="true">
-                    {xmas && <XmasTree size={70} gifts={false} className="pinfs-tree l" />}
-                    {xmas && <XmasTree size={86} className="pinfs-tree r" />}
+                    {xmas && <XmasTree size={48} gifts={false} className="pinfs-tree l" />}
+                    {xmas && <XmasTree size={58} className="pinfs-tree r" />}
                     <span className="pinfs-crown">{event.emoji || "🪔"}</span>
                     <span className="pinfs-badge-in">
                       <b>Scratch</b>

@@ -22,6 +22,8 @@ import InvoiceParamModal from "@/components/InvoiceParamModal";
 import BundleDeals from "@/components/BundleDeals";
 import CategoryBrowse from "@/components/CategoryBrowse";
 import BookRail from "@/components/BookRail";
+import BestsellerGrid from "@/components/BestsellerGrid";
+import LiveActivity from "@/components/LiveActivity";
 import HomeDock from "@/components/HomeDock";
 import { BOX_SETS } from "@/utils/boxSets";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -45,6 +47,34 @@ const RAIL_BESTSELLERS = ALL_BOOKS.filter(
   (b) =>
     b.catalogue?.includes("bestseller") && b.image && b.discountedPrice !== 1,
 );
+// Top sellers from GA4 (copies bought, 29 Oct – 25 Nov 2026), in rank order.
+const TOP_SELLER_NAMES = [
+  "Atomic Habits",
+  "The Art of Clarity",
+  "Can't Hurt Me",
+  "The Psychology of Money (Price Drop)",
+  "Haunting Adeline",
+  "The Psychology of Money",
+  "Thinking, Fast and Slow",
+  "The Courage to Be Disliked",
+  "Dog Man: A Sprinkle in Time",
+  "The Midnight Library",
+  "The Silent Patient",
+  "The 48 Laws of Power",
+  "A Little Life",
+  "Zero to One",
+  "Japanese Candlestick Charting Techniques",
+  "The Art of Spending Money",
+  "Mindset: The New Psychology of Success",
+  "Never Split the Difference",
+  "The Brothers Karamazov",
+  "Red Flags and Rishtas",
+  "The Inheritance Games",
+  "Don't Believe Everything You Think",
+];
+const RAIL_TOP_SELLERS = TOP_SELLER_NAMES.map((n) =>
+  ALL_BOOKS.find((b) => b.name === n && b.image),
+).filter(Boolean);
 const RAIL_FICTION = ALL_BOOKS.filter(
   (b) =>
     b.catalogue?.includes("fiction") && b.image && b.discountedPrice !== 1,
@@ -191,8 +221,25 @@ export default function HomePage() {
 
       {/* Reader photos now live inside the hero ("Readers loving TheBookX"). */}
 
-      {/* Who we are — short About us right under the reader photos */}
-      <div id="hs-about" className="hs-anchor">
+      {/* Best sellers (from real purchases) right under the hero —
+          compact 2-row scrolling cards. */}
+      <div id="hs-rail-top-sellers" className="hs-anchor">
+        <BestsellerGrid
+          list={RAIL_TOP_SELLERS}
+          badge="BEST SELLERS"
+          title="Our best-selling books"
+          subtitle="What readers actually bought most this month."
+          headingId="top-sellers-heading"
+        />
+      </div>
+
+      {/* Readers loving TheBookX — photos, live orders + join the community */}
+      <div className="home-la-wrap hero-night">
+        <LiveActivity />
+      </div>
+
+      {/* Who we are — short About us (desktop only; hidden on phones). */}
+      <div id="hs-about" className="hs-anchor hs-about-desktop">
         <HomeAbout />
       </div>
 

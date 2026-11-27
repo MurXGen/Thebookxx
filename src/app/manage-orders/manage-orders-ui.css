@@ -10094,3 +10094,141 @@ body.mo-map-fs-open .my-orders-page .mo-section { will-change: auto !important; 
   cursor: pointer;
 }
 .mo-et-custom .mo-et-chev { margin-left: auto; }
+
+/* 93. Wrongly-delivered rows: WhatsApp "ask to collect" + Call */
+.mo-deliv-contact { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.mo-deliv-wa, .mo-deliv-call {
+  display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px;
+  border-radius: 999px; font: inherit; font-size: 12px; font-weight: 700;
+  text-decoration: none; cursor: pointer; border: 1px solid transparent;
+}
+.mo-deliv-wa { background: #e8f8ee; color: #128c4a; border-color: #bfe9cf; }
+.mo-deliv-call { background: #eef2ff; color: #3843c7; border-color: #d4daff; }
+.mo-deliv-wa:active, .mo-deliv-call:active { transform: scale(.97); }
+
+/* 94. Pick bar: counts are filter chips (tap again to show all) */
+.mo-pick-f {
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; height: 26px; padding: 0 10px 0 8px;
+  border: 1px solid transparent; border-radius: 999px; background: transparent; font: inherit; color: inherit; cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.mo-pick-f:hover { background: var(--g-sunken, #f4f4f5); }
+.mo-pick-f.on { background: color-mix(in srgb, var(--c) 14%, #fff); border-color: color-mix(in srgb, var(--c) 55%, #fff); color: var(--g-ink, #111); }
+.mo-pick-f.none.on { background: #f4f4f5; border-color: #a1a1aa; }
+.mo-pick-clear {
+  height: 24px; padding: 0 9px; border: 0; border-radius: 999px; background: var(--g-ink, #111); color: #fff;
+  font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer;
+}
+
+/* 95. Overview as a card: header row + bordered 4-cell grid; details open
+   into bordered panels (stats, payment split, 14-day chart, map). */
+.my-orders-page.mo-glass .mo-ovcard {
+  margin: 10px 0 12px; border: 1px solid var(--g-hairline, #e5e7eb); border-radius: 14px;
+  background: var(--g-surface-3, #fff); overflow: hidden;
+}
+.my-orders-page.mo-glass .mo-tools-card .mo-ovcard .mo-ovacc-head,
+.my-orders-page.mo-glass .mo-ovcard .mo-ovacc-head {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px !important; border: 0 !important;
+}
+.mo-ovcard-head > b { font-size: 14px; }
+.mo-ovcard-sub { font-size: 12px; font-weight: 600; color: var(--g-ink-3, #71717a); }
+.mo-ovcard-toggle {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 8px 0 10px;
+  border: 1px solid var(--g-hairline, #e5e7eb); border-radius: 8px; font-size: 12px; font-weight: 700; color: var(--g-ink, #111);
+}
+.mo-ovcard .mo-ovacc-chev { transform: rotate(0deg); }
+.mo-ovcard .mo-ovacc-head.open .mo-ovacc-chev { transform: rotate(180deg); }
+
+.mo-ovgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--g-hairline, #e5e7eb); }
+.mo-ovcell { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 10px 14px; }
+.mo-ovcell + .mo-ovcell { border-left: 1px solid var(--g-hairline, #e5e7eb); }
+.mo-ovcell span { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--g-ink-3, #71717a); }
+.mo-ovcell b { font-size: 18px; font-weight: 800; line-height: 1.2; color: var(--g-ink, #111); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mo-ovcell.att b { color: #b45309; }
+.mo-ovcell.att { background: #fffbeb; }
+@media (max-width: 640px) {
+  .mo-ovgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mo-ovcell:nth-child(3) { border-left: 0; }
+  .mo-ovcell:nth-child(n + 3) { border-top: 1px solid var(--g-hairline, #e5e7eb); }
+}
+
+.my-orders-page.mo-glass .mo-ovcard .mo-ovcard-body { padding: 12px !important; border-top: 1px solid var(--g-hairline, #e5e7eb); display: flex; flex-direction: column; gap: 12px; }
+.my-orders-page.mo-glass .mo-ovcard-body > * { border: 1px solid var(--g-hairline, #e5e7eb) !important; border-radius: 12px; padding: 12px !important; margin: 0 !important; background: var(--g-surface-3, #fff); }
+.my-orders-page.mo-glass .mo-ovcard-body .mo-vs2 { border-top: 1px solid var(--g-hairline, #e5e7eb) !important; }
+.my-orders-page.mo-glass .mo-ovcard-body .mo-vs2-stat + .mo-vs2-stat { border-left: 1px solid var(--g-hairline, #e5e7eb); }
+
+/* Dispatch on phones: keep the bottom bar (was hidden in focus mode) */
+@media (max-width: 1023px) {
+  .my-orders-page.mo-glass.mo-in-dispatch { --g-bottombar-h: 62px; }
+  .my-orders-page.mo-glass.mo-in-dispatch .mo-bottomnav { display: flex !important; }
+}
+/* 95b. Overview: To review cell is a button; 14-day chart always visible */
+.mo-ovcell-btn { border: 0; background: transparent; font: inherit; text-align: left; cursor: pointer; }
+.mo-ovcell-btn:disabled { cursor: default; }
+.mo-ovcell-btn span { display: inline-flex; align-items: center; gap: 2px; }
+.mo-ovcell-btn.att:hover { background: #fef3c7; }
+.my-orders-page.mo-glass .mo-ovcard-days { padding: 12px; border-top: 1px solid var(--g-hairline, #e5e7eb); }
+.my-orders-page.mo-glass .mo-ovcard-days .mo-daybars { margin: 0 !important; border: 1px solid var(--g-hairline, #e5e7eb) !important; border-radius: 12px; padding: 12px !important; }
+.my-orders-page.mo-glass .mo-ovcard-body .mo-vs2 { gap: 10px; padding: 12px !important; }
+/* 95c. Compact Overview: one stats row everywhere, tight spacing, no inner borders */
+.my-orders-page.mo-glass .mo-ovcard { margin: 8px 0 10px; }
+.my-orders-page.mo-glass .mo-ovcard .mo-ovacc-head { padding: 8px 12px 4px !important; }
+.mo-ovcard-head > b { font-size: 13px; }
+.mo-ovcard-toggle { height: 24px; font-size: 11.5px; }
+.mo-ovgrid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; border-top: 0 !important; padding: 0 4px; }
+.mo-ovcell { padding: 4px 8px 8px !important; border: 0 !important; gap: 0; }
+.mo-ovcell:nth-child(n) { border: 0 !important; }
+.mo-ovcell span { font-size: 9.5px; letter-spacing: .04em; }
+.mo-ovcell b { font-size: 15px; }
+.mo-ovcell.att { background: transparent; }
+.mo-ovcell-btn.att:hover { background: #fffbeb; border-radius: 8px; }
+.my-orders-page.mo-glass .mo-ovcard-days { padding: 0 12px 8px; border-top: 0; }
+.my-orders-page.mo-glass .mo-ovcard-days .mo-daybars { border: 0 !important; border-radius: 0; padding: 0 !important; }
+.my-orders-page.mo-glass .mo-ovcard .mo-ovcard-body { padding: 0 12px 10px !important; border-top: 0; gap: 8px; }
+.my-orders-page.mo-glass .mo-ovcard-body > * { border: 0 !important; border-radius: 0; padding: 0 !important; }
+.my-orders-page.mo-glass .mo-ovcard-body .mo-vs2 { border-top: 0 !important; padding: 0 !important; gap: 8px; }
+
+/* 96. Pick bar: filters in one row (no wrap) as real buttons; books picked
+   as its own progress row */
+.mo-pickbar-row { flex-wrap: nowrap !important; gap: 6px !important; overflow-x: auto; scrollbar-width: none; }
+.mo-pickbar-row::-webkit-scrollbar { display: none; }
+.mo-pick-f {
+  flex: none; height: 30px; padding: 0 11px 0 9px; border: 1px solid var(--g-hairline, #e5e7eb) !important;
+  border-radius: 10px; background: var(--g-surface-3, #fff); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  font-size: 12px; font-weight: 600; transition: transform .12s ease, background .15s ease, border-color .15s ease;
+}
+.mo-pick-f:hover { background: var(--g-sunken, #f4f4f5); }
+.mo-pick-f:active { transform: scale(.97); }
+.mo-pick-f.on { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 55%, #fff); }
+.mo-pick-s { display: none; }
+@media (max-width: 640px) {
+  .mo-pick-l { display: none; }
+  .mo-pick-s { display: inline; }
+}
+.mo-pick-clear { flex: none; height: 30px; border-radius: 10px; padding: 0 11px; }
+
+.mo-pickbar-books { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.mo-pickbar-books .mo-pickbar-track { flex: 1; margin: 0 !important; height: 6px; }
+.mo-pickbar-books .mo-pickbar-track span { background: #16a34a; border-radius: 99px; }
+.mo-pickbar-books em { flex: none; font-style: normal; font-size: 11.5px; font-weight: 600; color: var(--g-ink-3, #71717a); white-space: nowrap; }
+.mo-pickbar-books em b { color: var(--g-ink, #111); font-weight: 800; }
+.mo-pickbar-row .mo-pick-f .mo-pick-s { display: none !important; }
+@media (max-width: 640px) {
+  .mo-pickbar-row .mo-pick-f .mo-pick-l { display: none !important; }
+  .mo-pickbar-row .mo-pick-f .mo-pick-s { display: inline !important; }
+}
+
+/* 97. Orders tab: tight, borderless spacing between Overview, pick bar, cards */
+.my-orders-page.mo-glass .admin-search.mo-tools-card:has(.mo-ovcard) { border-bottom: 0 !important; padding-bottom: 0 !important; margin-bottom: 0 !important; box-shadow: none !important; }
+.my-orders-page.mo-glass .mo-ovcard { margin: 4px 0 8px !important; }
+.my-orders-page.mo-glass .flex.flex-col.gap-12:has(> .mo-pickbar) { gap: 8px !important; }
+.my-orders-page.mo-glass .mo-pickbar { margin: 0 !important; }
+.my-orders-page.mo-glass .flex.flex-col.gap-12:has(> .mo-pickbar) .admin-orders-grid { padding-top: 0 !important; }
+.my-orders-page.mo-glass .mo-section:has(> .mo-tools-card .mo-ovcard) { gap: 8px !important; }
+.my-orders-page.mo-glass .mo-ovcard { margin-bottom: 0 !important; }
+
+/* 98. Payment-type chips (Online / ₹99 advance / COD) above the pick chips */
+.mo-pickbar .mo-payrow { margin-bottom: 6px; }
+.mo-pickbar .pay-upi { --c: #16a34a; }
+.mo-pickbar .pay-adv { --c: #2563eb; }
+.mo-pickbar .pay-cod { --c: #a8a29e; }

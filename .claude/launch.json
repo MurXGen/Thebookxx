@@ -55,6 +55,17 @@
         "mobile/scripts/dev-cors-proxy.mjs"
       ],
       "port": 8092
+    },
+    {
+      "name": "next-prod-3005",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "next",
+        "start",
+        "-p",
+        "3005"
+      ],
+      "port": 3005
     }
   ]
 }

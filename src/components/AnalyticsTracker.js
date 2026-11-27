@@ -121,9 +121,8 @@ export default function AnalyticsTracker() {
           recency_bucket: bucket,
           visit_number: count + 1,
         });
-      } else {
-        safeGtag("event", "first_visit_custom", { visit_number: 1 });
       }
+      // First visits are GA's built-in `first_visit` (no duplicate event).
       localStorage.setItem(LAST_VISIT_KEY, String(now));
       localStorage.setItem(VISIT_COUNT_KEY, String(count + 1));
     } catch {}

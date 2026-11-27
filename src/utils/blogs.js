@@ -4,6 +4,2055 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "black-friday-2026-27-november-smart-book-buying-guide-books-to-gift-india": {
+    "id": "blog-131",
+    "title": "Black Friday 2026 (27 November): A Smart Book-Buying Guide for India and 20 Books Worth Your Cart",
+    "slug": "black-friday-2026-27-november-smart-book-buying-guide-books-to-gift-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-26",
+    "lastModified": "2026-11-26",
+    "excerpt": "Black Friday 2026 is on 27 November. How to buy books smartly in India without impulse regret, plus 20 books worth your cart, from ₹1 with free delivery.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Black Friday falls on <strong>Friday, 27 November 2026</strong>, the day after American Thanksgiving. What began as a US shopping ritual has steadily found its way into Indian e-commerce over the last few years, and with it comes the familiar weekend of countdown timers, flash deals and carts that fill faster than anyone intends. Cyber Monday follows on 30 November, and then the year-end gifting season, Christmas, Secret Santa and New Year, takes over."
+      },
+      {
+        "type": "paragraph",
+        "content": "Books are one of the few things that genuinely reward a sale weekend. A good book bought at a low price keeps giving long after the discount is forgotten. But books are also easy to over-buy: most readers own at least a few titles they grabbed in a sale and never opened. This guide is about doing Black Friday the smart way, with a simple plan for buying books you will actually read, and a curated list of 20 books worth putting in your cart."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Black Friday 2026 at a glance",
+        "content": "Black Friday: Friday, 27 November 2026. Cyber Monday: Monday, 30 November 2026. Why the date moves: Black Friday is always the day after US Thanksgiving, which falls on the fourth Thursday of November (26 November this year). In India: many online retailers now run sales across this weekend, often stretching from Friday to Monday."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why books are the smartest Black Friday buy"
+      },
+      {
+        "type": "paragraph",
+        "content": "Gadgets depreciate and fashion dates, but a well-chosen book holds its value in a different way: what you take from it. A single idea from a personal finance book can change how you handle money for decades. A novel can become the book you press into a friend's hands for years. Per rupee spent, very few purchases offer that kind of return."
+      },
+      {
+        "type": "paragraph",
+        "content": "There is also the gifting angle. December brings Christmas, office Secret Santa exchanges, year-end thank-yous and New Year's resolutions. Buying a few gift-ready books during a sale weekend, and wrapping them once, takes care of a surprising number of those occasions in one go."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A 5-step plan to buy books without sale regret"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "<strong>Write your list before the sale starts.</strong> Note down the books you have been meaning to read this year, and the people you need gifts for. Shop from the list, not from the banner.",
+          "<strong>Apply the 'next 60 days' test.</strong> For each book you add for yourself, ask: will I start this before the end of January? If not, leave it for later. A low price is not a reason to own something you will not read.",
+          "<strong>Mix one stretch book with two easy reads.</strong> Pair a demanding non-fiction title with two books you will race through. Momentum is what turns a stack of books into a reading habit.",
+          "<strong>Buy gifts by person, not by bestseller list.</strong> Think about what the recipient enjoys, a thriller lover, a new investor, a teenager who likes fantasy, and match the book to them.",
+          "<strong>Check the total, not just the discount.</strong> Delivery charges and payment fees can quietly eat a deal. Free delivery and Cash on Delivery make a real difference on small orders."
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": "The best deal is not the biggest discount. It is the book you finish."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The Black Friday book cart: 20 books worth buying"
+      },
+      {
+        "type": "paragraph",
+        "content": "We have grouped these by the kind of reader they suit, so you can build a cart for yourself and pick gifts at the same time."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "For a smarter relationship with money"
+      },
+      {
+        "type": "paragraph",
+        "content": "It is fitting to read about money on the biggest spending weekend of the year. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is the best place to start: short chapters on why behaviour matters more than intelligence when it comes to wealth. <a href=\"/books/the-art-of-spending-money\" style=\"color:#fb8500;font-weight:600\">The Art of Spending Money</a>, his follow-up, tackles the question this weekend raises directly: how to spend in a way that actually makes you happier. <a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> remains the classic first book on assets and liabilities, and <a href=\"/books/the-intelligent-investor\" style=\"color:#fb8500;font-weight:600\">The Intelligent Investor</a> by Benjamin Graham is the serious read for anyone starting to invest. For a broader view of what a rich life means, <a href=\"/books/the-5-types-of-wealth\" style=\"color:#fb8500;font-weight:600\">The 5 Types of Wealth</a> by Sahil Bloom is a thoughtful pick."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "For clear thinking and better habits"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to thinking clearly, communicating well and cutting through noise, exactly the skill a sale weekend tests. It is a fine book to read before you shop and an easy one to gift. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear needs no introduction and makes a dependable New Year gift, while <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport is for anyone who wants to reclaim focus from a constant stream of notifications. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is a gentle, short read about purpose that works well for almost anyone on your list."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "For fiction lovers"
+      },
+      {
+        "type": "paragraph",
+        "content": "If you are buying novels, pick ones with staying power. <a href=\"/books/a-gentleman-in-moscow\" style=\"color:#fb8500;font-weight:600\">A Gentleman in Moscow</a> by Amor Towles is a warm, witty story of a man confined to a hotel for decades, ideal for long winter evenings. <a href=\"/books/project-hail-mary\" style=\"color:#fb8500;font-weight:600\">Project Hail Mary</a> by Andy Weir is the science fiction book that converts people who say they do not read science fiction. <a href=\"/books/the-seven-husbands-of-evelyn-hugo\" style=\"color:#fb8500;font-weight:600\">The Seven Husbands of Evelyn Hugo</a> is a compulsive, emotional read, and <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> by Alex Michaelides is the thriller to gift someone who claims nothing surprises them. For something cosy and short, <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> and <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> are both lovely translated Japanese novels. And <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> is still one of the most gifted books in India for a reason."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Big gift sets worth waiting for a sale"
+      },
+      {
+        "type": "paragraph",
+        "content": "Sale weekends are the right time to buy the sets you would hesitate over at any other time. The <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set (Books 1-7)</a> is the classic family gift, and the <a href=\"/books/the-lord-of-the-rings-trilogy-set\" style=\"color:#fb8500;font-weight:600\">Lord of the Rings Trilogy Set</a> suits the reader who wants an epic for the holidays. For a mystery lover, the <a href=\"/books/agatha-christie-classic-collection-set\" style=\"color:#fb8500;font-weight:600\">Agatha Christie Classic Collection Set</a> is hard to beat."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Buying books on TheBookX this weekend",
+        "content": "Books start from ₹1, delivery is free and Cash on Delivery is available across India, so there is no minimum order to worry about. Buying gifts for Christmas or Secret Santa? Add gift wrapping for just ₹25 at checkout and the book arrives ready to give."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Secret Santa and Christmas: quick gift matches"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<strong>For a colleague you barely know:</strong> <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> or <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a>, both short, positive and universally useful.",
+          "<strong>For a friend who has just started investing:</strong> <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a>.",
+          "<strong>For the thriller fan:</strong> <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a>.",
+          "<strong>For a teenager:</strong> the <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter set</a>, or <a href=\"/books/diary-of-a-wimpy-kid\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid</a> for younger readers.",
+          "<strong>For someone making New Year resolutions:</strong> <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a>."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A short note on mindful shopping"
+      },
+      {
+        "type": "paragraph",
+        "content": "Black Friday has a quieter counterpart: many people now treat the weekend as a reason to pause and buy only what they need. Books fit both instincts. If you are cutting back, pick one book you will truly read and enjoy it slowly. If you are stocking up, use the plan above so every book on your shelf earns its place."
+      },
+      {
+        "type": "paragraph",
+        "content": "Whatever you choose, the goal is the same: end the year with a few good books read, not just bought."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Build your list tonight, shop it this weekend, and start the first book before Monday."
+      }
+    ],
+    "coverImage": "/blogs/black-friday-2026-27-november-smart-book-buying-guide-books-to-gift-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/black-friday-2026-27-november-smart-book-buying-guide-books-to-gift-india.jpeg",
+        "alt": "Young Indian woman sitting cross-legged on a sofa with a small stack of new books and a wrapped gift parcel beside her, smiling as she opens a book",
+        "caption": "Black Friday 2026 is on 27 November. Books are one of the few sale buys that keep giving long after the weekend.",
+        "category": "Reading Lists"
+      }
+    ],
+    "keywords": [
+      "Black Friday 2026",
+      "Black Friday 2026 India",
+      "Black Friday book deals India",
+      "Black Friday 27 November 2026",
+      "books to buy on Black Friday",
+      "Cyber Monday 2026 books",
+      "best books to gift Christmas 2026 India",
+      "Secret Santa book gift ideas",
+      "buy books online India cheap",
+      "mindful shopping books"
+    ],
+    "categories": [
+      "Reading Lists",
+      "Gift Guides",
+      "Book News"
+    ],
+    "faqs": [
+      {
+        "question": "When is Black Friday 2026?",
+        "answer": "Black Friday 2026 is on Friday, 27 November 2026, the day after US Thanksgiving (Thursday, 26 November). Cyber Monday follows on Monday, 30 November 2026."
+      },
+      {
+        "question": "Is Black Friday celebrated in India?",
+        "answer": "Black Friday is an American shopping tradition, but over the last few years many Indian online retailers have started running sales over the Black Friday weekend, often stretching from Friday to Cyber Monday."
+      },
+      {
+        "question": "What are the best books to buy during a Black Friday sale?",
+        "answer": "Buy books you will start within the next couple of months, plus gifts for specific people. Strong picks include The Psychology of Money, Atomic Habits, The Art of Clarity, Project Hail Mary, A Gentleman in Moscow and gift sets like the Harry Potter Series Set."
+      },
+      {
+        "question": "Does TheBookX offer free delivery and Cash on Delivery?",
+        "answer": "Yes. TheBookX offers books from ₹1 with free delivery and Cash on Delivery across India. Gift wrapping is available for ₹25, which is handy for Christmas and Secret Santa gifts."
+      }
+    ]
+  },
+  "mumbai-book-festival-2026-kalina-24-29-november-books-to-read-india": {
+    "id": "blog-130",
+    "title": "Mumbai Book Festival 2026 (24-29 November, Kalina): Visitor Guide and 17 Books to Read",
+    "slug": "mumbai-book-festival-2026-kalina-24-29-november-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-25",
+    "lastModified": "2026-11-25",
+    "excerpt": "Mumbai Book Festival 2026 runs 24-29 November at Mumbai University's Kalina campus. What to expect, how to plan your visit and 17 books to read, from ₹1.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Mumbai has a new date on its reading calendar. The <strong>Mumbai Book Festival 2026</strong> opened on Tuesday, 24 November at the University of Mumbai's Kalina campus and runs for six days, until Sunday, 29 November. Chief Minister Devendra Fadnavis inaugurated it, called it a celebration of human sensibility and values, and announced that the festival will become an annual fixture in the city's cultural calendar."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you are in Mumbai this week, this guide tells you what is on and how to get the most out of a visit. If you are anywhere else in India, it is still a good excuse to build a reading list. Below are 17 books, Mumbai stories, Indian classics, children's favourites and a few bestsellers, all available on TheBookX with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Mumbai Book Festival 2026 at a glance",
+        "content": "Dates: 24 to 29 November 2026 (six days). Venue: University of Mumbai, Kalina campus, Santacruz East. Organisers: Union Ministry of Education, National Book Trust (NBT), Government of Maharashtra, University of Mumbai and the Brihanmumbai Municipal Corporation. Scale: 600+ book stalls, 200+ literary sessions and 95+ cultural and musical programmes. Special spaces: an Authors' Corner, a stage dedicated to Marathi literature and a Children's Pavilion."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What is happening at the festival"
+      },
+      {
+        "type": "paragraph",
+        "content": "According to reports from the inauguration, the festival is organised jointly by the Union Ministry of Education, the National Book Trust, the Maharashtra government, the University of Mumbai and the BMC. NBT Chairman Prof Milind Marathe and MLA Ameet Satam, the chief organiser, were among those on stage, and seven new books were released on opening day."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<strong>Over 600 book stalls</strong> from publishers across languages and genres, which makes it one of the largest book markets Mumbai has hosted.",
+          "<strong>Authors' Corner (Lekhak Manch-1)</strong> for conversations on contemporary literature, history, politics and social issues.",
+          "<strong>Lekhak Manch-2</strong>, a stage dedicated to Marathi literature with around 50 sessions across the week.",
+          "<strong>A Children's Pavilion</strong> with more than 20 interactive activities, including storytelling, painting, creative writing, reading sessions and quizzes.",
+          "<strong>Commemorative displays</strong> marking 150 years of Vande Mataram, the 200th birth anniversary year of Mahatma Jyotirao Phule and the 150th birth anniversary year of Sardar Vallabhbhai Patel.",
+          "<strong>95+ cultural and musical programmes</strong> in the evenings, so the festival works as a family outing as much as a shopping trip."
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": "Books cross geographical boundaries. In the age of AI, they remain irreplaceable. (Paraphrasing CM Devendra Fadnavis at the inauguration)"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to plan your visit"
+      },
+      {
+        "type": "paragraph",
+        "content": "A festival with 600 stalls rewards a little planning. A few simple habits make the difference between leaving with a bag of impulse buys and leaving with books you will actually read."
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "<strong>Go on a weekday if you can.</strong> The festival runs until Sunday, 29 November, and the weekend will be the busiest. Weekday afternoons are calmer for browsing.",
+          "<strong>Pick two or three sessions first.</strong> Check the day's programme at the venue and build your visit around the talks you care about, then browse in between.",
+          "<strong>Carry a short list.</strong> Write down five books you want before you arrive. It keeps you focused and makes it easier to compare editions and prices.",
+          "<strong>Give children a budget and a free hand.</strong> Let them choose their own book at the Children's Pavilion. Ownership is the fastest route to a reading habit.",
+          "<strong>Read one book before the next fair.</strong> The best souvenir of a book festival is a book finished, not a shelf filled."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "For a refresher on reading actively rather than passively, Mortimer Adler's classic <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> is still the best manual written on the subject, and a smart purchase before any book fair."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Mumbai on the page: books set in the city"
+      },
+      {
+        "type": "paragraph",
+        "content": "A Mumbai festival deserves a few Mumbai books. These two show the city from very different ends."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "1. Sacred Games by Vikram Chandra"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/sacred-games\" style=\"color:#fb8500;font-weight:600\">Sacred Games</a> is the great Mumbai crime novel: a weary Sikh police inspector, Sartaj Singh, and a gangster, Ganesh Gaitonde, whose lives braid together across decades. It is long, layered and full of the city's languages, neighbourhoods and contradictions. If you only watched the series, the novel is far richer."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "2. An Unsuitable Boy by Karan Johar"
+      },
+      {
+        "type": "paragraph",
+        "content": "For a lighter, very Mumbai read, the filmmaker's memoir <a href=\"/books/an-unsuitable-boy\" style=\"color:#fb8500;font-weight:600\">An Unsuitable Boy</a> walks through growing up in the city, the Hindi film industry and life in the public eye. It is candid, chatty and a quick weekend read."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Indian classics worth picking up"
+      },
+      {
+        "type": "paragraph",
+        "content": "Book festivals are a reminder of how deep Indian writing runs, in English and in Indian languages. These titles belong on every Indian reader's shelf."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "3. Malgudi Days by R.K. Narayan"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> collects Narayan's short stories set in his invented South Indian town. Each one is small and funny and quietly profound, which makes it the perfect book to dip into between festival sessions."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "4. Gunahon Ka Devta by Dharamvir Bharati"
+      },
+      {
+        "type": "paragraph",
+        "content": "One of the most loved Hindi novels ever written, <a href=\"/books/gunahon-ka-devta\" style=\"color:#fb8500;font-weight:600\">Gunahon Ka Devta</a> is a tender, tragic love story set in Allahabad. A good pick if the festival's language stages inspire you to read beyond English."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "5. Diwar Mein Ek Khidki Rahti Thi"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/diwar-mein-ek-khidki-rahti-thi\" style=\"color:#fb8500;font-weight:600\">Diwar Mein Ek Khidki Rahti Thi</a> is a gentle, poetic Hindi novel about an ordinary couple and the small window of beauty in their everyday life. It reads slowly and stays with you."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "6. Musafir Cafe by Divya Prakash Dubey"
+      },
+      {
+        "type": "paragraph",
+        "content": "For contemporary Hindi fiction, <a href=\"/books/musafir-cafe\" style=\"color:#fb8500;font-weight:600\">Musafir Cafe</a> is a breezy, modern love story that has introduced many young readers to 'new Hindi' writing."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "For young readers at the Children's Pavilion"
+      },
+      {
+        "type": "paragraph",
+        "content": "The festival's Children's Pavilion is built around storytelling and creative writing. These books carry that spirit home."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> by Sudha Murty, a warm collection of tales told by a grandmother to her grandchildren during the summer holidays.",
+          "<a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> by Sudha Murty, true stories that make the case for reading better than any lecture.",
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam, the autobiography that has turned generations of Indian students into dreamers and doers.",
+          "<a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds</a> by A.P.J. Abdul Kalam, a short, inspiring book for teenagers thinking about what they want to build."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Bestsellers readers keep coming back for"
+      },
+      {
+        "type": "paragraph",
+        "content": "Every big book fair has a few titles that sell out across stalls. These are the ones TheBookX readers order most often."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar, a practical guide to cutting through mental noise, deciding with confidence and focusing on what truly matters. A good companion for anyone who leaves a festival with more ideas than time.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear, the go-to book for building small habits, including a daily reading habit.",
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel, short stories about how people really think about wealth, greed and happiness.",
+          "<a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> by Kazuo Ishiguro, a moving novel narrated by an AI companion, and a fitting answer to the CM's point that books remain irreplaceable in the age of AI.",
+          "<a href=\"/books/three-thousand-stitches\" style=\"color:#fb8500;font-weight:600\">Three Thousand Stitches</a> by Sudha Murty, real stories of ordinary people from one of India's most loved storytellers.",
+          "<a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a> by Freida McFadden, the twisty thriller you will finish in one sitting on the train home."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Cannot make it to Kalina?",
+        "content": "You can build your own book festival at home. Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India. Buying for someone else this season? Add gift wrapping for just ₹25 at checkout."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why book festivals still matter"
+      },
+      {
+        "type": "paragraph",
+        "content": "Online shopping makes it easy to buy the book you already know you want. A book festival does the opposite: it puts you in front of the book you did not know existed, the author you have never heard speak, and the language you had stopped reading in. For children especially, an afternoon among hundreds of stalls can turn reading from a school task into something they choose for themselves."
+      },
+      {
+        "type": "paragraph",
+        "content": "That Mumbai is making this an annual event is good news for readers across Maharashtra. Whether you walk the stalls at Kalina this week or order from home, the point is the same: pick up one good book, and finish it."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Have a favourite find from the festival? Start it this week, and when you are done, come back for the next one."
+      }
+    ],
+    "coverImage": "/blogs/mumbai-book-festival-2026-kalina-24-29-november-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/mumbai-book-festival-2026-kalina-24-29-november-books-to-read-india.jpeg",
+        "alt": "Young Indian woman browsing books at an outdoor book festival stall, holding an open book, with stacks of books and visitors softly blurred behind her",
+        "caption": "Mumbai Book Festival 2026 runs from 24 to 29 November at the University of Mumbai's Kalina campus, with 600+ book stalls.",
+        "category": "Book News"
+      }
+    ],
+    "keywords": [
+      "Mumbai Book Festival 2026",
+      "Mumbai Book Festival Kalina",
+      "book fair Mumbai November 2026",
+      "National Book Trust book festival Mumbai",
+      "Mumbai University Kalina book festival dates",
+      "books set in Mumbai",
+      "Indian books to read 2026",
+      "book festival India 2026",
+      "Hindi novels to read",
+      "children's books India"
+    ],
+    "categories": [
+      "Book News",
+      "Reading Lists",
+      "Indian Literature"
+    ],
+    "faqs": [
+      {
+        "question": "When and where is the Mumbai Book Festival 2026?",
+        "answer": "The Mumbai Book Festival 2026 runs for six days, from 24 to 29 November 2026, at the University of Mumbai's Kalina campus. It was inaugurated by Maharashtra Chief Minister Devendra Fadnavis on 24 November."
+      },
+      {
+        "question": "Who is organising the Mumbai Book Festival 2026?",
+        "answer": "It is organised jointly by the Union Ministry of Education, the National Book Trust (NBT), the Government of Maharashtra, the University of Mumbai and the Brihanmumbai Municipal Corporation (BMC)."
+      },
+      {
+        "question": "What can visitors expect at the Mumbai Book Festival?",
+        "answer": "Over 600 book stalls, more than 200 literary sessions and 95+ cultural and musical programmes, including an Authors' Corner, a stage dedicated to Marathi literature with around 50 sessions, and a Children's Pavilion with storytelling, painting, creative writing and quizzes."
+      },
+      {
+        "question": "Which books should I read if I cannot attend the festival?",
+        "answer": "Try Sacred Games by Vikram Chandra for a Mumbai novel, Malgudi Days by R.K. Narayan and Gunahon Ka Devta for Indian classics, Wings of Fire for students, and The Art of Clarity by Murthy Thevar or Atomic Habits for self-improvement. All are on TheBookX from ₹1 with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
+  "cambridge-word-of-the-year-2026-human-books-about-being-human-india": {
+    "id": "blog-129",
+    "title": "Cambridge Word of the Year 2026 Is 'Human': 15 Books About What It Means to Be Human in the Age of AI",
+    "slug": "cambridge-word-of-the-year-2026-human-books-about-being-human-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-24",
+    "lastModified": "2026-11-24",
+    "excerpt": "Cambridge Dictionary named 'human' its Word of the Year 2026 as AI blurs the line between people and machines. 15 books on being human, from ₹1.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Of all the words that could have summed up 2026, Cambridge Dictionary picked the plainest one. On 18 November it named <strong>human</strong> its Word of the Year, defined as having the qualities, faults and feelings that people have, as opposed to gods, animals or machines. The reason, in the dictionary's own framing, is a year of global debate about what it means to be human at a time when AI is blurring the boundary between people and machines."
+      },
+      {
+        "type": "paragraph",
+        "content": "It is a fitting choice for readers, because literature has been asking that question for centuries. This guide explains why the word was chosen, what else was on the list, and then offers 15 books, novels and non-fiction, that help you think clearly about being human. Every title is on TheBookX, with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Cambridge Word of the Year 2026 at a glance",
+        "content": "Word: human. Announced: Wednesday, 18 November 2026. Why: a year shaped by debates over AI, deepfakes and what separates people from machines, with rising use of compounds such as 'human-made' and 'human author'. Other words in contention: agent, wholesome and dusking. Words to watch: FOBO (fear of becoming obsolete) and weather whiplash. Last year's word: parasocial."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why Cambridge chose 'human'"
+      },
+      {
+        "type": "paragraph",
+        "content": "According to reports by CNN and AFP, Cambridge lexicographer Colin McIntosh said AI is changing the way we talk about being human. The word has traditionally separated people from gods and animals, and more recently from machines, and that last contrast has become everyday language. Lexicographers noticed more people writing phrases like 'human-made' to describe work produced by a person rather than software. Deepfakes that imitate real people, and well-known artists moving to protect their images and voices, kept the question in the news all year."
+      },
+      {
+        "type": "paragraph",
+        "content": "The runners-up tell the same story from different angles. 'Agent' describes an AI system that can carry out complicated tasks without human control. 'Wholesome' and 'dusking', the habit of quietly watching daylight turn to dark, point to a hunger for slower, gentler, offline experiences. Put together, the shortlist reads like a year of people asking what only they can do, and what they want to keep for themselves."
+      },
+      {
+        "type": "blockquote",
+        "content": "A dictionary's word of the year is a mirror. In 2026, the mirror showed people looking hard at themselves."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels that ask what makes us human"
+      },
+      {
+        "type": "paragraph",
+        "content": "Fiction is the oldest technology for stepping into another mind. These novels make the question personal rather than abstract."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "1. Klara and the Sun by Kazuo Ishiguro"
+      },
+      {
+        "type": "paragraph",
+        "content": "If one novel belongs on this list, it is <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a>. Klara is an Artificial Friend, a solar-powered companion bought for a lonely, unwell teenager, and she narrates the whole book. Ishiguro, the Nobel laureate, never lectures. He lets you watch a machine observe love, loyalty and grief so closely that you start asking whether the human heart is something that can be learned, or something that cannot be copied at all."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "2. Never Let Me Go by Kazuo Ishiguro"
+      },
+      {
+        "type": "paragraph",
+        "content": "Ishiguro's earlier <a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a> follows three friends who grow up at a seemingly idyllic English boarding school and slowly understand what they were created for. It is a quiet, devastating book about memory, art and the claim to a soul, and it pairs naturally with Klara and the Sun as a two-book reading project."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "3. Brave New World by Aldous Huxley"
+      },
+      {
+        "type": "paragraph",
+        "content": "Published in 1932, <a href=\"/books/brave-new-world\" style=\"color:#fb8500;font-weight:600\">Brave New World</a> imagines a society engineered for comfort, where people are manufactured for their roles and kept content with pleasure and distraction. Nearly a century later, it remains the sharpest warning that a world without pain may also be a world without much humanity."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "4. Project Hail Mary by Andy Weir"
+      },
+      {
+        "type": "paragraph",
+        "content": "For a hopeful counterweight, read <a href=\"/books/project-hail-mary\" style=\"color:#fb8500;font-weight:600\">Project Hail Mary</a>. A schoolteacher wakes up alone on a spaceship with no memory and a mission to save Earth. Without spoiling it, the book becomes a celebration of curiosity, problem-solving and friendship across very different kinds of minds. It is pure page-turning fun with a big heart."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "5. Anxious People by Fredrik Backman"
+      },
+      {
+        "type": "paragraph",
+        "content": "Being human also means being flawed, awkward and kind in clumsy ways. <a href=\"/books/anxious-people\" style=\"color:#fb8500;font-weight:600\">Anxious People</a> begins with a failed bank robbery and a group of strangers stuck together in an apartment viewing. It is funny, gentle and one of the best novels about ordinary people forgiving one another."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "6. The Midnight Library by Matt Haig"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> gives Nora Seed the chance to try every life she could have lived. The lesson she learns, that a meaningful life is built from small, imperfect human moments, is exactly what the Word of the Year conversation keeps circling back to."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "7. Before the Coffee Gets Cold by Toshikazu Kawaguchi"
+      },
+      {
+        "type": "paragraph",
+        "content": "In a tiny Tokyo cafe, customers can travel back in time, but only until their coffee cools. <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> is a short, tender reminder that regret, love and the words we never said are among the most human things about us."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-fiction on human nature, meaning and the machine age"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "8. Sapiens by Yuval Noah Harari"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> tells the story of how one species came to dominate the planet through shared stories, money, religion and science. Harari's closing questions about where technology is taking us feel more relevant in 2026 than when the book first appeared."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "9. Behave by Robert Sapolsky"
+      },
+      {
+        "type": "paragraph",
+        "content": "Why do we act the way we do, at our best and our worst? <a href=\"/books/behave\" style=\"color:#fb8500;font-weight:600\">Behave</a> explains human behaviour by looking at the second before an action, then the hours, years and centuries before it, from brain chemistry to culture. It is long and demanding, and one of the most rewarding science books you can read."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "10. The Second Machine Age by Erik Brynjolfsson and Andrew McAfee"
+      },
+      {
+        "type": "paragraph",
+        "content": "If 'FOBO', the fear of becoming obsolete, sounds familiar, start with <a href=\"/books/the-second-machine-age\" style=\"color:#fb8500;font-weight:600\">The Second Machine Age</a>. The authors explain how digital technology changes work and wages, and argue that the people who thrive will be those who combine human judgement and creativity with what machines do well."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "11. Man's Search for Meaning by Viktor Frankl"
+      },
+      {
+        "type": "paragraph",
+        "content": "Written by a psychiatrist who survived the Nazi concentration camps, <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> argues that our deepest freedom is the freedom to choose our attitude, and that meaning, not pleasure, is what sustains a person. No machine can supply that meaning for you, which is exactly the point."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "12. When Breath Becomes Air by Paul Kalanithi"
+      },
+      {
+        "type": "paragraph",
+        "content": "A young neurosurgeon facing terminal illness writes about what makes life worth living. <a href=\"/books/when-breath-becomes-air\" style=\"color:#fb8500;font-weight:600\">When Breath Becomes Air</a> is brief, beautifully written and unforgettable, a book about mortality that leaves you more alive."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "13. Tuesdays with Morrie by Mitch Albom"
+      },
+      {
+        "type": "paragraph",
+        "content": "A journalist visits his old professor every Tuesday in the last months of the professor's life. <a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> distils those conversations into simple lessons on love, work, ageing and forgiveness, and it is an easy book to gift to someone you care about."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "14. Deep Work by Cal Newport"
+      },
+      {
+        "type": "paragraph",
+        "content": "In a year of AI agents, the most valuable human skill may be sustained, focused thinking. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> explains how to protect long stretches of concentration from constant notifications, and why that kind of attention is becoming rare, and therefore valuable."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "15. The Art of Clarity by Murthy Thevar"
+      },
+      {
+        "type": "paragraph",
+        "content": "When information is endless and machines can generate answers on demand, the human job is to decide what actually matters. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to cutting through noise, thinking clearly and making calm decisions about your work and your days. It is a short, useful read for students and professionals alike."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Build a 'human' reading pair",
+        "content": "Try reading one novel and one non-fiction book side by side: Klara and the Sun with The Second Machine Age, Never Let Me Go with Man's Search for Meaning, or The Midnight Library with The Art of Clarity. The story makes you feel the question, and the non-fiction helps you think it through."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "More books for the same conversation"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman, on the two systems that shape human judgement and our predictable mistakes.",
+          "<a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> by Marcus Aurelius, a Roman emperor's private notes on living well as a mortal, fallible person.",
+          "<a href=\"/books/the-laws-of-human-nature\" style=\"color:#fb8500;font-weight:600\">The Laws of Human Nature</a> by Robert Greene, a long, practical look at the patterns behind how people think and act.",
+          "<a href=\"/books/steal-like-an-artist-10-things-nobody-told-you-about-being-creative\" style=\"color:#fb8500;font-weight:600\">Steal Like an Artist</a> by Austin Kleon, a short, encouraging book on creative work that is unmistakably human-made.",
+          "<a href=\"/books/the-boy-the-mole-the-fox-and-the-horse\" style=\"color:#fb8500;font-weight:600\">The Boy, the Mole, the Fox and the Horse</a> by Charlie Mackesy, a gentle illustrated book on kindness and courage for readers of every age."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to talk about this with students and children"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Word of the Year is a ready-made discussion prompt for classrooms and dinner tables. Ask a simple question: what can a person do that a machine cannot? Answers usually turn to feelings, friendship, imagination, responsibility and the ability to choose. Reading a story such as Klara and the Sun or The Boy, the Mole, the Fox and the Horse together, then asking which character felt most human and why, turns a headline into real thinking."
+      },
+      {
+        "type": "paragraph",
+        "content": "For gifting season, any of these books makes a thoughtful present, and you can add gift wrapping for just ₹25 at checkout. Books start from ₹1, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Dictionaries record how we speak, and in 2026 we spoke a great deal about ourselves. The best response is not fear of machines but more attention to what makes life human: reading slowly, thinking clearly, and sharing stories with the people around us."
+      }
+    ],
+    "coverImage": "/blogs/cambridge-word-of-the-year-2026-human-books-about-being-human-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/cambridge-word-of-the-year-2026-human-books-about-being-human-india.jpeg",
+        "alt": "Young Indian woman reading a book by a sunlit window with a cup of chai beside her, a quiet human moment away from screens",
+        "caption": "Cambridge Dictionary named 'human' its Word of the Year 2026. Few things are more human than getting lost in a good book.",
+        "category": "Reading Lists"
+      }
+    ],
+    "keywords": [
+      "Cambridge Word of the Year 2026",
+      "Cambridge Dictionary word of the year human",
+      "word of the year 2026",
+      "books about what it means to be human",
+      "books about AI and humanity",
+      "Klara and the Sun",
+      "novels about artificial intelligence",
+      "books on human nature",
+      "best books to read in 2026 India",
+      "human-made"
+    ],
+    "categories": [
+      "Reading Lists",
+      "Book News",
+      "Non-Fiction"
+    ],
+    "faqs": [
+      {
+        "question": "What is the Cambridge Dictionary Word of the Year 2026?",
+        "answer": "Cambridge Dictionary chose 'human' as its Word of the Year 2026, announced on 18 November 2026. It defines the word as having the qualities, faults and feelings that people have, as opposed to gods, animals or machines."
+      },
+      {
+        "question": "Why did Cambridge choose 'human' as the Word of the Year?",
+        "answer": "Cambridge said 2026 was defined by global debates about what it means to be human as AI blurs the boundaries between people and machines. Lexicographers also saw growing use of phrases like 'human-made' and 'human author'."
+      },
+      {
+        "question": "What other words were considered for Cambridge Word of the Year 2026?",
+        "answer": "Other words in contention included 'agent' (an AI system that operates without human control), 'wholesome' and 'dusking' (watching daylight turn to dark as a way to relax). Last year's Cambridge word was 'parasocial'."
+      },
+      {
+        "question": "Which books explore what it means to be human?",
+        "answer": "Good starting points include Klara and the Sun and Never Let Me Go by Kazuo Ishiguro, Brave New World by Aldous Huxley, Sapiens by Yuval Noah Harari, Man's Search for Meaning by Viktor Frankl and The Art of Clarity by Murthy Thevar. All are available on TheBookX from ₹1 with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
+  "cbse-board-exam-2027-date-sheet-12-week-study-plan-books-for-students-india": {
+    "id": "blog-128",
+    "title": "CBSE Board Exam 2027 Date Sheet: Exams Begin 16 February. A 12-Week Study Plan and 18 Books That Help Students Focus",
+    "slug": "cbse-board-exam-2027-date-sheet-12-week-study-plan-books-for-students-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-23",
+    "lastModified": "2026-11-23",
+    "excerpt": "CBSE Board Exams 2027 start 16 February. Key dates, a calm 12-week study plan for Class 10 and 12, and 18 books on focus, habits, sleep and stress.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The countdown is official. CBSE has released the date sheet for the Class 10 and Class 12 Board Examinations 2027, and theory papers begin on Tuesday, 16 February 2027. From today, 23 November, that leaves roughly 12 weeks, or 85 days. That is enough time to finish well and revise properly, as long as the weeks are used with a plan rather than with panic."
+      },
+      {
+        "type": "paragraph",
+        "content": "This guide covers the key dates, a simple week-by-week study plan you can adapt to any stream, and a short shelf of books that help with the parts textbooks do not teach: building a daily routine, protecting attention from the phone, sleeping well before papers and keeping exam stress in proportion. Every title is on TheBookX, with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "CBSE Board Exams 2027 at a glance",
+        "content": "Theory exams begin: 16 February 2027. Class 10 ends: 9 March 2027. Class 12 ends: 9 April 2027. Most papers: 10:30 am to 1:30 pm. Practicals for regular schools: 1 January to 13 February 2027 (winter-bound schools: 9 November to 19 December 2026). Subjects: 83 for Class 10 and 121 for Class 12. Candidates: over 26.5 lakh in Class 10 and over 19.8 lakh in Class 12. Always confirm subject-wise dates on the official date sheet at cbse.gov.in."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What the 2027 date sheet tells you"
+      },
+      {
+        "type": "paragraph",
+        "content": "According to All India Radio, CBSE released the schedule 101 days ahead of the first paper, after mapping more than 40,000 subject combinations so that students do not face two of their papers on the same day. Two details matter for planning. First, Class 10 finishes in under a month, on 9 March, so its papers come close together. Second, Class 12 runs for almost eight weeks, until 9 April, which means the gaps between major papers are longer and should be used for focused, subject-specific revision rather than rest alone."
+      },
+      {
+        "type": "paragraph",
+        "content": "Before you build your timetable, download the official PDF, highlight your own subjects, and count the days between each of your papers. That one sheet of paper is the backbone of everything below."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A calm 12-week study plan (23 November to 15 February)"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Weeks 1 to 5 (23 November to 31 December): finish and first revision"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "List every chapter in every subject and mark each one as done, half-done or not started. Finish the not-started chapters first, in the order your papers appear.",
+          "Study in focused blocks of 50 to 90 minutes with the phone in another room. Two or three deep blocks a day beat a whole day of distracted studying.",
+          "Keep a single notebook of formulas, definitions, dates and diagrams per subject. You will revise from this, not from the full textbook, in February.",
+          "Solve the previous year's question papers chapter by chapter as you finish each unit, so you learn how CBSE actually asks questions."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Weeks 6 to 9 (January): practicals, sample papers and weak spots"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Practicals and internal assessments for regular schools run from 1 January to 13 February, so finish your practical files and viva preparation early in the month.",
+          "Write at least one full sample paper per subject per week, timed, from 10:30 am to 1:30 pm, so your brain gets used to performing at exam time.",
+          "After each paper, spend as long reviewing mistakes as you spent writing it. Add every error to a short 'mistakes list' for that subject.",
+          "Give extra hours to the two chapters you dread most. Avoiding them is the most common reason marks slip."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Weeks 10 to 12 (1 to 15 February): final revision and rest"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Revise only from your notebooks and mistakes lists. This is not the time to start new reference books.",
+          "Protect seven to nine hours of sleep. Memory is consolidated during sleep, and an all-nighter before a paper usually costs more than it gains.",
+          "Set your exam-day kit in advance: admit card, school ID, transparent pouch, pens and a water bottle, as per your school's instructions.",
+          "Keep one short daily walk or break. Calm students recall more than exhausted ones."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "A tip for parents",
+        "content": "The most helpful thing at home is usually structure, not pressure: regular meals, a quiet study corner, fewer late-night screens for the whole family, and conversations that are not only about marks. A book you read together on habits or mindset can open those conversations gently."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "18 books that help students study smarter"
+      },
+      {
+        "type": "paragraph",
+        "content": "None of these replace NCERT textbooks. They help with the routines and the mindset around them, and many are short enough to read in a weekend."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Build the daily routine"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is the clearest guide to making studying a system rather than a mood: tiny, repeatable actions, a set place and time, and habits stacked on each other. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport explains why an hour of undistracted work beats three hours of half-attention, which is exactly the shift most students need. For procrastinators, <a href=\"/books/eat-that-frog\" style=\"color:#fb8500;font-weight:600\">Eat That Frog</a> by Brian Tracy has one blunt rule worth taping above your desk: do the hardest task first."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a calm, practical book about cutting through mental noise to decide what matters and act on it. For students staring at a long syllabus, its core idea, that clarity comes before effort, is a useful way to plan each day and stop spinning on everything at once."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Protect attention and sleep"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/dopamine-detox\" style=\"color:#fb8500;font-weight:600\">Dopamine Detox</a> by Thibaut Meurisse is a short, practical read on why reels and notifications make textbooks feel boring, and how to reset that in a few days. <a href=\"/books/why-we-sleep\" style=\"color:#fb8500;font-weight:600\">Why We Sleep</a> by Matthew Walker makes the scientific case that sleep is part of studying, not time stolen from it. Read even a few chapters before deciding to pull all-nighters."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Handle stress and self-doubt"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/mindset-the-new-psychology-of-success\" style=\"color:#fb8500;font-weight:600\">Mindset: The New Psychology of Success</a> by Carol Dweck shows how treating a low mock-test score as feedback, rather than a verdict, changes how students improve. <a href=\"/books/the-art-of-not-overthinking\" style=\"color:#fb8500;font-weight:600\">The Art of Not Overthinking</a> and <a href=\"/books/don-t-believe-everything-you-think\" style=\"color:#fb8500;font-weight:600\">Don’t Believe Everything You Think</a> by Joseph Nguyen are quick, gentle reads for students whose biggest obstacle is the loop of worry before they even open a book. For older students who want grit, <a href=\"/books/can-t-hurt-me\" style=\"color:#fb8500;font-weight:600\">Can’t Hurt Me</a> by David Goggins is intense but motivating."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Read and write better"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/word-power-made-easy\" style=\"color:#fb8500;font-weight:600\">Word Power Made Easy</a> by Norman Lewis is still one of the best ways to build English vocabulary, useful for both board English papers and later entrance exams. <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> by Mortimer Adler teaches active reading: skimming first, questioning the text, then reading for understanding, a skill that pays off in every subject."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Inspiration from Indian lives"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a>, Dr A P J Abdul Kalam's autobiography, is the story of a boy from Rameswaram who studied by lamplight and went on to lead India's missile programme. Its sequel in spirit, <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds: Unleashing the Power Within India</a>, speaks directly to young people about purpose. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is a gentle reminder that the long game is about finding work you care about, not only the marks of one season."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "For the breaks (yes, you are allowed some)"
+      },
+      {
+        "type": "paragraph",
+        "content": "Short, light fiction can be the best reward after a mock test. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R K Narayan offers stories you can finish in fifteen minutes, <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho is a quick read about following a goal through setbacks, and <a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> by Chetan Bhagat is a funny, honest look at student life and exam pressure that many readers save for the day after their last paper."
+      },
+      {
+        "type": "blockquote",
+        "content": "Dream is not that which you see while sleeping, it is something that does not let you sleep. — Dr A P J Abdul Kalam"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting books to a student this exam season"
+      },
+      {
+        "type": "paragraph",
+        "content": "If someone in your family is writing boards in 2027, a book is a thoughtful way to show support without adding pressure. Pair a routine-builder like Atomic Habits or The Art of Clarity with a light read for the breaks, and add gift wrapping for +₹25 at checkout. With free delivery and Cash on Delivery across India, it arrives without fuss."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Twelve weeks is not long, but it is enough. Make a plan tonight, protect your attention and your sleep, and take one chapter at a time. All the best to every student writing the CBSE Board Exams in 2027."
+      }
+    ],
+    "coverImage": "/blogs/cbse-board-exam-2027-date-sheet-12-week-study-plan-books-for-students-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/cbse-board-exam-2027-date-sheet-12-week-study-plan-books-for-students-india.jpeg",
+        "alt": "Indian teenage student studying at a desk by a window with open notebooks, a stack of books and a cup of tea, preparing for CBSE board exams 2027",
+        "caption": "CBSE Board Exams 2027 begin on 16 February: a steady 12-week plan beats last-minute cramming.",
+        "category": "Education"
+      }
+    ],
+    "keywords": [
+      "CBSE board exam 2027",
+      "CBSE date sheet 2027",
+      "CBSE board exam 2027 start date",
+      "CBSE Class 10 exam 2027",
+      "CBSE Class 12 exam 2027",
+      "board exam study plan",
+      "how to prepare for board exams in 3 months",
+      "best books for students exam preparation",
+      "books for exam stress",
+      "CBSE practical exam dates 2027"
+    ],
+    "categories": [
+      "Education",
+      "Reading Lists",
+      "Self-Help"
+    ],
+    "faqs": [
+      {
+        "question": "When do CBSE Board Exams 2027 start?",
+        "answer": "CBSE Class 10 and Class 12 theory exams begin on 16 February 2027. Class 10 exams end on 9 March 2027 and Class 12 exams end on 9 April 2027. Most papers are held from 10:30 am to 1:30 pm."
+      },
+      {
+        "question": "When are CBSE practical exams in 2027?",
+        "answer": "For regular schools in India and abroad, practical exams and internal assessments run from 1 January to 13 February 2027. Winter-bound schools hold them from 9 November to 19 December 2026."
+      },
+      {
+        "question": "How should I study in the last 12 weeks before board exams?",
+        "answer": "Finish remaining chapters and do a first revision by 31 December, use January for practicals and timed sample papers, and keep 1 to 15 February for final revision from your own notes, with seven to nine hours of sleep each night."
+      },
+      {
+        "question": "Which books help students focus and manage exam stress?",
+        "answer": "Atomic Habits and Deep Work help build a focused daily routine, Why We Sleep explains why sleep matters for memory, Mindset by Carol Dweck reframes setbacks, and The Art of Clarity by Murthy Thevar helps students decide what matters each day. All are available on TheBookX with free delivery and Cash on Delivery."
+      }
+    ]
+  },
+  "guru-nanak-jayanti-2026-24-november-gurpurab-teachings-books-to-read-india": {
+    "id": "blog-127",
+    "title": "Guru Nanak Jayanti 2026 (24 November): Gurpurab Meaning, Guru Nanak's Teachings and 15 Books That Carry Their Spirit",
+    "slug": "guru-nanak-jayanti-2026-24-november-gurpurab-teachings-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-22",
+    "lastModified": "2026-11-22",
+    "excerpt": "Guru Nanak Jayanti 2026 is on Tuesday, 24 November. The meaning of Gurpurab, Guru Nanak's core teachings, and 15 books that carry their spirit.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "This Tuesday, 24 November 2026, Sikhs in India and around the world celebrate Guru Nanak Jayanti, also called Guru Nanak Gurpurab or Prakash Purab. It marks the 557th birth anniversary of Guru Nanak Dev Ji, the first Sikh Guru, and falls on Kartik Purnima, the full moon of the month of Kartik. Gurdwaras will glow with lamps, langar halls will feed anyone who walks in, and the day will begin, as it does every year, with hymns before sunrise."
+      },
+      {
+        "type": "paragraph",
+        "content": "This guide explains what the day marks, how it is celebrated, and the four teachings at the heart of Guru Nanak's message. Then, in the spirit of those teachings, we have put together 15 books on honest work, sharing, equality and inner stillness that make thoughtful reading or meaningful Gurpurab gifts. Every title is on TheBookX, with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Guru Nanak Jayanti 2026 at a glance",
+        "content": "Date: Tuesday, 24 November 2026 (Kartik Purnima). Anniversary: 557th birth anniversary of Guru Nanak Dev Ji (born 1469). Purnima tithi (New Delhi, per Drik Panchang): begins 11:42 pm on 23 November, ends 8:23 pm on 24 November. Birthplace: Rai Bhoi di Talwandi, now Nankana Sahib in Pakistan. Also known as: Guru Nanak Gurpurab, Prakash Purab, Prakash Utsav."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Who was Guru Nanak Dev Ji?"
+      },
+      {
+        "type": "paragraph",
+        "content": "Guru Nanak was born in 1469 in Rai Bhoi di Talwandi, a village near Lahore that is today called Nankana Sahib, to Mehta Kalu and Mata Tripta. Even as a boy he questioned empty ritual and was drawn to reflection and to the company of seekers. As an adult he travelled widely across the subcontinent and beyond on long journeys known as the udasis, speaking with people of every faith and background, and composing hymns that were later included in the Guru Granth Sahib."
+      },
+      {
+        "type": "paragraph",
+        "content": "His message was radical for its time and still feels fresh: there is one Creator present in all of creation, every human being has equal dignity regardless of caste, religion or gender, and a spiritual life is lived not by withdrawing from the world but by working honestly and sharing generously within it."
+      },
+      {
+        "type": "blockquote",
+        "content": "There is one Creator, present in all of creation. The opening idea of Sikh scripture, Ik Onkar, is the thread that runs through everything Guru Nanak taught."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How Gurpurab is celebrated"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Prabhat Pheris: in the days and weeks leading up to Gurpurab, groups walk through neighbourhoods in the early morning singing shabads (hymns).",
+          "Akhand Path: a continuous, roughly 48-hour reading of the Guru Granth Sahib, usually begun two days before, concludes on the morning of the festival.",
+          "Nagar Kirtan: a procession, usually a day or a few days before, in which the Guru Granth Sahib is carried on a decorated float led by five Sikhs representing the Panj Pyare.",
+          "Gurpurab day: programmes at gurdwaras begin in the early hours with Asa Di Vaar, kirtan and katha, followed by Ardas and karah prashad.",
+          "Langar: a free community meal served to everyone who comes, eaten together as equals and run entirely through seva (selfless service).",
+          "Evening: homes and gurdwaras are lit with lamps and candles."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "A simple way to observe the day",
+        "content": "Even if you are not Sikh, you are welcome at a gurdwara. Cover your head, remove your shoes, sit for a while in the kirtan, and share langar. Many families also mark the day by volunteering, donating, or gifting a book that reflects Guru Nanak's values."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The four teachings at the heart of Guru Nanak's message"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Ik Onkar: one Creator, present in all of creation. Sikhs call God Waheguru.",
+          "Naam Japna (Naam Simran): remembering and meditating on the divine Name, keeping the mind anchored in the present.",
+          "Kirat Karni: earning a living honestly through one's own work.",
+          "Vand Chakna: sharing what one earns with others, especially those in need."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Alongside these sit two values Guru Nanak lived out every day: seva, selfless service, and equality, the conviction that people should never be divided by religion, caste, gender or status. The reading list below is arranged around these ideas. None of these books is about Sikhism directly; each simply carries one thread of the spirit Guru Nanak taught."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on stillness and remembrance (Naam Japna)"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-power-of-now\" style=\"color:#fb8500;font-weight:600\">The Power of Now</a> by Eckhart Tolle is a modern classic on stepping out of the noise of the thinking mind and into the present moment. Readers who sit with its short chapters often find it echoes the idea of steady, mindful remembrance at the centre of Naam Simran."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> by Marcus Aurelius is the private notebook of a Roman emperor reminding himself, again and again, to be humble, just and calm. It is proof that a reflective inner life is possible even in the busiest, most demanding role."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/who-will-cry-when-you-die\" style=\"color:#fb8500;font-weight:600\">Who Will Cry When You Die?</a> by Robin Sharma offers 101 short, practical lessons on living with purpose, from rising early to practising gratitude. Its bite-sized format makes it easy to read one lesson each morning, much like the rhythm of early-morning prayer."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on honest work and discipline (Kirat Karni)"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to cutting through mental clutter so you can focus on the work and the people that matter. Kirat Karni asks us to earn honestly through our own effort; this book helps you decide what that effort should be spent on, and how to do it with a clear, calm mind."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear shows how small, consistent actions compound into lasting change. It is a natural companion to the idea that a good life is built day by day through steady, sincere work rather than grand gestures."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a>, the autobiography of Dr A.P.J. Abdul Kalam, traces a journey from a modest home in Rameswaram to leading India's missile programme. It remains one of the most inspiring Indian stories about honest labour, humility and service to the nation."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel explains why behaviour matters more than intelligence when it comes to money. Its emphasis on enough, patience and contentment sits comfortably beside a teaching that values honest earning over greed."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on sharing and seva (Vand Chakna)"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/three-thousand-stitches\" style=\"color:#fb8500;font-weight:600\">Three Thousand Stitches</a> by Sudha Murty collects true stories from her years of social work, including the remarkable episode that gives the book its title. It is warm, unpretentious and full of the quiet, practical service that the word seva describes."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> by Mitch Albom records a former student's weekly visits to his dying professor. Their conversations about love, giving and what really matters have moved millions of readers to rethink how they spend their time."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/before-we-forget-kindness\" style=\"color:#fb8500;font-weight:600\">Before We Forget Kindness</a> by Toshikazu Kawaguchi returns to the little Tokyo cafe where customers can travel in time. Each gentle story turns on small acts of kindness and the words people wish they had said, which makes it a lovely, light gift for the season."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on equality and human dignity"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy, winner of the Booker Prize, is set in Kerala and shows with heartbreaking clarity what caste and social rules do to love and to families. Guru Nanak rejected caste outright; this novel shows why that rejection still matters."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/a-thousand-splendid-suns\" style=\"color:#fb8500;font-weight:600\">A Thousand Splendid Suns</a> by Khaled Hosseini follows two Afghan women whose lives are shaped by war and by a society that denies them equal dignity. It is a powerful reminder of a teaching that honoured women as equal to men centuries ago."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on journeys and the search for meaning"
+      },
+      {
+        "type": "paragraph",
+        "content": "Guru Nanak's udasis took him thousands of kilometres on foot in search of truth and conversation. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho, a short fable about a shepherd boy's journey to find his treasure, captures the idea that the search itself transforms the seeker. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl, written after surviving the Nazi camps, argues that meaning can be found in any circumstance, especially through love and responsibility to others."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A Gurpurab pick for children"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> by Sudha Murty is a much-loved collection of tales a grandmother tells her grandchildren over a summer holiday. The stories are about honesty, sharing and kindness, which makes it a gentle way to talk to children about the same values Guru Nanak taught."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting books this Gurpurab"
+      },
+      {
+        "type": "paragraph",
+        "content": "A book is a fitting Gurpurab gift because it keeps giving long after the festival lights are packed away. Pair a reflective title like The Power of Now or The Art of Clarity with a warm story such as Three Thousand Stitches, or choose Grandma's Bag of Stories for the children in your family. On TheBookX, books start from ₹1, delivery is free, and Cash on Delivery is available across India. Add gift wrapping for just ₹25 at checkout and we will send it ready to hand over."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Order early for Gurpurab",
+        "content": "With Guru Nanak Jayanti on Tuesday, 24 November, place gift orders as early as possible. Delivery times vary by pin code, so a book ordered now also makes a thoughtful belated gift or a start to your December reading."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Whatever you read this week, Guru Nanak's message offers a simple test for it: does it help you remember what matters, work honestly, and share more freely? Wishing all our readers a peaceful and joyful Gurpurab."
+      }
+    ],
+    "coverImage": "/blogs/guru-nanak-jayanti-2026-24-november-gurpurab-teachings-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/guru-nanak-jayanti-2026-24-november-gurpurab-teachings-books-to-read-india.jpeg",
+        "alt": "Warm diya-lit table with a stack of books, a cup of tea and a small gift wrapped in cloth, prepared for Guru Nanak Jayanti 2026",
+        "caption": "Guru Nanak Jayanti, 24 November 2026: books on honest work, sharing and equality make meaningful Gurpurab reading and gifts.",
+        "category": "Reading Lists"
+      }
+    ],
+    "keywords": [
+      "Guru Nanak Jayanti 2026",
+      "Gurpurab 2026",
+      "Guru Nanak Jayanti 24 November 2026",
+      "Guru Nanak Gurpurab date",
+      "Prakash Purab 2026",
+      "Guru Nanak teachings",
+      "Naam Japna Kirat Karni Vand Chakna",
+      "Guru Nanak Jayanti gift ideas",
+      "books to read on Guru Nanak Jayanti",
+      "557th birth anniversary Guru Nanak"
+    ],
+    "categories": [
+      "Reading Lists",
+      "Festivals",
+      "Gifting"
+    ],
+    "faqs": [
+      {
+        "question": "When is Guru Nanak Jayanti 2026?",
+        "answer": "Guru Nanak Jayanti 2026 is on Tuesday, 24 November 2026, which is Kartik Purnima. In New Delhi, the Purnima tithi begins at 11:42 pm on 23 November and ends at 8:23 pm on 24 November, per Drik Panchang."
+      },
+      {
+        "question": "Which birth anniversary of Guru Nanak is celebrated in 2026?",
+        "answer": "2026 marks the 557th birth anniversary of Guru Nanak Dev Ji, counting from his birth in 1469 at Rai Bhoi di Talwandi, now Nankana Sahib in Pakistan."
+      },
+      {
+        "question": "What are the main teachings of Guru Nanak?",
+        "answer": "Guru Nanak's core teachings are Ik Onkar (one Creator present in all creation), Naam Japna (remembering the divine Name), Kirat Karni (earning honestly through one's own work) and Vand Chakna (sharing with those in need), along with seva and the equality of all people regardless of caste, religion or gender."
+      },
+      {
+        "question": "What is a good book to gift on Guru Nanak Jayanti?",
+        "answer": "Books that reflect honest work, sharing and kindness make thoughtful Gurpurab gifts, such as Three Thousand Stitches by Sudha Murty, The Power of Now, The Art of Clarity by Murthy Thevar, or Grandma's Bag of Stories for children. All are on TheBookX with free delivery, Cash on Delivery and gift wrapping for ₹25."
+      }
+    ]
+  },
+  "constitution-day-2026-26-november-samvidhan-divas-books-to-read-india": {
+    "id": "blog-126",
+    "title": "Constitution Day 2026 (26 November): Samvidhan Divas Meaning, History and 16 Books on Justice, Liberty and Equality",
+    "slug": "constitution-day-2026-26-november-samvidhan-divas-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-21",
+    "lastModified": "2026-11-21",
+    "excerpt": "Constitution Day 2026 falls on Thursday, 26 November. What Samvidhan Divas marks, and 16 books that bring justice, liberty and equality alive.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Next Thursday, 26 November 2026, India marks Constitution Day, also called Samvidhan Divas. It is the day in 1949 when the Constituent Assembly adopted the Constitution of India, two months before it came into force on 26 January 1950. Schools will read the Preamble aloud, colleges will hold debates and quizzes, and many offices will pause for a few minutes to reflect on the document that holds the country together."
+      },
+      {
+        "type": "paragraph",
+        "content": "This guide covers what Constitution Day means, a short history worth knowing, and a reading list of 16 books that make the four big ideas of the Preamble, justice, liberty, equality and fraternity, feel personal rather than textbook-dry. Every book is available on TheBookX, with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Constitution Day 2026 at a glance",
+        "content": "Date: Thursday, 26 November 2026. Also known as: Samvidhan Divas (earlier observed as National Law Day). Marks: adoption of the Constitution by the Constituent Assembly on 26 November 1949. Came into force: 26 January 1950, now celebrated as Republic Day. Officially notified as Constitution Day: 2015, the 125th birth anniversary year of Dr B.R. Ambedkar, chairman of the Drafting Committee."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A short history of Samvidhan Divas"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Constituent Assembly first met on 9 December 1946. Over roughly two years, eleven months and eighteen days it debated, drafted and revised the text clause by clause. The Drafting Committee, chaired by Dr B.R. Ambedkar, produced a document that was then argued over in public sessions whose records still make remarkable reading. On 26 November 1949 the Assembly adopted the Constitution, and on 24 January 1950 members signed the handwritten copies in English and Hindi."
+      },
+      {
+        "type": "paragraph",
+        "content": "Those original copies are works of art in their own right: the English text was hand-calligraphed by Prem Behari Narain Raizada, and the pages were illuminated by Nandalal Bose and artists from Santiniketan. For many years 26 November was observed mainly by lawyers as National Law Day. In 2015 the Government of India notified it as Constitution Day so that citizens, and especially students, would mark it too."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why reading is the best way to understand the Constitution"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Preamble is only one sentence long, but each word carries a world of meaning. What does liberty of thought actually protect? Why does equality need to be written down at all? What happens to a society when fraternity breaks? Legal commentaries answer these questions precisely. Novels and memoirs answer them emotionally, by showing you what life looks like when these values are present, and when they are missing."
+      },
+      {
+        "type": "paragraph",
+        "content": "That is why the list below mixes classic fiction, Indian writing and thoughtful non-fiction. Read one or two this week and the Preamble will never sound like a recitation again."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Justice: books about fairness and the rule of law"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> by Harper Lee: a small-town trial seen through a child's eyes. Few novels show so clearly why equal justice under law matters, and how hard it is to deliver.",
+          "<a href=\"/books/the-trial\" style=\"color:#fb8500;font-weight:600\">The Trial</a> by Franz Kafka: a man is arrested and prosecuted without ever being told his crime. It is the perfect, unsettling argument for due process and the right to know the charges against you.",
+          "<a href=\"/books/crime-and-punishment\" style=\"color:#fb8500;font-weight:600\">Crime and Punishment</a> by Fyodor Dostoevsky: a deep look at guilt, conscience and what justice means inside a person, not only inside a courtroom."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Liberty: books that show what happens when freedom is lost"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> by George Orwell: surveillance, rewritten history and a ban on independent thought. Read it alongside the Preamble's promise of liberty of thought, expression, belief, faith and worship.",
+          "<a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> by George Orwell: a short fable about how revolutions can be hollowed out from within. Ideal for students, and readable in an evening.",
+          "<a href=\"/books/brave-new-world\" style=\"color:#fb8500;font-weight:600\">Brave New World</a> by Aldous Huxley: a quieter warning, where freedom is not taken away by force but traded for comfort."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Equality and fraternity: Indian stories that ask who belongs"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy: the Booker-winning Kerala novel about the \"Love Laws\" that decide who may love whom. A powerful way to understand why the Constitution abolished untouchability and guaranteed equality before law.",
+          "<a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan: gentle stories of ordinary people in a small South Indian town, a reminder that fraternity is built in everyday kindness between neighbours.",
+          "<a href=\"/books/sudha-murty-collection-12-book-set\" style=\"color:#fb8500;font-weight:600\">Sudha Murty Collection (12-Book Set)</a>: warm, simple stories about honesty, service and community that work brilliantly for school students preparing Constitution Day talks."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Citizenship and nation-building: books for students and young Indians"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam: the former President's autobiography, from a boy in Rameswaram to a missile scientist. A living example of equality of opportunity.",
+          "<a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds</a> by A.P.J. Abdul Kalam: Kalam's call to young Indians to take responsibility for the country's future, which pairs naturally with the Fundamental Duties.",
+          "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari: why large groups of strangers can cooperate at all, and how shared ideas such as laws and nations make it possible.",
+          "<a href=\"/books/word-power-made-easy\" style=\"color:#fb8500;font-weight:600\">Word Power Made Easy</a> by Norman Lewis: for students writing essays or speeches this week, and for exam aspirants who need a sharper vocabulary for polity answers."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Thinking clearly as a citizen"
+      },
+      {
+        "type": "paragraph",
+        "content": "A democracy is only as strong as the judgement of its citizens. These three books are about thinking well, which is the quiet skill behind every good vote, debate and decision."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar: a practical, India-rooted guide to cutting through noise, slowing down and deciding with a clear head. Especially useful for students and young professionals overwhelmed by opinions online.",
+          "<a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman: the Nobel-winning psychologist explains the mental shortcuts that mislead us, a useful defence against misinformation.",
+          "<a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl: a survivor's reflection on dignity and the inner freedom no one can take away, a moving companion to the Preamble's promise of the dignity of the individual."
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": "The four words of the Preamble that matter most for everyday life, justice, liberty, equality and fraternity, are easiest to understand through stories about people who were denied them."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to mark Constitution Day at home, school or work"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Read the Preamble aloud together, then ask each person which single word in it matters most to them, and why.",
+          "Pick one book from this list as a family or class read for the week, and discuss one chapter each evening.",
+          "Hold a short quiz on Constituent Assembly facts: when it first met, who chaired the Drafting Committee, and when the Constitution came into force.",
+          "Ask students to write a 200-word letter to their future selves about one Fundamental Duty they want to practise.",
+          "Gift a book that carries the spirit of the day, such as Wings of Fire for a young reader or To Kill a Mockingbird for a teenager."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Gifting a book this Constitution Day?",
+        "content": "Books on TheBookX start from ₹1, ship free across India and can be paid for with Cash on Delivery. Add gift wrapping for just ₹25 at checkout if you are giving a book to a student, teacher or friend."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A reading plan for the week"
+      },
+      {
+        "type": "paragraph",
+        "content": "If you only have five days, start with Animal Farm (short and sharp), move to To Kill a Mockingbird over the weekend, and keep Wings of Fire for your commute. Readers who want to go deeper can follow up with The God of Small Things and 1984 through December."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Constitution Day is not only about remembering 1949. It is a chance to renew the promises the Preamble makes to every Indian, and books remain one of the best ways to understand those promises from the inside."
+      }
+    ],
+    "coverImage": "/blogs/constitution-day-2026-26-november-samvidhan-divas-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/constitution-day-2026-26-november-samvidhan-divas-books-to-read-india.jpeg",
+        "alt": "Young Indian woman reading a book at a wooden desk by a sunlit window, with a stack of books and a cup of chai, marking Constitution Day 2026",
+        "caption": "Constitution Day, 26 November 2026: books are one of the best ways to understand justice, liberty, equality and fraternity.",
+        "category": "Reading Lists"
+      }
+    ],
+    "keywords": [
+      "Constitution Day 2026",
+      "Samvidhan Divas 2026",
+      "Constitution Day 26 November",
+      "National Law Day",
+      "Constitution Day India history",
+      "books on Indian Constitution",
+      "books on justice liberty equality",
+      "Constitution Day speech ideas for students",
+      "Preamble of India"
+    ],
+    "categories": [
+      "Reading Lists",
+      "Education",
+      "Events"
+    ],
+    "faqs": [
+      {
+        "question": "When is Constitution Day 2026?",
+        "answer": "Constitution Day 2026, also called Samvidhan Divas, is on Thursday, 26 November 2026. It is observed every year on 26 November."
+      },
+      {
+        "question": "Why is Constitution Day celebrated on 26 November?",
+        "answer": "On 26 November 1949 the Constituent Assembly adopted the Constitution of India. It came into force on 26 January 1950, which is why that date is celebrated as Republic Day."
+      },
+      {
+        "question": "When was Constitution Day first officially observed?",
+        "answer": "The Government of India notified 26 November as Constitution Day in 2015, the 125th birth anniversary year of Dr B.R. Ambedkar, who chaired the Drafting Committee. Before that, the day was observed mainly as National Law Day."
+      },
+      {
+        "question": "Which books help students understand the values of the Constitution?",
+        "answer": "Good starting points are To Kill a Mockingbird for justice, Animal Farm and 1984 for liberty, The God of Small Things for equality, and Wings of Fire by A.P.J. Abdul Kalam for citizenship. All are available on TheBookX with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
+  "iffi-2026-goa-stories-without-borders-books-behind-the-films-india": {
+    "id": "blog-125",
+    "title": "IFFI 2026 Goa (20-28 November): 'Stories Without Borders' and 17 Books Behind Great Films to Read First",
+    "slug": "iffi-2026-goa-stories-without-borders-books-behind-the-films-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-20",
+    "lastModified": "2026-11-20",
+    "excerpt": "IFFI 2026 opens in Goa today on the theme 'Stories Without Borders'. 17 books that became celebrated films, Indian and global, to read first.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The 57th International Film Festival of India (IFFI) opens in Goa today, Friday 20 November 2026, and runs until 28 November. This year's theme, \"Stories Without Borders\", is a lovely reminder of something readers have always known: before a story crosses oceans on a cinema screen, it very often begins life on a printed page."
+      },
+      {
+        "type": "paragraph",
+        "content": "So while film lovers queue outside the screens in Panaji, here is a reader's companion to the festival: what IFFI 2026 is about, why so many great films start as books, and 17 novels that became memorable films and series, Indian and international, that are worth reading first. All of them are available on TheBookX, with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "IFFI 2026 at a glance",
+        "content": "Edition: 57th International Film Festival of India. Dates: 20 to 28 November 2026. Place: Goa, with opening and closing ceremonies at the Dr Shyama Prasad Mukherjee Indoor Stadium near Panaji. Theme: \"Stories Without Borders\". Country of Honour: Spain. Festival director: Ashutosh Gowariker. Highlights include the International Competition, the Indian Panorama, the ICFT-UNESCO Gandhi Medal and masterclasses at Kala Academy from 21 to 27 November."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What \"Stories Without Borders\" means for readers"
+      },
+      {
+        "type": "paragraph",
+        "content": "Organised by the Ministry of Information and Broadcasting with the Entertainment Society of Goa, IFFI brings together films from dozens of countries, a strong Indian Panorama selection, and a record number of women and debut filmmakers this year. The theme is about stories that travel: across languages, cultures and formats."
+      },
+      {
+        "type": "paragraph",
+        "content": "Books are the original borderless medium. A Russian short story written in 1848 can become a Bollywood romance; a Japanese novel can be filmed by a Vietnamese-French director; an Indian novel about a tour guide can become one of Hindi cinema's most loved classics. Reading the source book lets you see the full story, the inner thoughts and the details that a two-hour film simply cannot hold."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Indian books that became beloved films"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "<a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> by R.K. Narayan: the Sahitya Akademi Award-winning novel about Raju, a railway guide turned reluctant holy man, which became Vijay Anand's 1965 classic Guide with Dev Anand and Waheeda Rehman. The book is quieter, funnier and more ambiguous than the film.",
+          "<a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> by Chetan Bhagat: the campus novel that loosely inspired Rajkumar Hirani's 3 Idiots (2009). Reading it shows how much a screenplay can reshape a story while keeping its heart.",
+          "<a href=\"/books/2-states\" style=\"color:#fb8500;font-weight:600\">2 States</a> by Chetan Bhagat: a cross-cultural Punjabi-Tamil love story, filmed in 2014. A fitting pick for a festival about stories crossing borders, even ones inside India."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Global novels that crossed borders onto the screen"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "<a href=\"/books/white-nights\" style=\"color:#fb8500;font-weight:600\">White Nights</a> by Fyodor Dostoevsky: a short, aching story of four nights in St Petersburg, filmed by Luchino Visconti in Italy and reimagined by Sanjay Leela Bhansali as Saawariya (2007). Perhaps the best example of a story without borders.",
+          "<a href=\"/books/norwegian-wood\" style=\"color:#fb8500;font-weight:600\">Norwegian Wood</a> by Haruki Murakami: a tender Tokyo coming-of-age novel, adapted in 2010 by the Vietnamese-French director Tran Anh Hung.",
+          "<a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a> by Kazuo Ishiguro: the Nobel laureate's haunting novel, filmed in 2010. Read it before watching; the slow reveal works best on the page.",
+          "<a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini: a story of friendship, guilt and redemption from Kabul to California, filmed in 2007.",
+          "<a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> by Harper Lee: the 1962 film earned Gregory Peck an Oscar, yet Scout's voice is richest in the novel.",
+          "<a href=\"/books/the-great-gatsby\" style=\"color:#fb8500;font-weight:600\">The Great Gatsby</a> by F. Scott Fitzgerald: filmed many times, most recently by Baz Luhrmann in 2013. At under 200 pages, it is the perfect festival-week read.",
+          "<a href=\"/books/pride-and-prejudice\" style=\"color:#fb8500;font-weight:600\">Pride and Prejudice</a> by Jane Austen: adapted again and again, including Joe Wright's 2005 film and Gurinder Chadha's Indian-flavoured Bride and Prejudice (2004).",
+          "<a href=\"/books/little-women\" style=\"color:#fb8500;font-weight:600\">Little Women</a> by Louisa May Alcott: Greta Gerwig's 2019 film introduced the March sisters to a new generation; the book remains warmer and fuller."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Thrillers and blockbusters worth reading before watching"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/murder-on-the-orient-express\" style=\"color:#fb8500;font-weight:600\">Murder on the Orient Express</a> by Agatha Christie: filmed in 1974 and again in 2017. Try to guess the solution on the page before you see it on screen.",
+          "<a href=\"/books/gone-girl\" style=\"color:#fb8500;font-weight:600\">Gone Girl</a> by Gillian Flynn: David Fincher's 2014 film is sharp, but the novel's alternating diaries are even more unsettling.",
+          "<a href=\"/books/where-the-crawdads-sing\" style=\"color:#fb8500;font-weight:600\">Where the Crawdads Sing</a> by Delia Owens: a marsh-set mystery and coming-of-age story, filmed in 2022.",
+          "<a href=\"/books/normal-people\" style=\"color:#fb8500;font-weight:600\">Normal People</a> by Sally Rooney: the 2020 series made it a phenomenon; the novel is the best way to understand Connell and Marianne.",
+          "<a href=\"/books/dune\" style=\"color:#fb8500;font-weight:600\">Dune</a> by Frank Herbert: Denis Villeneuve's films are spectacular, but the book's politics and ecology are far deeper.",
+          "<a href=\"/books/harry-potter-set\" style=\"color:#fb8500;font-weight:600\">Harry Potter Set</a> by J.K. Rowling: the series that turned a generation into readers and filmgoers at once, ideal as a gift for a young film fan."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Book first or film first? A simple way to decide"
+      },
+      {
+        "type": "paragraph",
+        "content": "There is no single rule, but a few habits help. Read first when the story depends on a twist or an inner voice, as with Gone Girl, Never Let Me Go or The Guide, because the film will spoil what the book reveals slowly. Watch first when a book feels intimidating, such as Dune: the film gives you the world and the names, and the novel then fills in everything else. And for classics like Pride and Prejudice or White Nights, compare two or three adaptations; you will notice how each country and era reads the same story through its own eyes."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "A festival-week reading plan",
+        "content": "Pick one Indian and one international title from this list. Read a chapter each morning and watch one adaptation each weekend. By the time IFFI closes on 28 November, you will have travelled across at least two cultures without leaving home."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Seeing a story clearly, on page and screen"
+      },
+      {
+        "type": "paragraph",
+        "content": "Good films and good books share one quality: clarity. They know what the story is really about and cut away everything else. If you enjoy thinking about how stories are shaped, or want that same focus in your own work and decisions, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical, readable guide to cutting through noise and deciding what truly matters. It pairs well with a week of films and novels."
+      },
+      {
+        "type": "blockquote",
+        "content": "A great adaptation does not replace the book. It sends you back to it."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting a film lover this season"
+      },
+      {
+        "type": "paragraph",
+        "content": "With the wedding season and year-end holidays around the corner, a book-and-film pairing makes a thoughtful gift: The Great Gatsby for a friend who loves style, White Nights for a romantic, Murder on the Orient Express for a puzzle lover, or the Harry Potter Set for a young cinema fan. Add gift wrapping for just ₹25 at checkout, and every order comes with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Whether you are in Goa for the screenings or following IFFI 2026 from home, let this be the week you read the story before the credits roll. Stories may travel without borders, but the best seat is still the one with a book in your hands."
+      }
+    ],
+    "coverImage": "/blogs/iffi-2026-goa-stories-without-borders-books-behind-the-films-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/iffi-2026-goa-stories-without-borders-books-behind-the-films-india.jpeg",
+        "alt": "A young woman reading a novel in a cosy room with a film reel and popcorn beside her, celebrating books behind films during IFFI 2026",
+        "caption": "IFFI 2026 runs in Goa from 20 to 28 November on the theme \"Stories Without Borders\". Many great films begin as books.",
+        "category": "Books and Films"
+      }
+    ],
+    "keywords": [
+      "IFFI 2026",
+      "IFFI 2026 Goa",
+      "International Film Festival of India 2026",
+      "Stories Without Borders",
+      "books adapted into films",
+      "books behind movies",
+      "read the book before the movie",
+      "IFFI 57th edition",
+      "book to film adaptations India"
+    ],
+    "categories": [
+      "Books and Films",
+      "Reading Lists",
+      "Events"
+    ],
+    "faqs": [
+      {
+        "question": "When and where is IFFI 2026 being held?",
+        "answer": "The 57th International Film Festival of India runs from 20 to 28 November 2026 in Goa, with opening and closing ceremonies at the Dr Shyama Prasad Mukherjee Indoor Stadium near Panaji and screenings across several venues in the state."
+      },
+      {
+        "question": "What is the theme of IFFI 2026?",
+        "answer": "The theme of IFFI 2026 is \"Stories Without Borders\", celebrating stories that travel across languages, cultures and countries. Spain is the Country of Honour this year."
+      },
+      {
+        "question": "Which Indian books have been turned into famous films?",
+        "answer": "Well-known examples include R.K. Narayan's The Guide (filmed as Guide in 1965), Chetan Bhagat's Five Point Someone (which loosely inspired 3 Idiots) and 2 States (filmed in 2014). Dostoevsky's White Nights was also adapted in India as Saawariya (2007)."
+      },
+      {
+        "question": "Should I read the book before watching the film?",
+        "answer": "For twist-driven or introspective stories such as Gone Girl, Never Let Me Go or The Guide, reading first is usually more rewarding. For dense worlds such as Dune, watching first can make the book easier to enter. All the books in this list are available on TheBookX with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
+  "international-mens-day-2026-19-november-books-to-gift-men-india": {
+    "id": "blog-124",
+    "title": "International Men's Day 2026 (19 November): 18 Best Books to Read or Gift the Men in Your Life",
+    "slug": "international-mens-day-2026-19-november-books-to-gift-men-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-19",
+    "lastModified": "2026-11-19",
+    "excerpt": "International Men's Day is on 19 November 2026, theme \"The Future Is Everyone\". 18 books on health, clarity and role models to read or gift.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Today, Thursday 19 November 2026, is International Men's Day. It is not a day for grand gestures or another excuse to sell gadgets. At its best, it is a quiet reminder to notice the men in our lives, our fathers, brothers, husbands, sons, friends and colleagues, and to ask how they are really doing. In India, where many men are raised to provide first and talk later, that question can matter more than we think."
+      },
+      {
+        "type": "paragraph",
+        "content": "One of the simplest, most thoughtful ways to mark the day is with a book: something that helps a man think more clearly, look after his health, talk more openly or simply enjoy a great story. Below is what the day is about this year, followed by a carefully chosen list of books to read or gift, all available on TheBookX with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "International Men's Day 2026 at a glance",
+        "content": "Date: Thursday, 19 November 2026. Edition: the 28th annual observance, marked in more than 80 countries. Origin: first celebrated in 1999 by Dr Jerome Teelucksingh in Trinidad and Tobago. 2026 theme: \"The Future Is Everyone\", announced by the organisers in March 2026."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What is International Men's Day, and what does the 2026 theme mean?"
+      },
+      {
+        "type": "paragraph",
+        "content": "International Men's Day focuses on the positive contributions men and boys make to families, communities and workplaces, while drawing attention to the issues that affect them, such as physical and mental health, isolation, and the pressure to cope silently. Its long-standing pillars include promoting positive male role models, supporting men's health and wellbeing, and improving relations between men and women."
+      },
+      {
+        "type": "paragraph",
+        "content": "This year's theme, \"The Future Is Everyone\", is a deliberate invitation: a fairer, healthier future is not built by one group at the expense of another. Supporting men and boys and supporting women and girls are not competing goals. They are part of the same project. That idea runs through the reading list below, which mixes books on health, emotional resilience, money, relationships and role models with a few novels that explore fathers, sons and friendship with real depth."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why books make a better Men's Day gift than most things"
+      },
+      {
+        "type": "paragraph",
+        "content": "Many men find it hard to talk about stress, loneliness or self-doubt directly. A book gets around that. It lets someone explore an idea privately, at their own pace, and often opens a conversation later that would never have started with a direct question. A well-chosen book also says something a shirt or a gadget cannot: I have been thinking about who you are and what you are going through."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for health, energy and longevity"
+      },
+      {
+        "type": "paragraph",
+        "content": "Health is one of the core concerns of International Men's Day, and the best gift may be one that helps someone take it seriously without feeling lectured."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/why-we-sleep\" style=\"color:#fb8500;font-weight:600\">Why We Sleep</a> by Matthew Walker: a readable, eye-opening case for treating sleep as the foundation of physical and mental health. Ideal for the man who is always \"fine on five hours\".",
+          "<a href=\"/books/outlive\" style=\"color:#fb8500;font-weight:600\">Outlive</a> by Dr Peter Attia: a practical guide to living longer and better, covering exercise, nutrition, sleep and emotional health. A great pick for men in their thirties, forties and fifties.",
+          "<a href=\"/books/can-t-hurt-me\" style=\"color:#fb8500;font-weight:600\">Can't Hurt Me</a> by David Goggins: a raw memoir about discipline and mental toughness. Best for readers who respond to intensity and a challenge.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear: the most useful single book on building small, lasting habits, whether that is a daily walk, less screen time or reading every night."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for the mind: clarity, resilience and emotional strength"
+      },
+      {
+        "type": "paragraph",
+        "content": "Mental and emotional wellbeing sit at the heart of this day. These books help readers understand their own thinking, handle pressure and find meaning without pretending everything is always under control."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar: a calm, practical book on cutting through mental noise, overthinking and indecision. A thoughtful gift for any man juggling work, family and expectations.",
+          "<a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl: a short, profound book on finding purpose even in the hardest circumstances. Many readers return to it more than once in a lifetime.",
+          "<a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> by Marcus Aurelius: the private notes of a Roman emperor on duty, self-control and calm. Perfect for reading one page a day.",
+          "<a href=\"/books/the-monk-who-sold-his-ferrari\" style=\"color:#fb8500;font-weight:600\">The Monk Who Sold His Ferrari</a> by Robin Sharma: a simple, story-led introduction to slowing down and rethinking success, much loved by Indian readers."
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": "Strength is not the absence of struggle. It is the willingness to face it honestly, and to ask for help when you need it."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books on relationships and better conversations"
+      },
+      {
+        "type": "paragraph",
+        "content": "The theme's emphasis on everyone, and the pillar on improving gender relations, makes this a good moment for books about understanding and talking to each other."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/crucial-conversations-tools-for-talking-when-stakes-are-high\" style=\"color:#fb8500;font-weight:600\">Crucial Conversations</a>: practical tools for handling difficult talks at home and at work without shutting down or blowing up.",
+          "<a href=\"/books/men-are-from-mars-women-are-from-venus\" style=\"color:#fb8500;font-weight:600\">Men Are from Mars, Women Are from Venus</a> by John Gray: a classic, easy-to-read look at how partners communicate differently. Best read together and discussed.",
+          "<a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> by Mitch Albom: a moving true story about a former student and his dying teacher, and the conversations about love, work and regret that changed his life."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Role models, money and work"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam: the autobiography of one of India's most admired role models, a story of humility, hard work and service. A wonderful gift for sons and young men.",
+          "<a href=\"/books/shoe-dog\" style=\"color:#fb8500;font-weight:600\">Shoe Dog</a> by Phil Knight: the candid memoir of Nike's founder, full of doubt, risk and persistence. Ideal for the entrepreneur in the family.",
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel: short, wise essays on how behaviour, not cleverness, shapes our finances. A practical gift for anyone carrying the weight of providing for a family."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels about fathers, sons and friendship"
+      },
+      {
+        "type": "paragraph",
+        "content": "Fiction lets readers feel their way into other lives, which is often where real empathy begins. These novels deal with masculinity, loyalty, guilt and love in ways that stay with you."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini: a powerful story of friendship, betrayal and a son's complicated relationship with his father.",
+          "<a href=\"/books/men-without-women\" style=\"color:#fb8500;font-weight:600\">Men Without Women</a> by Haruki Murakami: quiet, haunting stories about men facing loneliness and loss.",
+          "<a href=\"/books/anxious-people\" style=\"color:#fb8500;font-weight:600\">Anxious People</a> by Fredrik Backman: a warm, funny and surprisingly tender novel about ordinary people, many of them struggling silently.",
+          "<a href=\"/books/project-hail-mary\" style=\"color:#fb8500;font-weight:600\">Project Hail Mary</a> by Andy Weir: a gripping science-fiction adventure with one of the most likeable, unheroic heroes in recent fiction, and a beautiful story of friendship."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Quick gift guide: which book for whom?"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "For your father: <a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> or <a href=\"/books/outlive\" style=\"color:#fb8500;font-weight:600\">Outlive</a>.",
+          "For your brother or a friend: <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> or <a href=\"/books/project-hail-mary\" style=\"color:#fb8500;font-weight:600\">Project Hail Mary</a>.",
+          "For your husband or partner: <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> or <a href=\"/books/crucial-conversations-tools-for-talking-when-stakes-are-high\" style=\"color:#fb8500;font-weight:600\">Crucial Conversations</a>.",
+          "For a son or student: <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> or <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a>.",
+          "For a colleague or mentor: <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> or <a href=\"/books/shoe-dog\" style=\"color:#fb8500;font-weight:600\">Shoe Dog</a>."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Make it a thoughtful gift",
+        "content": "Add gift wrapping for just ₹25 at checkout and include a short handwritten note. Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India, so a meaningful gift does not have to be expensive."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Simple ways to mark International Men's Day"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Call or message one man in your life and ask how he is really doing, then listen without trying to fix anything.",
+          "Gift a book with a note explaining why you chose it for him.",
+          "Start a two-person reading pact with a friend or family member and finish one book together by the end of December.",
+          "At work, recognise a male colleague who mentors others quietly or makes the team better.",
+          "Encourage one health habit: an annual check-up, a daily walk, or a consistent bedtime."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Final thought"
+      },
+      {
+        "type": "paragraph",
+        "content": "The theme \"The Future Is Everyone\" is a reminder that looking after men and boys is part of building a better world for all of us. A book will not solve everything, but it can start a conversation, offer a new perspective or simply give someone an hour of calm. This International Men's Day, pick one title from this list for yourself or for someone you care about."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/international-mens-day-2026-19-november-books-to-gift-men-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/international-mens-day-2026-19-november-books-to-gift-men-india.jpeg",
+        "alt": "Smiling Indian father and adult son sitting together on a sofa sharing a book, with a wrapped gift and cups of chai on the table",
+        "caption": "International Men's Day, 19 November 2026: a good book and an honest conversation can mean more than any gadget.",
+        "category": "Book Recommendations"
+      }
+    ],
+    "keywords": [
+      "International Men's Day 2026",
+      "International Men's Day 19 November",
+      "International Men's Day theme 2026",
+      "books to gift men India",
+      "best books for men",
+      "Men's Day gift ideas",
+      "books for father brother husband",
+      "self-help books for men"
+    ],
+    "categories": [
+      "Book Recommendations",
+      "Gifting",
+      "Self-Help & Personal Growth"
+    ],
+    "faqs": [
+      {
+        "question": "When is International Men's Day 2026?",
+        "answer": "International Men's Day 2026 is on Thursday, 19 November 2026. It is observed on 19 November every year and is marked in more than 80 countries."
+      },
+      {
+        "question": "What is the theme of International Men's Day 2026?",
+        "answer": "The 2026 theme is \"The Future Is Everyone\". It invites people to recognise and support men and boys as part of building a fairer, healthier future for everyone."
+      },
+      {
+        "question": "Who started International Men's Day?",
+        "answer": "Dr Jerome Teelucksingh first celebrated International Men's Day in Trinidad and Tobago in 1999. 2026 marks its 28th annual observance."
+      },
+      {
+        "question": "What are the best books to gift men on International Men's Day?",
+        "answer": "Good choices include Atomic Habits, Man's Search for Meaning, Outlive, Why We Sleep, Wings of Fire, The Psychology of Money and The Art of Clarity by Murthy Thevar. For fiction, try The Kite Runner, Anxious People or Project Hail Mary. On TheBookX, books start from ₹1 with free delivery, Cash on Delivery and gift wrapping for ₹25."
+      }
+    ]
+  },
+  "world-philosophy-day-2026-19-november-philosophy-books-for-beginners-india": {
+    "id": "blog-123",
+    "title": "World Philosophy Day 2026 (19 November): 15 Philosophy Books for Beginners That Actually Help You Think Clearly",
+    "slug": "world-philosophy-day-2026-19-november-philosophy-books-for-beginners-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-18",
+    "lastModified": "2026-11-18",
+    "excerpt": "World Philosophy Day is on 19 November 2026. Here is why it matters and 15 beginner-friendly philosophy books, from Stoics to the Gita, to start reading.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Tomorrow, Thursday 19 November 2026, is World Philosophy Day. For most people the word philosophy conjures up dense textbooks and arguments nobody wins. But at its core, philosophy is something everyone already does: asking what a good life looks like, how to deal with things outside our control, and how to think clearly when the world feels noisy. This guide explains what the day is about and gives you a realistic, beginner-friendly reading list to start with."
+      },
+      {
+        "type": "paragraph",
+        "content": "Every book below is available on TheBookX, with books from ₹1, free delivery and Cash on Delivery across India, so you can start this week without spending much."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "World Philosophy Day 2026 at a glance",
+        "content": "Date: Thursday, 19 November 2026 (it is always the third Thursday of November). Organised by: UNESCO. First celebrated: 2002, and formally proclaimed by UNESCO's General Conference in 2005. 2026 theme: according to the philosophy news site Daily Nous, UNESCO's theme this year is \"How can we coexist in a world in crises?\", with a focus on migration, climate, artificial intelligence and health."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What is World Philosophy Day, and why does it exist?"
+      },
+      {
+        "type": "paragraph",
+        "content": "UNESCO created World Philosophy Day to highlight the lasting value of philosophy for human thought, for every culture and for every individual. The idea is simple: in a time of rapid change, the habit of slowing down, asking good questions and examining our assumptions is not a luxury. It is a survival skill for citizens, students and professionals alike."
+      },
+      {
+        "type": "paragraph",
+        "content": "This year's theme, about how we can coexist in a world facing overlapping crises, makes the case even more clearly. Questions about AI, climate, migration and health are not just technical problems. They are questions about fairness, responsibility and what we owe each other, which is exactly the territory philosophy has always covered."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why India has always been a philosophy country"
+      },
+      {
+        "type": "paragraph",
+        "content": "Indian readers come to philosophy with a head start. The Upanishads, the Bhagavad Gita, Buddhist and Jain thought, and centuries of debate between schools of logic and metaphysics mean that many of us grew up hearing philosophical ideas at home, often without the label. Concepts like karma, dharma, detachment and the observing self are, at heart, philosophical tools for living. World Philosophy Day is a good excuse to revisit those ideas and put them in conversation with Greek, Roman and modern thinkers."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to start reading philosophy without getting lost"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Start with practical philosophy, not theory. Books about how to live (the Stoics, the Gita, Adlerian psychology) are easier entry points than abstract metaphysics.",
+          "Read slowly and in small doses. One page of Marcus Aurelius read carefully is worth more than a chapter skimmed.",
+          "Use fiction as a bridge. Novels by Dostoevsky, Kafka and Orwell let you feel a philosophical problem before you analyse it.",
+          "Keep a thinking notebook. Write down one idea per session and one question it raises for your own life.",
+          "Pair an old book with a modern one. Read Meditations alongside a modern Stoic guide, or the Gita alongside a book on clear thinking."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "15 philosophy books for beginners (and curious readers)"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Start here: practical wisdom for everyday life"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a natural first step for anyone who finds that their mind is busier than it is useful. It treats clear thinking as a practical skill, showing how to cut through overthinking, separate what matters from what is merely loud, and make decisions you can stand behind. In the spirit of this year's theme, it is a book about staying steady when the world around you is not."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> by Marcus Aurelius is the private notebook of a Roman emperor reminding himself to stay calm, fair and focused. It was never meant for publication, which is exactly why it feels so honest. Read a few entries each morning."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-daily-stoic-366-meditations-on-wisdom-perseverance-and-the-art-of-living\" style=\"color:#fb8500;font-weight:600\">The Daily Stoic</a> by Ryan Holiday and Stephen Hanselman turns Stoic philosophy into a one-page-a-day habit, with a short reading and commentary for every date of the year. If you want to build a philosophy habit rather than read one book, start here. Holiday's <a href=\"/books/the-obstacle-is-the-way\" style=\"color:#fb8500;font-weight:600\">The Obstacle Is the Way</a> is the best short introduction to the Stoic idea that difficulties can become the material for growth."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> (Eknath Easwaran's widely loved translation) is one of the world's great works of practical philosophy: a dialogue about duty, action without attachment to results, and a steady mind in the middle of conflict. Easwaran's introductions make it very accessible to first-time readers."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-courage-to-be-disliked\" style=\"color:#fb8500;font-weight:600\">The Courage to Be Disliked</a> by Ichiro Kishimi and Fumitake Koga is written as a conversation between a philosopher and a young man, in the tradition of Socratic dialogue. It introduces Alfred Adler's ideas about freedom, responsibility and relationships, and has become a modern bestseller precisely because it reads so easily."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Think about thinking: philosophy meets psychology and history"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman is not a philosophy book in name, but it tackles one of philosophy's oldest questions: how reliable is our own judgement? Its account of fast, intuitive thinking and slow, deliberate thinking will change how you evaluate your own opinions."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari asks big philosophical questions through history: why humans cooperate, what money and nations really are, and whether we are happier than our ancestors. It is an excellent conversation starter for book clubs."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-almanack-of-naval-ravikant\" style=\"color:#fb8500;font-weight:600\">The Almanack of Naval Ravikant</a> collects one entrepreneur's reflections on wealth, judgement and happiness. Many of its ideas, like wanting less and reading widely, echo the Stoics and Indian thought in a modern, quotable form."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Philosophy through fiction"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/notes-from-underground\" style=\"color:#fb8500;font-weight:600\">Notes from Underground</a> by Fyodor Dostoevsky is often called the first existentialist novel: a bitter, funny and painfully honest narrator who rebels against the idea that humans always act in their own rational interest. It is short, which makes it a good first Dostoevsky."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-metamorphosis\" style=\"color:#fb8500;font-weight:600\">The Metamorphosis</a> by Franz Kafka begins with a man waking up as an insect and becomes a quiet meditation on identity, work and family duty. You can read it in one sitting and think about it for weeks."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> by George Orwell is political philosophy in the form of a fable, showing how ideals of equality can be twisted by power. It remains one of the best books for teenagers and adults to discuss together."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho, a perennial bestseller in India, is a gentle parable about purpose, listening to your heart and recognising the treasure close to home. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig explores regret and the lives we did not live, landing on a surprisingly philosophical conclusion about what makes a life worth living."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> by Mitch Albom records a former student's weekly conversations with his dying professor about love, work, ageing and forgiveness. It is the warmest possible introduction to the oldest philosophical question of all: how should we live, knowing that life ends?"
+      },
+      {
+        "type": "blockquote",
+        "content": "Philosophy is not about having all the answers. It is about asking better questions, and a good book is one of the best places to practise."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple 4-week reading plan"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Week 1 (calm mind): read <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> and begin <a href=\"/books/the-daily-stoic-366-meditations-on-wisdom-perseverance-and-the-art-of-living\" style=\"color:#fb8500;font-weight:600\">The Daily Stoic</a> one page a day.",
+          "Week 2 (how to live): read <a href=\"/books/the-courage-to-be-disliked\" style=\"color:#fb8500;font-weight:600\">The Courage to Be Disliked</a> and dip into <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a>, one chapter at a time.",
+          "Week 3 (how we think): work through the first part of <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a>, noting one bias you recognise in yourself each day.",
+          "Week 4 (feel the questions): finish with a short novel such as <a href=\"/books/notes-from-underground\" style=\"color:#fb8500;font-weight:600\">Notes from Underground</a> or <a href=\"/books/the-metamorphosis\" style=\"color:#fb8500;font-weight:600\">The Metamorphosis</a>, then write a page on what it made you question."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Make it a gift",
+        "content": "Philosophy books make thoughtful gifts for students, new graduates and anyone going through a big change. Add gift wrapping for just ₹25 at checkout. Books start from ₹1, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to celebrate World Philosophy Day at home, school or work"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Host a 30-minute discussion around one question, such as \"Is it ever right to break a rule?\" or \"What do we owe strangers?\"",
+          "Read one passage of Meditations or the Gita aloud with family and ask each person what it means to them.",
+          "In classrooms, run a mini Socratic dialogue on this year's theme: how can people with different views live together well?",
+          "At work, try a no-phones walk with a colleague and talk about one decision you are each struggling with.",
+          "Start a two-person reading pact: pick one book from this list and finish it together by the end of December."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Final thought"
+      },
+      {
+        "type": "paragraph",
+        "content": "You do not need a degree to do philosophy. You need curiosity, a little quiet, and a good book. This World Philosophy Day, pick one title from this list and give it fifteen minutes a day. In a world that rewards fast reactions, slow, clear thinking is one of the most useful habits you can build."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/world-philosophy-day-2026-19-november-philosophy-books-for-beginners-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-philosophy-day-2026-19-november-philosophy-books-for-beginners-india.jpeg",
+        "alt": "Thoughtful young Indian woman reading a book by a window with a cup of tea and a notebook on a quiet winter morning",
+        "caption": "World Philosophy Day, 19 November 2026: a good day to slow down, ask better questions and pick up a book that makes you think.",
+        "category": "Book Recommendations"
+      }
+    ],
+    "keywords": [
+      "World Philosophy Day 2026",
+      "World Philosophy Day 19 November",
+      "philosophy books for beginners",
+      "best philosophy books to read India",
+      "Stoic books for beginners",
+      "books that make you think",
+      "UNESCO World Philosophy Day theme 2026",
+      "practical philosophy books"
+    ],
+    "categories": [
+      "Book Recommendations",
+      "Non-Fiction",
+      "Self-Help & Personal Growth"
+    ],
+    "faqs": [
+      {
+        "question": "When is World Philosophy Day 2026?",
+        "answer": "World Philosophy Day 2026 is on Thursday, 19 November 2026. UNESCO celebrates it every year on the third Thursday of November."
+      },
+      {
+        "question": "Why is World Philosophy Day celebrated?",
+        "answer": "UNESCO created the day to highlight the lasting value of philosophy for human thought, for every culture and for each individual. It was first celebrated in 2002 and formally proclaimed by UNESCO's General Conference in 2005. The 2026 theme, as reported by Daily Nous, is \"How can we coexist in a world in crises?\""
+      },
+      {
+        "question": "Which philosophy books are best for beginners?",
+        "answer": "Good starting points are practical books such as Meditations by Marcus Aurelius, The Daily Stoic, The Bhagavad Gita, The Courage to Be Disliked and The Art of Clarity by Murthy Thevar. Short philosophical novels like Notes from Underground, The Metamorphosis and Animal Farm are excellent bridges too."
+      },
+      {
+        "question": "Where can I buy philosophy books affordably in India?",
+        "answer": "On TheBookX, books start from ₹1 with free delivery and Cash on Delivery across India. Gift wrapping is available for ₹25 if you are buying a book for someone else."
+      }
+    ]
+  },
   "international-students-day-2026-17-november-books-every-student-should-read-india": {
     "id": "blog-122",
     "title": "International Students' Day 2026 (17 November): The Story Behind the Day and 15 Books Every Student Should Read",

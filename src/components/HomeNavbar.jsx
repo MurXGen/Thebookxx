@@ -9,11 +9,10 @@ import "./HomeNavbar.styles.css";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ChevronDown, Search, Truck, User, Wallet, Zap } from "lucide-react";
+import { BadgeCheck, Bookmark, ChevronDown, RotateCcw, Search, Star, Truck, User, Wallet, Banknote, Zap } from "lucide-react";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { useStore } from "@/context/StoreContext";
-import { XmasSnow, XmasTree } from "./XmasDecor";
 import { trackEvent } from "@/lib/ga";
 import { GetAppButton } from "./AppInstall";
 import { getSavedPhone } from "@/utils/userPhone";
@@ -36,7 +35,17 @@ const TABS = [
   { href: "/category/children", label: "Kids", color: "#f59e0b", covers: covers(inCat("children")) },
 ];
 
-const HINTS = ["Atomic Habits", "Ikigai", "The Art of Clarity", "Rich Dad Poor Dad", "Fiction under ₹199"];
+const TITLE_COUNT = Math.max(100, Math.floor(ALL_BOOKS.length / 100) * 100);
+// Trust points in the black strip above the header.
+const TRUST = [
+  { icon: Bookmark, label: "Free bookmark", hi: true },
+  { icon: Star, label: "4.4 rating" },
+  { icon: BadgeCheck, label: `${TITLE_COUNT}+ titles` },
+  { icon: RotateCcw, label: "7-day replacement" },
+  { icon: Banknote, label: "Cash on Delivery" },
+  { icon: Truck, label: "Free delivery from ₹249" },
+];
+
 
 export default function HomeNavbar({ onSearch }) {
   const { cart, qrCart } = useStore();
@@ -48,7 +57,6 @@ export default function HomeNavbar({ onSearch }) {
   const [name, setName] = useState("");
   const [wallet, setWallet] = useState(null); // null = loading, number = balance
   const [walletKnown, setWalletKnown] = useState(true);
-  const [hint, setHint] = useState(0);
 
   // Saved pincode / city / first name (re-read when the pincode changes).
   useEffect(() => {
@@ -110,11 +118,6 @@ export default function HomeNavbar({ onSearch }) {
     };
   }, []);
 
-  // Rotating search hint, like "Search “Atomic Habits”".
-  useEffect(() => {
-    const t = setInterval(() => setHint((h) => (h + 1) % HINTS.length), 2600);
-    return () => clearInterval(t);
-  }, []);
 
   const fast = pin && isMaharashtraPin(pin);
   const eta = !pin ? "4–9 days" : fast ? "1–5 days" : "4–9 days";
@@ -124,11 +127,11 @@ export default function HomeNavbar({ onSearch }) {
     {/* ===== Desktop (≥1024px): promo strip + floating navbar ===== */}
     <div className="hnd">
       <div className="hnd-promo">
-        <span>🎄 Christmas Sale — up to 50% off</span>
-        <i aria-hidden="true">·</i>
-        <span>Free delivery from ₹249</span>
-        <i aria-hidden="true">·</i>
-        <span>Cash on Delivery &amp; 7-day replacement</span>
+        {TRUST.map(({ icon: Ic, label, hi }) => (
+          <span key={label} className={hi ? "hi" : undefined}>
+            <Ic size={14} strokeWidth={2.4} /> {label}
+          </span>
+        ))}
       </div>
       <div className="hnd-bar">
         <Link href="/" className="hnd-brand" aria-label="TheBookX home">
@@ -188,68 +191,73 @@ export default function HomeNavbar({ onSearch }) {
       </div>
     </div>
 
-    <div className="hn">
-      {/* Christmas: gentle snowfall across the header */}
-      <XmasSnow className="hn-snow" density={0.6} max={36} />
-      <div className="hn-top section-1200">
-        <button type="button" className="hn-del" onClick={openPincodeSheet} aria-label="Change delivery pincode">
-          <span className="hn-del-k">
-            TheBookX delivers in <XmasTree size={22} gifts={false} className="hn-tree" />
-          </span>
-          {ready ? (
-            <>
-              <span className="hn-del-eta">
-                {fast && <Zap size={15} className="hn-del-zap" />}
-                {eta}
-              </span>
-              <span className="hn-del-addr">
-                <span className="hn-del-place">{pin ? `${city ? `${city} · ` : ""}${pin}` : "Set delivery pincode"}</span>
-                <ChevronDown size={15} />
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="hn-skel hn-skel-eta" />
-              <span className="hn-skel hn-skel-addr" />
-            </>
-          )}
-        </button>
+    <div className="hn hn2">
+      {/* Black trust strip — slow endless marquee (list doubled for a seamless loop) */}
+      <div className="hn2-strip">
+        <div className="hn2-strip-track">
+          {[0, 1].map((k) => (
+            <ul key={k} className="hn2-strip-list" aria-hidden={k === 1 ? "true" : undefined}>
+              {TRUST.map(({ icon: Ic, label, hi }) => (
+                <li key={label} className={hi ? "hi" : undefined}>
+                  <Ic size={13} strokeWidth={2.4} />
+                  {label}
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      </div>
 
-        <div className="hn-acts">
-          <GetAppButton source="home_nav" compact />
-          <Link href="/wallet" className="hn-wallet" aria-label="Wallet">
-            <Wallet size={16} />
-            {walletKnown && wallet === null ? <span className="hn-skel hn-skel-wal" /> : <span>₹{wallet ?? 0}</span>}
-          </Link>
-          <Link href="/profile" className="hn-ic" aria-label="Account">
+      {/* White bar: brand left; search, account, cart right */}
+      <div className="hn2-bar">
+        <Link href="/" className="hn2-brand" aria-label="TheBookX home">
+          <span className="hn2-logo">TheBookX</span>
+          <span className="hn2-logo-sub">formerly Uskillbook</span>
+        </Link>
+        <div className="hn2-acts">
+          <button
+            type="button"
+            className="hn2-ic"
+            aria-label="Search books"
+            onClick={() => {
+              trackEvent("search_opened", { source: "home_header" });
+              onSearch?.();
+            }}
+          >
+            <Search size={20} />
+          </button>
+          {walletKnown && wallet > 0 && (
+            <Link href="/wallet" className="hn2-wallet" aria-label={`Wallet ₹${wallet}`}>
+              <Wallet size={14} />₹{wallet}
+            </Link>
+          )}
+          <Link href="/profile" className="hn2-ic" aria-label="Account">
             <User size={20} />
           </Link>
-          <Link href="/bag" className="hn-ic hn-cart" aria-label="Cart" id="cart-fly-target">
+          <Link href="/bag" className="hn2-ic hn2-cart" aria-label="Cart" id="cart-fly-target">
             <HiOutlineShoppingBag size={21} />
             {cartCount > 0 && <span className="hn-badge">{cartCount > 99 ? "99+" : cartCount}</span>}
           </Link>
         </div>
       </div>
 
-      <div className="section-1200 hn-search-wrap">
-        <button
-          type="button"
-          className="hn-search hx-capped"
-          onClick={() => {
-            trackEvent("search_opened", { source: "home_header" });
-            onSearch?.();
-          }}
-          aria-label="Search books"
-        >
-          <Search size={19} />
-          <span className="hn-search-ph">
-            Search{" "}
-            <span key={hint} className="hn-search-hint">
-              “{HINTS[hint]}”
+      {/* Delivery promise + pincode, one slim tappable line */}
+      <button type="button" className="hn2-del" onClick={openPincodeSheet} aria-label="Change delivery pincode">
+        {fast ? <Zap size={14} className="hn2-del-ic fast" /> : <Truck size={14} className="hn2-del-ic" />}
+        {ready ? (
+          <>
+            <span className="hn2-del-eta">
+              Delivery in <b>{eta}</b>
             </span>
-          </span>
-        </button>
-      </div>
+            <span className={`hn2-del-pin${pin ? "" : " unset"}`}>
+              <span className="hn2-del-place">{pin ? `${city ? `${city} · ` : ""}${pin}` : "Set pincode"}</span>
+              <ChevronDown size={13} />
+            </span>
+          </>
+        ) : (
+          <span className="hn-skel hn-skel-addr" />
+        )}
+      </button>
 
       <nav className="hn-tabs section-1200" aria-label="Shop by category">
         {TABS.map((t, i) => (

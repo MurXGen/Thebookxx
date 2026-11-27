@@ -31,6 +31,7 @@ const PARAM = "section"; // /?section=combos opens the homepage at that section
 // anything not on the page is skipped automatically.
 const SECTIONS = [
   { id: "hs-top", slug: null, label: "Top", icon: Home },
+  { id: "hs-rail-top-sellers", slug: "best-sellers", label: "Best sellers", icon: Award },
   { id: "hs-reviews", slug: "reader-photos", label: "Reader photos", icon: Camera },
   { id: "hs-about", slug: "about-us", label: "About us", icon: Info },
   { id: "hs-categories", slug: "categories", label: "Categories", icon: LayoutGrid },
@@ -127,7 +128,7 @@ export default function HomeDock() {
 
   // Which sections exist on this page.
   useEffect(() => {
-    const find = () => setSections(SECTIONS.filter((s) => document.getElementById(s.id)));
+    const find = () => setSections(SECTIONS.filter((s) => { const el = document.getElementById(s.id); return el && el.offsetParent !== null; }));
     find();
     const t = setTimeout(find, 1500);
     return () => clearTimeout(t);
@@ -339,7 +340,7 @@ export default function HomeDock() {
 
   const jump = (i) => {
     scrollToSection(sections[i].id);
-    openFor(1400);
+    close();
   };
 
   const askWhatsApp = () => {
@@ -350,7 +351,8 @@ export default function HomeDock() {
   };
 
   const n = sections.length;
-  const shown = open || dragIdx !== null; // labels visible
+  const shown = dragIdx !== null; // rail labels: only while dragging the rail
+  const railVisible = scrolling || dragIdx !== null;
   const hi = dragIdx ?? active;
   const fabBottom = clear + 14;
   const railBottom = fabBottom + 58; // rail ends just above the button row
@@ -362,7 +364,7 @@ export default function HomeDock() {
     <>
       {/* Dark fade behind the open index (tap to close) */}
       <AnimatePresence>
-        {shown && (
+        {(open || shown) && (
           <motion.div
             className="hd-fade"
             initial={{ opacity: 0 }}
@@ -377,7 +379,7 @@ export default function HomeDock() {
 
       {/* Section rail along the right edge */}
       <motion.nav
-        className={`hd-rail${shown ? " is-open" : ""}${scrolling ? " is-scrolling" : ""}`}
+        className={`hd-rail${shown ? " is-open" : ""}${scrolling ? " is-scrolling" : ""}${railVisible && !open ? " is-visible" : ""}`}
         aria-label="Jump to a section"
         initial={false}
         animate={{ bottom: railBottom }}
@@ -427,7 +429,7 @@ export default function HomeDock() {
                   )}
                 </AnimatePresence>
                 <AnimatePresence>
-                  {on && flash && !shown && (
+                  {on && scrolling && !shown && !open && (
                     <motion.span
                       key={`flash-${s.id}`}
                       className="hd-reached"
@@ -453,6 +455,51 @@ export default function HomeDock() {
         </div>
       </motion.nav>
 
+      {/* Section index: a card of all sections above the buttons */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="hd-panel"
+            role="dialog"
+            aria-label="Jump to a section"
+            style={{ bottom: fabBottom + 60 }}
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.97, transition: { duration: 0.15 } }}
+            transition={{ type: "spring", stiffness: 420, damping: 32 }}
+          >
+            <div className="hd-panel-head">
+              <span>Jump to</span>
+              <small>
+                {active + 1} / {n} · {sections[active]?.label}
+              </small>
+            </div>
+            <div className="hd-panel-bar" aria-hidden="true">
+              <span style={{ width: `${n > 1 ? (active / (n - 1)) * 100 : 100}%` }} />
+            </div>
+            <div className="hd-panel-grid">
+              {sections.map((s, i) => {
+                const Icon = s.icon;
+                return (
+                  <motion.button
+                    key={s.id}
+                    type="button"
+                    className={`hd-chip${i === active ? " on" : ""}${i < active ? " past" : ""}`}
+                    onClick={() => jump(i)}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.015, duration: 0.18 }}
+                  >
+                    <Icon size={15} />
+                    <span>{s.label}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Bottom-right buttons: section index + WhatsApp */}
       <motion.div
         className="hd-fabs"
@@ -463,23 +510,14 @@ export default function HomeDock() {
         <button
           type="button"
           className={`hd-stack${open ? " on" : ""}`}
-          onClick={() => (open ? close() : openFor())}
+          onClick={() => {
+            clearTimeout(closeTimer.current);
+            setOpen((o) => !o);
+          }}
           aria-label={open ? "Close section index" : "Show page sections"}
           aria-expanded={open}
         >
           {open ? <X size={16} /> : <Layers size={16} />}
-          {open && (
-            <svg key={openKey} className="hd-ring" viewBox="0 0 44 44" aria-hidden="true">
-              <motion.circle
-                cx="22"
-                cy="22"
-                r="20.5"
-                initial={{ pathLength: 1 }}
-                animate={{ pathLength: 0 }}
-                transition={{ duration: OPEN_MS / 1000, ease: "linear" }}
-              />
-            </svg>
-          )}
         </button>
         <AnimatePresence>
           {waTip && !open && (

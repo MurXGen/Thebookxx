@@ -57,7 +57,7 @@ export const trackBeginCheckout = (cartItems, totalAmount) => {
       item_id: item.id,
       item_name: item.name,
       price: item.discountedPrice,
-      quantity: item.qty,
+      quantity: Number(item.qty ?? item.quantity) || 1,
       item_category: item.catalogue?.[0] || "Books",
     })),
   });
@@ -78,18 +78,27 @@ export const trackPayClick = (totalAmount) => {
 /**
  * Track purchase success
  */
+// `paymentId` is the order ID (ORD…), so GA de-duplicates and matches the
+// sheet. Each order ID is sent once per browser even if a flow calls this twice.
 export const trackPurchase = ({ cartItems, totalAmount, paymentId }) => {
   if (!isBrowser()) return;
+  const txId = String(paymentId || "").trim();
+  if (!txId) return;
+  try {
+    const sent = JSON.parse(localStorage.getItem("ga_tx_sent") || "[]");
+    if (sent.includes(txId)) return;
+    localStorage.setItem("ga_tx_sent", JSON.stringify([...sent, txId].slice(-50)));
+  } catch (_) {}
 
   window.gtag("event", "purchase", {
-    transaction_id: paymentId,
+    transaction_id: txId,
     currency: "INR",
     value: totalAmount,
     items: cartItems.map((item) => ({
       item_id: item.id,
       item_name: item.name,
       price: item.discountedPrice,
-      quantity: item.qty,
+      quantity: Number(item.qty ?? item.quantity) || 1,
       item_category: item.catalogue?.[0] || "Books",
     })),
   });

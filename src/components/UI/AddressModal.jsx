@@ -4,10 +4,12 @@ import "./AddressModal.styles.css";
 import PlacingOrder from "@/components/UI/PlacingOrder";
 import { XmasSnow } from "@/components/XmasDecor";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef, Fragment } from "react";
+import { useEffect, useState, useRef, useMemo, Fragment } from "react";
 import { createPortal } from "react-dom";
 import { readBagCoupon, saveBagCoupon } from "@/utils/bagCoupon";
 import { useStore } from "@/context/StoreContext";
+import BestsellerGrid from "@/components/BestsellerGrid";
+import { buildRecommendations } from "@/utils/recoEngine";
 import { books as ALL_BOOKS } from "@/utils/book";
 import LoadingButton from "./LoadingButton";
 import {
@@ -55,7 +57,7 @@ import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 import { EVENTS } from "@/lib/trackingEvents";
 import { trackFunnelEvent } from "@/lib/analytics";
-import { trackPurchase } from "@/lib/ga";
+import { trackPurchase, trackBeginCheckout } from "@/lib/ga";
 import {
   trackOrderToGoogleForm,
   creditWalletReward,
@@ -399,6 +401,21 @@ export default function AddressModal({
   // ── Upsell: "The Art of Clarity" add-on before payment ──
   const ART_ID = "bk-002";
   const { cart, addToCart, clearCart } = useStore();
+  // Checkout recommendations: ranked by similarity to the bag (₹1 books and
+  // out-of-stock excluded). Recomputed only when the bag's books change.
+  const cartIdsKey = cart.map((i) => i.id).join(",");
+  const checkoutRecos = useMemo(
+    () => {
+      if (!cartIdsKey) return [];
+      const seen = new Set();
+      return buildRecommendations(cartIdsKey.split(",")).filter((b) => {
+        if (b.discountedPrice === 1 || !b.image || seen.has(b.id)) return false;
+        seen.add(b.id);
+        return true;
+      });
+    },
+    [cartIdsKey],
+  );
   const artBook = ALL_BOOKS.find((b) => b.id === ART_ID);
   const hasArtInCart = (cart || []).some((i) => i.id === ART_ID);
   const [showUpsell, setShowUpsell] = useState(false);
@@ -441,6 +458,10 @@ export default function AddressModal({
   // Thunder on: "select" (payment card) or "place" (from the UPI QR screen).
   const [codSwitch, setCodSwitch] = useState(null);
   const codPlaceRef = useRef(false);
+  // Gift wrap is prepaid-only: picking full COD with gift wrap on opens a
+  // sheet ("select" = from the payment cards, "place" = from the UPI screen).
+  const [giftCod, setGiftCod] = useState(null);
+  const giftCodPlaceRef = useRef(false);
   const codConfirmRef = useRef({ oid: "", isFaster: false });
   const [qrUnlocked, setQrUnlocked] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
@@ -561,6 +582,7 @@ export default function AddressModal({
   }, [paySel]);
 
   const UPI_ID = "7977960242-1@okbizaxis";
+  const formCompletedSentRef = useRef(false);
 
   useEffect(() => {
     if (open) {
@@ -569,6 +591,13 @@ export default function AddressModal({
         has_gift_wrap: giftWrapSelected,
       });
       setAddressFormStartTime(Date.now());
+      formCompletedSentRef.current = false;
+      try {
+        trackBeginCheckout(
+          cartBooks.map((b) => ({ ...b, qty: b.qty || b.quantity || 1 })),
+          finalPayable,
+        );
+      } catch (_) {}
     }
   }, [open]);
 
@@ -579,8 +608,10 @@ export default function AddressModal({
       phone.length === 10 &&
       address &&
       city &&
-      pincode
+      pincode &&
+      !formCompletedSentRef.current
     ) {
+      formCompletedSentRef.current = true;
       const timeSpent = addressFormStartTime
         ? Math.round((Date.now() - addressFormStartTime) / 1000)
         : null;
@@ -1379,11 +1410,6 @@ export default function AddressModal({
       setQrUnlocked(true);
       setVerifyCountdown(30);
       setUpiPhase(desk ? "ready" : "counting");
-      trackPurchase({
-        cartItems: cartBooks,
-        totalAmount: netPayable,
-        paymentId: `UPI-${upiOrderRef || Date.now()}`,
-      });
       // QR is live and the 30s counter has started → post the order to Telegram
       // with the Passed/Failed buttons so the team can mark it from the chat.
       notifyUpiQrToTelegram();
@@ -1954,7 +1980,7 @@ export default function AddressModal({
     trackPurchase({
       cartItems: cartBooks,
       totalAmount: netPayable,
-      paymentId: `COD-${Date.now()}`,
+      paymentId: oid,
     });
     // Now log the CONFIRMED order (plain name, no "(unconfirmed)" tag).
     // COD ships Standard, except Faster on 1–2 book orders.
@@ -2126,7 +2152,7 @@ export default function AddressModal({
     trackPurchase({
       cartItems: cartBooks,
       totalAmount: netPayable,
-      paymentId: `COD-${Date.now()}`,
+      paymentId: oid,
     });
     submitToGoogleForm("COD", isFaster, true, oid);
     notifyCODToTelegram(isFaster);
@@ -2184,14 +2210,14 @@ export default function AddressModal({
       return;
     }
     const label = `${giftMethod} · Gift card: ${code}`;
+    const oid = ensureCheckoutOid();
     try {
       trackPurchase({
         cartItems: cartBooks,
         totalAmount: netPayable,
-        paymentId: `GIFT-${Date.now()}`,
+        paymentId: oid,
       });
     } catch (_) {}
-    const oid = ensureCheckoutOid();
     submitToGoogleForm(giftMethod, fasterDelivery, true, oid, label);
     setShowPayMethod(false);
     setFasterDelivery(fasterDelivery);
@@ -2217,14 +2243,14 @@ export default function AddressModal({
   const isZeroPayable = upiTotalForFlow <= 0;
   const placeZeroOrder = () => {
     const label = "Wallet (fully paid)";
+    const oid = ensureCheckoutOid();
     try {
       trackPurchase({
         cartItems: cartBooks,
         totalAmount: 0,
-        paymentId: `WALLET-${Date.now()}`,
+        paymentId: oid,
       });
     } catch (_) {}
-    const oid = ensureCheckoutOid();
     submitToGoogleForm("Wallet", fasterDelivery, true, oid, label);
     if (notifyTelegram) {
       notifyTelegram(
@@ -2439,6 +2465,12 @@ export default function AddressModal({
   const finalizeUPISuccess = () => {
     if (successHandedRef.current) return;
     clearUpiTimers();
+    // GA purchase — UPI counts only once the payment is confirmed.
+    trackPurchase({
+      cartItems: cartBooks,
+      totalAmount: netPayable,
+      paymentId: upiOrderRef || ensureCheckoutOid(),
+    });
     persistLogin();
     setSuccessPayment("UPI");
     setUpiPhase("success"); // tick screen renders in the modal
@@ -2623,12 +2655,6 @@ export default function AddressModal({
       amount: finalPayable,
       verification_time: verifyTimer,
     });
-    // Count the purchase intent here (order row already logged as unconfirmed).
-    trackPurchase({
-      cartItems: cartBooks,
-      totalAmount: netPayable,
-      paymentId: `UPI-${upiOrderRef || Date.now()}`,
-    });
     setVerifyCountdown(30);
     setUpiPhase("verifying");
   };
@@ -2643,6 +2669,11 @@ export default function AddressModal({
       setCodSwitch("place");
       return;
     }
+    // Gift wrap isn't available with full Cash on Delivery.
+    if (giftWrap || giftWrapSelected) {
+      setGiftCod("place");
+      return;
+    }
     setShowUPIPayment(false);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "COD_from_UPI",
@@ -2651,7 +2682,7 @@ export default function AddressModal({
     trackPurchase({
       cartItems: cartBooks,
       totalAmount: netPayable,
-      paymentId: `COD-${Date.now()}`,
+      paymentId: oid,
     });
     // Faster delivery is online-only: a COD order always ships Standard, so it
     // is placed (and charged) without the Faster fee.
@@ -2662,6 +2693,15 @@ export default function AddressModal({
     notifyCODToTelegram(codFaster);
   };  // COD confirmed on the "ships by Standard" sheet from the UPI screen →
   // place it now that Faster / Thunder is off.
+  // Gift wrap removed on the gift/COD sheet from the UPI screen → place COD.
+  const giftIsOn = giftWrap || giftWrapSelected;
+  useEffect(() => {
+    if (!giftCodPlaceRef.current || giftIsOn) return;
+    giftCodPlaceRef.current = false;
+    switchToCODFromUPI(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [giftIsOn]);
+
   useEffect(() => {
     if (!codPlaceRef.current || fasterDelivery) return;
     codPlaceRef.current = false;
@@ -3793,6 +3833,10 @@ export default function AddressModal({
                         setCodSwitch("select");
                         return;
                       }
+                      if (giftWrap || giftWrapSelected) {
+                        setGiftCod("select");
+                        return;
+                      }
                       setPaySel("COD");
                     }}
                     className={`pay-method pm2 pm-pop${paySel === "COD" ? " selected" : ""}${codBlocked ? " pm2-blocked" : ""}`}
@@ -3864,6 +3908,19 @@ export default function AddressModal({
                     </a>
                   )}
                 </div>
+
+                {/* More books like the ones in the bag — 2-row scrolling grid,
+                    20 at a time (more load as the row scrolls). */}
+                {checkoutRecos.length > 0 && (
+                  <BestsellerGrid
+                    list={checkoutRecos}
+                    badge="PICKED FOR YOU"
+                    title="Add these to your order"
+                    subtitle="Similar to the books in your bag — ships in the same parcel."
+                    headingId="co-reco-heading"
+                    className="co-reco"
+                  />
+                )}
 
                 {/* Coins toggle (default off) */}
                 {walletBalance > 0 && (
@@ -4517,6 +4574,91 @@ export default function AddressModal({
         )}
       </Fragment>
 
+      {/* ========== Gift wrap needs a prepaid / ₹99-advance order ========== */}
+      <Fragment key="gift-cod-sheet">
+      {giftCod &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            <motion.div
+              key="gift-cod"
+              className="cdp-back cdp-back-full"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setGiftCod(null)}
+            >
+              <motion.div
+                className="cdp psh psh-full"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="gift-cod-h"
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button type="button" className="cdp-x" onClick={() => setGiftCod(null)} aria-label="Close">
+                  <X size={18} />
+                </button>
+                <div className="psh-head">
+                  <Gift size={22} aria-hidden="true" />
+                  <h3 id="gift-cod-h">Gift wrap isn&apos;t available with Cash on Delivery</h3>
+                </div>
+                <p>
+                  We pack gifts specially before dispatch, so a gift-wrapped order needs a small advance.
+                  Pay <b>₹{codAdvanceAmount} now</b> and the rest at delivery, or pay the full amount online.
+                </p>
+                <button
+                  type="button"
+                  className="cdp-save"
+                  data-no-busy
+                  onClick={() => {
+                    const mode = giftCod;
+                    setGiftCod(null);
+                    buzz(8);
+                    if (mode === "place") setShowUPIPayment(false);
+                    setPaySel("ADV");
+                  }}
+                >
+                  <Gift size={16} strokeWidth={2.4} />
+                  Keep gift wrap · pay ₹{codAdvanceAmount} now, rest at delivery
+                </button>
+                <button
+                  type="button"
+                  className="cdp-save cdp-save-alt"
+                  data-no-busy
+                  onClick={() => {
+                    const mode = giftCod;
+                    setGiftCod(null);
+                    buzz(8);
+                    if (mode !== "place") setPaySel("UPI");
+                  }}
+                >
+                  <Smartphone size={16} strokeWidth={2.4} />
+                  Keep gift wrap · pay full online
+                </button>
+                <button
+                  type="button"
+                  className="cdp-skip"
+                  onClick={() => {
+                    const mode = giftCod;
+                    setGiftCod(null);
+                    setGiftWrap(false);
+                    if (mode === "place") giftCodPlaceRef.current = true;
+                    else setPaySel("COD");
+                    showToast("Gift wrap removed. Your order is on Cash on Delivery.", "info");
+                  }}
+                >
+                  Remove gift wrap{giftWrapCharge ? ` (−₹${giftWrapCharge})` : ""} &amp; use Cash on Delivery
+                </button>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>,
+          document.body,
+        )}
+      </Fragment>
+
       {/* ========== Faster Delivery Modal ========== */}
       <AnimatePresence>
         {showFasterDeliveryModal && (
@@ -5090,6 +5232,10 @@ export default function AddressModal({
                           setShowPayMethod(false);
                           if (fasterDelivery) {
                             setCodSwitch("select");
+                            return;
+                          }
+                          if (giftWrap || giftWrapSelected) {
+                            setGiftCod("select");
                             return;
                           }
                           setPaySel("COD");

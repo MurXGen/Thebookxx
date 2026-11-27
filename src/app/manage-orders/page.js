@@ -523,6 +523,24 @@ const waMessages = (order) => {
         minimalBlock,
     },
     {
+      // Sheet said Out for delivery / Delivered but India Post still shows it
+      // with the post office — ask the customer to make sure it's collected.
+      key: "collect",
+      label: "Please collect parcel",
+      text:
+        `📮 *Your parcel is waiting for you*\n\n${hi}\n` +
+        `India Post shows your books are *not delivered yet* — the postman may have missed you, or the parcel is at your *local post office*.\n\n` +
+        `Please help us get it to you:\n` +
+        `📞 Keep your phone reachable — the postman may *call you* (9 AM – 8 PM).\n` +
+        `🏠 *Not at home?* Ask a family member or neighbour to collect it for you.\n` +
+        `🏤 *Or visit your nearest post office* with this tracking ID and collect it${tracking ? ` — *${tracking}*` : ""}.` +
+        (isCodOrder
+          ? `\n\n💵 *Keep ₹${codPayAtDoor} ready* — pay in *cash or UPI* when you collect.`
+          : ``) +
+        `\n\nIf the parcel is held up or you can't collect it, just reply here and we'll sort it out right away. 🙏` +
+        linkBlock,
+    },
+    {
       key: "delivered",
       label: "Delivered",
       text: `🎉 *Delivered*\n\n${hi}\nHope you love your books! A quick ⭐ *review* would mean a lot.${reviewLine}${linkBlock}`,
@@ -4761,8 +4779,10 @@ export default function ManageOrdersPage() {
   const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
   // Card view renders only this many at a time (perf — "Load more" reveals the
   // rest). Reset to the first page whenever the filter/search changes.
-  const ORDERS_PAGE = 100;
+  const ORDERS_PAGE = 10; // cards per load; "Load more" adds 10 more
   const [visibleCount, setVisibleCount] = useState(ORDERS_PAGE);
+  // Pick-bar filter: "" (all) | "ready" | "partial" | "none" (by books picked).
+  const [packFilter, setPackFilter] = useState("");
   // Collapse all order cards to a tiny summary (name, status, price, books).
   const [compactCards, setCompactCards] = useState(false);
   // Tap-to-enlarge book cover (lightbox) — { src, name }.
@@ -11854,7 +11874,13 @@ export default function ManageOrdersPage() {
   // `visibleOrders` stays the FULL filtered list (bulk actions / IP pools rely
   // on it). The card grid renders only `renderedOrders` (first N) for perf; a
   // "Load more" button reveals the rest in pages.
-  const visibleOrders = listOrders;
+  const pickStateOf = (o) => {
+    const bk = o.parsedBooks || [];
+    if (!bk.length) return "";
+    const got = bk.filter((_, i) => pickChecked[bookKey(o["Order ID"], i)]).length;
+    return got === bk.length ? "ready" : got > 0 ? "partial" : "none";
+  };
+  const visibleOrders = packFilter ? listOrders.filter((o) => pickStateOf(o) === packFilter) : listOrders;
   const renderedOrders = visibleOrders.slice(0, visibleCount);
   const remainingCount = Math.max(0, visibleOrders.length - renderedOrders.length);
 
@@ -16281,106 +16307,45 @@ export default function ManageOrdersPage() {
                   {/* Overview accordion — headline numbers, last-14-days chart and
                       the order map in one group. Closed by default; the head
                       line is the short version. */}
+                  <section className={`mo-ovcard${ovOpen ? " open" : ""}`} aria-label="Overview">
                   <button
                     type="button"
-                    className={`mo-ovacc-head${ovOpen ? " open" : ""}`}
+                    className={`mo-ovacc-head mo-ovcard-head${ovOpen ? " open" : ""}`}
                     aria-expanded={ovOpen}
                     onClick={toggleOvOpen}
                   >
-                    <ChevronDown size={15} className="mo-ovacc-chev" aria-hidden="true" />
                     <b>Overview</b>
-                    <span className="mo-ovacc-sum">
-                      <span>{realOrders.length.toLocaleString()} orders</span>
-                      <span>₹{fRevenue.toLocaleString()}</span>
-                      <span>{fBooks.toLocaleString()} books</span>
-                      {unconfirmedOrders.length > 0 && (
-                        <span className="att">{unconfirmedOrders.length} to review</span>
-                      )}
+                    <span className="mo-ovcard-sub">This view</span>
+                    <span className="mo-ovcard-toggle">
+                      {ovOpen ? "Hide details" : "Details"}
+                      <ChevronDown size={15} className="mo-ovacc-chev" aria-hidden="true" />
                     </span>
                   </button>
-                  {ovOpen && (
-                  <div className="mo-ovacc-body">
-                  {/* Row 3 — the current view: three headline numbers, the
-                      payment split as one bar, and anything needing attention.
-                      On phones (search lives in the bottom bar) the Filters
-                      and Select buttons sit here instead of on their own row. */}
-                  {(() => {
-                    const n = realOrders.length;
-                    const pay = [
-                      { k: "upi", label: "Online", v: fUpi },
-                      { k: "adv", label: "₹99 advance", v: fPrepaid },
-                      { k: "cod", label: "COD", v: fCod },
-                    ];
-                    const alerts = [
-                      unconfirmedOrders.length > 0 && (
-                        <button
-                          key="rev"
-                          type="button"
-                          className="mo-vs2-alert"
-                          onClick={() => setShowUnconfirmed(true)}
-                        >
-                          <AlertCircle size={14} />
-                          <b>{unconfirmedOrders.length}</b> to review
-                          <ChevronRight size={14} className="mo-vs2-go" />
-                        </button>
-                      ),
-                      dismissedIds.length > 0 && (
-                        <button
-                          key="hid"
-                          type="button"
-                          className="mo-vs2-alert"
-                          onClick={reloadCards}
-                        >
-                          <RefreshCw size={14} />
-                          <b>{dismissedIds.length}</b> hidden · show
-                        </button>
-                      ),
-                    ].filter(Boolean);
-                    return (
-                      <div className="mo-vs2">
-                        <div className="mo-vs2-top">
-                          <div className="mo-vs2-stats">
-                            <div className="mo-vs2-stat">
-                              <span>Orders</span>
-                              <b>{n.toLocaleString()}</b>
-                            </div>
-                            <div className="mo-vs2-stat">
-                              <span>Revenue</span>
-                              <b>₹{fRevenue.toLocaleString()}</b>
-                            </div>
-                            <div className="mo-vs2-stat">
-                              <span>Books</span>
-                              <b>{fBooks.toLocaleString()}</b>
-                            </div>
-                          </div>
-                        </div>
-                        {n > 0 && (
-                          <div className="mo-vs2-pay">
-                            <div className="mo-vs2-paybar" role="img" aria-label={pay.map((p) => `${p.label} ${p.v}`).join(", ")}>
-                              {pay.map((p) =>
-                                p.v > 0 ? (
-                                  <i key={p.k} className={p.k} style={{ flexGrow: p.v }} />
-                                ) : null,
-                              )}
-                            </div>
-                            <div className="mo-vs2-paylegend">
-                              {pay.map((p) => (
-                                <span key={p.k}>
-                                  <i className={p.k} />
-                                  {p.label} <b>{p.v}</b>
-                                  <em>{Math.round((p.v / n) * 100)}%</em>
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {alerts.length > 0 && (
-                          <div className="mo-vs2-alerts">{alerts}</div>
-                        )}
-                      </div>
-                    );
-                  })()}
-
+                  <div className="mo-ovgrid">
+                    <div className="mo-ovcell">
+                      <span>Orders</span>
+                      <b>{realOrders.length.toLocaleString()}</b>
+                    </div>
+                    <div className="mo-ovcell">
+                      <span>Revenue</span>
+                      <b>₹{fRevenue.toLocaleString()}</b>
+                    </div>
+                    <div className="mo-ovcell">
+                      <span>Books</span>
+                      <b>{fBooks.toLocaleString()}</b>
+                    </div>
+                    <button
+                      type="button"
+                      className={`mo-ovcell mo-ovcell-btn${unconfirmedOrders.length > 0 ? " att" : ""}`}
+                      onClick={() => unconfirmedOrders.length > 0 && setShowUnconfirmed(true)}
+                      disabled={!unconfirmedOrders.length}
+                      title={unconfirmedOrders.length ? "Review unconfirmed orders" : "Nothing to review"}
+                    >
+                      <span>To review{unconfirmedOrders.length > 0 && <ChevronRight size={12} />}</span>
+                      <b>{unconfirmedOrders.length.toLocaleString()}</b>
+                    </button>
+                  </div>
+                  <div className="mo-ovcard-days">
                   {/* Last 14 days at a glance for the current filters, stacked
                       by payment type. Tap a day to filter the list to it; tap
                       again to clear. Bar count = cards you'll see. */}
@@ -16796,9 +16761,66 @@ export default function ManageOrdersPage() {
                       </div>
                     );
                   })()}
+                  </div>
+                  {ovOpen && (
+                  <div className="mo-ovacc-body mo-ovcard-body">
+                  {/* Row 3 — the current view: three headline numbers, the
+                      payment split as one bar, and anything needing attention.
+                      On phones (search lives in the bottom bar) the Filters
+                      and Select buttons sit here instead of on their own row. */}
+                  {(() => {
+                    const n = realOrders.length;
+                    const pay = [
+                      { k: "upi", label: "Online", v: fUpi },
+                      { k: "adv", label: "₹99 advance", v: fPrepaid },
+                      { k: "cod", label: "COD", v: fCod },
+                    ];
+                    const alerts = [
+                      dismissedIds.length > 0 && (
+                        <button
+                          key="hid"
+                          type="button"
+                          className="mo-vs2-alert"
+                          onClick={reloadCards}
+                        >
+                          <RefreshCw size={14} />
+                          <b>{dismissedIds.length}</b> hidden · show
+                        </button>
+                      ),
+                    ].filter(Boolean);
+                    return (
+                      <div className="mo-vs2">
+                        {n > 0 && (
+                          <div className="mo-vs2-pay">
+                            <div className="mo-vs2-paybar" role="img" aria-label={pay.map((p) => `${p.label} ${p.v}`).join(", ")}>
+                              {pay.map((p) =>
+                                p.v > 0 ? (
+                                  <i key={p.k} className={p.k} style={{ flexGrow: p.v }} />
+                                ) : null,
+                              )}
+                            </div>
+                            <div className="mo-vs2-paylegend">
+                              {pay.map((p) => (
+                                <span key={p.k}>
+                                  <i className={p.k} />
+                                  {p.label} <b>{p.v}</b>
+                                  <em>{Math.round((p.v / n) * 100)}%</em>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {alerts.length > 0 && (
+                          <div className="mo-vs2-alerts">{alerts}</div>
+                        )}
+                      </div>
+                    );
+                  })()}
+
                   <OrdersMap orders={filteredOrders} dateOf={getOrderDate} onOpenOrder={setBillOrderId} />
                   </div>
                   )}
+                  </section>
 
                   {/* Filters & view — slide-over sheet: from the right on
                       desktop, up from the bottom on phones. Changes apply
@@ -20079,6 +20101,28 @@ export default function ManageOrdersPage() {
                                 </a>
                               )}
                             </span>
+                            {(() => {
+                              const ph = String(m.order["Phone Number"] || "").replace(/\D/g, "").slice(-10);
+                              if (ph.length !== 10) return null;
+                              return (
+                                <span className="mo-deliv-contact" onClick={(e) => e.stopPropagation()}>
+                                  <button
+                                    type="button"
+                                    className="mo-deliv-wa"
+                                    title="WhatsApp: ask them to collect the parcel"
+                                    onClick={() => {
+                                      const msg = waMessages(m.order).find((t) => t.key === "collect");
+                                      openWhatsApp(ph, msg ? msg.text : "");
+                                    }}
+                                  >
+                                    <FaWhatsapp size={13} /> Ask to collect
+                                  </button>
+                                  <a className="mo-deliv-call" href={`tel:+91${ph}`} title={`Call ${ph}`}>
+                                    <Phone size={12} /> Call
+                                  </a>
+                                </span>
+                              );
+                            })()}
                           </div>
                           <div className="mo-deliv-row-flow">
                             <span className="mo-deliv-cur">
@@ -21628,19 +21672,98 @@ export default function ManageOrdersPage() {
                       else none += 1;
                     });
                     const total = ready + partial + none;
-                    if (!total) return null;
-                    const pct = (n) => `${(n / total) * 100}%`;
+                    if (!total && paymentFilter === "all") return null;
+                    // Payment-type counts for the chips (same buckets as the
+                    // Filters sheet; tap to filter, tap again to clear).
+                    const payCount = { "UPI / Online": 0, "₹99 advance": 0, "Cash on Delivery": 0 };
+                    filteredOrders.forEach((o) => {
+                      if (!o["Order ID"]) return;
+                      const b = paymentBucket(o["Payment Type"]);
+                      if (b in payCount) payCount[b] += 1;
+                    });
                     return (
                       <div className="mo-pickbar" role="status" aria-label="Picking progress">
-                        <div className="mo-pickbar-row">
-                          <span className="ready"><i /> <b>{ready}</b> ready to dispatch</span>
-                          <span className="partial"><i /> <b>{partial}</b> partly picked</span>
-                          <span className="none"><i /> <b>{none}</b> not picked</span>
-                          <em>{booksDone}/{booksAll} books</em>
+                        <div className="mo-pickbar-row mo-payrow">
+                          {[
+                            ["UPI / Online", "upi", "Online"],
+                            ["₹99 advance", "adv", "₹99 advance"],
+                            ["Cash on Delivery", "cod", "COD"],
+                          ].map(([bucket, k, label]) => (
+                            <button
+                              key={k}
+                              type="button"
+                              className={`mo-pick-f pay-${k}${paymentFilter === bucket ? " on" : ""}`}
+                              aria-pressed={paymentFilter === bucket}
+                              title={paymentFilter === bucket ? "Show all payment types" : `Show only ${label} orders`}
+                              onClick={() => {
+                                setPaymentFilter((f) => (f === bucket ? "all" : bucket));
+                                setVisibleCount(ORDERS_PAGE);
+                              }}
+                            >
+                              <i /> <b>{payCount[bucket]}</b> {label}
+                            </button>
+                          ))}
+                          {paymentFilter !== "all" && (
+                            <button
+                              type="button"
+                              className="mo-pick-clear"
+                              onClick={() => {
+                                setPaymentFilter("all");
+                                setVisibleCount(ORDERS_PAGE);
+                              }}
+                            >
+                              Clear
+                            </button>
+                          )}
                         </div>
-                        <div className="mo-pickbar-track" aria-hidden="true">
-                          <span className="ready" style={{ width: pct(ready) }} />
-                          <span className="partial" style={{ width: pct(partial) }} />
+                        <div className="mo-pickbar-row">
+                          {[
+                            ["ready", ready, "ready to dispatch", "Ready"],
+                            ["partial", partial, "partly picked", "Partly"],
+                            ["none", none, "not picked", "Not picked"],
+                          ].map(([k, n, label, short]) => (
+                            <button
+                              key={k}
+                              type="button"
+                              className={`mo-pick-f ${k}${packFilter === k ? " on" : ""}`}
+                              aria-pressed={packFilter === k}
+                              title={packFilter === k ? "Show all orders" : `Show only ${label}`}
+                              onClick={() => {
+                                setPackFilter((f) => (f === k ? "" : k));
+                                setVisibleCount(ORDERS_PAGE);
+                              }}
+                            >
+                              <i /> <b>{n}</b> <span className="mo-pick-l">{label}</span>
+                              <span className="mo-pick-s">{short}</span>
+                            </button>
+                          ))}
+                          {packFilter && (
+                            <button
+                              type="button"
+                              className="mo-pick-clear"
+                              onClick={() => {
+                                setPackFilter("");
+                                setVisibleCount(ORDERS_PAGE);
+                              }}
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+                        <div className="mo-pickbar-books">
+                          <div
+                            className="mo-pickbar-track"
+                            role="progressbar"
+                            aria-valuemin={0}
+                            aria-valuemax={booksAll}
+                            aria-valuenow={booksDone}
+                            aria-label="Books picked"
+                          >
+                            <span className="ready" style={{ width: `${booksAll ? (booksDone / booksAll) * 100 : 0}%` }} />
+                          </div>
+                          <em>
+                            <b>{booksDone}</b>/{booksAll} books picked
+                          </em>
                         </div>
                       </div>
                     );
@@ -21663,8 +21786,7 @@ export default function ManageOrdersPage() {
                           className="mo-loadmore"
                           onClick={() => setVisibleCount((c) => c + ORDERS_PAGE)}
                         >
-                          Load more · {remainingCount} more order
-                          {remainingCount === 1 ? "" : "s"}
+                          Load {Math.min(ORDERS_PAGE, remainingCount)} more · {remainingCount} left
                         </button>
                       )}
                     </>
@@ -21701,7 +21823,7 @@ export default function ManageOrdersPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {visibleOrders.map((order, i) => {
+                          {renderedOrders.map((order, i) => {
                             const oid = order["Order ID"];
                             const sel = selectedIds.includes(oid);
                             return (
@@ -21757,6 +21879,15 @@ export default function ManageOrdersPage() {
                           })}
                         </tbody>
                       </table>
+                      {remainingCount > 0 && (
+                        <button
+                          type="button"
+                          className="mo-loadmore"
+                          onClick={() => setVisibleCount((c) => c + ORDERS_PAGE)}
+                        >
+                          Load {Math.min(ORDERS_PAGE, remainingCount)} more · {remainingCount} left
+                        </button>
+                      )}
                     </div>
                   )}
 

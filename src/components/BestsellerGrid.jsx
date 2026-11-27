@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+
+const PAGE = 20; // cards rendered per batch; more load as the row scrolls
 import Link from "next/link";
-import { Plus, Loader2, Award } from "lucide-react";
+import { Plus, Loader2, Award, ChevronLeft, ChevronRight } from "lucide-react";
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
+import BookCoverImg from "@/components/BookCoverImg";
 
 const slugify = (t) =>
   String(t || "")
@@ -16,13 +19,31 @@ const slugify = (t) =>
 
 // Compact 2-row scrollable rail of bestselling books — shows discounted price,
 // struck-through MRP and the savings on each card (matches TrendingGrid style).
-export default function BestsellerGrid() {
+// Optional props let the homepage pass its own list (e.g. real top sellers).
+export default function BestsellerGrid({
+  list,
+  badge = "BESTSELLERS",
+  title = "Our most-loved books",
+  subtitle = "Top picks readers keep coming back for.",
+  headingId = "bg-heading",
+  className = "",
+} = {}) {
   const { cart, addToCart, decreaseQty } = useStore();
   const [loadingId, setLoadingId] = useState(null);
+  const [visible, setVisible] = useState(PAGE);
+  const scrollRef = useRef(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+  const slide = (dir) => {
+    const el = scrollRef.current;
+    if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+  };
 
-  const bestsellers = books.filter(
-    (b) => b.catalogue?.includes("bestseller") && b.image && b.discountedPrice !== 1,
-  );
+  const bestsellers =
+    list ||
+    books.filter(
+      (b) => b.catalogue?.includes("bestseller") && b.image && b.discountedPrice !== 1,
+    );
   if (!bestsellers.length) return null;
 
   const maxPct = Math.max(
@@ -45,17 +66,22 @@ export default function BestsellerGrid() {
   };
 
   return (
-    <section className="or1-section" aria-labelledby="bg-heading">
+    <section className={`or1-section ${className}`} aria-labelledby={headingId}>
       <div className="section-1200 or1-inner">
         <div className="or1-head">
           <div className="or1-head-left">
             <span className="or1-badge">
-              <Award size={13} /> BESTSELLERS
+              <Award size={13} /> {badge}
             </span>
-            <h2 id="bg-heading" className="or1-title">
-              Our most-loved books
+            <h2 id={headingId} className="or1-title">
+              {title}
             </h2>
-            <p className="or1-sub">Top picks readers keep coming back for.</p>
+            <p className="or1-sub">
+              {subtitle}
+              <span className="or1-swipe" aria-hidden="true">
+                Swipe <ChevronRight size={13} />
+              </span>
+            </p>
           </div>
           {maxPct > 0 && (
             <span className="or1-save-pill">
@@ -64,9 +90,27 @@ export default function BestsellerGrid() {
           )}
         </div>
 
-        <div className="or1-scroll">
+        <div className={`or1-scroll-wrap${atStart ? " at-start" : ""}${atEnd ? " at-end" : ""}`}>
+        <button type="button" className="or1-nav prev" onClick={() => slide(-1)} aria-label="Scroll left" tabIndex={atStart ? -1 : 0}>
+          <ChevronLeft size={18} />
+        </button>
+        <button type="button" className="or1-nav next" onClick={() => slide(1)} aria-label="Scroll right for more books" tabIndex={atEnd ? -1 : 0}>
+          <ChevronRight size={18} />
+        </button>
+        <div
+          ref={scrollRef}
+          className="or1-scroll"
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            setAtStart(el.scrollLeft < 8);
+            setAtEnd(visible >= bestsellers.length && el.scrollLeft + el.clientWidth >= el.scrollWidth - 8);
+            if (visible < bestsellers.length && el.scrollLeft + el.clientWidth > el.scrollWidth - 400) {
+              setVisible((v) => Math.min(bestsellers.length, v + PAGE));
+            }
+          }}
+        >
           <div className="or1-grid">
-            {bestsellers.map((b) => {
+            {bestsellers.slice(0, visible).map((b) => {
               const qty = cart.find((i) => i.id === b.id)?.qty || 0;
               const on = qty > 0;
               const loading = loadingId === b.id;
@@ -78,7 +122,7 @@ export default function BestsellerGrid() {
                 <div className="or1-card" key={b.id}>
                   <div className="or1-cover">
                     <Link href={url} className="or1-cover-link" aria-label={b.name}>
-                      <img src={b.image} alt={b.name} loading="lazy" />
+                      <BookCoverImg src={b.image} name={b.name} author={b.author} thumb />
                     </Link>
                     {loading ? (
                       <button type="button" className="or1-add loading" disabled aria-label="Adding">
@@ -110,6 +154,7 @@ export default function BestsellerGrid() {
               );
             })}
           </div>
+        </div>
         </div>
       </div>
     </section>

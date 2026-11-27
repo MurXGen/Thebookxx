@@ -11,6 +11,7 @@ import {
 import { usePathname } from "next/navigation";
 import { books } from "@/utils/book";
 import { trackAddSource } from "@/lib/addSource";
+import { trackAddToCart } from "@/lib/ga";
 import { priceMode } from "@/lib/offerTimer";
 import {
   getOneRupeeOfferData,
@@ -446,8 +447,17 @@ export function StoreProvider({ children }) {
 
   // `source` ("detail" = book page, "card" = a book card/grid outside it)
   // feeds the per-device add counts in the Timers tab.
+  // GA add_to_cart for every add (book cards, book page, combos, search…).
+  const gaAdd = (id, qty = 1) => {
+    try {
+      const book = books.find((b) => b.id === id);
+      if (book) trackAddToCart({ book, qty });
+    } catch (_) {}
+  };
+
   const addToCart = (id, source) => {
     if (source) trackAddSource(source);
+    gaAdd(id, 1);
     setCart((prev) => {
       const item = prev.find((i) => i.id === id);
       let newCart;
@@ -490,6 +500,7 @@ export function StoreProvider({ children }) {
       localStorage.setItem(BUYNOW_KEY, JSON.stringify({ cart: prev || [], item: { id, qty }, at: Date.now() }));
     } catch {}
     setBuyNowActive(true);
+    gaAdd(id, Math.max(1, Number(qty) || 1));
     setCart([{ id, qty: Math.max(1, Number(qty) || 1) }]);
   };
   const endBuyNow = (ordered = false) => {

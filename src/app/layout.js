@@ -218,16 +218,26 @@ export default function RootLayout({ children }) {
               function gtag(){dataLayer.push(arguments);}
               window.gtag = gtag;
               gtag('js', new Date());
-              gtag('config', 'G-VZX7GSTR9Z', {
-                page_path: window.location.pathname,
-                send_page_view: false
-              });
-              (window.__tbxLater || function (f) { f(); })(function () {
-                var s = document.createElement('script');
-                s.async = true;
-                s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VZX7GSTR9Z';
-                document.head.appendChild(s);
-              });
+              // Landing page view is sent here; later in-app navigations are
+              // sent by GA's enhanced measurement (browser history changes).
+              gtag('config', 'G-VZX7GSTR9Z');
+              // Load GA on the first tap/scroll, or as soon as the browser is
+              // idle after load (max ~1.2 s), so short visits are counted too.
+              (function () {
+                var loaded = false;
+                function loadGa() {
+                  if (loaded) return; loaded = true;
+                  var s = document.createElement('script');
+                  s.async = true;
+                  s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VZX7GSTR9Z';
+                  document.head.appendChild(s);
+                }
+                (window.__tbxLater || function (f) { f(); })(loadGa);
+                function idle() {
+                  (window.requestIdleCallback || function (f) { setTimeout(f, 300); })(loadGa, { timeout: 1200 });
+                }
+                document.readyState === 'complete' ? idle() : addEventListener('load', idle, { once: true });
+              })();
             }
           `}
         </Script>

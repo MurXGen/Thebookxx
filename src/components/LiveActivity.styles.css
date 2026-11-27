@@ -131,3 +131,4 @@
 @media (prefers-reduced-motion: reduce) {
 .la-photo.is-loading { animation: none; }
 }
+.la .la-join { width: 100%; margin: 10px 0 0; }

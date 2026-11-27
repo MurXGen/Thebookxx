@@ -271,3 +271,62 @@
 .pinfs-xmas .pinfs-skip { color: #b91c1c; }
 
 .pinfs-xmas .pinfs-tc { color: #8a6b6b; }
+
+/* ===== Compact centered card (replaces the full-screen phone layout) ===== */
+.bill-modal-overlay.pinfs-overlay {
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: rgba(20, 12, 8, 0.55);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.pinfs-overlay .bill-modal.pinfs-modal {
+  position: relative !important; inset: auto !important;
+  width: 100% !important; max-width: 380px !important;
+  height: auto !important; max-height: min(640px, calc(100dvh - 32px)) !important;
+  margin: 0 !important; border-radius: 24px !important;
+  overflow: hidden !important; padding: 0 !important;
+  box-shadow: 0 30px 60px -20px rgba(60, 10, 10, 0.45), 0 0 0 1px rgba(255,255,255,.35) inset;
+  will-change: transform, opacity;
+}
+.pinfs-overlay .bill-modal.pinfs-modal::before { display: none; }
+.pinfs-overlay .pinfs {
+  min-height: 0 !important; height: auto; max-height: min(640px, calc(100dvh - 32px));
+  padding: 16px 16px 14px; overscroll-behavior: contain;
+}
+.pinfs-overlay .pinfs-xmas { padding-top: 38px; }
+.pinfs-overlay .pinfs-garland { height: 38px; }
+.pinfs-overlay .pinfs-x { top: 10px; right: 10px; width: 32px; height: 32px; }
+.pinfs-overlay .pinfs-xmas .pinfs-x { top: 42px; }
+.pinfs-overlay .pinfs-top { margin-top: 4px; }
+.pinfs-overlay .pinfs-brand { font-size: 11px; padding: 4px 11px; }
+.pinfs-overlay .pinfs-h { margin: 10px 0 4px; font-size: 25px; }
+.pinfs-overlay .pinfs-h br { display: none; }
+.pinfs-overlay .pinfs-h em { margin-left: .25em; }
+.pinfs-overlay .pinfs-sub { font-size: 13px; }
+.pinfs-overlay .pinfs-badge,
+.pinfs-overlay .pinfs-xmas .pinfs-badge { margin: 16px 0 12px; max-width: 300px; }
+.pinfs-overlay .pinfs-crown { font-size: 26px; margin-bottom: -6px; }
+.pinfs-overlay .pinfs-badge-in { padding: 12px 24px; border-width: 4px; border-radius: 20px; }
+.pinfs-overlay .pinfs-badge-in b { font-size: 21px; }
+.pinfs-overlay .pinfs-form { padding: 12px; border-radius: 16px; }
+.pinfs-overlay .pinfs-phone { height: 46px; border-radius: 12px; }
+.pinfs-overlay .pinfs-phone input { font-size: 16px; }
+.pinfs-overlay .pinfs-lbl2 { margin: 10px 0 6px; font-size: 12px; }
+.pinfs-overlay .pinfs-chip { height: 28px; padding: 0 10px; font-size: 12px; }
+.pinfs-overlay .pinfs-foot { padding-top: 10px; gap: 4px; }
+.pinfs-overlay .pinfs-tc { font-size: 10.5px; }
+.pinfs-overlay .pinfs-cta { min-height: 48px; font-size: 16px; transition: transform .12s ease, filter .12s ease; }
+.pinfs-overlay .pinfs-cta:active { transform: scale(.98); }
+.pinfs-overlay .pinfs-skip { font-size: 13px; padding: 6px; }
+.pinfs-overlay .pinfs-float { transform-origin: center; scale: .75; }
+@media (max-height: 640px) {
+  .pinfs-overlay .pinfs-badge { display: none; }
+}
+.bill-modal-overlay.pinfs-overlay { z-index: 3000; }
+.pinfs-overlay .pinfs-h { font-size: 23px; }
+.pinfs-overlay .pinfs-h em { white-space: nowrap; }
+.pinfs-overlay .pinfs-sub { max-width: 260px; margin: 0 auto; line-height: 1.4; }
+.pinfs-overlay .pinfs-badge,
+.pinfs-overlay .pinfs-xmas .pinfs-badge { margin: 12px 0 10px; }
+.pinfs-overlay .pinfs-badge-in { padding: 8px 20px; }
+.pinfs-overlay .pinfs-badge-in b { font-size: 18px; }
+.pinfs-overlay .pinfs-crown { font-size: 22px; }

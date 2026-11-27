@@ -147,3 +147,71 @@
 .hd-rail .hd-stop.on .hd-reached ~ .hd-dot { box-shadow: 0 0 0 4px rgba(251, 133, 0, 0.3); }
 
 .hd-rail:has(.hd-reached) { opacity: 1; }
+
+/* ===== v2: rail only appears while scrolling / dragging; tap the layers
+   button for a "Jump to" card ===== */
+.hd-rail { opacity: 0; transition: opacity .35s ease, transform .35s ease; transform: translateX(8px); }
+.hd-rail .hd-track { pointer-events: none; }
+.hd-rail.is-visible, .hd-rail.is-open { opacity: 1; transform: none; }
+.hd-rail.is-visible .hd-track, .hd-rail.is-open .hd-track { pointer-events: auto; }
+.hd-rail .hd-line { width: 2px; right: 11.5px; background: rgba(15, 23, 42, 0.12); }
+.hd-rail .hd-progress { width: 2px; right: 11.5px; background: linear-gradient(180deg, #818cf8, #0f172a); }
+.hd-rail .hd-dot { width: 5px; height: 5px; right: 10px; margin-top: -2.5px; border: 0; background: rgba(15, 23, 42, 0.28); box-shadow: none; }
+.hd-rail .hd-stop.past .hd-dot { background: #0f172a; }
+.hd-rail .hd-thumb { width: 10px; height: 10px; right: 8px; margin-top: -5px; background: #0f172a; box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.3), 0 2px 6px rgba(0, 0, 0, 0.3); }
+.hd-rail .hd-reached { background: rgba(15, 23, 42, 0.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: 12px; font-weight: 700; height: 26px; margin-top: -13px; }
+.hd-rail .hd-reached svg { color: #a5b4fc; }
+
+.hd-fade { background: rgba(8, 12, 30, 0.35) !important; -webkit-backdrop-filter: blur(3px) !important; backdrop-filter: blur(3px) !important; }
+
+.hd-panel {
+  position: fixed; right: 12px; z-index: 138; width: min(320px, calc(100vw - 24px));
+  padding: 14px; border-radius: 22px; background: rgba(255, 255, 255, 0.96);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 24px 60px -20px rgba(8, 12, 30, 0.55), 0 2px 8px rgba(8, 12, 30, 0.08);
+  transform-origin: bottom right;
+}
+.hd-panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.hd-panel-head span { font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: -0.01em; }
+.hd-panel-head small { font-size: 11.5px; font-weight: 600; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hd-panel-bar { height: 3px; border-radius: 3px; background: #eef0f6; overflow: hidden; margin-bottom: 12px; }
+.hd-panel-bar span { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #818cf8, #0f172a); transition: width .3s ease; }
+.hd-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; max-height: min(52vh, 420px); overflow-y: auto; overscroll-behavior: contain; }
+.hd-chip {
+  display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px; border-radius: 12px;
+  border: 1px solid #eef0f6; background: #f8fafc; color: #334155; font: inherit; font-size: 12.5px; font-weight: 700;
+  text-align: left; cursor: pointer; transition: background .15s ease, transform .12s ease;
+}
+.hd-chip svg { flex: none; color: #64748b; }
+.hd-chip span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hd-chip:active { transform: scale(.97); }
+.hd-chip.past { color: #475569; }
+.hd-chip.on { background: #0f172a; border-color: #0f172a; color: #fff; }
+.hd-chip.on svg { color: #a5b4fc; }
+.hd-rail:not(.is-visible):not(.is-open) { opacity: 0 !important; }
+.hd-rail.is-visible, .hd-rail.is-open { opacity: 1 !important; }
+
+/* ===== Brand pass: TheBookX orange + cream (matches bottom nav, badges) ===== */
+.hd-panel { background: #fffdf9 !important; border: 1px solid #f6e3cc !important;
+  box-shadow: 0 24px 60px -22px rgba(124, 45, 18, 0.45), 0 2px 8px rgba(124, 45, 18, 0.08) !important; }
+.hd-panel-head span { color: #1c1917; display: inline-flex; align-items: center; gap: 6px; }
+.hd-panel-head span::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: linear-gradient(180deg, #fb8500, #f97316); }
+.hd-panel-head small { color: #a16207; }
+.hd-panel-bar { background: #fdebd6; }
+.hd-panel-bar span { background: linear-gradient(90deg, #fbbf24, #fb8500) !important; }
+.hd-chip { background: #fff7ed; border-color: #fde7cf; color: #44403c; }
+.hd-chip svg { color: #ea580c; }
+.hd-chip.past { color: #57534e; }
+.hd-chip.on { background: linear-gradient(135deg, #fb8500, #f97316) !important; border-color: #f97316 !important; color: #fff !important;
+  box-shadow: 0 8px 18px -10px rgba(234, 88, 12, 0.8); }
+.hd-chip.on svg { color: #fff !important; }
+.hd-chip:hover { background: #ffedd5; }
+.hd-fade { background: rgba(28, 25, 23, 0.32) !important; }
+
+/* side rail in brand orange */
+.hd-rail .hd-progress { background: linear-gradient(180deg, #fbbf24, #fb8500) !important; }
+.hd-rail .hd-stop.past .hd-dot { background: #fb8500; }
+.hd-rail .hd-thumb { background: #fb8500 !important; border: 2px solid #fff; box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.25) !important; }
+.hd-rail .hd-reached { background: #1c1917 !important; }
+.hd-rail .hd-reached svg { color: #fbbf24 !important; }

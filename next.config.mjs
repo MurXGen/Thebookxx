@@ -1,9 +1,39 @@
+/* Two deployments from this one repo:
+   • store (default)    → thebookx.in on Netlify.
+   • admin (SITE_ROLE=admin) → admin.thebookx.in on Vercel: only Manage Orders
+     (+ the /api routes it calls). Every other page redirects to the store.
+   Manage Orders changes often; splitting it means those pushes don't redeploy
+   the storefront (see scripts/netlify-ignore-store.sh).
+   ADMIN_SITE_URL (store only, e.g. https://admin.thebookx.in) turns on the
+   /manage-orders → admin site redirect. Leave it unset until admin is live. */
+const SITE_ROLE = process.env.SITE_ROLE === "admin" ? "admin" : "store";
+const ADMIN_SITE_URL = (process.env.ADMIN_SITE_URL || "").replace(/\/+$/, "");
+const STORE_URL = (process.env.STORE_SITE_URL || "https://thebookx.in").replace(/\/+$/, "");
+
+const ADMIN_REDIRECTS = [
+  { source: "/", destination: "/manage-orders", permanent: false },
+  // Any page except Manage Orders, API routes, Next assets and static files
+  // (anything with a dot, e.g. /books/x.jpeg covers) → same path on the store.
+  {
+    source: "/:path((?!manage-orders|api/|_next/|.*\\.).+)",
+    destination: `${STORE_URL}/:path`,
+    permanent: false,
+  },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: false,
 
   async redirects() {
+    if (SITE_ROLE === "admin") return ADMIN_REDIRECTS;
     return [
+      ...(ADMIN_SITE_URL
+        ? [
+            { source: "/manage-orders", destination: `${ADMIN_SITE_URL}/manage-orders`, permanent: false },
+            { source: "/manage-orders/:path*", destination: `${ADMIN_SITE_URL}/manage-orders/:path*`, permanent: false },
+          ]
+        : []),
       // Box-set category URLs → the dedicated box sets page.
       { source: "/category/set", destination: "/book-sets", permanent: true },
       { source: "/books/we-are-there-for-other", destination: "/books/we-are-there-for-each-other", permanent: true },
@@ -95,6 +125,19 @@ const nextConfig = {
 
   // Add headers for SEO and image crawling
   async headers() {
+    // Admin site: never indexed.
+    if (SITE_ROLE === "admin") {
+      return [
+        {
+          source: "/:path*",
+          headers: [
+            { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+            { key: "X-Content-Type-Options", value: "nosniff" },
+            { key: "X-Frame-Options", value: "DENY" },
+          ],
+        },
+      ];
+    }
     return [
       {
         source: "/:path*",

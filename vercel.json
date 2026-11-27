@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/books/:path*", "destination": "https://thebookx-media.s3.us-east-005.backblazeb2.com/books/:path*" },
+    { "source": "/review/:path*", "destination": "https://thebookx-media.s3.us-east-005.backblazeb2.com/review/:path*" },
+    { "source": "/blogs/:path*", "destination": "https://thebookx-media.s3.us-east-005.backblazeb2.com/blogs/:path*" },
+    { "source": "/sounds/:path*", "destination": "https://thebookx-media.s3.us-east-005.backblazeb2.com/sounds/:path*" }
+  ]
+}

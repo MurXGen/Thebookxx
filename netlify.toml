@@ -8,6 +8,9 @@
 [build]
   command = "npm run build"
   publish = ".next"
+  # Skip store deploys when a push only changes the Manage Orders admin
+  # (deployed separately to admin.thebookx.in on Vercel).
+  ignore = "bash scripts/netlify-ignore-store.sh"
 
 [build.environment]
   NODE_VERSION = "20"

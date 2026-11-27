@@ -55,14 +55,14 @@ export default function ContactDetailsPrompt({ open, orderId, phone = "", needEm
     <AnimatePresence>
       {open && (
         <motion.div
-          className="cdp-back"
+          className="cdp-back cdp-back-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => !saving && onDone?.(false)}
         >
           <motion.div
-            className="cdp"
+            className="cdp psh-full"
             role="dialog"
             aria-modal="true"
             aria-labelledby="cdp-h"

@@ -168,3 +168,8 @@
 .sps-paid-orders { flex: 1; height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; background: #111827; color: #fff; font-size: 15px; font-weight: 800; text-decoration: none; }
 
 .sps-paid-wa { flex: none; height: 50px; padding: 0 16px; display: inline-flex; align-items: center; gap: 7px; border: 0; border-radius: 14px; background: #25d366; color: #fff; font: inherit; font-size: 14.5px; font-weight: 800; cursor: pointer; }
+
+/* Phones: full-width sheet, content kept to a readable column on wide screens */
+@media (max-width: 768px) {
+  .bill-modal.support-sheet { max-width: none; padding-left: max(16px, calc((100% - 520px) / 2)); padding-right: max(16px, calc((100% - 520px) / 2)); }
+}

@@ -3509,3 +3509,70 @@
 .psh-bill li.is-off b { color: #16a34a; }
 
 .psh-bill li.is-off span { color: #6b7280; text-decoration: line-through; }
+
+/* ── "Make it special" add-ons: minimal tiles ───────────────────────────── */
+.pa-grid-block .pa-grid { gap: 8px; }
+.pa-grid-block .pa-card {
+  min-height: 0; gap: 1px; padding: 10px 11px 10px;
+  border: 1px solid #eceef2; border-radius: 14px; background: #fff;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+}
+.pa-grid-block .pa-card:hover { border-color: #fdba74; }
+.pa-grid-block .pa-card.on {
+  border-color: #fb8500; background: linear-gradient(180deg, #fff, #fff8f0);
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.1);
+}
+.pa-grid-block .pa-card-top { margin-bottom: 4px; }
+.pa-grid-block .pa-card-ic {
+  width: 28px !important; height: 28px !important; border-radius: 9px !important;
+  background: #fff7ed !important; border: 0 !important; color: #ea580c !important;
+}
+.pa-grid-block .pa-card-ic svg { width: 15px; height: 15px; }
+.pa-grid-block .pa-card.on .pa-card-ic { background: #fb8500 !important; color: #fff !important; }
+.pa-grid-block .pa-card.pa-card-applied .pa-card-ic { background: #16a34a !important; color: #fff !important; }
+.pa-grid-block .pa-card-name { font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; }
+.pa-grid-block .pa-card-sub { font-size: 11.5px; color: #8a8f98; -webkit-line-clamp: 1; }
+.pa-grid-block .pa-card-sub.pa-card-save { color: #15803d; }
+.pa-grid-block .pa-card > .pa-card-price { padding-top: 4px; font-size: 12.5px; font-weight: 800; color: #9a3412; }
+.pa-grid-block .pa-card-top .pa-card-price {
+  padding: 2px 7px; border-radius: 999px; background: #f3f4f6; font-size: 11px; font-weight: 800; color: #374151;
+}
+.pa-grid-block .pa-card-top .pa-card-price.free { background: #ecfdf5; color: #15803d; }
+.pa-grid-block .pa-card-stepper { padding-top: 6px; }
+.pa-grid-block .pa-card-chev { color: #c4c8cf; width: 15px; height: 15px; }
+.pa-grid-block .pa-check { width: 18px !important; height: 18px !important; border-radius: 6px !important; }
+.pa-grid-block .pa-gift-cta { margin-top: 6px; }
+
+/* ── Payment method cards: tidy, consistent perk tags ───────────────────── */
+.pay-methods .pay-perks { gap: 6px; margin-top: 6px; }
+.pay-methods .pay-perk {
+  height: 22px; padding: 0 8px !important; gap: 4px; border-radius: 7px;
+  font-size: 11px; font-weight: 700; letter-spacing: .01em; line-height: 1;
+  color: #15803d; background: #f0fdf4; border: 1px solid #dcfce7;
+}
+.pay-methods .pay-perk svg { width: 12px; height: 12px; flex: none; }
+/* Bookmark perk: icon inline (was a floating tassel above the tag) */
+.pay-methods .pay-perk-bm { padding-left: 8px !important; color: #c2410c; background: #fff7ed; border-color: #fed7aa; }
+.pay-methods .pay-perk-pop {
+  position: static; display: inline-grid; place-items: center; filter: none; animation: none; color: #fb8500;
+}
+.pay-methods .pay-perk-pop svg { width: 11px; height: 12px; }
+.pay-methods .pay-perk-blue { color: #1d4ed8; background: #eff6ff; border-color: #dbeafe; }
+.pay-methods .pay-perk-red { color: #dc2626; background: #fef2f2; border-color: #fee2e2; }
+.pay-methods .pm2-title { font-size: 15.5px; letter-spacing: -0.01em; }
+.pay-methods .pm2-upi { width: 30px; height: 30px; border-radius: 9px; background: #f8fafc; display: inline-grid; place-items: center; }
+
+/* ── Checkout header: one-line title, quieter badge ─────────────────────── */
+.sw-head { min-height: 60px; }
+.sw-head-txt b { font-size: 17px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sw-head .fc-badge { font-size: 11px; padding: 3px 8px 3px 6px; }
+@media (max-width: 480px) {
+  /* Phones: the "Faster checkout" pill crowds the title — drop it here. */
+  .sw-head .fc-badge { display: none; }
+}
+
+/* Step bar: dots sized to themselves so the line meets each one with the same small gap */
+.sw-steps { padding: 12px 24px 10px !important; }
+.sw-steps .sw-step, .sw-steps .sw-step:not(:first-child), .sw-steps .sw-step:not(:first-child):not(:last-child) { flex: 0 0 26px !important; width: 26px; min-width: 26px !important; align-items: center !important; }
+.sw-steps .sw-link { margin: 12px -1px 0 !important; z-index: 0; }
+.sw-steps .sw-step.on .sw-dot { box-shadow: none; }

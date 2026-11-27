@@ -45,7 +45,7 @@ export default function DeliveryEtaStripe({ faster = false, thunder = false, add
 
   if (!now) return null;
 
-  // Thunder (24/48 Speed Post): one date — tomorrow before 4 PM, else the day after.
+  // Thunder (24/48 Speed Post): one date — tomorrow before 12 noon, else the day after.
   if (thunder) {
     const t = thunderEta(now);
     return (

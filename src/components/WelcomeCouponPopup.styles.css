@@ -1,7 +1,7 @@
 /* Styles used only by WelcomeCouponPopup.jsx (split out of globals.css so other pages
    don't download them). */
 
-.wcp-back { position: fixed; inset: 0; z-index: 2147483000; background: rgba(17, 24, 39, .55); display: grid; place-items: center; padding: 16px; animation: wcpFade .2s ease-out; }
+.wcp-back { position: fixed; inset: 0; z-index: 2147483647; background: rgba(17, 24, 39, .55); display: grid; place-items: center; padding: 16px; animation: wcpFade .2s ease-out; }
 
 .wcp { position: relative; width: min(340px, 100%); background: #fff; border-radius: 22px; padding: 26px 20px 22px; text-align: center; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.25); animation: wcpPop .38s cubic-bezier(.2,1.4,.4,1); }
 

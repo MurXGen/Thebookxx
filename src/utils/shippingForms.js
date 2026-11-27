@@ -2588,6 +2588,7 @@ const GRID_PAL = {
     normal: { accent: BW_INK, headA: "#efefef", headB: "#efefef" },
     speed: { accent: BW_INK, headA: "#f4f4f4", headB: "#e2e2e2" },
     gift: { accent: BW_INK, headA: "#f6f6f6", headB: "#dcdcdc" },
+    thunder: { accent: BW_INK, headA: "#161616", headB: "#3a3a3a", spark: "#ffffff", ink: "#ffffff", chipFill: "#ffffff", chipInk: BW_INK },
     bolt: BW_INK,
     cod: { fill: "#ebebeb", line: BW_INK, text: BW_INK },
     paid: { line: BW_INK, text: BW_INK },
@@ -2598,6 +2599,7 @@ const GRID_PAL = {
     normal: { accent: "#3730a3", headA: "#eef2ff", headB: "#eef2ff" },
     speed: { accent: "#c2410c", headA: "#fff7ed", headB: "#fed7aa" },
     gift: { accent: "#be185d", headA: "#fdf2f8", headB: "#f9a8d4" },
+    thunder: { accent: "#4c1d95", headA: "#0f0a2e", headB: "#3b1d8f", spark: "#facc15", ink: "#ffffff", chipFill: "#facc15", chipInk: "#1e1b4b" },
     bolt: "#f59e0b",
     cod: { fill: "#fef3c7", line: "#b45309", text: "#78350f" },
     paid: { line: "#15803d", text: "#14532d" },
@@ -2822,6 +2824,38 @@ function bwHeaderBg(ctx, variant, x, y, w, h, P, seed) {
   ctx.clip();
   ctx.fillStyle = tone.headA;
   ctx.fillRect(x, y, w, h);
+  if (variant === "thunder") {
+    // Night-storm band: deep gradient, a soft glow and slanted rain.
+    const g = ctx.createLinearGradient(x, y, x + w, y + h);
+    g.addColorStop(0, tone.headA);
+    g.addColorStop(0.55, tone.headB);
+    g.addColorStop(1, tone.headA);
+    ctx.fillStyle = g;
+    ctx.fillRect(x, y, w, h);
+    if (!ctx.__mono) {
+      const rg = ctx.createRadialGradient(x + w * 0.62, y + h * 0.4, 4, x + w * 0.62, y + h * 0.4, w * 0.28);
+      rg.addColorStop(0, "rgba(250,204,21,0.28)");
+      rg.addColorStop(1, "rgba(250,204,21,0)");
+      ctx.fillStyle = rg;
+      ctx.fillRect(x, y, w, h);
+    }
+    const rnd = (() => {
+      let v = (seed || 7) % 233280;
+      return () => ((v = (v * 9301 + 49297) % 233280) / 233280);
+    })();
+    ctx.strokeStyle = ctx.__mono ? "rgba(255,255,255,0.22)" : "rgba(191,219,254,0.35)";
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    for (let i = 0; i < w / 14; i++) {
+      const rx = x + rnd() * w;
+      const ry = y + rnd() * h;
+      const len = 10 + rnd() * 16;
+      ctx.beginPath();
+      ctx.moveTo(rx, ry);
+      ctx.lineTo(rx - len * 0.35, ry + len);
+      ctx.stroke();
+    }
+  }
   if (variant === "speed") {
     // Diagonal racing hatch.
     ctx.strokeStyle = tone.headB;
@@ -2867,6 +2901,48 @@ function drawBunting(ctx, x, y, w, colors, mono) {
   ctx.restore();
 }
 
+// Forked lightning bolt from (x, y) down to y + h, seeded so it's stable.
+function drawLightning(ctx, x, y, h, color, seed, width = 4) {
+  let v = (seed || 11) % 233280;
+  const rnd = () => ((v = (v * 9301 + 49297) % 233280) / 233280);
+  const pts = [[x, y]];
+  const steps = 5;
+  for (let i = 1; i <= steps; i++) {
+    const px = x + (rnd() - 0.5) * h * 0.55 + (i % 2 ? h * 0.12 : -h * 0.08);
+    pts.push([px, y + (h * i) / steps]);
+  }
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineJoin = "miter";
+  ctx.lineCap = "round";
+  if (!ctx.__mono) {
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 14;
+  }
+  ctx.lineWidth = width;
+  ctx.beginPath();
+  pts.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)));
+  ctx.stroke();
+  // Small fork off the second joint.
+  const [fx, fy] = pts[2];
+  ctx.lineWidth = width * 0.55;
+  ctx.beginPath();
+  ctx.moveTo(fx, fy);
+  ctx.lineTo(fx + h * 0.18, fy + h * 0.2);
+  ctx.lineTo(fx + h * 0.12, fy + h * 0.34);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// "THUNDER 1-DAY" chip text and "Tue 25 Nov" deliver-by date from the
+// saved Delivery Type ("Thunder 1-day · Faster Delivery (… by Tue 25 Nov)").
+const thunderInfo = (data) => {
+  const s = String(data.deliveryType || "");
+  const d = (s.match(/thunder\s*(\d)-?day/i) || [])[1];
+  const by = (s.match(/by\s+([A-Za-z]{3}\s+\d{1,2}\s+[A-Za-z]{3})/i) || [])[1];
+  return { chip: d ? `THUNDER ${d}-DAY` : "THUNDER", by: by || "" };
+};
+
 const GRID_TEMPLATES = {
   normal: {
     frame: 3,
@@ -2890,6 +2966,17 @@ const GRID_TEMPLATES = {
     chipFont: `italic 800 21px ${BW_FONT}`,
     name: { family: BW_FONT, style: "italic", weight: "800" },
   },
+  thunder: {
+    frame: 5,
+    brand: `italic 900 40px ${BW_FONT}`,
+    tagEmoji: "⛈️",
+    tagline: "Thunder delivery · 24/48h",
+    tagFont: `italic 800 18px ${BW_FONT}`,
+    chipEmoji: "⚡",
+    chip: "THUNDER",
+    chipFont: `italic 900 21px ${BW_FONT}`,
+    name: { family: BW_FONT, style: "italic", weight: "800" },
+  },
   gift: {
     frame: 3,
     brand: `italic 800 42px ${BW_SERIF}`,
@@ -2905,14 +2992,20 @@ const GRID_TEMPLATES = {
 
 // The template a label uses: data.variant forces one ("gift" / "speed"),
 // otherwise gift → speed → standard.
+// Thunder orders use the storm template unless the gift template is forced
+// (or the order is a gift and no template is forced).
 const labelVariant = (data) =>
-  data.variant === "gift" || data.variant === "speed"
-    ? data.variant
-    : data.isGift
-      ? "gift"
-      : data.isFaster
+  data.variant === "gift"
+    ? "gift"
+    : data.isThunder && !(data.isGift && data.variant !== "speed")
+      ? "thunder"
+      : data.variant === "speed"
         ? "speed"
-        : "normal";
+        : data.isGift
+          ? "gift"
+          : data.isFaster
+            ? "speed"
+            : "normal";
 
 function drawGridLabel(ctx, data, { mono = true } = {}) {
   const W = BW_W;
@@ -2938,8 +3031,13 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
   bwRoundRect(ctx, M, M, W - 2 * M, H - 2 * M, 18);
   ctx.clip();
   bwHeaderBg(ctx, variant, M, M, W - 2 * M, HB, P, seed);
-  ctx.fillStyle = A;
-  ctx.fillRect(M, M + HB - 1, W - 2 * M, 2);
+  if (variant === "thunder") {
+    ctx.fillStyle = mono ? BW_INK : P.thunder.spark;
+    ctx.fillRect(M, M + HB - 2, W - 2 * M, 5);
+  } else {
+    ctx.fillStyle = A;
+    ctx.fillRect(M, M + HB - 1, W - 2 * M, 2);
+  }
   ctx.restore();
 
   // Frame (gift gets an inner dashed "gift tag" line)
@@ -2959,7 +3057,7 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
 
   // Brand + tagline
   ctx.save();
-  ctx.fillStyle = BW_INK;
+  ctx.fillStyle = variant === "thunder" ? P.thunder.ink : BW_INK;
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
   ctx.font = T.brand;
@@ -2969,13 +3067,15 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
   bwLead(ctx, T.tagEmoji, T.tagline, L + brandW + 20, M + 58, {
     font: T.tagFont,
     size: 20,
-    color: variant === "gift" ? (mono ? "#2a2a2a" : A) : BW_SOFT,
+    color: variant === "gift" ? (mono ? "#2a2a2a" : A) : variant === "thunder" ? (mono ? "#e5e5e5" : "#fde68a") : BW_SOFT,
   });
 
   // Type chip (white pill, accent outline)
+  const th = variant === "thunder" ? thunderInfo(data) : null;
+  const chipText = th ? th.chip : T.chip;
   ctx.save();
   ctx.font = T.chipFont;
-  const chipTextW = ctx.measureText(T.chip).width;
+  const chipTextW = ctx.measureText(chipText).width;
   ctx.font = `26px ${BW_EMOJI}`;
   const chipEmojiW = ctx.measureText(T.chipEmoji).width;
   ctx.restore();
@@ -2984,14 +3084,34 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
   const chipX = R - chipW;
   const chipY = M + (HB - chipH) / 2;
   ctx.save();
-  ctx.fillStyle = "#fff";
-  ctx.strokeStyle = A;
+  ctx.fillStyle = th ? P.thunder.chipFill : "#fff";
+  ctx.strokeStyle = th ? P.thunder.chipFill : A;
   ctx.lineWidth = 2.5;
+  if (th && !mono) {
+    ctx.shadowColor = "rgba(250,204,21,0.7)";
+    ctx.shadowBlur = 18;
+  }
   bwRoundRect(ctx, chipX, chipY, chipW, chipH, chipH / 2);
   ctx.fill();
+  ctx.shadowBlur = 0;
   ctx.stroke();
   ctx.restore();
-  bwLead(ctx, T.chipEmoji, T.chip, chipX + 20, chipY + 35, { font: T.chipFont, size: 26, gap: 0.38, color: A });
+  bwLead(ctx, T.chipEmoji, chipText, chipX + 20, chipY + 35, { font: T.chipFont, size: 26, gap: 0.38, color: th ? P.thunder.chipInk : A });
+
+  // Thunder: forked lightning in the gap between the tagline and the chip.
+  if (th) {
+    ctx.save();
+    ctx.font = T.tagFont;
+    const tagEnd = L + brandW + 20 + 30 + ctx.measureText(T.tagline).width;
+    ctx.restore();
+    const gx = tagEnd + 24;
+    const gw = chipX - 40 - gx;
+    const n = Math.max(0, Math.min(4, Math.floor(gw / 60)));
+    for (let i = 0; i < n; i++) {
+      const bx = gx + (gw * (i + 0.5)) / n;
+      drawLightning(ctx, bx, M + 10 + (i % 2) * 8, HB - 30 - (i % 2) * 10, P.thunder.spark, seed + i * 31, i % 2 ? 3 : 4);
+    }
+  }
 
   // Gift: confetti burst in the free space between the tagline and the chip.
   if (variant === "gift") {
@@ -3010,9 +3130,9 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
   }
 
   // Speed lines trailing into the chip.
-  if (variant === "speed") {
+  if (variant === "speed" || variant === "thunder") {
     ctx.save();
-    ctx.strokeStyle = mono ? "#7a7a7a" : "#fb923c";
+    ctx.strokeStyle = variant === "thunder" ? (mono ? "#bdbdbd" : "#fde047") : mono ? "#7a7a7a" : "#fb923c";
     ctx.lineCap = "round";
     [[0, 70, 3], [12, 46, 2.5], [-12, 46, 2.5]].forEach(([dy, len, lw]) => {
       ctx.lineWidth = lw;
@@ -3135,9 +3255,33 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
     const bTop = infoEnd + 26;
     if (bTop + 40 < payY) drawBunting(ctx, L, bTop, colW, P.confetti, mono);
   }
+  // Thunder: an electric zigzag with small bolts in the space above payment.
+  if (variant === "thunder") {
+    const zy = (infoEnd + payY) / 2;
+    if (payY - infoEnd > 50) {
+      ctx.save();
+      ctx.strokeStyle = mono ? "#555" : "#7c3aed";
+      ctx.lineWidth = 3;
+      ctx.lineJoin = "miter";
+      if (!mono) {
+        ctx.shadowColor = "rgba(250,204,21,0.8)";
+        ctx.shadowBlur = 8;
+      }
+      ctx.beginPath();
+      const step = 26;
+      for (let zx = L, i = 0; zx <= L + colW; zx += step, i++) {
+        const py = zy + (i % 2 ? -9 : 9);
+        if (i === 0) ctx.moveTo(zx, py);
+        else ctx.lineTo(zx, py);
+      }
+      ctx.stroke();
+      ctx.restore();
+      [0.18, 0.5, 0.82].forEach((f) => bwBolt(ctx, L + colW * f - 12, zy - 20, 40, mono ? BW_INK : P.thunder.spark));
+    }
+  }
 
   // ── Payment strip (full width): tint for COD, outline for prepaid ──
-  const payH = 104;
+  const payH = 88;
   const payW = R - L;
   const pay = isCOD ? P.cod : P.paid;
   ctx.save();
@@ -3149,40 +3293,52 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
   ctx.stroke();
   ctx.restore();
   if (isCOD) {
-    bwLead(ctx, "💵", "COLLECT ON DELIVERY", L + 26, payY + 36, { font: `800 17px ${BW_FONT}`, size: 19, color: pay.text });
-    ctx.save();
-    ctx.fillStyle = pay.text;
-    ctx.textAlign = "left";
-    ctx.font = `800 46px ${BW_FONT}`;
-    ctx.fillText(`₹ ${Number(data.codAmount || 0).toLocaleString("en-IN")} /-`, L + 26, payY + 86);
-    ctx.textAlign = "right";
-    ctx.font = `700 19px ${BW_FONT}`;
-    ctx.fillText("Cash or UPI", R - 26, payY + 46);
-    ctx.font = `500 17px ${BW_FONT}`;
-    ctx.fillStyle = BW_SOFT;
-    ctx.fillText("to the delivery agent", R - 26, payY + 72);
-    ctx.restore();
-  } else {
-    bwLead(ctx, "✅", "PAYMENT", L + 26, payY + 36, { font: `800 17px ${BW_FONT}`, size: 19, color: BW_SOFT });
+    bwLead(ctx, "💵", "COLLECT ON DELIVERY", L + 26, payY + 30, { font: `800 17px ${BW_FONT}`, size: 19, color: pay.text });
     ctx.save();
     ctx.fillStyle = pay.text;
     ctx.textAlign = "left";
     ctx.font = `800 40px ${BW_FONT}`;
-    ctx.fillText("PREPAID", L + 26, payY + 82);
+    ctx.fillText(`₹ ${Number(data.codAmount || 0).toLocaleString("en-IN")} /-`, L + 26, payY + 74);
     ctx.textAlign = "right";
-    ctx.font = `800 22px ${BW_FONT}`;
-    ctx.fillText("DO NOT COLLECT", R - 26, payY + 46);
+    ctx.font = `700 19px ${BW_FONT}`;
+    ctx.fillText("Cash or UPI", R - 26, payY + 40);
     ctx.font = `500 17px ${BW_FONT}`;
     ctx.fillStyle = BW_SOFT;
-    ctx.fillText("Already paid online", R - 26, payY + 72);
+    ctx.fillText("to the delivery agent", R - 26, payY + 64);
+    ctx.restore();
+  } else {
+    bwLead(ctx, "✅", "PAYMENT", L + 26, payY + 30, { font: `800 17px ${BW_FONT}`, size: 19, color: BW_SOFT });
+    ctx.save();
+    ctx.fillStyle = pay.text;
+    ctx.textAlign = "left";
+    ctx.font = `800 36px ${BW_FONT}`;
+    ctx.fillText("PREPAID", L + 26, payY + 72);
+    ctx.textAlign = "right";
+    ctx.font = `800 22px ${BW_FONT}`;
+    ctx.fillText("DO NOT COLLECT", R - 26, payY + 40);
+    ctx.font = `500 17px ${BW_FONT}`;
+    ctx.fillStyle = BW_SOFT;
+    ctx.fillText("Already paid online", R - 26, payY + 64);
     ctx.restore();
   }
 
   // ── Note row: template-specific ──
-  const nY = payY + payH + 14;
-  const nH = 58;
+  const nY = payY + payH + 12;
+  const nH = 50;
   const dn = deliveryNoteFor(data.note);
-  if (variant === "speed") {
+  if (variant === "thunder") {
+    // Storm band: same night sky as the header, bolt + deliver-by line.
+    ctx.save();
+    bwRoundRect(ctx, L, nY, payW, nH, 12);
+    ctx.clip();
+    bwHeaderBg(ctx, "thunder", L, nY, payW, nH, P, seed + 5);
+    ctx.restore();
+    bwBolt(ctx, L + 16, nY + 9, 32, mono ? "#ffffff" : P.thunder.spark);
+    const msg = dn.isCustomer
+      ? `THUNDER · Note: ${dn.text}`
+      : `THUNDER${th.by ? ` · DELIVER BY ${th.by.toUpperCase()}` : ""} — Speed Post 24/48. Deliver first, do not return.`;
+    bwFitText(ctx, msg, L + 58, nY + 33, payW - 74, { size: 19, min: 13, weight: "800", style: "italic", color: mono ? "#ffffff" : "#fef9c3" });
+  } else if (variant === "speed") {
     // Hatched priority callout.
     ctx.save();
     bwRoundRect(ctx, L, nY, payW, nH, 12);
@@ -3198,8 +3354,8 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
     const msg = dn.isCustomer
       ? `PRIORITY · Note: ${dn.text}`
       : "PRIORITY — deliver first. Do not return. प्राथमिकता से डिलीवर करें।";
-    bwBolt(ctx, L + 18, nY + 12, 34, mono ? BW_INK : P.bolt);
-    bwFitText(ctx, msg, L + 56, nY + 37, payW - 72, { size: 19, min: 13, weight: "800", style: "italic", color: mono ? BW_INK : "#7c2d12" });
+    bwBolt(ctx, L + 18, nY + 9, 32, mono ? BW_INK : P.bolt);
+    bwFitText(ctx, msg, L + 56, nY + 33, payW - 72, { size: 19, min: 13, weight: "800", style: "italic", color: mono ? BW_INK : "#7c2d12" });
   } else if (variant === "gift") {
     // Celebration strip: tinted box sprinkled with confetti behind the note.
     ctx.save();
@@ -3214,13 +3370,13 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
     bwRoundRect(ctx, L, nY, payW, nH, 12);
     ctx.stroke();
     ctx.restore();
-    const left = bwLead(ctx, "🎉", "Surprise! A story picked just for you", L + 16, nY + 39, {
+    const left = bwLead(ctx, "🎉", "Surprise! A story picked just for you", L + 16, nY + 35, {
       font: `700 29px ${BW_SCRIPT}`,
       size: 24,
       color: mono ? BW_INK : "#831843",
     });
-    bwLead(ctx, "🎊", "", L + 16 + left + 10, nY + 39, { font: `700 29px ${BW_SCRIPT}`, size: 24, gap: 0 });
-    const right = bwLead(ctx, "🤲", "Handle with care", R - 16, nY + 37, {
+    bwLead(ctx, "🎊", "", L + 16 + left + 10, nY + 35, { font: `700 29px ${BW_SCRIPT}`, size: 24, gap: 0 });
+    const right = bwLead(ctx, "🤲", "Handle with care", R - 16, nY + 33, {
       font: `italic 800 17px ${BW_SERIF}`,
       size: 19,
       align: "right",
@@ -3238,8 +3394,29 @@ function drawGridLabel(ctx, data, { mono = true } = {}) {
     const msg = dn.isCustomer
       ? `Note: ${dn.text}`
       : "Deliver to the customer — do not return. ग्राहक को ही डिलीवर करें, वापस न लौटाएँ।";
-    bwEmoji(ctx, dn.isCustomer ? "📝" : "🙏", L, nY + 26, 20);
-    bwWrap(ctx, msg, L + 32, nY + 26, payW - 32, 24, 2, `700 18px ${BW_FONT}`);
+    bwEmoji(ctx, dn.isCustomer ? "📝" : "🙏", L, nY + 22, 20);
+    bwWrap(ctx, msg, L + 32, nY + 22, payW - 32, 22, 2, `700 17px ${BW_FONT}`);
+  }
+
+  // ── Books in this parcel (small, one line, each title capped) — helps the
+  // packer cross-check. Not on gift labels, so the surprise stays a surprise.
+  const books = Array.isArray(data.books) ? data.books : [];
+  if (books.length && variant !== "gift") {
+    const cap = books.length > 4 ? 16 : books.length > 2 ? 22 : 32;
+    const short = (t) => {
+      const v = String(t || "").replace(/\s+/g, " ").trim();
+      return v.length > cap ? `${v.slice(0, cap - 1).trim()}…` : v;
+    };
+    const txt = books
+      .map((b) => `${short(b.name)}${Number(b.qty) > 1 ? ` ×${b.qty}` : ""}`)
+      .join("  ·  ");
+    bwEmoji(ctx, "📚", L, nY + nH + 20, 15);
+    bwFitText(ctx, `${books.length} book${books.length === 1 ? "" : "s"}: ${txt}`, L + 26, nY + nH + 21, payW - 26, {
+      size: 15,
+      min: 10,
+      weight: "600",
+      color: "#333",
+    });
   }
 
   // ── Footer: FROM (left) · Order ID (right) ──

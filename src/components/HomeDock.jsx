@@ -275,13 +275,38 @@ export default function HomeDock() {
     closeTimer.current = setTimeout(() => setOpen(false), ms);
   }, []);
 
-  // WhatsApp tooltip: visible for 4s shortly after the page opens.
+  // WhatsApp tooltip: once per visit, ~10s after the page has fully loaded
+  // and gone idle (so it never competes with first paint or Lighthouse's
+  // measurements), only while the tab is visible; shown for 5s.
   useEffect(() => {
-    const show = setTimeout(() => setWaTip(true), 900);
-    const hide = setTimeout(() => setWaTip(false), 4900);
+    let shown = false;
+    try {
+      shown = sessionStorage.getItem("tbx_wa_tip") === "1";
+    } catch {}
+    if (shown) return;
+    let wait = 0,
+      hide = 0,
+      idle = 0;
+    const reveal = () => {
+      if (document.hidden) return;
+      try {
+        sessionStorage.setItem("tbx_wa_tip", "1");
+      } catch {}
+      setWaTip(true);
+      hide = setTimeout(() => setWaTip(false), 5000);
+    };
+    const arm = () => {
+      wait = setTimeout(() => {
+        idle = window.requestIdleCallback ? window.requestIdleCallback(reveal, { timeout: 3000 }) : (reveal(), 0);
+      }, 10000);
+    };
+    if (document.readyState === "complete") arm();
+    else window.addEventListener("load", arm, { once: true });
     return () => {
-      clearTimeout(show);
+      window.removeEventListener("load", arm);
+      clearTimeout(wait);
       clearTimeout(hide);
+      if (idle && window.cancelIdleCallback) window.cancelIdleCallback(idle);
     };
   }, []);
 

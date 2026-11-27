@@ -75,7 +75,7 @@ export const THUNDER = {
   name: "Thunder delivery",
   cities: ["Delhi", "Mumbai", "Kolkata", "Chennai", "Bengaluru", "Hyderabad"],
   citiesText: "Delhi, Mumbai, Kolkata, Chennai, Bengaluru and Hyderabad",
-  cutoff: "4:00 PM IST",
+  cutoff: "12:00 noon IST",
   oneDay: "1 day (next day)",
   twoDay: "2 days",
   // Fee on top of Standard: at least ₹69; heavier parcels pay weight ×

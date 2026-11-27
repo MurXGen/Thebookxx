@@ -4,6 +4,244 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "childrens-booker-prize-2027-shortlist-great-eight-books-for-kids-8-12-india": {
+    "id": "blog-132",
+    "title": "Children's Booker Prize 2027 Shortlist: The First-Ever 'Great Eight' and the Best Books for Kids Aged 8 to 12 in India",
+    "slug": "childrens-booker-prize-2027-shortlist-great-eight-books-for-kids-8-12-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-11-27",
+    "lastModified": "2026-11-27",
+    "excerpt": "The first Children's Booker Prize shortlist is out. Meet the Great Eight, and find the best books for Indian kids aged 8 to 12, from ₹1 with free delivery.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The Booker Prize, the award most of us associate with literary fiction for adults, has finally turned its attention to younger readers. On <strong>24 November 2026</strong>, the Booker Prize Foundation announced the shortlist for the first-ever <strong>Children's Booker Prize</strong>, a new annual award for fiction aimed at readers aged 8 to 12. Eight books made the cut, and the winner will be named at a ceremony on <strong>2 February 2027</strong>."
+      },
+      {
+        "type": "paragraph",
+        "content": "For Indian parents, teachers and anyone shopping for a child this December, the announcement is a useful prompt. The 8 to 12 years are when a child either becomes a reader for life or quietly drifts away from books. This guide explains what the new prize is, lists the shortlisted 'Great Eight', and then suggests books, most of them easy to find in India, that can carry a young reader through these crucial years."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Children's Booker Prize at a glance",
+        "content": "Shortlist announced: 24 November 2026. Winner announced: 2 February 2027. Age group: readers aged 8 to 12. Eligibility: fiction written in or translated into English and published in the UK or Ireland. Prize: £50,000 for the winner and £2,500 for each shortlisted author (shared with illustrators of graphic novels and translators). Submissions: 89 books. Chair of judges: author and screenwriter Frank Cottrell-Boyce."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What is the Children's Booker Prize?"
+      },
+      {
+        "type": "paragraph",
+        "content": "The Children's Booker is the newest offshoot of the Booker family, which already includes the Booker Prize and the International Booker Prize. It is designed for middle-grade fiction, the stage between picture books and young adult novels. The prize will be awarded every year starting in 2027."
+      },
+      {
+        "type": "paragraph",
+        "content": "Two details make it stand out. First, the final decision will not be made by adults alone: four child judges, aged 8 to 12 and chosen from more than 4,000 applicants, join the adult panel for the final round. Second, the Booker Prize Foundation has said it will donate at least 30,000 copies of the shortlisted books to children across the UK and Ireland. The message is clear: a children's prize should be about getting books into children's hands, not just onto award lists."
+      },
+      {
+        "type": "paragraph",
+        "content": "The adult judges who narrowed 89 submissions down to the shortlist are Frank Cottrell-Boyce (chair), writer and actor Lolly Adefope, and children's bookseller Sanchita Basu De Sarkar."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The shortlist: meet the 'Great Eight'"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<strong>The Worst Thing That Could Possibly Happen</strong> by Guy Bass, illustrated by David Roberts",
+          "<strong>Tadpole Summer</strong> by Catherine Bruton",
+          "<strong>War</strong> by Eoin Colfer and Andrew Donkin, illustrated by Giovanni Rigano (a graphic novel)",
+          "<strong>The Night I Borrowed Time</strong> by Iqbal Hussain",
+          "<strong>The Teller of Tall Tales</strong> by Liz Hyder, illustrated by Tom de Freston",
+          "<strong>The Rambler's Curse</strong> by Mikey Please",
+          "<strong>Séamus Almost Famous</strong> by Jessica Scott-Whyte, illustrated by Becka Moor",
+          "<strong>Hometown</strong> by Shaun Tan"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "The list mixes well-known names with newer voices. Eoin Colfer is best known for the Artemis Fowl series, and Shaun Tan is an award-winning author-illustrator whose visual storytelling has a large following among adults as well as children. The presence of a graphic novel on the list is a quiet but important signal: comics and illustrated stories are real reading, and children who love them are real readers."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "A note for Indian readers",
+        "content": "Because the prize covers books published in the UK and Ireland, some shortlisted titles may take time to reach Indian shelves or may be available only as imported editions. The good news is that the qualities the judges are celebrating, humour, imagination and big feelings handled honestly, are found in many books that are already easy to buy in India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why ages 8 to 12 matter so much"
+      },
+      {
+        "type": "paragraph",
+        "content": "Ask adults who love reading when it started, and many will name a book they read around the age of ten. This is the window when children move from being read to to reading on their own, when they choose books for themselves for the first time, and when reading starts to compete seriously with screens, homework and tuition."
+      },
+      {
+        "type": "paragraph",
+        "content": "Research on reading for pleasure consistently links it with stronger vocabulary, comprehension and confidence, but the practical lesson for parents is simpler: in these years, the right book matters more than the 'improving' book. A child who finishes a funny, gripping story feels like a reader. A child forced through a book that is too hard or too dull often concludes that reading is not for them."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for Indian kids aged 8 to 12: a starter shelf"
+      },
+      {
+        "type": "paragraph",
+        "content": "While the Great Eight make their way to readers, here is a shelf that covers the same ground, humour, adventure, myth and real life, using books that are easy to find in India."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "For the reluctant reader: start with laughter and pictures"
+      },
+      {
+        "type": "paragraph",
+        "content": "If your child says they 'do not like reading', start with books that feel like fun rather than homework. The <a href=\"/books/diary-of-a-wimpy-kid-15-book-set\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid (15-Book Set)</a> has turned more reluctant readers into regular ones than almost any series of the last two decades, thanks to its short chapters and cartoon-filled pages. Dav Pilkey's <a href=\"/books/dog-man\" style=\"color:#fb8500;font-weight:600\">Dog Man</a> books work the same way and pair naturally with the Children's Booker's recognition of graphic storytelling. For younger readers in the range, the <a href=\"/books/geronimo-stilton-collection-20-book-set\" style=\"color:#fb8500;font-weight:600\">Geronimo Stilton Collection (20-Book Set)</a> uses playful fonts and colour to keep pages moving."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "For the adventure-hungry reader"
+      },
+      {
+        "type": "paragraph",
+        "content": "Children who are ready for longer stories often want worlds they can live in for weeks. The <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set (Books 1-7)</a> remains the classic choice, and it grows with the reader: the early books suit 8 and 9 year olds, while the later ones are better around 11 and 12. The <a href=\"/books/percy-jackson-ultimate-collection\" style=\"color:#fb8500;font-weight:600\">Percy Jackson Ultimate Collection</a> by Rick Riordan mixes Greek myth with fast, funny action and is a favourite with children who also enjoy Indian mythology."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "For the reader who loves Indian stories"
+      },
+      {
+        "type": "paragraph",
+        "content": "Indian children deserve to see their own homes, grandparents and festivals on the page. Sudha Murty's <a href=\"/books/the-magic-of-the-lost-temple\" style=\"color:#fb8500;font-weight:600\">The Magic of the Lost Temple</a> captures a city child's summer in a Karnataka village, while <a href=\"/books/how-the-mango-got-its-magic\" style=\"color:#fb8500;font-weight:600\">How the Mango Got Its Magic</a> and <a href=\"/books/the-magic-drum\" style=\"color:#fb8500;font-weight:600\">The Magic Drum</a> retell folk tales in short, read-aloud-friendly chunks. R.K. Narayan's <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is a gentle bridge to adult literature for 11 and 12 year olds."
+      },
+      {
+        "type": "paragraph",
+        "content": "For myth, Devdutt Pattanaik's <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> is a rich family read, and Roopa Pai's <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita: For Children</a> explains big ideas in a voice that respects young readers' intelligence."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "For the thoughtful older child"
+      },
+      {
+        "type": "paragraph",
+        "content": "At 11 or 12, many children are ready for books that ask harder questions. <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> by Anne Frank introduces history through a voice their own age. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a>, Dr A.P.J. Abdul Kalam's autobiography, shows how curiosity and hard work can carry a child from a small town to the country's highest office. <a href=\"/books/little-women\" style=\"color:#fb8500;font-weight:600\">Little Women</a> and <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> are classics that read well at this age and reward a second reading later in life. And <a href=\"/books/the-boy-the-mole-the-fox-and-the-horse\" style=\"color:#fb8500;font-weight:600\">The Boy, the Mole, the Fox and the Horse</a> by Charlie Mackesy is a beautiful book to share across generations, especially for a child going through a hard time."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "For parents: helping a child become a reader"
+      },
+      {
+        "type": "paragraph",
+        "content": "Choosing books is only half the job. The other half is building a home where reading feels normal and enjoyable. A few habits that work:"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "<strong>Let them choose.</strong> Offer three or four options and let your child pick. Ownership is a powerful motivator.",
+          "<strong>Do not look down on comics or series.</strong> Judges for the Children's Booker shortlisted a graphic novel. Volume and enjoyment build stamina for harder books later.",
+          "<strong>Read aloud beyond the early years.</strong> Even confident 10 year olds enjoy being read to, and it lets you share books slightly above their reading level.",
+          "<strong>Make a small daily window.</strong> Fifteen or twenty minutes before bed, with screens away, is more effective than an occasional long session.",
+          "<strong>Read in front of them.</strong> Children copy what adults do far more than what adults say."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "If you want to sharpen your own approach, <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> by Mortimer Adler is a classic guide to reading actively, and Carol Dweck's <a href=\"/books/mindset-the-new-psychology-of-success\" style=\"color:#fb8500;font-weight:600\">Mindset: The New Psychology of Success</a> offers useful language for encouraging children who feel they are 'not good at' reading. For a calmer approach to the noise of modern parenting and decision-making, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical read on cutting through overthinking and focusing on what matters, which, in a house full of homework, screens and schedules, is often the family's reading time."
+      },
+      {
+        "type": "blockquote",
+        "content": "A children's prize should be measured by how many children end up holding the books. A reading habit is built the same way: one book, put into one child's hands, at the right moment."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting books this season"
+      },
+      {
+        "type": "paragraph",
+        "content": "With Christmas, school winter breaks and New Year coming up, books are one of the most useful gifts for children aged 8 to 12. A series box set gives a child weeks of reading, and a single well-chosen novel can become the book they remember for years. On TheBookX, books start from <strong>₹1</strong>, with <strong>free delivery</strong> and <strong>Cash on Delivery</strong> across India. Add <strong>gift wrapping for ₹25</strong> and the book arrives ready to hand over."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Quick picks by age",
+        "content": "Ages 8 to 9: Diary of a Wimpy Kid, Dog Man, Geronimo Stilton, Sudha Murty's folk tales. Ages 10 to 11: Harry Potter, Percy Jackson, The Magic of the Lost Temple, The Gita: For Children. Ages 11 to 12: The Diary of a Young Girl, Wings of Fire, Little Women, Malgudi Days."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The bottom line"
+      },
+      {
+        "type": "paragraph",
+        "content": "The first Children's Booker Prize is good news for young readers everywhere, not because Indian children must read the eight shortlisted books, but because it reminds adults that children's books deserve the same attention and celebration as adult literature. Follow the winner announcement on 2 February 2027, look out for the shortlisted titles, and in the meantime, put a good book in a child's hands this month."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Pick one book for a child you know, and read the first chapter together this weekend."
+      }
+    ],
+    "coverImage": "/blogs/childrens-booker-prize-2027-shortlist-great-eight-books-for-kids-8-12-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/childrens-booker-prize-2027-shortlist-great-eight-books-for-kids-8-12-india.jpeg",
+        "alt": "Indian girl of about ten reading a hardback storybook on a window seat at home while her mother sits beside her with a cup of tea, warm afternoon light",
+        "caption": "The first Children's Booker Prize celebrates fiction for readers aged 8 to 12, the years when a lifelong reading habit is often formed.",
+        "category": "Reading Lists"
+      }
+    ],
+    "keywords": [
+      "Children's Booker Prize",
+      "Children's Booker Prize 2027 shortlist",
+      "Children's Booker Prize Great Eight",
+      "first Children's Booker Prize",
+      "best books for kids aged 8 to 12 India",
+      "middle grade books India",
+      "books for 10 year olds India",
+      "children's books to gift India",
+      "how to make a child a reader",
+      "Booker Prize children's books"
+    ],
+    "categories": [
+      "Book Awards",
+      "Children's Books",
+      "Reading Lists"
+    ],
+    "faqs": [
+      {
+        "question": "What is the Children's Booker Prize?",
+        "answer": "The Children's Booker Prize is a new annual award from the Booker Prize Foundation for fiction aimed at readers aged 8 to 12, written in or translated into English and published in the UK or Ireland. It will be awarded every year from 2027."
+      },
+      {
+        "question": "Which books are on the Children's Booker Prize 2027 shortlist?",
+        "answer": "The eight shortlisted books are The Worst Thing That Could Possibly Happen (Guy Bass), Tadpole Summer (Catherine Bruton), War (Eoin Colfer and Andrew Donkin), The Night I Borrowed Time (Iqbal Hussain), The Teller of Tall Tales (Liz Hyder), The Rambler's Curse (Mikey Please), Séamus Almost Famous (Jessica Scott-Whyte) and Hometown (Shaun Tan)."
+      },
+      {
+        "question": "When will the Children's Booker Prize winner be announced?",
+        "answer": "The shortlist was announced on 24 November 2026 and the winner will be revealed at a ceremony on 2 February 2027. The winner receives £50,000, and four child judges aged 8 to 12 take part in the final decision."
+      },
+      {
+        "question": "What are good books for children aged 8 to 12 in India?",
+        "answer": "Strong picks include Diary of a Wimpy Kid, Dog Man, Harry Potter, Percy Jackson, Sudha Murty's The Magic of the Lost Temple, The Gita: For Children, Wings of Fire and The Diary of a Young Girl. All are on TheBookX from ₹1 with free delivery and Cash on Delivery across India, with gift wrapping for ₹25."
+      }
+    ]
+  },
   "black-friday-2026-27-november-smart-book-buying-guide-books-to-gift-india": {
     "id": "blog-131",
     "title": "Black Friday 2026 (27 November): A Smart Book-Buying Guide for India and 20 Books Worth Your Cart",

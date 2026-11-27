@@ -983,3 +983,34 @@
 .osc-xmas .osc-tree.l { left: 14px; }
 
 .osc-xmas .osc-tree.r { right: 14px; }
+
+/* ── Phones: compact header so most of the page shows on the first screen ── */
+@media (max-width: 640px) {
+  .osc-full .osc-top {
+    display: grid; grid-template-columns: 56px 1fr; column-gap: 12px; row-gap: 1px; align-items: center;
+    text-align: left; padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px !important;
+  }
+  .osc-full .osc-top > * { max-width: none; }
+  .osc-full .osc-garland, .osc-full .osc-tree { display: none !important; }
+  .osc-full .osc-tick { grid-column: 1; grid-row: 1 / span 3; margin: 0; zoom: .82; }
+  .osc-full .osc-top-title { grid-column: 2; margin: 0; font-size: 20px; line-height: 1.2; }
+  .osc-full .osc-top-sub { grid-column: 2; font-size: 13px; line-height: 1.35; }
+  .osc-full .osc-oid { grid-column: 2; justify-self: start; margin-top: 4px; padding: 3px 9px; font-size: 11.5px; }
+  .osc-full .osc-stats { grid-column: 1 / -1; margin-top: 12px; gap: 6px; }
+  .osc-full .osc-stat { padding: 7px 4px; border-radius: 12px; gap: 2px; }
+  .osc-full .osc-stat b { font-size: 14px; }
+  .osc-full .osc-body { padding-top: 4px; gap: 10px; }
+  .osc-full .osc-sec-title { margin-top: 6px; }
+}
+
+/* Footer buttons in the checkout's style: green primary, outlined secondary */
+.osc-full .osc-foot { gap: 10px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #eef0f3; }
+.osc-foot .sec-big-btn.osc-foot-ghost,
+.osc-foot .pri-big-btn.osc-foot-cta {
+  height: 48px !important; min-height: 48px !important; padding: 0 18px !important; border-radius: 12px !important;
+  font-size: 15px !important; font-weight: 700 !important; gap: 8px; box-shadow: none !important;
+}
+.osc-foot .pri-big-btn.osc-foot-cta { background: var(--sw-green, #1ba672) !important; border: 1px solid var(--sw-green, #1ba672) !important; color: #fff !important; }
+.osc-foot .pri-big-btn.osc-foot-cta:hover { background: #17925f !important; border-color: #17925f !important; }
+.osc-foot .sec-big-btn.osc-foot-ghost { background: #fff !important; border: 1px solid #e3e5ea !important; color: var(--sw-ink, #1c1c28) !important; }
+.osc-foot .sec-big-btn.osc-foot-ghost:hover { border-color: #c9ccd3 !important; }

@@ -1,0 +1,60 @@
+/* Checkout header: WhatsApp help pill + topic sheet */
+.ckh-btn {
+  flex: none; display: inline-flex; align-items: center; gap: 5px; height: 34px !important; min-height: 34px !important;
+  padding: 0 11px !important; border-radius: 999px; border: 1px solid #bbf7d0; background: #f0fdf4;
+  color: #15803d; font: inherit; font-size: 13px !important; font-weight: 800; cursor: pointer;
+  transition: transform .12s ease, background .15s ease;
+}
+.ckh-btn svg { color: #25d366; }
+.ckh-btn:active { transform: scale(.95); background: #dcfce7; }
+.sw-head .ckh-btn { margin-left: auto; }
+.sw-head .ckh-btn + .sw-x { margin-left: 4px; }
+.sw-head .fc-badge + .ckh-btn, .sw-head .ckh-btn.after-badge { margin-left: 8px; }
+
+.ckh-back {
+  position: fixed; inset: 0; z-index: 2147483300; display: flex; align-items: flex-end; justify-content: center;
+  background: rgba(15, 23, 42, 0.5);
+}
+.ckh-sheet {
+  width: 100%; max-width: 520px; max-height: 88vh; overflow: auto; background: #fff; border-radius: 22px 22px 0 0;
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -20px 40px -24px rgba(0, 0, 0, 0.5);
+}
+.ckh-grab { width: 40px; height: 4px; border-radius: 4px; background: #e5e7eb; margin: 2px auto 10px; }
+.ckh-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+.ckh-head-ic { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: #25d366; color: #fff; }
+.ckh-head-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.ckh-head-tx b { font-size: 17px; font-weight: 800; color: #111827; }
+.ckh-head-tx small { font-size: 12.5px; color: #6b7280; line-height: 1.4; }
+.ckh-x {
+  flex: none; display: grid; place-items: center; width: 34px; height: 34px !important; min-height: 34px !important; padding: 0 !important;
+  border: 0; border-radius: 50%; background: #f3f4f6; color: #374151; cursor: pointer;
+}
+.ckh-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ckh-item {
+  width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px !important; min-height: 64px; height: auto !important;
+  border: 1px solid #eef0f3; border-radius: 14px; background: #fff; text-align: left; font: inherit; cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, transform .12s ease;
+}
+.ckh-item:hover { border-color: #bbf7d0; background: #f7fef9; }
+.ckh-item:active { transform: scale(.98); }
+.ckh-item-ic { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: #f0fdf4; color: #16a34a; }
+.ckh-item-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ckh-item-tx b { font-size: 14.5px; font-weight: 700; color: #111827; }
+.ckh-item-tx small { font-size: 12.5px; color: #6b7280; }
+.ckh-item-go { flex: none; color: #9ca3af; }
+.ckh-fine { margin: 12px 0 0; text-align: center; font-size: 12px; color: #9ca3af; }
+
+/* Phones: round icon-only button so the step title stays on one line */
+@media (max-width: 440px) {
+  .ckh-btn { width: 36px; height: 36px !important; min-height: 36px !important; padding: 0 !important; justify-content: center; border-radius: 50%; }
+  .ckh-btn span { display: none; }
+  .ckh-btn svg { width: 19px; height: 19px; }
+}
+
+/* Sheet: full width, same "pick a reason → WhatsApp / Email" layout as the order Help sheet */
+.ckh-sheet { max-width: none; padding-left: max(16px, calc((100% - 520px) / 2)); padding-right: max(16px, calc((100% - 520px) / 2)); }
+.ckh-sheet .support-reasons { margin-bottom: 14px; }
+@media (min-width: 769px) {
+  .ckh-back { align-items: center; }
+  .ckh-sheet { width: min(480px, 92vw); padding: 12px 18px 18px; border-radius: 20px; }
+}

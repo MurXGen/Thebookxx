@@ -73,6 +73,7 @@ import {
   creditWalletReward,
 } from "@/utils/googleFormOrder";
 import { parseAddonsField } from "@/utils/addonsField";
+import OrderBookmarks from "@/components/profile/OrderBookmarks";
 import { isGiftOrder } from "@/utils/giftOrder";
 import { showToast } from "@/context/ToastContext";
 import { isPaymentPending, isPaymentDue, pendingSince, PENDING_NUDGE_MS, PAYMENT_PENDING_STATUS, markPaymentPending } from "@/lib/paymentPending";
@@ -3040,30 +3041,59 @@ export default function OrderDetailPage() {
         </section>
       )}
 
-      {order && unconfirmed && !payPending && !paymentDue && (
-          <div className="od-unconf-banner">
-            <span className="od-unconf-ic">
-              <AlertCircle size={18} />
+      {order && unconfirmed && !payPending && !paymentDue && verifyingPayment && !payFailed && (
+          <div className="od-verify2" role="status">
+            <span className="od-verify-ic" aria-hidden="true">
+              <span className="od-verify-ring" />
+              <ShieldCheck size={15} />
             </span>
+            <span className="od-verify2-tx">
+              <strong>Verifying your payment</strong>
+              <small>{canPayNow ? "Order saved · not paid yet? Finish it here" : "Order saved · confirming in a few minutes"}</small>
+            </span>
+            {canPayNow && (
+              <button type="button" className="od-verify2-pay" onClick={() => setPayOpen(true)}>
+                Pay ₹{payNowAmount}
+              </button>
+            )}
+          </div>
+        )}
+
+      {order && unconfirmed && !payPending && !paymentDue && !(verifyingPayment && !payFailed) && (
+          <div className={`od-unconf-banner${verifyingPayment && !payFailed ? " od-verify" : ""}`}>
+            {verifyingPayment && !payFailed ? (
+              <span className="od-verify-ic" aria-hidden="true">
+                <span className="od-verify-ring" />
+                <ShieldCheck size={16} />
+              </span>
+            ) : (
+              <span className="od-unconf-ic">
+                <AlertCircle size={18} />
+              </span>
+            )}
             <div className="od-unconf-txt">
               <strong>
                 {payFailed
                   ? "Your payment didn't go through"
                   : verifyingPayment
-                    ? "We're verifying your payment"
+                    ? "Verifying your payment"
                     : "This order isn't confirmed yet"}
               </strong>
               <span>
                 {payFailed
                   ? "No worries — your order is saved. Pay again with UPI below and we'll start packing it right away."
                   : verifyingPayment && canPayNow
-                    ? "We haven't received your payment yet. If you haven't paid, complete it below — otherwise we'll confirm your order within a few minutes."
+                    ? "Your order is saved. This usually takes a few minutes — haven't paid yet? Finish it below."
                   : verifyingPayment
-                  ? "Thanks for paying online — we'll confirm your order shortly, usually within a few minutes. Questions? Message us."
+                  ? "Thanks for paying — your order is saved and we'll confirm it in a few minutes."
                   : "We may be waiting for your payment, or there could be an issue with this order. Please contact us and we'll sort it out right away."}
               </span>
               {canPayNow && (
-                <button type="button" className="od-paynow-btn od-paynow-lg" onClick={() => setPayOpen(true)}>
+                <button
+                  type="button"
+                  className={`od-paynow-btn od-paynow-lg${verifyingPayment && !payFailed ? " od-verify-pay" : ""}`}
+                  onClick={() => setPayOpen(true)}
+                >
                   <QrCode size={16} /> {payFailed ? `Retry payment · ₹${payNowAmount}` : `Complete payment · ₹${payNowAmount}`}
                 </button>
               )}
@@ -3789,7 +3819,7 @@ export default function OrderDetailPage() {
 
       {/* Get the app — tracking alerts for this order (hidden once installed). */}
       {order && !cancelled && (
-        <div style={{ padding: "0 16px" }}>
+        <div className="od-app-promo">
           <AppPromoCard source="order_page" compact />
         </div>
       )}
@@ -4112,6 +4142,13 @@ export default function OrderDetailPage() {
           )}
         </AnimatePresence>
       </section>
+
+      {/* Bookmarks packed with this order — drawn as a fan of ribbons. */}
+      <OrderBookmarks
+        qty={bd.bookmarkQty || Number(order?.["Bookmark Qty"]) || 0}
+        free={bd.bookmarkFree}
+        charged={bd.bookmarkCharged}
+      />
 
       {/* Gift message — the note the shopper added with gift wrapping. */}
       {bd.giftMessage && (
@@ -5206,10 +5243,25 @@ export default function OrderDetailPage() {
         )}
       </AnimatePresence>
 
-      {/* Floating community FAB (bottom-right, sliding label) + install bar. */}
-      <div className="od-community-fab">
-        <CommunityJoin variant="icon" />
-        <span className="od-community-fab-label">Join community</span>
+      {/* Floating dock (bottom-right, like the home page): WhatsApp help
+          (opens the same "How can we help?" sheet as the header) + community. */}
+      <div className="od-fabs">
+        <span className="od-fabs-tip" aria-hidden="true">
+          <FaWhatsapp size={16} />
+          <span>
+            Need help with this order?
+            <small>Tap to chat with us on WhatsApp</small>
+          </span>
+        </span>
+        <button
+          type="button"
+          className="od-fab-wa"
+          onClick={() => setShowSupport(true)}
+          aria-label="Get help with this order on WhatsApp"
+        >
+          <FaWhatsapp size={22} />
+        </button>
+        <CommunityJoin variant="icon" className="od-fab-comm" />
       </div>
       <PwaInstallPromo variant="bar" />
 

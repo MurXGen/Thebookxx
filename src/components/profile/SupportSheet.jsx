@@ -171,7 +171,6 @@ export default function SupportSheet({
     >
       <motion.div
         className="bill-modal support-sheet"
-        style={{ maxWidth: "500px" }}
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
         exit={{ y: "100%" }}

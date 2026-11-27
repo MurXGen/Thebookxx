@@ -59,7 +59,7 @@ export async function GET(request) {
       missing,
       warnings,
       note:
-        "Totals are estimates before offers/coupons. Faster delivery (1–6 days) is pre-selected on the payment step and can be switched off. In Delhi, Mumbai, Kolkata, Chennai, Bengaluru and Hyderabad the user can pick Thunder delivery (1 day before 4 PM IST, else 2 days; delivery charges refunded if late, unless the delay is on the customer's side). Faster and Thunder are online-only; full COD uses standard delivery (5–9 days).",
+        "Totals are estimates before offers/coupons. Faster delivery (1–6 days) is pre-selected on the payment step and can be switched off. In Delhi, Mumbai, Kolkata, Chennai, Bengaluru and Hyderabad the user can pick Thunder delivery (1 day before 12 noon IST, else 2 days; delivery charges refunded if late, unless the delay is on the customer's side). Faster and Thunder are online-only; full COD uses standard delivery (5–9 days).",
     },
     { headers: { "Access-Control-Allow-Origin": "*" } },
   );

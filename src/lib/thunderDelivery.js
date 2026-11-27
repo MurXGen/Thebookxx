@@ -2,8 +2,8 @@
 // metros. Shown as a third delivery option (after Standard and Faster) only
 // when the delivery pincode is in one of these cities.
 //
-//  • Booked before 4 PM (India time) → "Thunder 1-day delivery", arrives
-//    tomorrow. After 4 PM → "Thunder 2-day delivery", arrives the day after.
+//  • Booked before 12 noon (India time) → "Thunder 1-day delivery", arrives
+//    tomorrow. From 12 noon → "Thunder 2-day delivery", arrives the day after.
 //  • Price: India Post charged ₹224 for a 2,900 g parcel. Thunder costs
 //    Standard + a fee of at least ₹69; heavier parcels pay
 //    cart weight × ₹224 / 2,900 g, plus 1%, rounded UP to the next rupee
@@ -14,7 +14,7 @@
 const IST_OFFSET_MIN = 330; // UTC+5:30
 const DAY = 86400000;
 
-export const THUNDER_CUTOFF_HOUR = 16; // 4 PM IST
+export const THUNDER_CUTOFF_HOUR = 12; // 12 noon IST
 
 // Metro pincode ranges covered by 24 / 48 Speed Post (inclusive).
 export const THUNDER_CITIES = [
@@ -72,7 +72,7 @@ const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MO = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 // { days: 1 | 2, date (India-time Date, read with getUTC*), dateText "Tue 25 Nov",
-//   name "Thunder 1-day delivery", short "1-day", msToCutoff (0 after 4 PM) }
+//   name "Thunder 1-day delivery", short "1-day", msToCutoff (0 after 12 noon) }
 export function thunderEta(now = Date.now()) {
   const ist = new Date(now + IST_OFFSET_MIN * 60000);
   const today = Date.UTC(ist.getUTCFullYear(), ist.getUTCMonth(), ist.getUTCDate());

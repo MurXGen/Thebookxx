@@ -1692,6 +1692,10 @@ function paymentBucket(raw) {
 // Analytics "lost" orders: Cancelled and Returned only. Pre-cancellation
 // (called off before it shipped) is not a loss, so it stays out of the count.
 const isPreCancelStatus = (status) => /pre[\s-]*cancel/i.test(String(status || ""));
+// Analytics counts only orders whose status means a real, going-ahead order.
+const STALE_STATUS_RE = /unconfirm|pending|pre[\s-]*cancel|cancel|refund|on\s*hold|\bhold\b|return|\brto\b|lost|fail/i;
+const isCountedStatus = (status) => !STALE_STATUS_RE.test(String(status || ""));
+
 const isLostStatus = (status) => {
   const s = String(status || "");
   return /return/i.test(s) || (/cancel/i.test(s) && !isPreCancelStatus(s));
@@ -3909,6 +3913,177 @@ function CalculatorModal({ onClose }) {
         </div>
       </motion.div>
     </motion.div>
+  );
+}
+
+// Label download picker: splits the orders into "Not downloaded yet" and
+// "Already downloaded" (remembered per label type in localStorage), ticks the
+// new ones by default, and downloads only the ticked orders.
+const LABEL_DL_KEY = "mo_label_dl_v1";
+const readLabelDl = () => {
+  try {
+    return JSON.parse(localStorage.getItem(LABEL_DL_KEY) || "{}") || {};
+  } catch {
+    return {};
+  }
+};
+const markLabelDl = (kind, ids) => {
+  try {
+    const all = readLabelDl();
+    const m = { ...(all[kind] || {}) };
+    const now = Date.now();
+    ids.forEach((id) => {
+      if (id) m[id] = now;
+    });
+    // Keep the newest 3000 per type so storage never grows without bound.
+    const keep = Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 3000);
+    all[kind] = Object.fromEntries(keep);
+    localStorage.setItem(LABEL_DL_KEY, JSON.stringify(all));
+  } catch {
+    /* storage full or blocked: download still works */
+  }
+};
+const clearLabelDl = (kind, ids) => {
+  try {
+    const all = readLabelDl();
+    const m = { ...(all[kind] || {}) };
+    ids.forEach((id) => delete m[id]);
+    all[kind] = m;
+    localStorage.setItem(LABEL_DL_KEY, JSON.stringify(all));
+  } catch {
+    /* ignore */
+  }
+};
+const fmtDlAgo = (ts) => {
+  const m = Math.round((Date.now() - ts) / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m} min ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h} h ago`;
+  return new Date(ts).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+};
+
+function LabelPickSheet({ pick, onClose }) {
+  const { list, kind, title, run } = pick;
+  const [dlMap, setDlMap] = useState(() => readLabelDl()[kind] || {});
+  const idOf = (o) => String(o["Order ID"] || "");
+  const fresh = list.filter((o) => !dlMap[idOf(o)]);
+  const done = list.filter((o) => dlMap[idOf(o)]);
+  const [sel, setSel] = useState(() => new Set(fresh.map(idOf)));
+  const [showDone, setShowDone] = useState(fresh.length === 0);
+  const toggle = (id) =>
+    setSel((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  const setGroup = (grp, on) =>
+    setSel((s) => {
+      const n = new Set(s);
+      grp.forEach((o) => (on ? n.add(idOf(o)) : n.delete(idOf(o))));
+      return n;
+    });
+  const picked = list.filter((o) => sel.has(idOf(o)));
+  const go = () => {
+    if (!picked.length) return;
+    run(picked);
+    markLabelDl(kind, picked.map(idOf));
+    onClose();
+  };
+  const unmark = (o) => {
+    clearLabelDl(kind, [idOf(o)]);
+    setDlMap((m) => {
+      const n = { ...m };
+      delete n[idOf(o)];
+      return n;
+    });
+  };
+  const row = (o, isDone) => {
+    const id = idOf(o);
+    return (
+      <label key={id} className={`lp-row${sel.has(id) ? " is-on" : ""}`}>
+        <input type="checkbox" checked={sel.has(id)} onChange={() => toggle(id)} />
+        <span className="lp-row-main">
+          <b>{o["Customer Name"] || "—"}</b>
+          <em>
+            {id}
+            {o["Pincode"] ? ` · ${o["Pincode"]}` : ""}
+          </em>
+        </span>
+        {isDone && (
+          <button
+            type="button"
+            className="lp-when"
+            title="Mark as not downloaded"
+            onClick={(e) => {
+              e.preventDefault();
+              unmark(o);
+            }}
+          >
+            {fmtDlAgo(dlMap[id])} ✕
+          </button>
+        )}
+      </label>
+    );
+  };
+  const groupHead = (label, grp, extra) => {
+    const allOn = grp.length > 0 && grp.every((o) => sel.has(idOf(o)));
+    return (
+      <div className="lp-head">
+        <span>
+          {label} <i>{grp.length}</i>
+        </span>
+        {extra}
+        {grp.length > 0 && (
+          <button type="button" onClick={() => setGroup(grp, !allOn)}>
+            {allOn ? "Untick all" : "Tick all"}
+          </button>
+        )}
+      </div>
+    );
+  };
+  if (typeof document === "undefined") return null;
+  return createPortal(
+    <div className="lp-overlay" onClick={onClose}>
+      <div className="lp-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={title}>
+        <div className="lp-top">
+          <div>
+            <h3>{title}</h3>
+            <p>Pick which orders to download. Downloaded ones are remembered on this device.</p>
+          </div>
+          <button type="button" className="lp-x" onClick={onClose} aria-label="Close">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="lp-body">
+          {groupHead("Not downloaded yet", fresh)}
+          {fresh.length ? (
+            fresh.map((o) => row(o, false))
+          ) : (
+            <p className="lp-empty">All of these were downloaded already.</p>
+          )}
+          {done.length > 0 &&
+            groupHead(
+              "Already downloaded",
+              showDone ? done : [],
+              <button type="button" className="lp-show" onClick={() => setShowDone((v) => !v)}>
+                {showDone ? "Hide" : `Show ${done.length}`}
+              </button>,
+            )}
+          {showDone && done.map((o) => row(o, true))}
+        </div>
+        <div className="lp-foot">
+          <button type="button" className="lp-cancel" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="button" className="lp-go" disabled={!picked.length} onClick={go}>
+            <Download size={16} /> Download {picked.length}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -7935,6 +8110,13 @@ export default function ManageOrdersPage() {
           ? byTrk === "speed"
           : /faster|express/i.test(String(o["Delivery Type"] || ""));
       })(),
+      // Thunder (24/48 Speed Post, metros) gets the storm label template.
+      isThunder: isThunderOrder(o),
+      books: (o.parsedBooks || parseBooksList(o["Books List"])).map((b) => ({
+        name: b.name,
+        qty: b.quantity,
+      })),
+      deliveryType: String(o["Delivery Type"] || ""),
       giftQrUrl,
     };
   };
@@ -8013,22 +8195,28 @@ export default function ManageOrdersPage() {
         ? list.filter((o) => orderFormData(o).isFaster)
         : list;
   const downloadLabelSet = (list, kind, mono) => {
-    const pick = labelSetOf(list, kind);
-    if (!pick.length) {
+    const all = labelSetOf(list, kind);
+    if (!all.length) {
       showToast(
         `No ${kind === "gift" ? "gift" : "express"} orders in this selection.`,
         "info",
       );
       return;
     }
-    downloadLabelGridPDF(
+    const name = kind === "gift" ? "Gift labels" : kind === "speed" ? "Express labels" : "Address labels";
+    setLabelPick({
+      list: all,
+      kind: kind === "all" ? "addr" : kind,
+      title: `${name} · ${mono ? "black & white" : "colour"}`,
+      run: (pick) => downloadLabelGridPDF(
       pick.map((o) => ({
         ...orderFormData(o),
         variant: kind === "all" ? undefined : kind,
       })),
       `${kind === "speed" ? "express" : kind}_labels_${mono ? "bw" : "color"}_${new Date().toISOString().slice(0, 10)}.pdf`,
       { mono },
-    );
+    ),
+    });
   };
 
   // Gift note to print & tuck in the parcel: the note saved with the Gift Wrap
@@ -8822,13 +9010,27 @@ export default function ManageOrdersPage() {
 
   // Analytics are independent of the list's search/status/payment filters.
   // They scope to the selected, navigable period window (or all orders).
-  const analyticsOrders = useMemo(() => {
+  // Every order in the period (any status) — used only where lost /
+  // cancelled orders must be counted (cancel rate, status breakdown).
+  const analyticsOrdersAll = useMemo(() => {
     if (analyticsPeriod === "all" || !periodWindow.start) return orders;
     return orders.filter((o) => {
       const d = getOrderDate(o);
       return d && d >= periodWindow.start && d < periodWindow.end;
     });
   }, [orders, analyticsPeriod, periodWindow]);
+  // What analytics counts: real orders only. Stale / not-real statuses
+  // (Unconfirmed, Pending / Payment pending, Pre-cancellation, Cancelled,
+  // Refund, On hold, Returned, RTO, Lost, Failed) are left out so revenue,
+  // books, customers and trends reflect orders that actually went through.
+  // Rows without an Order ID (wallet-ledger entries) pass through unchanged.
+  const analyticsOrders = useMemo(
+    () =>
+      analyticsOrdersAll.filter(
+        (o) => !String(o["Order ID"] || "").trim() || isCountedStatus(o["Order Status"]),
+      ),
+    [analyticsOrdersAll],
+  );
 
   const analyticsByDay = useMemo(() => {
     const map = {};
@@ -8910,6 +9112,11 @@ export default function ManageOrdersPage() {
     const repeat = Object.values(custMap).filter((c) => c > 1).length;
     const n = src.length;
     const revenue = src.reduce((s, o) => s + (o.revenue || 0), 0);
+    // Cancel rate is measured on every order in the period (lost orders are
+    // excluded from the analytics set itself).
+    const allReal = analyticsOrdersAll.filter((o) => String(o["Order ID"] || "").trim());
+    const allN = allReal.length;
+    const lostAll = allReal.filter((o) => isLostStatus(String(o["Order Status"] || ""))).length;
 
     return {
       topBooks,
@@ -8919,7 +9126,7 @@ export default function ManageOrdersPage() {
       hourArr,
       hasTime,
       delivered,
-      cancelled,
+      cancelled: lostAll,
       tracked,
       uniqueCustomers,
       repeat,
@@ -8930,13 +9137,13 @@ export default function ManageOrdersPage() {
       count: n,
       aov: n ? Math.round(revenue / n) : 0,
       deliveredPct: n ? Math.round((delivered / n) * 100) : 0,
-      cancelPct: n ? Math.round((cancelled / n) * 100) : 0,
+      cancelPct: allN ? Math.round((lostAll / allN) * 100) : 0,
       trackedPct: n ? Math.round((tracked / n) * 100) : 0,
       repeatPct: uniqueCustomers
         ? Math.round((repeat / uniqueCustomers) * 100)
         : 0,
     };
-  }, [analyticsOrders]);
+  }, [analyticsOrders, analyticsOrdersAll]);
 
   // ─────────────────────────────────────────────────────────────────────
   // Curated analytics data layer (rebuilt dashboard). Everything below only
@@ -10350,6 +10557,8 @@ export default function ManageOrdersPage() {
 
   // Bulk: send one template to every selected order (or all) that has an email.
   const [emailBulkOpen, setEmailBulkOpen] = useState(false);
+  // Label download picker (downloaded / not downloaded, see LabelPickSheet).
+  const [labelPick, setLabelPick] = useState(null);
   // Optional explicit order list (Dispatch passes its selected queue orders);
   // null → the Orders tab's selection, or every visible order.
   const [emailBulkScope, setEmailBulkScope] = useState(null);
@@ -11755,7 +11964,7 @@ export default function ManageOrdersPage() {
   };
   const statusCounts = STATUS_META.map((s) => ({
     ...s,
-    count: analyticsOrders.filter((o) => matchStatusKey(o, s.key)).length,
+    count: analyticsOrdersAll.filter((o) => matchStatusKey(o, s.key)).length,
   }));
   const maxStatusCount = Math.max(1, ...statusCounts.map((s) => s.count));
 
@@ -14387,6 +14596,19 @@ export default function ManageOrdersPage() {
                 </EdgeSafeTip>,
                 moPortalTarget(),
               )}
+
+            {/* Which orders the numbers are built from. */}
+            {(() => {
+              const all = analyticsOrdersAll.filter((o) => String(o["Order ID"] || "").trim()).length;
+              const kept = anOrders.length;
+              const left = all - kept;
+              return left > 0 ? (
+                <p className="an-scope-note">
+                  Counting <b>{kept.toLocaleString()}</b> real orders · {left.toLocaleString()} unconfirmed, pending,
+                  cancelled, refunded or on-hold left out
+                </p>
+              ) : null;
+            })()}
 
             {/* View switcher + live status — sticky, one view at a time. */}
             <div className="an3-bar">
@@ -17144,11 +17366,17 @@ export default function ManageOrdersPage() {
                   showToast("Select orders first.", "error");
                   return;
                 }
-                downloadDecoratedAddressLabelsPDF(
-                  scope.map(orderFormData),
-                  `dispatch_labels_${mono ? "bw" : "color"}.pdf`,
-                  { mono },
-                );
+                setLabelPick({
+                  list: scope,
+                  kind: "addr",
+                  title: `Labels · ${mono ? "black & white" : "colour"}`,
+                  run: (pick) =>
+                    downloadDecoratedAddressLabelsPDF(
+                      pick.map(orderFormData),
+                      `dispatch_labels_${mono ? "bw" : "color"}.pdf`,
+                      { mono },
+                    ),
+                });
               };
               const allSel =
                 dOrders.length > 0 && dispatchSel.length === dOrders.length;
@@ -24233,6 +24461,10 @@ export default function ManageOrdersPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {labelPick && (
+        <LabelPickSheet pick={labelPick} onClose={() => setLabelPick(null)} />
+      )}
 
       {/* ===== Bulk email status-template picker ===== */}
       <AnimatePresence>

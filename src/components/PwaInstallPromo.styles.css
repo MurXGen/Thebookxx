@@ -71,3 +71,35 @@
 .pwa-promo-cta:active {
   transform: scale(0.97);
 }
+
+/* Floating card (inset from the edges) instead of a flush bottom bar */
+.pwa-promo.pwa-promo-bar {
+  left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  max-width: 560px; gap: 10px; padding: 10px 10px 10px 10px;
+  border: 1px solid #eceef2; border-radius: 16px;
+  box-shadow: 0 14px 34px -16px rgba(28, 24, 20, 0.4);
+  animation: pwaBarIn .35s cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes pwaBarIn { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+.pwa-promo-bar .pwa-promo-ic {
+  flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px;
+  background: #fff7ed; color: #ea580c;
+}
+.pwa-promo-bar .pwa-promo-title { font-size: 14px; }
+.pwa-promo-bar .pwa-promo-feats { flex-wrap: nowrap; overflow: hidden; }
+.pwa-promo-bar .pwa-promo-feats span { white-space: nowrap; }
+.pwa-promo-bar .pwa-promo-cta {
+  flex: none; height: 38px; padding: 0 16px; border-radius: 10px; font-weight: 800;
+}
+.pwa-promo-x {
+  flex: none; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; margin-left: -2px;
+  border: 0; border-radius: 50%; background: #f3f4f6; color: #6b7280; cursor: pointer;
+}
+.pwa-promo-spacer { height: 96px; }
+@media (max-width: 380px) {
+  .pwa-promo-bar .pwa-promo-feats span:nth-child(3) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .pwa-promo.pwa-promo-bar { animation: none; } }
+.pwa-promo-bar .pwa-promo-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pwa-promo-bar .pwa-promo-feats span:nth-child(3) { display: none; }
+@media (max-width: 420px) { .pwa-promo-bar .pwa-promo-feats span:nth-child(2) { display: none; } }

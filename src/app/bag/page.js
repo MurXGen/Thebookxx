@@ -109,6 +109,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { readOrders } from "@/components/HomeResumeStrip";
+import BagEmptyOrders from "@/components/BagEmptyOrders";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import { trackOfferClaim } from "@/utils/cartEvents";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef, useCallback, Suspense } from "react";
@@ -1724,6 +1726,8 @@ ${itemsBlock}${qrLines}
             </div>
           </div>
 
+          <BagEmptyOrders />
+
           <OrderRewards amount={0} celebrate={false} />
 
           <BagQuickAdd empty />
@@ -1753,6 +1757,8 @@ ${itemsBlock}${qrLines}
 
         {sharedModal}
         {shareModal}
+        {/* Nothing in the bag: show the app's bottom tabs so they can move on */}
+        <MobileBottomNav />
       </div>
     );
   }
@@ -1843,7 +1849,9 @@ ${itemsBlock}${qrLines}
             <Link href="/books" className="pri-big-btn">
               Browse all books
             </Link>
+            <BagEmptyOrders />
           </div>
+          <MobileBottomNav />
 
           {/* Below the empty state: on the QuickReads tab show ONLY QuickReads;
               otherwise show the full set of homepage book rails. */}

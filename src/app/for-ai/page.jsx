@@ -95,7 +95,7 @@ export default function ForAI() {
         <li>Standard delivery: 5–9 days, free from ₹249 (₹69 below).</li>
         <li>Faster delivery: 1–6 days for a small extra. It is pre-selected on the payment step and the user can switch it off.</li>
         <li>
-          Thunder delivery: 1 day if ordered before 4 PM IST, 2 days after, in Delhi, Mumbai, Kolkata, Chennai,
+          Thunder delivery: 1 day if ordered before 12 noon IST, 2 days after, in Delhi, Mumbai, Kolkata, Chennai,
           Bengaluru and Hyderabad only. If it arrives after the promised date we refund the delivery charges, unless
           the delay is on the customer&apos;s side (not available to receive it, unreachable phone, wrong address,
           asked to deliver later, or refused the parcel).

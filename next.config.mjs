@@ -7,6 +7,8 @@ const nextConfig = {
       // Box-set category URLs → the dedicated box sets page.
       { source: "/category/set", destination: "/book-sets", permanent: true },
       { source: "/books/we-are-there-for-other", destination: "/books/we-are-there-for-each-other", permanent: true },
+      // Duplicate Wimpy Kid set (bk-717, hidden) → the Series Set.
+      { source: "/books/diary-of-a-wimpy-kid-15-book-set", destination: "/books/diary-of-a-wimpy-kid-series-set", permanent: true },
       { source: "/category/boxset", destination: "/book-sets", permanent: true },
       // Retired Art of Clarity combo pages → the matching 2-book combo (or /combos).
       { source: "/combos/the-art-of-clarity-and-blue-ocean-strategy-combo", destination: "/combos/the-hard-thing-about-hard-things-and-blue-ocean-strategy-combo", permanent: true },

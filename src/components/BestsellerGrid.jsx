@@ -27,6 +27,9 @@ export default function BestsellerGrid({
   subtitle = "Top picks readers keep coming back for.",
   headingId = "bg-heading",
   className = "",
+  // Embedded use (checkout): no big heading, and cards don't navigate away.
+  hideHead = false,
+  noLinks = false,
 } = {}) {
   const { cart, addToCart, decreaseQty } = useStore();
   const [loadingId, setLoadingId] = useState(null);
@@ -66,8 +69,9 @@ export default function BestsellerGrid({
   };
 
   return (
-    <section className={`or1-section ${className}`} aria-labelledby={headingId}>
+    <section className={`or1-section ${className}`} aria-labelledby={hideHead ? undefined : headingId}>
       <div className="section-1200 or1-inner">
+        {!hideHead && (
         <div className="or1-head">
           <div className="or1-head-left">
             <span className="or1-badge">
@@ -89,6 +93,7 @@ export default function BestsellerGrid({
             </span>
           )}
         </div>
+        )}
 
         <div className={`or1-scroll-wrap${atStart ? " at-start" : ""}${atEnd ? " at-end" : ""}`}>
         <button type="button" className="or1-nav prev" onClick={() => slide(-1)} aria-label="Scroll left" tabIndex={atStart ? -1 : 0}>
@@ -115,15 +120,17 @@ export default function BestsellerGrid({
               const on = qty > 0;
               const loading = loadingId === b.id;
               const url = `/books/${slugify(b.name)}`;
+              const L = noLinks ? "span" : Link;
+              const lp = noLinks ? {} : { href: url };
               const mrp = Number(b.originalPrice) || 0;
               const now = Number(b.discountedPrice) || 0;
               const save = mrp > now ? mrp - now : 0;
               return (
                 <div className="or1-card" key={b.id}>
                   <div className="or1-cover">
-                    <Link href={url} className="or1-cover-link" aria-label={b.name}>
+                    <L {...lp} className="or1-cover-link" aria-label={b.name}>
                       <BookCoverImg src={b.image} name={b.name} author={b.author} thumb />
-                    </Link>
+                    </L>
                     {loading ? (
                       <button type="button" className="or1-add loading" disabled aria-label="Adding">
                         <Loader2 size={16} className="or1-spin" />
@@ -140,9 +147,9 @@ export default function BestsellerGrid({
                       </button>
                     )}
                   </div>
-                  <Link href={url} className="or1-name">
+                  <L {...lp} className="or1-name">
                     {b.name}
-                  </Link>
+                  </L>
                   <div className="or1-price">
                     <span className="or1-now">₹{now}</span>
                     {mrp > now && <span className="or1-mrp">₹{mrp}</span>}

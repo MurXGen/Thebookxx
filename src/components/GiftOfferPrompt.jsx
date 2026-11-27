@@ -5,7 +5,7 @@
 // they claim it, free delivery drops to ₹149 on this device and the bag adds
 // the free bookmarks. Not shown again once claimed or dismissed.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 // The popup's code downloads only when it's about to show.
 let popupP = null;
@@ -20,10 +20,29 @@ const DELAY_MS = 2500; // after the first scroll / tap
 
 const onPromptPage = (p = "") => p === "/" || p.startsWith("/books/");
 
+// One popup at a time: while this gift popup is waiting to show (or showing),
+// other auto popups (the scratch-card number modal) hold back, then open after
+// it closes. See waitForGiftPrompt().
+const setGiftPending = (on) => {
+  if (typeof window === "undefined") return;
+  const was = !!window.__tbxGiftPending;
+  window.__tbxGiftPending = on;
+  if (was && !on) window.dispatchEvent(new Event("tbx:gift-done"));
+};
+
+/** Runs `fn` now, or once the first-visit gift popup has been dismissed. */
+export function waitForGiftPrompt(fn) {
+  if (typeof window === "undefined" || !window.__tbxGiftPending) return fn();
+  const go = () => setTimeout(fn, 700);
+  window.addEventListener("tbx:gift-done", go, { once: true });
+  return () => window.removeEventListener("tbx:gift-done", go);
+}
+
 export default function GiftOfferPrompt() {
   const pathname = usePathname() || "";
   const [open, setOpen] = useState(false);
   const [Popup, setPopup] = useState(null);
+  const shownRef = useRef(false);
 
   useEffect(() => {
     if (!onPromptPage(pathname)) return;
@@ -34,6 +53,7 @@ export default function GiftOfferPrompt() {
       return;
     }
     if (seen || freeDeliveryOfferOn()) return;
+    setGiftPending(true);
     // Wait until the visitor starts browsing (first scroll / tap / key), then
     // show it a moment later — it no longer covers the page while it loads.
     let t;
@@ -53,8 +73,16 @@ export default function GiftOfferPrompt() {
     return () => {
       EVENTS.forEach((e) => window.removeEventListener(e, arm, true));
       clearTimeout(t);
+      // Left the page before it showed: let other popups go.
+      if (!shownRef.current) setGiftPending(false);
     };
   }, [pathname]);
+
+  useEffect(() => {
+    if (open) shownRef.current = true;
+    // Closed (claimed or "Maybe later") → the next popup may show.
+    else if (shownRef.current) setGiftPending(false);
+  }, [open]);
 
   const claim = () => {
     setOpen(false);

@@ -60,7 +60,7 @@ function useLoop(n) {
 }
 
 // Mini phone on the left, steps on the right — the active step follows the phone.
-function PayDemo({ steps, frames, label }) {
+export function PayDemo({ steps, frames, label }) {
   const { ref, f, setF } = useLoop(frames.length);
   return (
     <div ref={ref} className="cg-body upg-demo" aria-label={label}>

@@ -4,6 +4,7 @@ import "./PincodeModal.styles.css";
 import { XmasSnow, XmasGarland, XmasTree } from "@/components/XmasDecor";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { waitForGiftPrompt } from "@/components/GiftOfferPrompt";
 import {
   X,
   MapPin,
@@ -232,12 +233,15 @@ export default function PincodeModal() {
       done = true;
       window.removeEventListener("scroll", onScroll);
       if (!eligible()) return;
-      setStage("form");
-      setIsOpen(true);
-      setStartTime(Date.now());
-      try {
-        localStorage.setItem(PINCODE_STORAGE_KEY, String(Date.now()));
-      } catch (_) {}
+      // Never on top of the first-visit gift popup: wait until it's closed.
+      waitForGiftPrompt(() => {
+        setStage("form");
+        setIsOpen(true);
+        setStartTime(Date.now());
+        try {
+          localStorage.setItem(PINCODE_STORAGE_KEY, String(Date.now()));
+        } catch (_) {}
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

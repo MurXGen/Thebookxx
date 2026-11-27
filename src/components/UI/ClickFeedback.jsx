@@ -87,7 +87,8 @@ export default function ClickFeedback() {
     screen.className = "cf-screen";
     screen.setAttribute("role", "status");
     screen.setAttribute("aria-label", "Loading");
-    screen.innerHTML = '<span class="cf-screen-box"><span class="cf-spin"></span></span>';
+    // Just a rotating ring over a blurred page.
+    screen.innerHTML = '<span class="cf-ring" aria-hidden="true"></span>';
     let shown = 0;
     const syncScreen = () => {
       if (shown > 0) {

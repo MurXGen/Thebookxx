@@ -1,0 +1,47 @@
+/* Order page — bookmarks in this order */
+.obm { display: flex; flex-direction: column; gap: 12px; }
+.obm-head { display: flex; align-items: center; gap: 10px; }
+.obm-ic { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #fff7ed; color: #ea580c; }
+.obm-head-tx { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.obm-head-tx b { font-size: 15px; font-weight: 800; color: #1c1814; }
+.obm-head-tx small { font-size: 12px; color: #78716c; }
+
+.obm-fan {
+  position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 0;
+  height: 86px; padding: 14px 12px 8px; border-radius: 14px;
+  background: radial-gradient(120% 90% at 50% 100%, #fff4e6 0%, #fffaf5 60%, #fff 100%);
+  border: 1px dashed #fed7aa; overflow: hidden;
+}
+.obm-rb { position: relative; display: block; margin: 0 -4px; transform-origin: 50% 100%; filter: drop-shadow(0 6px 6px rgba(154, 52, 18, 0.22)); }
+.obm-rb svg { display: block; }
+.obm-rb.free svg path:first-child { fill: #fb8500; }
+.obm-rb.paid svg path:first-child { fill: #b45309; }
+.obm-rb svg .ln { fill: none; stroke: #fff; stroke-opacity: .55; stroke-width: 2; stroke-linecap: round; }
+.obm-tassel {
+  position: absolute; top: 4px; right: -3px; width: 7px; height: 12px; border-right: 1.5px solid #9a3412;
+  border-radius: 0 6px 6px 0;
+}
+.obm-tassel::after { content: ""; position: absolute; right: -3.5px; bottom: -3px; width: 5px; height: 5px; border-radius: 50%; background: #9a3412; }
+.obm-free {
+  position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); padding: 1px 3px; border-radius: 3px;
+  background: #fff; color: #c2410c; font-size: 6.5px; font-weight: 900; letter-spacing: .04em; line-height: 1.2;
+}
+.obm-more {
+  align-self: center; margin-left: 10px; padding: 3px 8px; border-radius: 999px; background: #fff;
+  border: 1px solid #fed7aa; color: #c2410c; font-size: 12px; font-weight: 800;
+}
+
+.obm-split { display: flex; flex-wrap: wrap; gap: 8px; }
+.obm-chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 8px;
+  font-size: 12px; font-weight: 700; border: 1px solid;
+}
+.obm-chip i { width: 8px; height: 8px; border-radius: 2px; }
+.obm-chip.free { color: #c2410c; background: #fff7ed; border-color: #fed7aa; }
+.obm-chip.free i { background: #fb8500; }
+.obm-chip.paid { color: #92400e; background: #fffbeb; border-color: #fde68a; }
+.obm-chip.paid i { background: #b45309; }
+
+@media (prefers-reduced-motion: reduce) {
+  .obm-rb { transition: none; }
+}

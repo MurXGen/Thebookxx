@@ -2,13 +2,15 @@
 import "./AddressModal.styles.css";
 
 import PlacingOrder from "@/components/UI/PlacingOrder";
+import GiftCardPay from "@/components/UI/GiftCardPay";
+import CheckoutAddMore from "@/components/UI/CheckoutAddMore";
+import CheckoutHelp from "@/components/UI/CheckoutHelp";
 import { XmasSnow } from "@/components/XmasDecor";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef, useMemo, Fragment } from "react";
 import { createPortal } from "react-dom";
 import { readBagCoupon, saveBagCoupon } from "@/utils/bagCoupon";
 import { useStore } from "@/context/StoreContext";
-import BestsellerGrid from "@/components/BestsellerGrid";
 import { buildRecommendations } from "@/utils/recoEngine";
 import { books as ALL_BOOKS } from "@/utils/book";
 import LoadingButton from "./LoadingButton";
@@ -3700,7 +3702,7 @@ export default function AddressModal({
                             transition={{ duration: 0.18 }}
                           >
                             Packed first and sent by India Post Speed Post. Arrives {tEta.dateText}
-                            {tEta.days === 1 ? " (ordered before 4 PM)" : ""}. If it&apos;s late, we refund your
+                            {tEta.days === 1 ? " (ordered before 12 noon)" : ""}. If it&apos;s late, we refund your
                             delivery charges back to your account (not if nobody&apos;s available to receive it).
                           </motion.p>
                         )}
@@ -3912,13 +3914,10 @@ export default function AddressModal({
                 {/* More books like the ones in the bag — 2-row scrolling grid,
                     20 at a time (more load as the row scrolls). */}
                 {checkoutRecos.length > 0 && (
-                  <BestsellerGrid
+                  <CheckoutAddMore
                     list={checkoutRecos}
-                    badge="PICKED FOR YOU"
-                    title="Add these to your order"
-                    subtitle="Similar to the books in your bag — ships in the same parcel."
-                    headingId="co-reco-heading"
-                    className="co-reco"
+                    title="Complete your order"
+                    subtitle="Picked for your bag · ships in the same parcel"
                   />
                 )}
 
@@ -5098,6 +5097,18 @@ export default function AddressModal({
                     {advanceMode ? " now" : ""}
                   </small>
                 </span>
+                <CheckoutHelp
+                  ctx={{
+                    name,
+                    phone,
+                    pincode,
+                    city,
+                    address: fullAddress,
+                    items: (cartBooks || []).map((b) => ({ name: b.name, qty: b.qty || 1 })),
+                    amount: payNowAmount,
+                    step: "Choosing payment method",
+                  }}
+                />
                 <button type="button" className="sw-x" onClick={() => setShowPayMethod(false)} aria-label="Close">
                   <X size={18} />
                 </button>
@@ -5209,7 +5220,7 @@ export default function AddressModal({
                         </span>
                         <span className="po-more-txt">
                           <b>{m}</b>
-                          <small>Pay with an Amazon gift card</small>
+                          <small>Pay on Amazon via a gift card · takes 2 min</small>
                         </span>
                         <ChevronRight size={16} className="po-more-chev" />
                       </button>
@@ -5257,50 +5268,14 @@ export default function AddressModal({
                   </p>
                 </div>
               ) : (
-                <div className="paymeth-gift">
-                  <div className="paymeth-gift-note">
-                    <Info size={16} />
-                    <p>
-                      To pay with <strong>{giftMethod}</strong>, buy an{" "}
-                      <strong>
-                        Amazon gift card worth ₹
-                        {getTotalWithDelivery(fasterDelivery) + addOnsCharge}
-                      </strong>{" "}
-                      and paste the code below. We&apos;ll verify it and confirm
-                      your order on WhatsApp.
-                    </p>
-                  </div>
-                  <a
-                    href="https://www.amazon.in/gift-cards"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="paymeth-gift-buy"
-                  >
-                    Buy an Amazon gift card
-                    <ArrowRight size={15} />
-                  </a>
-                  <label className="paymeth-gift-label">Gift card code</label>
-                  <input
-                    className="paymeth-gift-input"
-                    value={giftCode}
-                    onChange={(e) => setGiftCode(e.target.value)}
-                    placeholder="Paste your gift-card code here"
-                    autoComplete="off"
-                  />
-                  <button
-                    type="button"
-                    className="pri-big-btn paymeth-gift-submit"
-                    disabled={giftCode.trim().length < 4}
-                    onClick={submitGiftCard}
-                  >
-                    Submit &amp; place order · ₹
-                    {getTotalWithDelivery(fasterDelivery) + addOnsCharge}
-                  </button>
-                  <p className="paymeth-gift-fine">
-                    Your books are reserved. We confirm once the gift card is
-                    verified.
-                  </p>
-                </div>
+                <GiftCardPay
+                  method={giftMethod}
+                  amount={payNowAmount}
+                  code={giftCode}
+                  onCode={setGiftCode}
+                  onSubmit={submitGiftCard}
+                  haveCard={giftMethod === "Amazon Gift Voucher"}
+                />
               )}
             </motion.div>
           </motion.div>
@@ -5652,6 +5627,14 @@ export default function AddressModal({
       <AnimatePresence>
         {showUPIPayment && (
           <UPIPaymentModal
+            helpCtx={{
+              name,
+              phone,
+              pincode,
+              city,
+              address: fullAddress,
+              items: (cartBooks || []).map((b) => ({ name: b.name, qty: b.qty || 1 })),
+            }}
             onAutoConfirm={autoConfirmUpi}
             onPollStatus={pollUpiStatus}
             finalPayable={netPayable}
@@ -5957,6 +5940,8 @@ export function CODSuccessModal({
   totalDiscounted = 0,
   offerDiscount = 0,
   offerLabel = "",
+  couponDiscount = 0,
+  appliedCoupon = null,
   walletApplied = 0,
   deliveryCharge = 0,
   fasterDeliveryCharge = 0,
@@ -6955,6 +6940,7 @@ export function isUpiDesktop() {
 // ============== Sub-component: UPIPaymentModal =======================
 // =====================================================================
 export function UPIPaymentModal({
+  helpCtx = null,
   finalPayable,
   fasterDelivery,
   fasterDeliveryCharge,
@@ -7129,6 +7115,7 @@ export function UPIPaymentModal({
             </small>
           </span>
           <span className="upiv3-head-r">
+            <CheckoutHelp ctx={{ ...(helpCtx || {}), amount: totalToPay, step: "Scan & pay (UPI)" }} />
             {SHOW_UPI_WHATSAPP && (
             <a
               className="upiv3-help"

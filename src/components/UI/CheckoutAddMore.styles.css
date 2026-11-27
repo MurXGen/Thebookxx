@@ -1,0 +1,20 @@
+/* Checkout "Complete your order" — Swiggy-style section wrapping our 2-row cards */
+.cam {
+  flex: none; margin: -10px 0 6px; padding: 12px 0 8px; border-radius: 18px; background: #fff;
+  border: 1px solid #eef0f3; box-shadow: 0 8px 20px -18px rgba(15, 23, 42, 0.45); overflow: hidden;
+}
+.cam-head { display: flex; align-items: center; gap: 10px; padding: 0 14px 6px; }
+.cam-head-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cam-head-tx b { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 800; color: #1c1c1c; letter-spacing: -0.01em; }
+.cam-head-tx b svg { color: #fb8500; }
+.cam-head-tx small { font-size: 12.5px; color: #6b7280; }
+.cam-pill {
+  flex: none; padding: 5px 10px; border-radius: 999px; background: #fff7ed; border: 1px solid #fed7aa;
+  color: #c2410c; font-size: 11.5px; font-weight: 800; white-space: nowrap;
+}
+
+/* The embedded grid: no outer section spacing/background of its own */
+.cam .or1-section.cam-grid { margin: 0 !important; padding: 0 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+.cam .or1-section.cam-grid .or1-inner { padding: 0 !important; max-width: none !important; }
+.cam .or1-section.cam-grid .or1-scroll { padding-left: 14px; padding-right: 14px; scroll-padding-left: 14px; }
+.cam .or1-section.cam-grid span.or1-cover-link, .cam .or1-section.cam-grid span.or1-name { cursor: default; }

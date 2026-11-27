@@ -194,9 +194,9 @@ export default function AppInstallSheet() {
   return createPortal(
     <AnimatePresence>
       {open && (
-        <motion.div className="cdp-back" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close}>
+        <motion.div className="cdp-back cdp-back-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close}>
           <motion.div
-            className="cdp psh"
+            className="cdp psh psh-full"
             role="dialog"
             aria-modal="true"
             aria-labelledby="app-sheet-title"

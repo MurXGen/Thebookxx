@@ -385,3 +385,77 @@
 }
 .hn2-del-pin.unset { background: #0f172a; border-color: #0f172a; color: #fff; }
 .hn2-del-pin svg { flex: none; color: currentColor !important; margin: 0 !important; }
+
+/* =====================================================================
+   Glass header that melts into the night-sky hero (home only).
+   Phones/tablets: the whole header is a navy glass layer.
+   Desktop: a floating glass bar over the same navy sky.
+   ===================================================================== */
+header.navbar-wrapper.home-nav {
+  background: linear-gradient(180deg, rgba(8, 13, 38, 0.9) 0%, rgba(11, 18, 48, 0.78) 100%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 12px 30px -20px rgba(0, 0, 0, 0.7) !important;
+}
+header.navbar-wrapper.home-nav + .navbar-spacer { background: #0b1230 !important; }
+
+/* phones / tablets */
+header.navbar-wrapper.home-nav .hn.hn2 { color: #e0e7ff; }
+header.navbar-wrapper.home-nav .hn2-strip {
+  background: rgba(255, 255, 255, 0.04); border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+header.navbar-wrapper.home-nav .hn2-logo { color: #fff; }
+header.navbar-wrapper.home-nav .hn2-logo-sub { color: #a5b4fc; }
+header.navbar-wrapper.home-nav .hn2-ic {
+  background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.16);
+  color: #fff !important; box-shadow: none;
+}
+header.navbar-wrapper.home-nav .hn2-ic:active { background: rgba(255, 255, 255, 0.16); }
+header.navbar-wrapper.home-nav .hn2-del {
+  background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.14); color: #c7d2fe;
+}
+header.navbar-wrapper.home-nav .hn2-del b { color: #fff; }
+header.navbar-wrapper.home-nav .hn2-del-ic { color: #93c5fd; }
+header.navbar-wrapper.home-nav .hn2-del-pin { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); color: #fff; }
+header.navbar-wrapper.home-nav .hn2-del-pin.unset { background: #fff; border-color: #fff; color: #0b1230; }
+header.navbar-wrapper.home-nav .hn2 .hn-tab .hn-tab-lbl { color: #c7d2fe; }
+header.navbar-wrapper.home-nav .hn2 .hn-tab.on .hn-tab-lbl { color: #fff; }
+header.navbar-wrapper.home-nav .hn2 .hn-tab.on { border-bottom-color: #fde68a !important; }
+header.navbar-wrapper.home-nav .hn2 .hn-tab.on .hn-tile { box-shadow: 0 0 0 2px #fde68a, 0 6px 14px -8px rgba(0, 0, 0, 0.6); }
+
+/* desktop */
+@media (min-width: 1024px) {
+  header.navbar-wrapper.home-nav {
+    background: transparent !important; border-bottom: 0; box-shadow: none !important;
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+  header.navbar-wrapper.home-nav .hnd-promo {
+    background: rgba(255, 255, 255, 0.04) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  }
+  header.navbar-wrapper.home-nav .hnd-bar {
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.05)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%);
+    box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    color: #fff;
+  }
+  header.navbar-wrapper.home-nav .hnd-logo { color: #fff; }
+  header.navbar-wrapper.home-nav .hnd-logo-sub { color: #a5b4fc; }
+  header.navbar-wrapper.home-nav .hnd-links a { color: #e0e7ff !important; }
+  header.navbar-wrapper.home-nav .hnd-links a:hover { color: #fff !important; background: rgba(255, 255, 255, 0.1); }
+  header.navbar-wrapper.home-nav .hnd-search {
+    background: rgba(255, 255, 255, 0.08) !important; border: 1px solid rgba(255, 255, 255, 0.14) !important; color: #c7d2fe !important;
+  }
+  header.navbar-wrapper.home-nav .hnd-search svg { color: #c7d2fe; }
+  header.navbar-wrapper.home-nav .hnd-del {
+    background: rgba(255, 255, 255, 0.06) !important; border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  }
+  header.navbar-wrapper.home-nav .hnd-del-ic { background: rgba(251, 133, 0, 0.18) !important; color: #fdba74 !important; }
+  header.navbar-wrapper.home-nav .hnd-del-tx, header.navbar-wrapper.home-nav .hnd-del-tx span { color: #c7d2fe !important; }
+  header.navbar-wrapper.home-nav .hnd-del-tx b { color: #fff !important; }
+  header.navbar-wrapper.home-nav .hnd-acts .hn-ic {
+    background: rgba(255, 255, 255, 0.08) !important; border-color: rgba(255, 255, 255, 0.16) !important; color: #fff !important;
+  }
+}

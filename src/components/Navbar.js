@@ -203,7 +203,7 @@ export default function Navbar() {
           {/* Kept mounted (bar hidden) so its pincode sheet still opens */}
           <DeliveryCheckBar />
         </header>
-        <div className="navbar-spacer" aria-hidden="true" style={{ height: navH }} />
+        <div className="navbar-spacer" aria-hidden="true" style={{ height: navH }} suppressHydrationWarning />
         {/* Size the spacer to the real header height while the page is still
             parsing (before first paint), so content below never jumps. */}
         <script
@@ -346,6 +346,7 @@ export default function Navbar() {
         className="navbar-spacer"
         aria-hidden="true"
         style={{ height: navH }}
+        suppressHydrationWarning
       />
       {/* Size the spacer to the real header height while the page is still
           parsing (before first paint), so content below never jumps. */}

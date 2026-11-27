@@ -20,6 +20,8 @@ import {
   X,
   ChevronRight,
   BookOpen,
+  Users,
+  ShieldCheck,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { books } from "@/utils/book";
@@ -263,11 +265,23 @@ export default function HomeHero() {
           </div>
 
           {/* Desktop: proof stats under the actions */}
-          <ul className="hx-stats">
-            <li><b>{titleCount}+</b><span>Books in stock</span></li>
-            <li><b>4.4<Star size={15} fill="#f59e0b" stroke="#f59e0b" /></b><span>Reader rating</span></li>
-            <li><b>5,000+</b><span>Community readers</span></li>
-            <li><b>COD</b><span>&amp; 7-day replacement</span></li>
+          <ul className="hx-stats hx-stats2">
+            <li>
+              <i className="hx-st-ic" aria-hidden="true"><BookOpen size={18} /></i>
+              <span className="hx-st-tx"><b>{titleCount}+</b><span>Books in stock</span></span>
+            </li>
+            <li>
+              <i className="hx-st-ic is-gold" aria-hidden="true"><Star size={18} fill="currentColor" /></i>
+              <span className="hx-st-tx"><b>4.4<em>/5</em></b><span>Reader rating</span></span>
+            </li>
+            <li>
+              <i className="hx-st-ic" aria-hidden="true"><Users size={18} /></i>
+              <span className="hx-st-tx"><b>5,000+</b><span>Happy readers</span></span>
+            </li>
+            <li>
+              <i className="hx-st-ic is-green" aria-hidden="true"><ShieldCheck size={18} /></i>
+              <span className="hx-st-tx"><b>COD</b><span>7-day replacement</span></span>
+            </li>
           </ul>
 
           {/* Christmas gift — opens the scratch & win flow */}

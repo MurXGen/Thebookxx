@@ -58,3 +58,23 @@
 @media (prefers-reduced-motion: reduce) {
 .hrs-wrap, .hrs-row, .hrs-chev { transition: none; }
 }
+
+/* Night-sky home: the strip is a frosted-glass card on the same navy as the
+   navbar/hero (navy painted out to the screen edges, so no white bands). */
+.hrs.hrs {
+  margin-bottom: 10px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.05)), #0b1230 !important; border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 0 0 100vmax #0b1230, inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  clip-path: inset(-12px -100vmax -11px -100vmax) !important;
+}
+.hrs.hrs + * { margin-top: 0 !important; }
+.hrs.hrs .hrs-ic { background: rgba(251, 133, 0, 0.18); color: #ffb35c; }
+.hrs.hrs .hrs-head-txt small { color: rgba(226, 232, 240, 0.65); }
+.hrs.hrs .hrs-head-txt b, .hrs.hrs .hrs-txt b { color: #fff; }
+.hrs.hrs .hrs-txt small { color: rgba(226, 232, 240, 0.7); }
+.hrs.hrs .hrs-chev { color: rgba(226, 232, 240, 0.7); }
+.hrs.hrs .hrs-row { border-top-color: rgba(255, 255, 255, 0.14); }
+.hrs.hrs .hrs-go { color: #ffb35c; }
+.hrs.hrs .hrs-row.green .hrs-go { color: #4ade80; }
+.hrs.hrs .hrs-cover { border-color: rgba(255, 255, 255, 0.6); }
+.hrs.hrs .hrs-badge { border-color: #0b1230; }

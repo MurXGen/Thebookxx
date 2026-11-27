@@ -2,7 +2,7 @@
 import "./PwaInstallPromo.styles.css";
 
 import { useEffect, useState } from "react";
-import { Download, Truck, Tag, Bell } from "lucide-react";
+import { Download, Truck, Tag, Bell, X } from "lucide-react";
 import { trackEvent } from "@/lib/ga";
 import { openAppSheet } from "@/components/AppInstall";
 
@@ -63,7 +63,28 @@ export default function PwaInstallPromo({ variant = "bar" }) {
     openAppSheet(`orders_${variant}`);
   };
 
-  if (installed) return null;
+  // "Not now" hides the bar for 3 days on this device.
+  const HIDE_KEY = "tbx_pwa_bar_hide_until";
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    let h = false;
+    try {
+      h = Number(localStorage.getItem(HIDE_KEY) || 0) > Date.now();
+    } catch {}
+    if (h) {
+      const t = setTimeout(() => setHidden(true), 0);
+      return () => clearTimeout(t);
+    }
+  }, []);
+  const dismiss = () => {
+    try {
+      localStorage.setItem(HIDE_KEY, String(Date.now() + 3 * 86400000));
+    } catch {}
+    trackEvent("app_bar_dismissed", { source: `orders_${variant}` });
+    setHidden(true);
+  };
+
+  if (installed || hidden) return null;
 
   return (
     <>
@@ -73,7 +94,7 @@ export default function PwaInstallPromo({ variant = "bar" }) {
           <Download size={18} />
         </span>
         <div className="pwa-promo-txt">
-          <strong className="pwa-promo-title">Install the TheBookX app</strong>
+          <strong className="pwa-promo-title">Get the TheBookX app</strong>
           <div className="pwa-promo-feats">
             <span>
               <Truck size={11} /> Live tracking
@@ -88,6 +109,9 @@ export default function PwaInstallPromo({ variant = "bar" }) {
         </div>
         <button type="button" className="pwa-promo-cta" onClick={handleInstall}>
           Install
+        </button>
+        <button type="button" className="pwa-promo-x" onClick={dismiss} aria-label="Hide for now">
+          <X size={14} />
         </button>
       </div>
     </>

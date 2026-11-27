@@ -4,13 +4,20 @@
 // Never import it from a client component ("use client") or it will be bundled
 // into the browser and defeat the purpose.
 //
-// Values come from environment variables (set them in .env.local and in your
-// host's env). Fallbacks keep the app working before the env vars are set, but
-// for real protection set the env vars so the IDs/URLs are not in the source at
-// all.
+// Sheet IDs and Apps Script URLs come only from environment variables (Netlify
+// for the store, Vercel for admin.thebookx.in, .env.local locally). Tab names
+// below keep their defaults.
 
-export const ORDERS_SHEET_ID =
-  process.env.ORDERS_SHEET_ID || "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
+// Sheet IDs and Apps Script URLs come ONLY from env vars (no copies in the
+// source). Set them on Netlify (store), Vercel (admin) and .env.local.
+const requireEnv = (name) => {
+  const v = process.env[name] || "";
+  if (!v && typeof window === "undefined")
+    console.error(`[serverSheets] Missing env var ${name} — set it on the host (Netlify / Vercel / .env.local).`);
+  return v;
+};
+
+export const ORDERS_SHEET_ID = requireEnv("ORDERS_SHEET_ID");
 
 export const ORDERS_SHEET_NAME =
   process.env.ORDERS_SHEET_NAME || "Form responses 1";
@@ -100,13 +107,9 @@ export const RETURN_TO_ADDRESS =
 
 // Apps Script web apps (writes/edits). Keep these on the server so nobody can
 // call them directly to forge/modify sheet rows.
-export const APPSCRIPT_ORDER_URL =
-  process.env.APPSCRIPT_ORDER_URL ||
-  "https://script.google.com/macros/s/AKfycbzHQ2gs25qh7stuSdWWV_g4r3Im_6HUgUxxcbahkyWsY6d-VjO0ppwgiezokxHd5fqzKA/exec";
+export const APPSCRIPT_ORDER_URL = requireEnv("APPSCRIPT_ORDER_URL");
 
-export const APPSCRIPT_EDIT_URL =
-  process.env.APPSCRIPT_EDIT_URL ||
-  "https://script.google.com/macros/s/AKfycbzYyEYufYZBP4pV-sJvgTvTBrcIb3iNUH3BgDD31zCL9xiULoKWnATFfad2awNMgvyC/exec";
+export const APPSCRIPT_EDIT_URL = requireEnv("APPSCRIPT_EDIT_URL");
 
 // Dedicated Apps Script Web App that appends ONLY to the Wallet tab. Deploy the
 // standalone script in docs/wallet-apps-script-standalone.gs and paste its /exec

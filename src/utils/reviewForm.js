@@ -13,8 +13,7 @@ export const REVIEW_FIELD_IDS = {
 };
 
 // Published sheet (CSV) used to READ approved reviews back onto the page.
-export const REVIEW_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRkBuiwKblKeTjxVTDb5Ga3a0j0cmXvHDg0lCvc09KGgZbZmqsjwZfs4fE40AbuE2dOH4rPOQeMWSZK/pub?output=csv";
+export const REVIEW_CSV_URL = process.env.NEXT_PUBLIC_REVIEWS_CSV_URL || "";
 
 // Minimal CSV parser (handles quoted fields + newlines in cells).
 function parseCsv(text) {

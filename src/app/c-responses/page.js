@@ -18,8 +18,7 @@ import {
 } from "lucide-react";
 
 // Published "publish to web" CSV of first-visit capture data.
-const SHEET_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWmFx8QrlHdwPa4QQ_iPLiq-jq9WmEZtz8i9dJha2TvgNmWnoTqhoRdt257iBGlv9_deHpUzxB0dCb/pub?output=csv";
+const SHEET_CSV_URL = process.env.NEXT_PUBLIC_LEADS_CSV_URL || "";
 
 /* ---------- CSV parsing (handles quoted fields with commas) ---------- */
 function parseCSV(text) {

@@ -740,7 +740,8 @@ const emailMessages = (order) => {
 };
 
 // Google Sheet ID and configuration
-const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
+// From env (set NEXT_PUBLIC_ORDERS_SHEET_ID on the host; baked in at build).
+const SHEET_ID = process.env.NEXT_PUBLIC_ORDERS_SHEET_ID || "";
 const SHEET_NAME = "Form responses 1";
 const SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 // Dedicated Wallet ledger tab (Timestamp | Phone Number | Amount | Type | Reason | Order ID)
@@ -751,8 +752,7 @@ const WALLET_SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}
 // CSV of the "C-Pincodes (Responses)" sheet — same source the /c-responses page
 // reads. Columns: Timestamp | Pincode | City | State | Phone Number |
 // Submission Type | userAgent | referrer | Source
-const LEADS_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWmFx8QrlHdwPa4QQ_iPLiq-jq9WmEZtz8i9dJha2TvgNmWnoTqhoRdt257iBGlv9_deHpUzxB0dCb/pub?output=csv";
+const LEADS_CSV_URL = process.env.NEXT_PUBLIC_LEADS_CSV_URL || "";
 
 // Minimal CSV parser (handles quoted fields with embedded commas/newlines).
 function parseLeadsCSV(text) {
@@ -816,8 +816,8 @@ const FORM_SUBMIT_URL =
 // sheet in place (edits without adding a new row). Deploy the script in
 // docs/sheet-edit-apps-script.gs and paste its /exec URL here. Leave empty to
 // keep the old append-on-edit behaviour.
-const SHEET_EDIT_API_URL =
-  "https://script.google.com/macros/s/AKfycbzHQ2gs25qh7stuSdWWV_g4r3Im_6HUgUxxcbahkyWsY6d-VjO0ppwgiezokxHd5fqzKA/exec";
+// From env: NEXT_PUBLIC_APPSCRIPT_ORDER_URL (same /exec URL as APPSCRIPT_ORDER_URL).
+const SHEET_EDIT_API_URL = process.env.NEXT_PUBLIC_APPSCRIPT_ORDER_URL || "";
 
 // Field mappings for Google Form
 const FORM_FIELD_IDS = {

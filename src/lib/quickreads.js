@@ -22,10 +22,10 @@ export const QR_FORM_FIELDS = {
   txnRef: "entry.274318451",
 };
 // Published-to-web CSV of the QuickReads responses sheet (public, CORS-friendly).
-export const QR_PUB_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSl_8uU6-AAMa5GqfjpFud30zQ7kMRfxYeK0klon7-F7vLZA_ri4YpFgkNVjKCDdhQpajdkWIFkj84j/pub?output=csv";
+// From env (NEXT_PUBLIC_QR_PUB_CSV_URL / NEXT_PUBLIC_QR_SHEET_ID; baked in at build).
+export const QR_PUB_CSV_URL = process.env.NEXT_PUBLIC_QR_PUB_CSV_URL || "";
 // Spreadsheet ID (fallback approval read via gviz, if the CSV ever fails).
-export const QR_SHEET_ID = "1k0_wc0iziyWNpmuebhhz7PNOqcOD86VFHAS-3J6M52M";
+export const QR_SHEET_ID = process.env.NEXT_PUBLIC_QR_SHEET_ID || "";
 export const QR_SHEET_NAME = "Form responses 1";
 // Live read endpoint. Unlike the published CSV (pub?output=csv), which Google
 // can cache for several minutes, the gviz endpoint reflects edits/deletions in

@@ -10288,3 +10288,47 @@ body.mo-map-fs-open .my-orders-page .mo-section { will-change: auto !important; 
 .lp-go:disabled { opacity: .45; cursor: not-allowed; }
 @keyframes lpFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lpUp { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ===== 101. Dispatch grouping dropdown + collapsible groups ===== */
+.mo-dq-pick { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+.mo-dq-select {
+  position: relative; display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 30px 0 12px;
+  border: 1px solid var(--g-hairline, #e5e7eb); border-radius: 10px;
+  background: var(--g-surface, #fff); cursor: pointer;
+}
+.mo-dq-select > span { font-size: 11px; font-weight: 700; color: var(--g-ink-3, #71717a); text-transform: uppercase; letter-spacing: .04em; }
+.mo-dq-select select {
+  appearance: none; -webkit-appearance: none; border: 0; background: transparent;
+  font: inherit; font-size: 13px; font-weight: 800; color: var(--g-ink, #111); cursor: pointer; outline: none;
+  padding: 0;
+}
+.mo-dq-select svg { position: absolute; right: 10px; pointer-events: none; color: var(--g-ink-3, #71717a); }
+.mo-dark .mo-dq-select select option { color: #111; }
+.mo-dq-toggleall {
+  height: 34px; padding: 0 12px; border-radius: 10px;
+  border: 1px solid var(--g-ink, #111); background: var(--g-ink, #111); color: #fff;
+  font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap;
+}
+.mo-dark .mo-dq-toggleall { background: #fafafa; color: #111; border-color: #fafafa; }
+@media (max-width: 560px) {
+  .mo-dq-pick { width: 100%; }
+  .mo-dq-select { flex: 1; }
+  .mo-dq-select select { flex: 1; }
+}
+.mo-dq-sec-tap { cursor: pointer; user-select: none; }
+.mo-dq-sec-tap:focus-visible { outline: 2px solid var(--g-ink, #111); outline-offset: 2px; }
+.mo-dq-sec-chev { flex: none; color: var(--g-ink-3, #71717a); transition: transform .2s ease; }
+.mo-dq-sec.is-shut .mo-dq-sec-chev { transform: rotate(-90deg); }
+.my-orders-page.mo-glass .mo-dq-sec.is-shut { padding-bottom: 4px; }
+.my-orders-page.mo-glass .mo-dq-sec.is-shut .mo-dq-sec-head { margin-bottom: 0; }
+.mo-dq-sec-sel {
+  flex: none; height: 26px; padding: 0 10px; border-radius: 999px;
+  border: 1px solid var(--g-hairline, #e5e7eb); background: var(--g-surface, #fff);
+  font-size: 11.5px; font-weight: 800; color: var(--g-ink-2, #3f3f46); cursor: pointer;
+}
+.mo-dq-sec-sel.on { background: var(--g-ink, #111); border-color: var(--g-ink, #111); color: #fff; }
+.mo-dark .mo-dq-sec-sel.on { background: #fafafa; color: #111; }
+.mo-dq-sec.place { --dq-c: #4f46e5; }
+.mo-dq-sec.p24 { --dq-c: #7c3aed; }
+.mo-dq-sec.rest { --dq-c: #a1a1aa; }

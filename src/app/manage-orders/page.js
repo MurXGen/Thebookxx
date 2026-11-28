@@ -4306,10 +4306,13 @@ export default function ManageOrdersPage() {
   useEffect(() => {
     try {
       const g = localStorage.getItem("mo_dispatch_group");
-      if (g === "off" || g === "stage" || g === "book") setDispGroup(g);
+      if (["off", "stage", "book", "city", "state", "p24"].includes(g)) setDispGroup(g);
       else if (localStorage.getItem("mo_dispatch_smart") === "1") setDispGroup("stage");
     } catch {}
   }, []);
+  // Which group sections are open. City / State / 24h groups start closed;
+  // Smart order and By book start open. Key: "<mode>:<group key>".
+  const [dqOpen, setDqOpen] = useState({});
   const pickDispGroup = (g) => {
     setDispGroup(g);
     try {
@@ -17461,6 +17464,72 @@ export default function ManageOrdersPage() {
                   out.push({ k: "book-rest", cls: "rest", step: "·", title: out.length ? "Other orders" : "No shared titles", hint: "Each has different books", rows: rest });
                 return out;
               })();
+              // By city / By state: one group per place, biggest first.
+              const placeName = (v) =>
+                String(v || "")
+                  .replace(/\s+/g, " ")
+                  .trim()
+                  .toLowerCase()
+                  .replace(/\b\w/g, (c) => c.toUpperCase());
+              const groupBy = (keyOf, prefix, hintOf) => {
+                const m = new Map();
+                dOrders.forEach((o) => {
+                  const k = keyOf(o) || "Unknown";
+                  if (!m.has(k)) m.set(k, []);
+                  m.get(k).push(o);
+                });
+                return [...m.entries()]
+                  .sort((a, b) => (a[0] === "Unknown") - (b[0] === "Unknown") || b[1].length - a[1].length || a[0].localeCompare(b[0]))
+                  .map(([k, rows], i) => ({
+                    k: `${prefix}-${k}`,
+                    cls: "place",
+                    step: i + 1,
+                    title: k,
+                    hint: hintOf(rows),
+                    rows: rows.sort(smartSort),
+                  }));
+              };
+              const topCities = (rows) => {
+                const c = new Map();
+                rows.forEach((o) => {
+                  const n = placeName(o["City"]);
+                  if (n) c.set(n, (c.get(n) || 0) + 1);
+                });
+                const list = [...c.entries()].sort((a, b) => b[1] - a[1]);
+                const shown = list.slice(0, 3).map(([n, k]) => `${n} ${k}`).join(" · ");
+                return list.length > 3 ? `${shown} · +${list.length - 3} more` : shown || "—";
+              };
+              const cityGroups = groupBy(
+                (o) => placeName(o["City"]),
+                "city",
+                (rows) => placeName(rows[0]?.["State"]) || "—",
+              );
+              const stateGroups = groupBy((o) => placeName(o["State"]), "state", topCities);
+              // 24h Speed Post: orders whose pincode is in a 24/48 metro zone,
+              // grouped by metro. The rest go in one last group.
+              const p24Groups = (() => {
+                const m = new Map();
+                const rest = [];
+                dOrders.forEach((o) => {
+                  const c = thunderCity(o["Pincode"]);
+                  if (!c) return rest.push(o);
+                  if (!m.has(c)) m.set(c, []);
+                  m.get(c).push(o);
+                });
+                const out = [...m.entries()]
+                  .sort((a, b) => b[1].length - a[1].length)
+                  .map(([c, rows], i) => ({
+                    k: `p24-${c}`,
+                    cls: "p24",
+                    step: i + 1,
+                    title: `${c} · 24/48h Speed Post`,
+                    hint: `${rows.filter(isThunderOrder).length} chose Thunder · ${rows.filter((o) => !isThunderOrder(o)).length} can be upgraded`,
+                    rows: rows.sort(smartSort),
+                  }));
+                if (rest.length)
+                  out.push({ k: "p24-rest", cls: "rest", step: "·", title: "Not in a 24h zone", hint: "Standard / Speed Post only", rows: rest.sort(smartSort) });
+                return out;
+              })();
               const dqCod = dOrders.filter((o) => /cash|cod/i.test(String(o["Payment Type"] || ""))).length;
               const dqSpeed = dOrders.filter((o) => isSpeedShip(o)).length;
               const dqGift = dOrders.filter(isGiftOrder).length;
@@ -17559,24 +17628,42 @@ export default function ManageOrdersPage() {
                           </span>
                         )}
                       </div>
-                      <div className="mo-dq-group" role="radiogroup" aria-label="Group cards">
-                        {[
-                          { k: "off", label: "As queued" },
-                          { k: "stage", label: "Smart order", icon: <Sparkles size={13} /> },
-                          { k: "book", label: "By book", icon: <BookOpen size={13} /> },
-                        ].map((g) => (
-                          <button
-                            key={g.k}
-                            type="button"
-                            role="radio"
-                            aria-checked={dispGroup === g.k}
-                            className={dispGroup === g.k ? "on" : ""}
-                            onClick={() => pickDispGroup(g.k)}
+                      <div className="mo-dq-pick">
+                        <label className="mo-dq-select">
+                          <span>Group</span>
+                          <select
+                            value={dispGroup}
+                            onChange={(e) => pickDispGroup(e.target.value)}
+                            aria-label="Group dispatch cards"
                           >
-                            {g.icon}
-                            {g.label}
-                          </button>
-                        ))}
+                            <option value="off">As queued</option>
+                            <option value="stage">Smart order</option>
+                            <option value="book">By book</option>
+                            <option value="city">By city</option>
+                            <option value="state">By state</option>
+                            <option value="p24">24h Speed Post</option>
+                          </select>
+                          <ChevronDown size={14} />
+                        </label>
+                        {["city", "state", "p24"].includes(dispGroup) && (() => {
+                          const gs = dispGroup === "city" ? cityGroups : dispGroup === "state" ? stateGroups : p24Groups;
+                          const anyOpen = gs.some((g) => dqOpen[`${dispGroup}:${g.k}`]);
+                          return (
+                            <button
+                              type="button"
+                              className="mo-dq-toggleall"
+                              onClick={() =>
+                                setDqOpen((p) => {
+                                  const n = { ...p };
+                                  gs.forEach((g) => (n[`${dispGroup}:${g.k}`] = !anyOpen));
+                                  return n;
+                                })
+                              }
+                            >
+                              {anyOpen ? "Collapse all" : "Expand all"}
+                            </button>
+                          );
+                        })()}
                       </div>
                     </div>
                   )}
@@ -17644,23 +17731,71 @@ export default function ManageOrdersPage() {
                             </div>
                           );
                         let i = 0;
-                        return (dispGroup === "book" ? bookGroups : dispGroups).map((g) =>
-                          g.rows.length ? (
-                            <section className={`mo-dq-sec ${g.cls || g.k}`} key={g.k}>
-                              <header className="mo-dq-sec-head">
+                        const shut = ["city", "state", "p24"].includes(dispGroup);
+                        const groups =
+                          dispGroup === "book" ? bookGroups
+                          : dispGroup === "city" ? cityGroups
+                          : dispGroup === "state" ? stateGroups
+                          : dispGroup === "p24" ? p24Groups
+                          : dispGroups;
+                        return groups.map((g) => {
+                          if (!g.rows.length) return null;
+                          const key = `${dispGroup}:${g.k}`;
+                          const open = shut ? !!dqOpen[key] : dqOpen[key] !== false;
+                          const ids = g.rows.map((o) => o["Order ID"]);
+                          const allIn = ids.every((id) => dispatchSel.includes(id));
+                          return (
+                            <section className={`mo-dq-sec ${g.cls || g.k}${open ? "" : " is-shut"}`} key={g.k}>
+                              <header
+                                className="mo-dq-sec-head mo-dq-sec-tap"
+                                role="button"
+                                tabIndex={0}
+                                aria-expanded={open}
+                                onClick={() => setDqOpen((p) => ({ ...p, [key]: !open }))}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    setDqOpen((p) => ({ ...p, [key]: !open }));
+                                  }
+                                }}
+                              >
                                 <span className="mo-dq-sec-step">{g.step}</span>
                                 <span className="mo-dq-sec-t">
                                   {g.title}
                                   <small>{g.hint}</small>
                                 </span>
+                                <button
+                                  type="button"
+                                  className={`mo-dq-sec-sel${allIn ? " on" : ""}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDispatchSel((p) =>
+                                      allIn ? p.filter((x) => !ids.includes(x)) : [...new Set([...p, ...ids])],
+                                    );
+                                  }}
+                                >
+                                  {allIn ? "Unselect" : "Select"}
+                                </button>
                                 <b className="mo-dq-sec-n">{g.rows.length}</b>
+                                <ChevronDown size={16} className="mo-dq-sec-chev" />
                               </header>
-                              <div className="admin-orders-grid mo-dispatch-grid">
-                                {g.rows.map((o) => dCard(o, i++))}
-                              </div>
+                              <AnimatePresence initial={false}>
+                                {open && (
+                                  <motion.div
+                                    className="admin-orders-grid mo-dispatch-grid"
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                                    style={{ overflow: "hidden" }}
+                                  >
+                                    {g.rows.map((o) => dCard(o, i++))}
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </section>
-                          ) : null,
-                        );
+                          );
+                        });
                       })()}
                       {selN === 0 && (
                         <p className="mo-dispatch-hint">
